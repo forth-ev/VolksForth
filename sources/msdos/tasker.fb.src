@@ -1,0 +1,85 @@
+Screen 0 not modified     
+ 0 \                                                 ks 22 dez 87  
+ 1 The multitasker is a simple yet powerful round robin scheme     
+ 2 with explicit task switching. This has the major advantage      
+ 3 that the system switches tasks only in known states.            
+ 4 Hence the difficulties in synchronizing tasks and locking       
+ 5 critical portions of code are greatly minimized or simply       
+ 6 do not exist at all.                                            
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ Multitasker loadscreen                          ks 03 apr 88  
+ 1   Onlyforth   \needs Assembler   2 loadfrom asm.scr             
+ 2                                                                 
+ 3   Code stop         $E990 # U ) mov  ' pause @ # jmp   end-code 
+ 4                                                                 
+ 5   : singletask   [ ' noop @  ] Literal  ['] pause ! ;           
+ 6   : multitask    [ ' pause @ ] Literal  ['] pause ! ;           
+ 7                                                                 
+ 8   1 3 +thru   .( Multitasker geladen) cr                        
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ pass activate                                   ks  1 jun 87  
+ 1                                                                 
+ 2   : pass      ( n0 ... nr-1 Taddr r -- )                        
+ 3 BEGIN [ rot ]                                                   
+ 4     swap $E9CD over !       \ awake Task                        
+ 5     r> -rot                 \ Stack: IP r addr                  
+ 6     8 + >r                  \ s0 of Task                        
+ 7     r@ 2+ @ swap            \ Stack:  IP r0 r                   
+ 8     2+ 2*                   \ bytes on Taskstack incl. r0 & IP  
+ 9     r@ @ over -             \ new SP                            
+10     dup r> 2- !             \ into Ssave                        
+11     swap bounds  ?DO  I !  2 +LOOP  ;  restrict                 
+12                                                                 
+13   : activate  ( Taddr -- )  0  \ [ ' pass >body ] Literal >r ;  
+14 [ -rot ] REPEAT ; restrict                                      
+15                                                                 
+Screen 3 not modified     
+ 0 ( Building a Task                          ks  8 may 84 )       
+ 1                                                                 
+ 2 | : taskerror   ( string -- )   standardi/o  singletask         
+ 3      ." Task error: " count type multitask stop ;               
+ 4                                                                 
+ 5   : sleep     ( addr -- )    $90 swap c! ;                      
+ 6                                                                 
+ 7   : wake      ( addr -- )    $CD swap c! ;                      
+ 8                                                                 
+ 9   : rendezvous   ( semaphoraddr -- )                            
+10      dup unlock  pause  lock ;                                  
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 4 not modified     
+ 0 \ Task                                            ks  1 jun 87  
+ 1                                                                 
+ 2   : Task   ( rlen slen -- )   clear                             
+ 3      0 Constant   here 2- >r      \ addr of task constant       
+ 4      here -rot                    \ here for Task dp            
+ 5      even allot even              \ allot dictionary area       
+ 6      here r> !                    \ set task constant addr      
+ 7      up@ here $100 cmove          \ init user area              
+ 8      here $E990 ,                 \ JMP opcode                  
+ 9      up@ 2+ dup dup @ + here - ,                                
+10      2dup - 2-  swap !            \ link task                   
+11      0 , dup 2- dup , ,           \ ssave and s0                
+12      2dup + ,                     \ here + rlen = r0            
+13      rot ,                        \ dp                          
+14      under + dp !  0 ,            \ allot rstack                
+15      ['] taskerror [ ' errorhandler >body c@ ] Literal rot + ! ;

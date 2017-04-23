@@ -1,0 +1,4423 @@
+ leer                         clv02feb88 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ Directory 13.5.87          ccclv8feb89 
+                                         
+listbufs                       2         
+ frei                          3-4       
+fehlerbehandlung-test          5-11 kw   
+fehlerbehandlung-funktioniert 12-19      
+fehlerbeh  6                  20-26      
+ frei                         27         
+SKIP[ ]SKIP                   28         
+ frei                         29-32      
+fehlerbeh. mit tabort"        33-37      
+fehler (err in quit..         38-44      
+backup ..R/W                  45-53      
+ frei                         54-59      
+Terminal                      60         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ listbufs                    clv14mar88 
+                                         
+                                         
+: listbufs    prev                       
+  BEGIN @ dup WHILE \ liste              
+     cr dup u. dup 2+ @ 1+               
+     IF dup 2+ 2+ @   blk/drv /mod       
+        u. ." :" u. THEN                 
+     stop? UNTIL drop ;                  
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ fehlerbeh. test             clv24nov87 
+                                         
+.( fehlerbeh EXITS FAILS ;THEN ) cr      
+.( 1.5 scr + 2 scr ueberdefinieren)      
+                                         
+: repare ['] (error errorhandler !       
+  [ ' quit   >body dup @ ]               
+  Literal Literal !                      
+  [ ' abort" >body dup @ ]               
+  Literal Literal !                      
+  [ ' error" >body 2+ @ >body dup @ ]    
+  Literal Literal ! ;                    
+: old repare                             
+  ['] repare >name 4 - (forget save quit 
+;                                        
+                                         
+  1 5 +thru                              
+    6 +load \ beispiel                   
+                                         
+' throw errorhandler !                   
+' nquit ' quit >body ! \ patch           
+' n(abort" ' (abort" >body !             
+' n(err" ' error" >body 2+ @ >body !     
+save quit                                
+                                        
+\ ep eClrS throw catch        clv19nov87 
+                                         
+( | ) User ep     0 ep !                 
+( | ) User eClrS  eClrS on               
+                                         
+( | ) : throw                            
+ ep @ rp!  r> ep !  r>                   
+ [ last @ name> >body ] Literal >r >r ;  
+\ rstack: ... throw catchAdr             
+\ ' throw errorhandler !                 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ (error Abort" Error"        clv16nov87 
+                                         
+: n(error  ( string -- )                 
+ standardi/o                             
+ space here .name count type space ?cr   
+ blk @  ?dup IF  scr !  >in @  r# ! THEN 
+ eClrS @ IF clearstack THEN quit ;       
+                                         
+\\                                       
+: (abort"    "lit swap                   
+ IF eClrS on  errorhandler perform exit  
+    THEN  drop ;  restrict               
+                                         
+| : (err"    "lit swap                   
+ IF eClrS off errorhandler perform exit  
+    THEN drop ;    restrict              
+                                         
+: Abort"  compile (abort" ," ;           
+ immediate  restrict                     
+                                         
+: Error"  compile (err"   ," ;           
+ immediate  restrict                     
+                                         
+                                         
+                                        
+\                             clv16nov87 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ FAILS                       clv16nov87 
+                                         
+Create: unfails r> ep ! rdrop ;          
+Create: unexits r> ep ! ;                
+                                         
+: (fails ( --)                           
+  r>  dup 2+ >r  ep @ >r  rp@ ep !       
+      unfails >r                         
+  dup @ + >r ; restrict                  
+                                         
+: (exits ( --)                           
+  r>  dup 2+ >r  ep @ >r  rp@ ep !       
+      unexits >r                         
+  dup @ + >r ; restrict                  
+\ branchtarget & catchpart  follows      
+\ rstack: ... adr oldep uncatch cont     
+\             ep ---^                    
+                                         
+: FAILS  compile (fails  >mark -1 ;      
+         immediate restrict              
+: EXITS  compile (exits  >mark -1 ;      
+         immediate restrict              
+: ;THEN  compile exit [compile] THEN ;   
+         immediate restrict              
+                                        
+\ quit                        clv16nov87 
+\ patches:                               
+                                         
+: n(abort" rdrop   "lit swap             
+ IF eClrS on  errorhandler perform exit  
+    THEN  drop ;  restrict               
+                                         
+| : n(err" rdrop   "lit swap             
+ IF eClrS off errorhandler perform exit  
+    THEN drop ;    restrict              
+: nquit    rdrop   r0 @ rp! [compile] [  
+ FAILS n(error THEN 'quit ;              
+ \ installs toplevel errorhandling       
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ fehlerbeh. beispiel         clv17nov87 
+                                         
+: devon  ." device ist on  " ;           
+: devoff ." device ist off " ;           
+                                         
+: mistake? ." Fehler=y " key capital     
+  Ascii Y = abort" aborted" ;            
+                                         
+: tf    ." t-1 " devon                   
+  FAILS ." t-f " devoff ;THEN            
+        ." t-2 " mistake?                
+        ." t-3 " devoff ;                
+                                         
+: te    ." t-1 " devon                   
+  EXITS ." t-f " devoff ;THEN            
+        ." t-2 " mistake? ." t-3 " ;     
+                                         
+                                         
+: t cr ." mit FAILS:" tf cr tf cr        
+    cr ." mit EXITS:" te cr te ;         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ fehlerbeh. 2                clv07feb88 
+                                         
+.( fehlerbeh EXITS #FAILS END ) cr       
+.( 4 scr + 1 scr ueberdefinieren)        
+                                         
+                                         
+  1 5 +thru                              
+  6 7 +thru \ beispiel                   
+                                         
+' noop errorhandler !                    
+' nquit ' quit >body ! \ patch           
+' n(abort" ' (abort" >body !             
+' n(err" ' error" >body 2+ @ >body !     
+save quit                                
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+(c) clv 1988                             
+                                        
+\ pointer and rstack-handl.   clv07feb88 
+                                         
+( | ) User ep     \ error-return-pointer 
+User err   err  off \ error-message      
+User eClr  eClr off \ error-clearstack   
+                                         
+                                         
+Create: uncatch r> r> ep ! rp! ;         
+                                         
+( |) Variable catchrp                    
+                                         
+: <catch  r> rp@ catchrp ! >r ; restrict 
+                                         
+: catch>  r> ep @ >r  rp@ ep !           
+  catchrp @ >r uncatch >r >r ; restrict  
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ throw (exits (fails         clv07feb88 
+                                         
+: throw rdrop err @ 0= ?exit             
+  ep @ rp!  r> ep ! ; restrict           
+                                         
+: (exits   r>  dup 2+ >r <catch catch>   
+  dup @ + >r ; restrict                  
+                                         
+: (fails   r>  <catch dup 2+ >r catch>   
+  dup @ + >r ; restrict                  
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ (#fails                     clv07feb88 
+                                         
+: move>r ( from count--)        r> -rot  
+  rp@ over - under rp! cmove       >r ;  
+  restrict                               
+: r>move ( to count--)          r> -rot  
+  under rp@ -rot cmove  rp@ + rp!  >r ;  
+  restrict                               
+                                         
+create: getargs                          
+ s0 @ r> - sp!   sp@ r@ 1+ 2* r>move ;   
+                                         
+: (#fails ( ..args.. n--..args..)        
+  >r r@ sp@ s0 @ swap -                  
+  sp@ r> 2+ 2*                           
+  ( .args. n depth from bytes)           
+  r> <catch dup 2+ >r -rot move>r        
+     nip nip getargs >r catch>           
+  dup @ + >r ; restrict                  
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ FAILS EXITS #FAILS END      clv07feb88 
+                                         
+: EXITS  compile (exits  >mark -1 ;      
+         immediate restrict              
+: FAILS  [compile] BEGIN compile (fails  
+         >mark -1 2swap ;                
+         immediate restrict              
+: #FAILS ( n--)                          
+         [compile] BEGIN compile (#fails 
+         >mark -1 2swap ;                
+          immediate restrict             
+: END    dup 2 = IF 2drop THEN           
+         abs 1 ?pairs                    
+         compile throw >resolve ;        
+         immediate restrict              
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ (error (abort" quit         clv07feb88 
+                                         
+: n(error  standardi/o space here .name  
+ err @ count type space ?cr  err off     
+ blk @  ?dup IF  scr !  >in @  r# ! THEN 
+ eClr @ IF clearstack THEN quit ;        
+                                         
+: n(abort" rdrop   "lit swap             
+ IF err !  eClr on                       
+    errorhandler perform throw THEN      
+ drop ;  restrict                        
+                                         
+| : n(err" rdrop   "lit swap             
+ IF err !  eClr off                      
+    errorhandler perform throw THEN      
+ drop ;  restrict                        
+                                         
+: nquit    rdrop   r0 @ rp! [compile] [  
+ FAILS n(error END 'quit ;               
+ \ installs toplevel errorhandling       
+                                         
+                                         
+\\ die RDROP sind nur wg. Patch          
+                                         
+                                        
+\ fehlerbeh. beispiel         clv19nov87 
+                                         
+: devon  ." device ist on  " ;           
+: devoff ." device ist off " ;           
+                                         
+: mistake? ." Fehler=y " key capital     
+  Ascii Y = abort" aborted" ;            
+                                         
+: tf    ." t-1 " devon                   
+  FAILS ." t-f " devoff END              
+        ." t-2 " mistake?                
+        ." t-3 " devoff ;                
+                                         
+: te    ." t-1 " devon                   
+  EXITS ." t-f " devoff END              
+        ." t-2 " mistake? ." t-3 " ;     
+                                         
+                                         
+: t cr ." mit FAILS:" tf cr tf cr        
+    cr ." mit EXITS:" te cr te ;         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ fhler test #FAILS           clv07feb88 
+                                         
+\ Fuer Neugierige:                       
+: .rs r0 @ rp@                           
+  DO cr I dup . ." :" @ dup .            
+     dup 2- @ uncatch 2- @ =             
+     IF ." -" 2- ELSE @ THEN >name .name 
+     2 +LOOP ;                           
+                                         
+                                         
+: .stack ." Stack:" .s ;                 
+: action ( n1 n2 n3--nSum)               
+  ." action:" .stack + + mistake? ;      
+                                         
+: t#fails    1 2 3                       
+  3 #FAILS  ." F:" .stack                
+            ." retry=y?" key Ascii y -   
+            UNTIL END                    
+  action ." successfull:"  .stack drop ; 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ EH:LOADs exception handling clv24feb88 
+                                         
+User ep           \ error-return-pointer 
+User err  err off \ error-message        
+                                         
+                                         
+                                         
+  1 3 +thru \ throw EXITS #FAILS RETRY   
+    4 +load \ patches (abort" (err" quit 
+\ 5 7 +thru \ beispiel                   
+                                         
+                                         
+save quit                                
+                                         
+                                         
+                                         
+\\ (c) 1988 volksFORTH83-Autoren         
+       in der Forth-Gesellschaft e.V.    
+                                         
+enwickelt von Claus Vogt, 1988           
+unter ultraFORTH83 Vs 3.8 auf CBM +4     
+                                         
+Thanks to Klaus Schleisiek and TLC-Lisp  
+                                         
+                                        
+\ EH:returnstack  catch-throw clv24feb88 
+                                         
+: <rstack r> rp@ >r >r ; restrict        
+                                         
+: ,r      ( u--)                         
+  r> r> rot >r >r >r ; restrict          
+                                         
+: rmove   ( adr u --)                    
+  r> r>  rp@ 3 pick - rp!                
+  rp@ -rot >r >r swap cmove ; restrict   
+                                         
+Create: unstack  r> rp! ;                
+Create: uncatch  r> r> ep ! rp! ;        
+: rstack> r> unstack >r >r ; restrict    
+                                         
+: catch>  r> r> ep @ >r rp@ ep ! >r      
+             uncatch >r >r ; restrict    
+                                         
+: throw  err @                           
+  IF ep @ rp!  r> ep ! ELSE rdrop THEN   
+  ; restrict                             
+                                         
+: ?throw ( flag--)                       
+  IF rdrop throw THEN ; restrict         
+                                        
+\ EH:(exits (fails (#fails    clv24feb88 
+                                         
+: (exits \ frame to be executed after    
+         \ error or exit                 
+  r>  err @ IF err dup push off THEN     
+  dup 2+  >r  <rstack catch>             
+  dup @ + >r ; restrict                  
+                                         
+: (fails \ frame executes after error    
+  r>  <rstack  dup 2+ ,r  catch>         
+  dup @ + >r ; restrict                  
+                                         
+Create: getargs          \ restore:      
+ s0 @ r> 2* - sp!        \ stack-pointer 
+ sp@ rp@ swap  r@ 1+ 2*  cmove \ values  
+ r> 2* rp@ + rp! ;       \ returnstack   
+                                         
+: (#fails ( u*args u--u*args)            
+  >r sp@ r> \ saves also arguments       
+  r> <rstack  dup 2+ ,r                  
+       -rot under 2* rmove ,r            
+       depth ,r  getargs ,r  catch>      
+  dup @ + >r ; restrict                  
+                                         
+                                        
+\ EH:FAILS EXITS #FAILS RETRY clv24feb88 
+                                         
+: EXITS  compile (exits  >mark -1        
+         ; immediate restrict            
+                                         
+: FAILS  compile (fails  >mark -1        
+         ; immediate restrict            
+                                         
+: #FAILS ( n--)                          
+         compile (#fails >mark -1        
+         ; immediate restrict            
+                                         
+: RETRY  compile branch over 2- <resolve 
+         [compile] THEN                  
+         ; immediate restrict            
+                                         
+\\ use:                                  
+                                         
+EXITS      ...        throw THEN  ...    
+                                         
+(#)FAILS   ...   ?throw ... RETRY ...    
+                                         
+don't use: IF ... ELSE ... RETRY  !!!!   
+                                         
+                                        
+\ EH:(error (abort" quit      clv24feb88 
+                                         
+' noop errorhandler  !                   
+                                         
+| : err! ( flag--) rdrop  "lit swap      
+  IF dup err ! errorhandler perform drop 
+     throw THEN  drop ;  restrict        
+                                         
+: n(abort" rdrop ( * ) err! ; restrict   
+' n(abort"  ' (abort" >body  !           
+                                         
+: n(err"   rdrop ( * ) err! ; restrict   
+' error" >body 2+ @  | Alias (err"       
+' n(err"   ' (err"   >body  !            
+                                         
+: .err  space here .name                 
+  err @  count type space ?cr ;          
+: nquit    rdrop ( * )  r0 @ rp!         
+  FAILS  standardi/o .err                
+    blk @ ?dup IF scr !  >in @ r# ! THEN 
+    err @ 2- @   ['] (err" -             
+    IF clearstack THEN                   
+  RETRY  err off  [compile] [  'quit ;   
+' nquit  ' quit >body  !                 
+                                        
+\ EH:sample..                 clv24feb88 
+                                         
+: devon   ." aktion begonnen "  cr ;     
+: devoff  ." aktion beendet "   cr ;     
+                                         
+                                         
+: .ok     ." alles erfolgreich" cr ;     
+: .handle ." Ausnahmebehandlung: " ;     
+: .stack  ." Stack:" .s cr ;             
+                                         
+: ?y?  ( --flag)                         
+  ." =y "  key capital Ascii Y =         
+  dup 0= IF del del ." n " THEN cr ;     
+                                         
+: ok?  ." Fehler?" ?y? abort" abbruch" ; 
+                                         
+: retry? ( --flag) ." nochmal?" ?y? ;    
+                                         
+: action ( n1 n2 n3--nSum)               
+  devon                                  
+  .stack + +  ok?                        
+  devoff ;                               
+                                         
+                                         
+                                        
+\ EH:..sample                 clv24feb88 
+                                         
+: tf    ."  t-1 " devon                  
+  FAILS .handle   devoff   throw THEN    
+        ."  t-2 " ok?                    
+        ."  t-3 " devoff .ok ;           
+                                         
+: te    ."  t-1 " devon                  
+  EXITS .handle   devoff   throw THEN    
+        ."  t-2 " ok? .ok ;              
+                                         
+: t#       1111 2222 3333                
+  3 #FAILS  .handle .stack               
+            retry? 0= ?throw cr RETRY    
+  action .ok .stack drop ;               
+                                         
+                                         
+                                         
+: test  0 #FAILS cr cr ." alles" retry?  
+                 0= ?throw cr RETRY      
+    cr ." mit FAILS:"  cr tf cr          
+    cr ." mit EXITS:"  cr te cr          
+    cr ." mit #FAILS:" cr t# cr ;        
+                                         
+                                        
+\ EH:ouput of returnstack     clv24feb88 
+                                         
+\ Fuer Neugierige:                       
+                                         
+: tab at? &22 umax at ;                  
+                                         
+: ?.n ( adr string--)                    
+  swap >name ?dup                        
+  IF swap  count type  tab .name         
+     rdrop exit THEN  drop ; restrict    
+                                         
+: ?.name ( adr--)                        
+  dup 2-    " pfa of"  ?.n               
+  dup 2- @  " "        ?.n               
+  dup 4 - @ " data of" ?.n               
+  tab ." ???" ;                          
+                                         
+: .rs r0 @ rp@  \ gibt rstack aus        
+  DO cr I 6 u.r   I @ 6 u.r  space       
+     I @ ?.name drop  2 +LOOP            
+  cr ep @ 6 u.r ."  ep ! " ;             
+                                         
+                                         
+                                         
+                                        
+\ SKIP[ ]SKIP                 clv13feb88 
+                                         
+: ]SKIP 4 ?pairs >resolve ] ;            
+                                         
+: SKIP[ reveal compile branch >mark 4    
+  [compile] [ ;                          
+  immediate restrict                     
+                                         
+                                         
+                                         
+\\                                       
+                                         
+: t ." hier t"                           
+                                         
+  SKIP[ : t2 ." hier t2 " ;              
+  ]SKIP ." hier noch t" ;                
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+ leer                         clv02feb88 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+ leer                         clv02feb88 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+ leer                         clv02feb88 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+ leer                         clv02feb88 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ fehlerbeh. 4                clv22feb88 
+                                         
+\ mit tabort"                            
+\ nur Studie, da nicht patchbar          
+\ Beispiel wie gehabt                    
+                                         
+  1 3 +thru \ EXITS #FAILS END           
+    4 +load \ systemaenderungen          
+                                         
+\\ Veraenderungen im System:             
+                                         
+errorhandler wird leider gestrichen      
+quit abort" (abort" error" (err" anders  
+(error wird in quit integriert           
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ pointer and rstack-handl.   clv22feb88 
+                                         
+User ep   ep off \ Error-Ret-Ptr         
+                                         
+Create: uncatch r> r> ep ! rp! ;         
+                                         
+( |) Variable catchrp                    
+                                         
+: <catch  r>  rp@ catchrp !  0 >r  >r ;  
+  restrict                               
+                                         
+: catch>  r> ep @ >r  rp@ ep !           
+  catchrp @ >r uncatch >r >r ; restrict  
+                                         
+: move>r ( from count--)        r> -rot  
+  rp@ over - under rp! cmove       >r ;  
+  restrict                               
+                                         
+: r>move ( to count--)          r> -rot  
+  under rp@ -rot cmove  rp@ + rp!  >r ;  
+  restrict                               
+                                         
+                                         
+                                         
+                                        
+\ throw (exits (fails (#fails clv22feb88 
+                                         
+| : rdo ( pfa--pfa)  r> swap 2+ >r >r ;  
+| : rskip  ( pfa--)  rdrop dup @ + >r ;  
+                                         
+: (exits  rdo rskip ; restrict           
+                                         
+: EXITS  compile (exits  >mark -1 ;      
+         immediate restrict              
+                                         
+: (fails                                 
+  r> <catch rdo catch> rskip ; restrict  
+                                         
+: (#fails ( ..args.. n--..args..)        
+  >r r@ sp@ s0 @ swap -                  
+  sp@ r> 2+ 2*                           
+  ( .args. n depth from bytes)           
+  r> <catch rdo -rot move>r              
+  nip nip                                
+  EXITS s0 @ r> - sp!                    
+        sp@ r@ 1+ 2* r>move exit THEN    
+  catch> rskip ; restrict                
+                                         
+                                         
+                                        
+\ FAILS #FAILS END      clv22fclv22feb88 
+                                         
+: FAILS  [compile] BEGIN compile (fails  
+         >mark -1 2swap ;                
+         immediate restrict              
+: #FAILS ( n--)                          
+         [compile] BEGIN compile (#fails 
+         >mark -1 2swap ;                
+          immediate restrict             
+: END    dup 2 = IF 2drop THEN           
+         abs 1 ?pairs  >resolve ;        
+         immediate restrict              
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ (error (abort" quit         clv22feb88 
+                                         
+: throw rdrop r> 2- \ points to tabort"  
+  ep @ 2- rp!  r> 2- ! \ error-exit-pfa  
+  r> ep ! ; restrict                     
+                                         
+: (tabort" throw ; restrict              
+: (terr"   throw ; restrict              
+                                         
+: abort"  ( flag -- )                    
+  [compile] IF   compile (tabort" ,"     
+  [compile] THEN ; immediate  restrict   
+: error"  ( flag -- )                    
+  [compile] IF   compile (terr"   ,"     
+  [compile] THEN ; immediate  restrict   
+                                         
+: quit    r0 @ rp! \ kann ev weg         
+  FAILS standardi/o space here .name     
+    r> dup 2+  count type space          
+    dup ." at:" u.  ?cr                  
+    blk @ ?dup IF scr !  >in @ r# ! THEN 
+    ['] (tabort" = IF clearstack THEN    
+    REPEAT THEN                          
+  [compile] [ 'quit ;                    
+                                        
+\ fehlerbeh. 5                clv23feb88 
+                                         
+\ (errror in quit, User: ep / err        
+                                         
+  1 3 +thru \ EXITS #FAILS END           
+    4 +load \ patches (abort" (err" quit 
+  5 6 +thru \ beispiel                   
+                                         
+\\ ab hier wird gepatched:               
+: -!-  dup @ -rot , , , ;                
+Variable patches                         
+' noop     errorhandler      -!-         
+' nquit    ' quit >body      -!-         
+' n(abort" ' (abort" >body   -!-         
+' n(err"   ' error" >body 2+ @ >body -!- 
+here patches !                           
+                                         
+: patch    patches @ patches 2+          
+  DO  I 2 + @  I @  !   6 +LOOP ;        
+: unpatch  patches @ patches 2+          
+  DO  I 4 + @  I @  !   6 +LOOP ;        
+\\ patch save quit                       
+\\ unpatch  ' ep >name 4 - (forget save  
+   0 +load                               
+                                        
+\ pointer and rstack-handl.   clv23feb88 
+                                         
+( | ) User ep     \ error-return-pointer 
+User err   err off \ points to message   
+                                         
+                                         
+Create: uncatch r> r> ep ! rp! ;         
+                                         
+( |) Variable catchrp                    
+                                         
+: <catch  r> rp@ catchrp ! >r ; restrict 
+                                         
+: catch>  r> ep @ >r  rp@ ep !           
+  catchrp @ >r uncatch >r >r ; restrict  
+                                         
+: move>r ( from count--)        r> -rot  
+  rp@ over - under rp! cmove       >r ;  
+  restrict                               
+                                         
+: r>move ( to count--)          r> -rot  
+  under rp@ -rot cmove  rp@ + rp!  >r ;  
+  restrict                               
+                                         
+                                         
+                                        
+\ throw (exits (fails (#fails clv07feb88 
+                                         
+: throw rdrop err @ 0= ?exit             
+  ep @ rp!  r> ep ! ; restrict           
+                                         
+: (exits   r>  dup 2+ >r <catch catch>   
+  dup @ + >r ; restrict                  
+                                         
+: (fails   r>  <catch dup 2+ >r catch>   
+  dup @ + >r ; restrict                  
+                                         
+create: getargs                          
+ s0 @ r> - sp!   sp@ r@ 1+ 2* r>move ;   
+                                         
+: (#fails ( ..args.. n--..args..)        
+  >r r@ sp@ s0 @ swap -                  
+  sp@ r> 2+ 2*                           
+  ( .args. n depth from bytes)           
+  r> <catch dup 2+ >r -rot move>r        
+     nip nip getargs >r catch>           
+  dup @ + >r ; restrict                  
+                                         
+                                         
+                                         
+                                        
+\ FAILS EXITS #FAILS END      clv07feb88 
+                                         
+: EXITS  compile (exits  >mark -1 ;      
+         immediate restrict              
+: FAILS  [compile] BEGIN compile (fails  
+         >mark -1 2swap ;                
+         immediate restrict              
+: #FAILS ( n--)                          
+         [compile] BEGIN compile (#fails 
+         >mark -1 2swap ;                
+          immediate restrict             
+: END    dup 2 = IF 2drop THEN           
+         abs 1 ?pairs                    
+         compile throw >resolve ;        
+         immediate restrict              
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ (error (abort" quit         clv23feb88 
+                                         
+| : err! ( flag--)                       
+    rdrop ( deletes (ABORT" ) "lit swap  
+    IF err !                             
+       errorhandler perform throw THEN   
+    drop ;  restrict                     
+                                         
+: n(abort" rdrop err! ; restrict         
+: n(err"   rdrop err! ; restrict         
+                                         
+: .err  space here .name                 
+  err @  count type space                
+  ." AT:" err @ u.  ?cr ;                
+                                         
+: nquit    rdrop   r0 @ rp!              
+  FAILS  standardi/o .err                
+    blk @ ?dup IF scr !  >in @ r# ! THEN 
+    err @ 2- @   ['] (abort"  =          
+    IF clearstack THEN                   
+    REPEAT THEN                          
+  err off  [compile] [  'quit ;          
+                                         
+\\ die RDROP sind nur wg. Patch          
+                                        
+\ fehlerbeh. beispiel         clv07feb88 
+                                         
+: devon  ." device ist on  " ;           
+: devoff ." device ist off " ;           
+                                         
+: mistake? ." Fehler=y " key capital     
+  Ascii Y = abort" aborted" ;            
+                                         
+: tf    ." t-1 " devon                   
+  FAILS ." t-f " devoff END              
+        ." t-2 " mistake?                
+        ." t-3 " devoff ;                
+                                         
+: te    ." t-1 " devon                   
+  EXITS ." t-f " devoff END              
+        ." t-2 " mistake? ." t-3 " ;     
+                                         
+                                         
+: t cr ." mit FAILS:" tf cr tf cr        
+    cr ." mit EXITS:" te cr te ;         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ fhler test #FAILS           clv07feb88 
+                                         
+\ Fuer Neugierige:                       
+: .rs r0 @ rp@                           
+  DO cr I dup . ." :" @ dup .            
+     dup 2- @ uncatch 2- @ =             
+     IF ." -" 2- ELSE @ THEN >name .name 
+     2 +LOOP ;                           
+                                         
+                                         
+: .stack ." Stack:" .s ;                 
+: action ( n1 n2 n3--nSum)               
+  ." action:" .stack + + mistake? ;      
+                                         
+: t#fails    1 2 3                       
+  3 #FAILS  ." F:" .stack                
+            ." retry=y?" key Ascii y -   
+            UNTIL END                    
+  action ." successfull:"  .stack drop ; 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ uniR/W                      clv15mar88 
+                                         
+\ Zum Kopieren Disk/Tape                 
+                                         
+\needs Code   .( ?!! Code !!?) quit      
+\needs s#>t+s (16 $46ee Alias s#>t+s C)  
+\needs 2@  : 2@  dup 2+ @ swap @ ;       
+                                         
+  1 6 +thru \ diverse r/w's              
+  7 8 +thru \ backup                     
+                                         
+' uniR/W  Is   r/w                       
+' patch-sbufs ' save-buffers >body !     
+                                         
+: uniIni supertape  r/wf on  virInit ;   
+uniIni                                   
+' uniIni ' drvinit >body !               
+                                         
+save                                     
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ tapeR/W                     clv14mar88 
+                                         
+: nofile ( f--) abort" nofile" ;         
+| Create blk.  ," blk."                  
+Variable r/wf  r/wf on                   
+                                         
+\ greift auf interne Block-struktur!!!   
+\ blk $ffff  laedt naechsten block       
+                                         
+: ?r/wf  ( rw/f--)  dup r/wf @ -         
+IF ." Press stop" key drop THEN r/wf ! ; 
+                                         
+: tapeR/W  ( adr blk file r/wf -- flag)  
+ swap nofile  dup ?r/wf                  
+ IF swap dup 2- 2-  blk. count  bload    
+    over 2- off \ no flags               
+    over - b/blk -                       
+    abort" block-crash"                  
+    over true = IF 2drop false exit THEN 
+    2- 2- @ 2dup -                       
+    IF ." not" u. ." ! " u.              
+       true exit THEN 2drop              
+ ELSE drop dup 2- 2-  swap b/blk +       
+      blk. count   bsave THEN false ;    
+                                        
+\ blk# nofile ?dev            clv14mar88 
+                                         
+\ : blk#   ( --blk) prev @ 2+ 2+ @ ;     
+                                         
+$FFB1 >label LISTEN  $FF93 >label SECOND 
+$FFAE >label UNLSN                       
+| Code (dev?                             
+ sp x) lda                               
+ $90 stx (16 $ae sta rom C) LISTEN jsr   
+        \ wg. Fehler im Betr.syst.       
+ $60 # lda  SECOND jsr  UNLSN jsr        
+ 0 # ldx  1 # ldy  (16 ram C)            
+ $90 lda                                 
+ sp x) sta  sp )y sta  Next jmp end-code 
+                                         
+: dev?    ( dev -- flag)                 
+ i/o lock  (dev? 0= i/o unlock ;         
+                                         
+\\                                       
+: ?device ( dev --)                      
+  dev? ?exit                             
+  buffers unlock                         
+  true abort" no device" ;               
+                                         
+                                        
+\ leer                        clv14mar88 
+                                         
+\ simuliert mehrere Laufwerke auf Drv#0  
+                                         
+Variable #drv                            
+Variable lastdrv                         
+                                         
+: virInit 4 0                            
+ DO I 8 + dev? 0=                        
+    IF I #drv ! leave THEN LOOP          
+ lastdrv on ;                            
+                                         
+: virDrv   ( drv--)                      
+  dup  1 #drv @ uwithin                  
+  IF (drv ! exit THEN                    
+  (drv off  lastdrv @ over -             
+  IF cr ." Insert disk#" dup u.          
+     lastdrv !  key THEN drop ;          
+                                         
+: virBlk   ( blk--blkOnDrv)              
+  blk/drv /mod virDrv ;                  
+                                         
+                                         
+                                         
+                                        
+\ diskR/W                     clv14mar88 
+                                         
+| $100 Constant b/sek                    
+                                         
+: 1551r/w  ( adr blk file r/wf -- flag)  
+ swap nofile  -rot  virBlk               
+ diskopen  IF  drop nip exit  THEN       
+ 0 swap   2* 2* 4 bounds                 
+ DO  drop  2dup I rot                    
+     IF    s#>t+s readsector             
+     ELSE  s#>t+s writesector THEN       
+     >r b/sek + r> dup  IF  LEAVE  THEN  
+ LOOP   -rot  2drop  diskclose  ;        
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ dirR/W                      clv15mar88 
+                                         
+\ Benutzt blk als Laufwerksnummer        
+                                         
+: dirR/W  ( adr blk file r/wf -- flag)   
+ -rot nofile  virDrv  ( adr r/wf)        
+ diskopen IF drop exit THEN              
+ 3 0  \ Directorie nur $300 lang !!      
+ DO  ( adr r/wf) 2dup                    
+     IF   &18 I  readsector              
+     ELSE &18 I  writesector THEN        
+     IF 2drop false false leave THEN     
+     swap b/sek + swap LOOP              
+ drop 0= diskclose ;                     
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ uniR/W                      clv15mar88 
+                                         
+ 4 Constant tape                         
+$f Constant dir                          
+                                         
+: info 2 pick IF ." r:" ELSE ." w:" THEN 
+  2dup 3 u.r ." :" 3 u.r  10 spaces      
+  cr $91 ( CurUp ) con! ;                
+                                         
+: uniR/W  ( adr blk file r/wf -- flag)   
+ 2 pick blk/drv /mod info                
+ dir case?                               
+ IF tape case?      IF tapeR/W exit THEN 
+    -rot  3 roll drop  dirR/W  exit THEN 
+                                         
+ tape case?                              
+ IF $ff = IF rot drop true -rot THEN     
+                       tapeR/W exit THEN 
+ dup 4 u< IF drop drop 1551r/w exit THEN 
+             drop drop ramR/W ;          
+                                         
+                                         
+                                         
+                                         
+                                        
+\ sort-buffers                clv15mar88 
+                                         
+: du> ( d1 d2 --flag)                    
+  rot 2dup -                             
+  IF  u< nip nip exit THEN               
+  drop drop u> ;                         
+| : swap? ( adr--flag)                   
+  @ dup 2+ @ -1 =                        
+  IF drop false exit THEN                
+  dup 2+ 2@ rot @ 2+ 2@  du> ;           
+| : swapbufs ( adr--)                    
+  dup @ dup @ dup @   >r swap r>         
+  over ! over ! over ! drop ;            
+                                         
+: sort-buffers  prev                     
+  BEGIN dup @ @ 0= IF drop exit THEN     
+   dup swap?                             
+   IF swapbufs prev ELSE @ THEN REPEAT ; 
+                                         
+: patch-sbufs                            
+  sort-buffers                           
+  [ ' save-buffers >body @ , ] ;         
+                                         
+                                         
+                                        
+\ backup                      clv14mar88 
+                                         
+                                         
+: backup ( fromDrv toDrv--)              
+  lastdrv on                             
+  over dir  >drive                       
+  over dir  >drive     copy              
+  >r >r                                  
+  0 r@  >drive                           
+  blk/drv 1- r>  >drive                  
+  0 r>  >drive         convey ;          
+                                         
+                                         
+\\                                       
+  Drv 0..3: reelle/virtuelle Disks       
+  Drv 4   : tape-DEVICE                  
+  Drv 15  : Directories                  
+                                         
+\\                                       
+supertape  0 4 backup \ Disk-->Tape      
+supertape  4 0 backup \ Tape-->Disk      
+                                         
+0 1 backup            \ Disk-->Disk      
+                                         
+                                        
+ leer                         clv14mar88 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+ leer                         clv02feb88 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+ leer                         clv02feb88 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+ leer                         clv02feb88 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+ leer                         clv02feb88 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+ leer                         clv02feb88 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ TM:Terminal Loadscreen     cclv28feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+    1 &11 +thru  \ serial interface      
+      &12 +load  \ cbm ascii conversion  
+      &13 +load  \ tx more than byte     
+      &14 +load  \ dumb terminal         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ TM:Serielle Schnittstelle   clv28feb89 
+                                         
+                                         
+| Variable INT \ location of interrupt   
+                                         
+| $fd00 Constant Port@   \ 6551          
+| $fd10 Constant uport@  \ cts-port      
+| Variable ctrl                          
+| $314 Constant sint@                    
+| sint@ @ >Label oldSint                 
+| $fcbe >Label intEnd    \ system-depend 
+                 \ interrupt end routine 
+                                         
+  Create Queue 0 , $80 allot             
+                                         
+                                         
+                                         
+\\ 0      1     2         130 byte adr   
+   len    out   128-byte-queue           
+  len ::= number of characters queued    
+  out ::= relative address of next       
+          output character               
+  (len+out)mod 128 = relative address    
+              of first byte empty        
+                                        
+\ TM:Serielle Schnittstelle    clv8feb89 
+                                         
+: tx  ( c -- )  port@ c! ;               
+                                         
+: tx? ( -- f )                           
+   port@ 1+ c@  $10 and 0<>              
+   uport@ c@  $02 and 0<>                
+   and ;                                 
+                                         
+\\                                       
+                                         
+| Label no  0 # lda                      
+| Label pushaa  sp 2dec  sp )y sta       
+   puta jmp  end-code                    
+                                         
+Code tx? ( -- f )                        
+   port@ 1+ lda  $10 # and  no beq \ ok? 
+   uport@  lda  $02 # and  no beq \ cts? 
+| Label yes $ff # lda  pushaa bne        
+   end-code                              
+                                         
+Code tx  ( c -- )                        
+   port@ sta  pop jmp  end-code          
+                                         
+                                        
+\ TM:Serielle Schnittstelle   clv28feb89 
+                                         
+: +dtr port@ 2+ dup c@   1 or  swap c! ; 
+                                         
+: -dtr port@ 2+ dup c@ $fe and swap c! ; 
+                                         
+: +rts port@ 2+ dup c@ $04 or  swap c! ; 
+                                         
+: -rts port@ 2+ dup c@ $f3 and swap c! ; 
+                                         
+\\                                       
+                                         
+Code +dtr                                
+   port@ 2+ lda   $1 # or   port@ 2+ sta 
+   next jmp  end-code                    
+                                         
+Code -dtr                                
+   port@ 2+ lda  $fe # and  port@ 2+ sta 
+   next jmp  end-code                    
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ TM:Serielle Schnittstelle    clv8feb89 
+                                         
+| Label s-int                            
+    port@ 1+ lda                         
+    0>= ?[ oldSint jmp ]?                
+    $08 # and  0= ?[ intEnd jmp ]?       
+    tya pha                              
+    queue lda  $68 # cmp                 
+    0>= ?[ port@ 2+ lda  $f2 # and       
+           port@ 2+ sta ]? \ -dtr -rts   
+    clc  queue 1+ adc                    
+    $7f # and  tay  queue inc            
+    port@ lda  queue 2+ ,y sta           
+    pla tay  intEnd jmp  end-code        
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ TM:Serielle Schnittstelle    clv8feb89 
+                                         
+: rx? ( -- f ) queue c@ ;                
+Code sei  sei next jmp end-code          
+Code cli  cli next jmp end-code          
+                                         
+: rx  ( -- c )                           
+   queue c@ 0=                           
+   IF +dtr +rts  BEGIN queue c@ UNTIL    
+      THEN                               
+   sei  queue dup  1+ c@  +  2+  c@      
+   -1 queue +!  1 queue 1+ +!  cli ;     
+                                         
+\\                                       
+Code rx?  ( -- f )                       
+  queue lda  pushaa jmp  end-code        
+                                         
+Code rx   ( -- c )                       
+  queue lda                              
+  0= ?[ port@ 2+ lda  5 # or             
+        port@ 2+ sta        \ +dtr +rts  
+        [[ queue lda  0<> ?] ]?          
+  sei  queue 1+ ldy  queue 2+ ,y lda     
+  queue dec  queue 1+ inc                
+  cli  push0a jmp  end-code             
+\ TM:Serielle Schnittstelle  clv228feb89 
+                                         
+: s-init  s-int sint@ ! \ new interrupt  
+   ctrl @ port@ 2+ !  +dtr +rts ;        
+                                         
+: bye  0 port@ 2+ c!  bye ;              
+  \ -dtr -rts -rxint                     
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\                            clv228feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ TM: ctrl:                  clv228feb89 
+                                         
+| : ctrl: ( adr 8b -- ) Create not c, ,  
+     does> ( 8b -- )                     
+           Create dup c@ c, 1+ @ , c,    
+      does> dup c@  over 1+ @ c@ and     
+            over 3+ c@ or swap 1+ @ c! ; 
+                                         
+\ The only meta-defining-word I ever saw 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ TM: baudrate               clclv8feb89 
+                                         
+| ctrl 1+ %00011111 ctrl: bd:            
+                                         
+   $11 bd:    50baud                     
+   $12 bd:    75baud                     
+   $13 bd:   110baud                     
+   $14 bd:   135baud                     
+   $15 bd:   150baud                     
+   $16 bd:   300baud                     
+   $17 bd:   600baud                     
+   $18 bd:  1200baud                     
+   $19 bd:  1800baud                     
+   $1a bd:  2400baud                     
+   $1b bd:  3600baud                     
+   $1c bd:  4800baud                     
+   $1d bd:  7200baud                     
+   $1e bd:  9600baud                     
+   $1f bd: 19200baud                     
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ TM: bits stopbits          clv228feb89 
+                                         
+| ctrl 1+ %01100000 ctrl: ln:            
+                                         
+   $00 ln: 8bits                         
+   $20 ln: 7bits                         
+   $40 ln: 6bits                         
+   $60 ln: 5bits                         
+                                         
+| ctrl 1+ %10000000 ctrl: st:            
+                                         
+   $80 st: 1stop                         
+   $00 st: xstop                         
+                                         
+\\ xStop gives: 8 bit+1 parity -> 1stop  
+                5 bit+0 parity -> 1.5    
+                    other      -> 2stop  
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ TM: parity                 clv228feb89 
+                                         
+| ctrl    %11100000 ctrl: pa:            
+                                         
+   $00 pa: noParity                      
+   $80 pa: oddParity                     
+   $c0 pa: evenParity                    
+   $a0 pa: 1Parity                       
+   $e0 pa: 0Parity                       
+                                         
+| ctrl    %00010000 ctrl: ec:            
+                                         
+   $10 ec: +echo \ only if -rts !!       
+   $00 ec: -echo                         
+                                         
+                                         
+\\ 1parity means:                        
+    send and receive high parity         
+    but no parity-check                  
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ TM: cbm>asc asc>cbm        cclv28feb89 
+                                         
+: cbm>asc ( c -- c' )                    
+   dup $41 $5b uwithin                   
+   IF $20 + exit THEN                    
+   dup $61 $7b uwithin                   
+   IF $60 + exit THEN                    
+   dup $c1 $db uwithin                   
+   IF $7f and exit THEN                  
+   $dc case? IF $7c exit THEN            
+   $7c case? IF $dc exit THEN            
+   $14 case? IF $08 exit THEN            
+   $08 case? IF $14 exit THEN ;          
+                                         
+: asc>cbm ( c -- c' )                    
+   dup $41 $5b uwithin                   
+   IF $80 or exit THEN                   
+   dup $61 $7b uwithin                   
+   IF $20 - exit THEN                    
+   dup $c1 $db uwithin                   
+   IF $60 - exit THEN                    
+   $dc case? IF $7c exit THEN            
+   $7c case? IF $dc exit THEN            
+   $14 case? IF $08 exit THEN            
+   $08 case? IF $14 exit THEN ;         
+\ TM: txType txblocks         clv28feb89 
+                                         
+$1a Constant #EOF                        
+                                         
+| : ?break key? abort" ***aborted***" ;  
+                                         
+                                         
+| : ?tx ( c -- )                         
+     BEGIN ?break tx? UNTIL              
+     cbm>asc #EOF case? IF $ff THEN tx ; 
+                                         
+: txType ( adr count -- )                
+   bounds DO I c@ ?tx LOOP ;             
+                                         
+: txblocks ( fromBlk toBlk -- )          
+   2dup u> abort" nein!"  s-init         
+   1+ swap DO I block b/blk txType LOOP  
+   #EOF ?tx ;                            
+                                         
+: txDisk 0 $a9 txBlocks ;                
+                                         
+                                         
+                                         
+                                         
+                                        
+\ TM: dumb Terminal          clclv8feb89 
+                                         
+\ Sample for an easy Terminal            
+                                         
+\needs #LF     $0a Constant #LF          
+                                         
+| : ?rx  pause rx? 0= ?exit rx asc>cbm   
+      #LF case?  IF cr exit THEN         
+      #CR case?  IF row 0 at exit THEN   
+      #BS case?  IF del exit THEN emit ; 
+                                         
+                                         
+| : ?tx ( c --)                          
+     cbm>asc BEGIN ?rx tx? UNTIL tx ;    
+                                         
+  300baud noparity 1stop 8bits -echo     
+                                         
+  : dumb s-init                          
+     BEGIN BEGIN ?rx key? UNTIL          
+       key $1b case? IF -dtr exit THEN   
+           #cr case? IF #CR ?tx #LF THEN 
+       ?tx REPEAT ;                      
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                              clv20may87 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\\ zu fehlerbeh.              clv16nov87 
+                                         
+ziel:                                    
+CATCH           (catch ---+              
+...             ...       !              
+TO              branch -- ! ---+         
+                uncatch <-+    !         
+...             ...            !         
+ENDCATCH        throw          !         
+                uncatch <------+         
+                                         
+                                         
+                                         
+ONERROR         (catch ----+             
+                branch --- ! --+         
+                uncatch <--+   !         
+...             ...            !         
+ENDONERROR      throw   <------+         
+...             ...                      
+               ( ; macht uncatch )       
+                                         
+                                         
+                                         
+                                         
+                                        
+\\ zu fehler                  clv16nov87 
+                                         
+TRY <#>         put#                     
+                (catch --                
+<word>          <word>                   
+                branch --                
+                uncatch                  
+...             ...                      
+RETRY           get                      
+                branch --                
+                unstack                  
+                uncatch                  
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+( .status push load           clv20may87 
+                                         
+                                         
+Defer .status    ' noop Is .status       
+                                         
+| Create pull  0  ] r> r> ! ;            
+                                         
+: push ( addr -- )                       
+ r> swap dup >r @ >r  pull >r >r  ;      
+ restrict                                
+                                         
+: load   ( blk --)                       
+ ?dup 0= ?exit blk push  blk !           
+ >in push  >in off                       
+ .status interpret ;                     
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+          
+ û(4112)    Ílﬁ@Ílxal{ 
+b6 { { í_   ‡cbz.3>\                  
+                                         
+                                         
+                                         
+                                         
+           ultraFOR∞l Å±… ël	 # 
+Ê2+©P‡# 3+©PS©PM$©PG# 
+1-18°Èêl Å±È ël	 # *2-oê‡$ h
+TRUEy+ˇˇ$ tFALSEy+  $ ¡"-1[$ œ!0…$
+ ÿ1y+ $ Ä2y+ $ ä3y+ $ î4y+ $ 
+ûON+[s$$ ®OFF+…s$% πÑCLI
+TT•8ÈÖ∞F°ÅäëÊPÊl	 WAND˚H
+°1ëà±†1ëlŸ  ÛXORH°qëà±†q
+ëlŸ! -3H±8·ëH±†Ò†ëlŸ! -
+NOTsä·ÅäÒël	 ! kNEGATEŒ8∞„" √D
+NEGATEH8äÒëHäÒëä·Å†äÒël	 
+™®à±
+ô$ à¯ä≈ÖêÊ¢ †`" ”D+ø© õH±≈
+&ëH±≈'ë°≈$Å†±≈%ël	 # ∏1+Ì©¡
+\\ zu ONERROR                 clv16nov87 
+                                         
+: ONERROR                                
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\\ zu FAILS                   clv16nov87 
+                                         
+--Quelltext-- --Compilat-----            
+                                         
+FAILS         catch ## -----!            
+<errorWords>  <errorWords>  !            
+;THEN         exit          !            
+<continue>    <-------------!            
+                                         
+EXITS         catch ## -----!            
+<errorWords>  <errorWords>  !            
+;THEN         exit          !            
+<continue>    <-------------!            
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ test                        clv22may87 
+                                         
+: getbufs \ [from to] --                 
+ 1+ swap ?DO I dup . block drop LOOP ;   
+                                         
+4a 4a getbufs                            
+40 46 getbufs                            
+20 2a getbufs                            
+50 59 getbufs                            
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\\ zu fehlerbeh.2             clv07feb88 
+                                         
+Ermoeglicht das Behandeln eines abort"   
+oder error" in einer der auesseren       
+Routinen.                                
+  Die Behandlung kann sich im einfachen  
+Fall auf das Abschliessen bestimmter     
+Prozesse (z.B. Schliessen von Geraeten)  
+beschraenken, kann aber ggf. auch        
+einen weiteren Versuch starten.          
+                                         
+Die Benutzung geschieht mittels          
+Kontrollstrukturen                       
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\\                            clv07feb88 
+                                         
+to linked List on return-stack           
+adress of abort" - message               
+=true after abort" / =false after error" 
+temporary                                
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+\\                                       
+Mit:  ...<CATCH ..rstackmanipul.. CATCH> 
+wird eine Sequenz auf den rstack gelegt, 
+die im Fehlerfalle ausgefuehrt wird.     
+Im normalen Exitfall wird sie von        
+UNCATCH entfernt                         
+                                         
+rstack: ... oldep oldrp uncatch-pfa -->  
+               ^                         
+ep @ points to ^                         
+oldep is old value of ep                 
+oldrp is rstack-Pointer before <CATCH    
+                                        
+\\ zu throw (exits (fails     clv07feb88 
+                                         
+THROW wirkt im Normalfall wie EXIT.      
+  wenn sich das System nach ABORT" oder  
+  ERROR" im Fehlerbehandlungszustand     
+  befindet, aktiviert es die             
+  naechst-aussere                        
+  Fehlerbehandlungsroutine               
+(EXITS wird von EXITS compiliert.        
+  Es installiert bei Ausfuehrung die     
+  ihm folgende Sequenz als Fehler- und   
+  Exit-Routine und branched ueber sie    
+  hinweg. Der Returnstack nach (EXITS:   
+  ... exit-pfa oldep oldrp uncatch-pfa   
+         ^             /                 
+         ^<<<<<<<<<<<<</                 
+(FAILS wird von FAILS compiliert.        
+  Es installiert bei Ausfuehrung die     
+  ihm folgende Sequenz als Fehler-       
+  Routine und branched ueber sie         
+  hinweg. Der Returnstack nach (FAILS:   
+  ... fails-pfa oldep oldrp uncatch-pfa  
+    ^                  /                 
+    ^<<<<<<<<<<<<<<<<<</                 
+                                        
+\\ zu (#fails                 clv07feb88 
+                                         
+                                         
+(#FAILS ( ..args.. u--..args..)          
+  wird von #FAILS compiliert.            
+  Es installiert bei Ausfuehrung die     
+  ihm folgende Sequenz als Fehler-       
+  Routine und branched ueber sie         
+  hinweg. Ausserdem sichert es           
+  die u obersten Elemente und die Tiefe  
+  des Datenstacks, sodass die Fehler-    
+  Routine als oberste Elemente auf dem   
+  Stack vorfindet: ( ..U*ARGS.. U)       
+                                         
+  Der Returnstack nach (#FAILS:          
+                                         
+  ... ..U*args.. U depth getargs-pfa     
+    ^ fails-pfa oldep oldrp uncatch-pfa  
+    ^                  /                 
+    ^<<<<<<<<<<<<<<<<<</                 
+                                         
+                                         
+                                         
+                                         
+                                        
+\\ zu Kontrollstrukturen      clv07feb88 
+                                         
+\\ Benutzung:                            
+EXITS ... END \ ... bei exit und error   
+FAILS ... END \ ... bei error            
+#FAILS .. END \ ... bei error mit args   
+                                         
+(#)FAILS .. WHILE .. WHILE .. REPEAT END 
+ermoeglicht wiederholung                 
+                                         
+Abschluss mit THEN geht auch, aber       
+ Benutzerverantwortung!                  
+                                         
+sinnlos: IF BEGIN END                    
+                                         
+EXITS THEN macht zweimal das gleiche     
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ zu den patches              clv07feb88 
+                                         
+Unterschiede zu Systemroutinen:          
+(ERROR ist nicht mehr ERRORHANDLER,      
+  sondern wird von QUIT installiert.     
+  Die Message wird in ERR uebergeben,    
+  es fuehrt jetzt ggf. CLEARSTACK aus.   
+(ABORT" und (ERR" setzen Message         
+  und ein Flag zum Thema Clearstack      
+  und fuehren dann THROW aus.            
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\                             clv19nov87 
+                                         
+\ rstack: ... oldrp oldep uncatch        
+                                         
+Create: uncatch r> ep! r> rp! ;          
+Create: catch ( ret oldrp --)            
+ >r ep @ >r  rp@ ep !  uncatch >r >r ;   
+                                         
+: (fails  ( --)                          
+  r> rp@ over 2+ >r \ fails-ip           
+  swap dup @ + swap catch ;              
+\ rstack: fails oldrp oldep uncatch      
+                                         
+: (exits  ( --)                          
+  rp@ r> dup 2+ >r  \ exits-ip           
+  dup @ + swap catch ;                   
+\ rstack: exits oldrp oldep uncatch      
+                                         
+: (#fails ( n--)                         
+  r> rp@ over 2+ >r \ fails-ip           
+  saveargs                               
+  swap dup @ + swap catch ;              
+                                         
+                                         
+                                        
+\                             clv19nov87 
+                                         
+Variable lastrp                          
+: <catch r> rp@ lastrp ! >r ;            
+: catch> r> lastrp @ >r                  
+  ep @ >r rp@ ep ! uncatch >r >r ;       
+                                         
+: (fails  ( --)                          
+  r> <catch dup 2+ >r \ fails-ip         
+  catch> dup @ + >r ;                    
+\ rstack: fails oldrp oldep uncatch      
+                                         
+: (exits  ( --)                          
+  <catch r> dup 2+ >r \ exits-ip         
+  catch> dup @ + >r ;                    
+\ rstack: exits oldrp oldep uncatch      
+                                         
+: (#fails ( n--)                         
+  r> rp@ over 2+ >r \ fails-ip           
+  saveargs                               
+  swap dup @ + swap catch ;              
+                                         
+                                         
+                                         
+                                        
+\\ EH:the concept             clv24feb88 
+                                         
+This level-(and sytem-!!)-dependant,     
+nestable exception-handler               
+is able to reconstruct stack-pointer and 
+stack-datas.                             
+                                         
+It uses a structured syntax              
+opened by FAILS, #FAILS ( u--), EXITS    
+closed by THEN, RETRY                    
+                                         
+The opening word installs the following  
+clause as errorhandler and continues     
+execution after the closing words.       
+                                         
+If ABORT" or ERROR" is invoked during    
+this execution the installed errorclause 
+is executed. It may RETRY execution or   
+THROW away execution to the surrounding  
+errorhandler, which may be for example   
+the top-level errorhandler installed by  
+QUIT.                                    
+It remains the possiblitity to install   
+a post-mortom-handler on lowest level.   
+                                        
+\\ EH:returnstack catch-throw clv24feb88 
+                                         
+r( --f)      begins frame                
+                                         
+r( f--u f)   adds word to frame          
+                                         
+                                         
+r( f--u*Bytes f)  adds bytes at addr     
+                                         
+                                         
+                                         
+removes frame                            
+r( f--f unstack-pfa) ends frame          
+                                         
+                                         
+r( f--f errorLink uncatch-pfa)           
+                                         
+                                         
+continues execution at installed error-h 
+andling-clause if ERR. Else like EXIT.   
+--------------------------------------   
+ f     is the rstack-pointer above frame 
+ ep    points to a linked list of        
+       errorhandling-frames              
+ frame means a data-block on retStack   
+\\ EH:(exits (fails (#fails   clv24feb88 
+                                         
+RSTACK after execution of:               
+                                         
+    (exits        (fails      (#fails    
+    -----------   ---------   ---------  
+    ...........   .........   .........  
+    ...........   .........   .... <--+  
+    ...........   .........   arg1    ^  
+    ...rstack..   ..rstack.   arg2    ^  
+    ...before..   ..before.    ..     ^  
+    ...(exits..   ..(fails.   argU    ^  
+    ...........   .........   u       ^  
+    ...........   .........   sDepth  ^  
+    ...........   .... <--+   GETARGS ^  
+    handle <--+   handle  ^   handle  ^  
+    f  -->-->-+   f  -->--+   f  -->--+  
+ +->oldEP         oldEP       oldEP-->   
+ ^  UNCATCH       UNCATCH     UNCATCH    
+ ^     !             !           !       
+ ^     !             !           !       
+ ^     V             V           V       
+ ^                                       
+                                         
+EP @                                    
+\\ EH:FAILS EXITS #FAILS RETRYclv24feb88 
+                                         
+Syntax: : name clause1                   
+               beg  handle-clause end    
+               clause2 ;                 
+                                         
+beg::= EXITS / FAILS / u #FAILS          
+end::= THEN  / RETRY                     
+                                         
+handle-clause may contain THROW, ?THROW  
+or other words. It is invoked, if ABORT" 
+or ERROR" is called during execution of  
+clause2.                                 
+                                         
+compiles to:                             
+                                         
+ (EXITS           +--> (FAILS / (#fails  
+  ptr ->-+        ^     ptr ->-+         
+  ...    !        ^     ...    !         
+ THROW   !        ^    ?THROW  !         
+  ... <--+        ^     ...    !         
+                  ^    BRANCH  !         
+                  +--<- ptr    !         
+                        ... <--+         
+                                        
+\\ EH:patches for volksFORTH  clv24feb88 
+                                         
+ERRORHANDLER called on low level. May    
+ used to output post-mortem-information  
+                                         
+(ABORT" and (ERR" must be patched.       
+ Stores following string, performs       
+ ERRORHANDLER and THROWs to outer level  
+ error-clauses.                          
+                                         
+QUIT must be patched.                    
+ Installs top-level errorhandler-clause, 
+ which executes the same as the old      
+ (ERROR-handler, which can be omitted.   
+ It also demonstrates the (perhaps only) 
+ use of .. FAILS ... RETRY ...           
+                                         
+                                         
+( * ) RDROPs with this mark are          
+      necessary when patching words      
+                                         
+                                         
+                                         
+                                         
+                                        
+\\ EH:sample..                clv24feb88 
+                                         
+DEVON is an example for an action,       
+ which must be closed by another: DEVOFF 
+ Used to demonstrate EXITS and FAILS     
+                                         
+.OK .HANDLE .STACK prints silly texts    
+                                         
+                                         
+                                         
+?Y? prompts for Yes/No and displays      
+ the answer                              
+                                         
+                                         
+OK? is an example for any action, that   
+ may cause an error. It asks the User    
+ to produce an error or not.             
+                                         
+ACTION is an example for any action      
+ which consumes some arguments and       
+ may cause an error.                     
+ Used to demonstrate #FAILS              
+                                         
+                                         
+                                        
+\\ EH:..sample                clv24feb88 
+                                         
+TF demonstrates how to use               
+     FAILS ... THEN                      
+ to close an action if an error occures  
+                                         
+                                         
+TE demonstrates how to use               
+   EXITS ... THEN   for the same purpose 
+                                         
+                                         
+T# demonstrates how to use               
+   u #FAILS ... ?throw ... THEN          
+ to save stack-pointer and arguments, so 
+ that the error-causing action may be    
+ RETRYd after the handling clause        
+ decided not to THROW up execution.      
+                                         
+TEST puts TF, TE, T# in one word         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\\ EH:ouput of returnstack    clv24feb88 
+                                         
+                                         
+                                         
+                                         
+                                         
+?.N tries to output the name             
+    corresponding to adr witch comment   
+    string and leaves if possible        
+                                         
+                                         
+?.NAME detects names of                  
+    PFAs ( ie created bye CREATE:)       
+    normal colon-definitions             
+    words like BRANCH and (DO with data  
+    and nothing else                     
+                                         
+.RS outputs adresses, contents           
+    and perhaps right names on retStack  
+    and the contents of EP which points  
+    to a linked list of errorframes      
+    placed on returnstack.               
+                                         
+                                         
+                                        
+∞l Å±… ël	 # Ê2+©P‡# 3+
+©PS©PM$©PG# 1-18°Èêl Å±È 
+ël	 # *2-oê‡$ hTRUEy+ˇˇ$ tFALSEy
++  $ ¡"-1[$ œ!0…$ ÿ1y+ $ Ä2y+ $
+ ä3y+ $ î4y+ $ ûON+[s$$ ®
+OFF+…s$% πÑCLITT•8ÈÖ∞F°Åäë
+ÊPÊl	 Ö©lÖl	 6 ^WATCH'+Ä^
+Í^	V.z^_c$6 Õ^CONT+^ÍÍ^	
+z^$+Ä¢5 $:$+ÄÍR5$+Äíò5
+$+R$w?1…£(4$7 í^S+´^4F^¢(4Ä* 
+?ÄíøÎR^$7 Â^N+´^π^é(4ÄÍu*G*	R
+^$7 	_L+´^π^	R^$8 '_D+±s´^ò(4s
+…)ˇ
+ F^Îàˇ◊ˇ¢(4"Ö$•%ë†•$ëH±Ö%°
+ë†±Å•%ë†l	  €-ROT+··$ NI
+P+sh$ ,UNDER+sº$ <PICK+ÎÒ
+øÍ$ nROLL+Ä∞uÄ	OÎÒ∞h
+$ ≈2SWAP+·∞·O$ à2DROPº û
+2DUP+ºº$  ™+AH°—ëà±†—ëlŸ
+  ªORﬁH°ëà±†ëlŸ  	% KÉLIT˘
+•8ÈÖ∞F±ë°Å•…ÖêÊl	 % ÒGLI
+TERAL+Ä˜ ˇ˘b
+ Ù ˜I $Ù R| $& 0
+<m±©ˇ$äël & f0=√°ËPÈ& \UWI
+THINŸ© õ†°E$±Â%∞
+°E&±Â'∞Ωlt' Õ
+<ü°Ö$±Ö%•…ÖêÊ•%q0ï°E$±Â%lo' 
+ôU<L°Ö$±Ö%•…ÖêÊ°E$±Â%∞lql
+0≤2Ω2 ]©\Ö©CÖ©lÖl	 4 á\TRACE'+ìm
+d\V.»]_c$4 {]ÖBREAK+ì	d\»]$4 ö
+]TRACEL:+Õ)I ó(lÃ(Íd\#$4 ≤]+DOD]˙ˇ4
+ Q]-DOD] 4 ›]+RD]˛ˇ4 È]-RD] 4 Ù]+PU
+SHD]˙ˇ4 ˇ]-PUSHD] Z)^A•…ÖêÊ≠^Ö
+$≠^Ö%°$M^•çf\•çg\©\Ö©CÖlﬂ\±$M^P‰
+l \^©^Ö©°$l ˇ Ê!°Ö$±Ö%H±Å$H±
+†ë$lºˇ ˇ+!%°Ö$±Ö%H±¡$Å$H±†—$l
+ DROP} aSWAPu±™†±Ö$äë•$†ë
+H¢ ±Ö$°ëà•$l  lDUPÇ•8ÈÖ∞F†
+±†ëH±àl  ⁄?DUPß°Pl	 lÇ û
+OVERæ•8ÈÖ∞F†±ÅH±†ël	  µROT
+„†±Ö%†±†ë†±t( E>+sù$( Ò
+0>+Ãk$( ˇ0<>+¡q$( U>+sJ
+$( =+1¡$( -D0=+|¡$( ;D=+
+}Ωa$( kD<+·±1b ı22  ¶J
+$+b sh$) \MIN+±ı}) çMAX
++±ù}) ùUMAX+±J}) ≠UMIN+±#}
+) æEXTEND+Äk$) ODABS+≠c\Öl Z
+)h\Z)ì* ±ø¢OsÇ$2   NPUSH+O"º
+∞ìºÎ1Ä¢ —\∞∞$+Ÿ14≠!î/˜~ˇª 
+$•…ÖêÊ•Mf\l •Mg\PˆÓf\•çb\•
+çc\ ∆˘Õ\∞·ê1ábTê1Å[?mÄ¢5ÍÄR
+5é(4u*G*Rw?1…£(4[5Ï#ê1Ç!ê1÷!ê1˜≤2
+ê1˜u/ê1!ê1õ!!Íè\¢ê1ì¢RÇª ˜Ø\◊
+˚•8ÈÖ∞F±ë°l  ÙÖRDROP‰ 
+EXIT&°Ö±Öl‰ ?EXIT=°•…Ö
+êÊ(PVl	  3EXECUTE¡°Ö±Ö•…Öê
+Êl  uPERFORM+Í_$ ŸC@î°Ö$±Ö
+%© ë°$l  çC!Æ°Ö$±Ö%H±Å$à•…Öê
+Êl	  ßCTOGGLE+dís¨$ˇ L@Ï°
+Ö$±Ö%±$ëXb }$) ‚ABS+Xb Ã$
++O	Ä∞·∞s∞∞$* ˜É(DO+º1	ˇ
+* #ˇÑ(?DO+º1•b 	ˇOÄÍø∞h$* 3ˇ
+BOUNDS+ºøs$* xˇáENDLOOPŸˇ©lÊ+ ÕˇÖ
+(LOOPäˇ©¡Åê±… ëêl	 †±Öà±Ö†l
+	 + ÄˇÜ(+LOOPªˇ°¡Å±—ë q•…Öê
+Ê(Dl	 , ∞ˇÅIÂˇ† •
+ER+«zm[T$m _[
+DISPLAY+?ñdﬁc$n ◊[B/SCRy+ n ç[.LINE
++æ9sà5‚øà5/?$n õ[.===+Rp…)ˇ R
+=˙>àˇ◊ˇ$n π[PRLIST+Äæ9h…[R˙> $Sc
+reen Nr. Ä=5R˙>?¿[R…)ˇ „ˇº£[?àˇ
+◊ˇh¿[???Å[$0 X[TOOLSÒ,’_’_zzZ)  Z)Í
+Ãj\Nf\°Ö±Ö•…ÖêÊ≠b\ÖVOC-LIN
+KV+ ˙UDPV+ˇ 
+SP@•Ö$•Ö%¢$•8ÈÖ
+∞Fµëµ ¢ l  SP!g°™±ÖÜ¢ l	 
+ ?UP@_¢l' wÉUP!Œ¢±ïà±ï ¢ †•
+…ÖêÊl	  ∆RP@ï¢l' çÉRP!§¢l–
+ úÇ>R≤•8ÈÖ∞F°Å±ël} ´ÇR>Q
+•8ÈÖ∞F°Å±ë©≈ÖêÊl	  JR@
+8ÈÖ∞F±HH—Åà±HH—†ël	 , ﬂˇÅJ
+†PR- ÜBRANCH"•¡Ö$•—Ö•$Öl	 - 
+á?BRANCHd°•…ÖêÊ(Kl. 8>MA
+RK+ñ …I $. \>RESOLVE+ñ º1s$. 
+–<MARK+ñ $. ã<RESOLVE+ñ 1I $. õ
+?PAIRS+1ƒ3unstructured$I h©ˇl›h© 
+™•8ÈÖ∞Fä†ë»¢ l / ≤CASE? © õ
+•$AP	•%QPlqälZ0 ˆBIF+Ù bƒÑ$0 
+ˇDTHEN+˝Ñª{$0 -DELSE+ÑªÙ  ƒs
+{[$0 bEBEGIN+ìé$0 _EWHILE+éª
+éÙ bƒ˜˛ˇê$+¶Ä˜˛ˇ1b
+ h{ Óˇ$
+0 —FREPEAT+éªÙ  è$0 ´EUNTIL+éª
+Ù bè$1 DBDO+Ù TH-83 3.51 clv13.4.
+87*C16+*çˇˇ±Ö≠ˇˇÖ•…Ö∞ÃˇˇÊ∞˘   
+	END-TRACEe©•Ö©Ö©…Ö©Öl	  7RECOV
+ERZ)»Ö»Ö•PFFl+ zNOOP	  ŸORIG
+INy+ ÑS0V+ ìR0V+
+ ùDPV+ ß
+OFFSETV+ ±BASEV+ øOUTPUTV+ KI
+NPUTV+ YERRORHANDLERV+ Ê)ˇƒò$1
+ |C?DO+Ù :ˇƒò$1 ÔDLOOP+òªÙ àˇÙ ◊
+ˇ{$1 E+LOOP+òªÙ πˇÙ ◊ˇ{$1 ÖLEA
+VE+◊ˇOmÄÍø∞$2 :UM*^±Ö$°Ö%HÜ&
+Ü'¢'&&&%&$ê±≈'Ö'H±à≈&Ö&êÊ%PÊ$JP|•
+'ëH•&ë†•$ë•%Ål	 3 vM*+ÄkÄ∞b
+ ÃsÄkb
+ ÃOq∞\Ob }$3 ©*
+!l4#†•$%=°&QPÊ&PÊ'•$PF%F$lﬂ"•&Ö(
+•'Ö)°&QÊ&PÊ'•$PF%F$(Ê*•$%P‚8†•&Ò
+çÿ!H•'ÒçŸ!©≈ÖêÊ†±ÅÖ$H±†ëÖ%à•
+*ë$±(HF*˜© ë$†l	 b –"SOURCE+Ç!Í•b
+ æ9 d$õ!!Í$b «#WORD+–#†"$b å#PARS
+E+∞–#÷!Í2"ºsOQ!∞º1ÄO1÷!#$
+b ù#NAME R(h`'…I ó(lã(ﬂ)°Ö(±Ö)•
+…ÖêÊ°Ö&±Ö'&Plt±&ëÖ%°&ÅÖ$%P
+l	 •$…Ö$êÊ%°$h8)≈$Ö$êÊ%») 
+±$h°$Ö$»
+Ö%•$E(P∞•%E)P™ln ƒ)>NAME+ÍÄb ±
+¢1s›)•b "¶$ ‡ˇ2$+* R˘ø$
+n m*NAME>+Ä*síR ˘b Í$n é*>BO
+DY+	$n Ø*.NAME+1$+ñ Rˇ˘Rˇ1
+b ÄÄÎñ º1Î∞Ñ*'#Ñª $k ß(?HEA
+DZ)  k )|+
+)Í;[
+)$l )WARNINGZ)
+  +0)Í;*'Ío,ÍT-2b 4*'ÍG* $exis
+ts §>$l &)CREATE+ñ Ç!ÍI o,ÍÍI V#íÄ
+ÑR ◊qƒ3invalid nameñ *'Îª 4)
+)Í
+b Ñ
+)#Ä¿(I j(R Ü'¿(¨  ºí˘1b
+ /sÎs ‰ˇ$< J!SKIP+∞Äbˇ ºí
+˘1b /sÎs ‰ˇ$< ˘!/STRING+º
+E·ºø"1$h)ﬂIaê	I[∞»…Ä`»`= ("CAPI
+TALƒ"° d"Ål	 > x"
+CAPITALIZE"°Ö$±Ö%°
+$Ö&àD&P†l	 H±$ d"ë$lå"¢"Ü*†±ô$ à¯†
+≠ÿ!≈&Ö&≠Ÿ!≈'Ö'8•$Ìÿ!Ö$•%ÌŸ!Ö%∞°çÿ!±çŸ
+\\ shadow zu 110              clv14may87 
+                                         
+rdfirst=0 ==> nicht initialisiert        
+                                         
+                                         
+                                         
+BasisadresLEARSTACKZ'†±ÖH±Ö†l	 i 
+K'HALLOT+òÍº1s	Ä·1Äòéu
+º1ÍX'ò$i Ï'HEAP+òÍ"$i %(HEA
+P?+,(]◊$+Äñ º1Äı',(sÇ,(º1*'#
+`'$•8ÈÖ∞F•ë•Å°…Öä—Ö©≈
+hä≈l›+O*'Íñ*$j 8(EDOES>+Ù ó(Rl|
+ Ù Ã($+ÄRˇ˘Rˇ1+ñ ¨Ñª $: W áCOM
+PILE+OÄ	∞ÍI $; Í #TIBZ) ; !>TI
+BZ)!savesystem clv16may87               
+                                         
+   ; !>INZ) ; –!BLKZ)  ; ‹!SPANZ) ;
+ à!TIB+ˇ!Í$; ï!QUERY+õ!RpF?è!Í!
+÷!øÇ!ø$< •!SCAN+∞Äbˇ ' mit      
+false antwortet. Terminiert mit false,   
+wenn alle Bloecke durch sind und mit     
+<> false, wenn 'cfa' ein true zuruecklie 
+fert                                     
+                                         
+                                        
+%¡R%»%√&®%‰%≤%%%¡bˇæ%o&¡R%N%ø®%‰%
+≤% Tˇ$g }&NUMBER+á&•¡ƒ3?kb X$
+h 'LASTZ)  +*'Í•$h #'HIDE+.'b m
+Ío,Í$h :'REVEAL+.'b
+ mo,Í$h
+ w'IRECURSIVE+`'$+.'b dí|º¨h$
+h ‘'	IMMEDIATE+R@Ü'$h û'RESTRICT+RÄ
+Ü'$i µ'
+C	 7 ßMOVE+∞±Jb O∞$
+OÇ$8 „PLACE+º∞·ºÎOÍ¨$8  
+COUNT, °Ö$…Å±Ö%… ë•8ÈÖ∞Flú8 "
+ ERASE+…∆ $9 m FILL» © õà•$¶'
+ë(H
+P˚Ê)JPˆ¶&ë(HJP˙†l	 : _ HERE+¨Í$: 
+è PAD+ñ Rbø$: † ALLOT+¨#$: ≥ ,
++ñ éª $: E C,                     
+                                         
+                                         
+                                         
+                                         
+                                         
+                              +b ¶
+h…$+b  hOb }·hN%ÍÎ•;h
+[$+R&˛b	 R
+[$R$˛b	 R[$R
+H˛b	 R[$R%˛b é[$…$+R,º1
+sR.1|$+N%Í[1;ÑN%#$Z)  g H%
+NUMBER?+Fê1Ä* ◊&N%≠…∞R R ·®%R%
+≤%R-˛b [∞®%R%≤%
+&b F®%R%≤%%
+	 ë° l 6 V/MOD+∞XOû$6 Ì/+
+Ù2$6 MOD+Ùh$6 */MOD+∞ÆOû
+$6  */+(2$6 6U/MOD+…s%$6 e
+UD/MOD+∞…˘%Os∞%O$7 yCMOVEÑ
+© õàD$P	F%†l	 ±(ë&HPÏÊ)Ê'lä7 ⁄CM
+OVE>≤© õ•%≈'Ö'•%≈)Ö)Ê%§$êà±(ë&òP¯F
+'F)F%P†l                               
+                                         
+                                         
+                                         
+                                         
+                                         
+                    d F$\NEEDS+V#ê.2
+b Æ$$d W$HEX+RF$d Ú$DECIMAL+
+R
+F$e %DIGIT?+R01ÄR	#b Rá
+1ÄR	#b FÍº#•;h…$e %
+ACCUM
+ULATE+s∞sFÍ\h·FÍ\ΩO$e [%C
+ONVERT+Î* %%b »% Ùˇ/$+◊&Í¡$+*
+ [◊&#$+/* $f à%DPLZ)ˇˇ+\h$3 
+ﬁ2*Û°
+Å±*ël	 +[ƒ3division overf
+low$4 ÏUM/MOD'°Ö)±Ö(•…ÖêÊ°Ö%
+±Ö$H±Ö'H±Ö&¢∆*8•%Â)®•$Â(∞&*êÖ$Ñ%&'
+&&&%&$JPﬂ†∆$∆%ê ∆ $•&ëH•%ëH•$ë†•
+'l 5 M/MOD+Ä∞˝ºkb døs%˘k
+b Ãºb s˘øs/$5 ñ2/›±
+±
+SER+Õ)éñ+| ó(•8ÈÖ∞F†±≈ÅäH≈
+†ël	  p C+ALIAS+Õ)*'ÍÄíR ˘b ˜
+˛ˇª   R Ü'*$q ¯+VPZ) --ﬁ]m≈- 
+   q ,,CURRENTZ)-q e,CONTEXT+1,ÄÍø
+	$+1,	_,$q u,ALSO+1,ÍR
+ı~3Voca
+bulary stack full_,Íé1,#_,$q Ÿ,TOS
+S+˜˛ˇ1,#+C3ì#}"$$c O#STATEZ)  c ‰#
+eASCII+C3ì#ÎíÏ#Íb &$c Ú#,"+R"•
+#ñ ºÎª  $c $Ñ"LIT+OOd* ø∞∞$c
+ ,$Ç("+3$$c g$A"+Ù l$$$d t$É(."+3$*
+ ?$d ƒ$B."+Ù  $$$d ÷$a(+R)•#¶$d 
+á$b.(+R)•#?$d ò$a\+÷!Íà5Îà5‚÷!
+$d ™$b\\+ d÷!$•b Ä@(b  $|*
+ R˘?   $???4$o ø*:+Õ)a'o,Í_,
+)0…ó(•8ÈÖ∞F•Å•ë•…Öä≈Öl	 
+o Ù*A;+…ªÙ $0`'$o 0+CONSTANT+Õ)I 
+ó(•8ÈÖ∞F†±ÅH±†ël	 o f+VARIABL
+E+Õ)éª $p ÷+UALLOT+ÄÍøRˇ#ƒ3U
+serarea fullÍs#$p ç+U           
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                              clv22feb88 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                              clv22feb88 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\\ shadow zu 116              clv14may87 
+                                         
+Uebertraegt den Block mit Nummer 'blk'   
+in den Bereich ab ['toadr'. Falls        
+Block nicht vorhanden: leeren Block      
+uebertragen. Falls Laenge des            
+uebertragenen Blocks > 1024 ist der      
+Blockmechanismus " damaged".             
+                                         
+                                         
+Uebertraegt den Block der Nummer 'blk'   
+nach ['fromadr' in die Ramdisk. Er       
+wird falls bereits vorhanden erst        
+geloescht.                               
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                              clv23feb88 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+create: getargs                          
+ s0 @ r> - sp!   sp@ r@ 1+ 2* r>move ;   
+                                         
+: (#fails ( ..args.. n--..args..)        
+  >r r@ sp@ s0 @ swap -                  
+  sp@ r> 2+ 2*                           
+  ( .args. n depth from bytes)           
+  r> <catch dup 2+ >r -rot move>r        
+     nip nip getargs >r catch>           
+  dup @ + >r ; restrict                  
+                                         
+                                         
+                                         
+                                        
+\\ shadow rdboot              clv14may87 
+weitere Versuche: 2e/f                   
+loescht die RamDisk, wenn vorhanden.     
+                                         
+                                         
+                                         
+                                         
+Fuehrt beim Booten (1.Kaltstart) aus:    
+                                         
+: rdboot limit $c000 u>                  
+ IF $c000 $533 !                         
+ ELSE limit rdfirst ! $fd00 rdlimit !    
+     rdnew 'rdboot THEN ;                
+                                         
+                                         
+                                         
+                                         
+                                         
+versetzt das System in einen Vor-Boot-   
+Zustand, wie er von SAVESYSTEM gebraucht 
+wird                                     
+                                         
+                                         
+                                         
+                                        
+\\ shadow zu 119              clv14may87 
+                                         
+Druckt die wichtigsten                   
+Ramdisk-Zeiger aus und prueft sie auf    
+Konsistenz. Muss ggf. angepasst werden.  
+- rdfirst = off: " not initialized"      
+                                         
+- Pointer drucken                        
+-      "                                 
+-      "                                 
+- Pointer gegeneinander pruefen          
+                                         
+..         " pointer error"              
+- Ramdisk-Bereich oberhalt von limit??   
+.. sonst   " limit too big"              
+                                         
+                                         
+- aktuelles R/W drucken                  
+                                         
+.. wenn oberhalb 'here' " forgotten"     
+                                         
+                                         
+                                         
+                                         
+                                        
+\\ shadow zu 11a              clv14may87 
+                                         
+                                         
+Testet einen Block auf Konsistenz        
+   druckt Block-Nummer                   
+   druckt Block-Basisadresse             
+   druckt Laenge                         
+                                         
+                                         
+                                         
+ Expandiert Testweise                    
+                                         
+                                         
+                                         
+    druckt die ersten Zeichen des Block  
+    druckt expandierte Laenge.           
+    Ist sie " too big" ?                 
+                                         
+Falls der Block zu lang expandiert,      
+wuerde er beim Lesen den                 
+Block-Mechanismus zerstoeren. In diesem  
+Fall die Laenge ' n Basisadresse ! '     
+korrigieren oder den Block und alle      
+folgenden aus der RamDisk loeschen mit:  
+' basisadresse rdafter ! '              
+\\ shadow zu 11b              clv14may87 
+                                         
+Prueft die Konsistenz der Ramdisk        
+und druckt alle zentralen Daten aus.     
+                                         
+Es aendert nichts. Dies muss der         
+Benutzer anschliessend tun.              
+                                         
+Zur Uebersicht:                          
+    limit error == limit   > rdfirst     
+  pointer error == rdfirst > rdafter     
+              oder rdafter > rdlast      
+forgotten error == R/W-Zeiger falsch     
+      len error == Block zu lang         
+      end error == EndeDesLezten Blocks  
+                           > rdafter     
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\\ shadow zu 11c              clv14may87 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+keine ramdisk=>abort   / namen wird ..   
+.. dem Betriebssystem uebergeben         
+.. Geraet setzen (Supertape)             
+.. Endadr+1                              
+.. Anfangsadr                            
+.. binaer sichern                        
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+beim ersten cold wird ramdisk geladen    
+und screen 100 ausgefuehrt.              
+                                        
+\ shadow zu rdboot-test       clv14may87 
+                                         
+Funktionen:                              
+- loeschen einer vorhandenen Ramdisk     
+- Erzeugen einer neuen (limit pruefen)   
+- & loadDown                             
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+SER+Õ)éñ+| ó(•8ÈÖ∞F†±≈ÅäH≈
+†ël	  p C+ALIAS+Õ)*'ÍÄíR ˘b ˜
+˛ˇª   R Ü'*$q ¯+VPZ)             
+   q ,,CURRENTZ)  q e,CONTEXT+1,ÄÍø
+	$+1,	_,$q u,ALSO+1,ÍR
+ı~3Voca
+bulary stack full_,Íé1,#_,$q Ÿ,TOS
+S+˜˛ˇ1,#ºí˘1b /sÎs ‰ˇ$<
+ J!SKIP+∞Äbˇ ºí˘1b /sÎs ‰
+ˇ$< ˘!/STRING+ºE·ºø"1$h)ﬂIaê
+	I[∞»…Ä`»`= ("CAPITALƒ"° d"Ål	 > x"
+
+CAPITALIZE"°Ö$±Ö%°$Ö&àD&P†l	 H±$ d"ë
+$lå"¢"Ü*†±ô$ à¯†≠ÿ!≈&Ö&≠Ÿ!≈'Ö'8•$Ìÿ!
+Ö$•%ÌŸ!Ö%∞°çÿ!±çŸ•b Ä@(b  $|*
+ R˘?   $???4$o ø*:+Õ)a'o,Í_,
+)0…ó(•8ÈÖ∞F•Å•ë•…Öä≈Öl	 
+o Ù*A;+…ªÙ $0`'$o 0+CONSTANT+Õ)I 
+ó(•8ÈÖ∞F†±ÅH±†ël	 o f+VARIABL
+E+Õ)éª $p ÷+UALLOT+ÄÍøRˇ#ƒ3U
+serarea fullÍs#$p ç+U+ñ ¨Ñª 
+$: W áCOMPILE+OÄ	∞ÍI $; Í #TIBZ)
+  ; !>TIBZ)!                          
+                                         
+             ; !>INZ)  ; –!BLKZ)  ; ‹!
+SPANZ)  ; à!TIB+ˇ!Í$; ï!QUERY+õ!R
+pF?è!Í!÷!øÇ!ø$< •!SCAN+∞Äbˇ 
+                              clv15may87 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+LEARSTACKZ'†±ÖH±Ö†l	 i K'HALLOT
++òÍº1s	Ä·1Äòéuº1ÍX'ò
+$i Ï'HEAP+òÍ"$i %(HEAP?+,(]◊
+$+Äñ º1Äı',(sÇ,(º1*'#`'$•8È
+Ö∞F•ë•Å°…Öä—Ö©≈hä≈l›+O
+*'Íñ*$j 8(EDOES>+Ù ó(Rl| Ù Ã($+Ä
+Rˇ˘Rˇ1+\h$3 ﬁ2*Û°
+Å±*ël	 
++[ƒ3division overflow$4 ÏUM/MOD'°
+Ö)±Ö(•…ÖêÊ°Ö%±Ö$H±Ö'H±Ö&¢∆*8
+•%Â)®•$Â(∞&*êÖ$Ñ%&'&&&%&$JPﬂ†∆$∆%ê ∆
+ $•&ëH•%ëH•$ë†•'l 5 M/MOD+Ä∞
+˝ºkb døs%˘kb Ãºb s˘øs
+/$5 ñ2/›±
+±%¡R%»%√&®%‰%≤%%%¡
+bˇæ%o&¡R%N%ø®%‰%≤% Tˇ$g }&NUMBER+
+á&•¡ƒ3?kb X$h 'LASTZ)  +*'Í•
+$h #'HIDE+.'b mÍo,Í$h :'REVEA
+L+.'b
+ mo,Í$h w'IRECURSIVE+`'$+
+.'b dí|º¨h$h ‘'	IMMEDIATE+R@Ü'
+$h û'RESTRICT+RÄÜ'$i µ'
+C sm ﬁˇ
+2…$v â.'+V#ê.¡ƒ3Haeh?$v R.I[COMPI
+LE]+V.I $v Í.C[']+V.&$v  /NULLSTRIN
+G?+Äí¡Äb 2$H±…ÖH±… Ö†l	 w
+ /
+>INTERPRET0/ò/x f/NOTFOUND]0⁄/x y/N
+O.EXTENSIONS+~3Haeh?$x  /	INTERPRET+s
+/+-1V#ê.•b Ñ˘b _s/ƒ3compile on
++b ¶h…$+b  hOb }·h
+N%ÍÎ•;h[$+R&˛b	 R
+[$R$˛b
+	 R[$RH˛b	 R[$R%˛b é[$…
+$+R,º1sR.1|$+N%Í[1;ÑN%#
+$Z)  g H%NUMBER?+Fê1Ä* ◊&N%≠…∞R
+ R ·®%R%≤%R-˛b [∞®%R%≤%
+&b F
+®%R%≤%%6†±ô$ à¯†±≈&Ö&H±≈'Ö'≠ç
+6Ö(≠é6Ö) °6P•…ÖêÊ†©≈(Å•)… ël&
+•(Ö*•)Ö+°*Ö(†±*Ö)(Pl	  °6P‚°(Å*†±(ë*
+≠ç6Å(≠é6ë(•(çç6•)çé6l€6+ÄÍs	Íp$
++º∫Íøºã6Í77b ¶ã6ÍRø$±∞
+∫Íø∞ã6ÍÄÍ•¡b
+ h$ÄOO±∞
+∞·77¡b 2 RˇÄ? ÷ ò?KEY?À?÷ £?
+DECODEÀ?÷ Ø?EXPECTÀ?◊   SEAL+…˜-∑
+*$◊ K?$ONLY-◊ ‚?%FORTH-◊ Ì?%WORDS§-◊
+ ˘?$ALSOÄ,◊ @+DEFINITIONSz-+ÍÄmÍº
+¢1Í•¡bÍˇ$+…ã6;*;I;$ÿ Ω?
+'COLD]01i+ @@@'?\@>- $ultraFORTH-83  r
+ev 3.5??aÿ t@'RESTART]01i+˜ l5 $Dr 
+hd=5î5…)ˇ& ?„ˇé543Íæ9„ˇà5‚øà5/U
+3?àˇ◊ˇ?$≈ ö5PAUSE	 ≈ Ú5LOCK+ÄÍ]1
+b h$ÄÍb ˙5 Ùˇ]s$≈ ˛5UNLOC
+K+Ä6ø$»8ÈÖ»È Ö©lÅ†±ÖH±Ö†°
+Ö±Ö•…ÖêÊ¢l–∆ /6FILEV+∆ ÿ6PR
+EVZ)  Z)  ∆ Ñ6B/BUFy+†±(Y" PH¿PÙ`≤
+?CR+w?à5R
+1#b ?$+Õ)Ä| 	ó(lÃ(
+íTÍøÉ$÷ û>OUTPUT:+Õ))0ó(lÃ(T$
+÷ V>EMITE> ÷ Û>CRE>÷ ˇ>TYPEE>÷ 	?DE
+LE>÷ ?PAGEE>÷  ?ATE>
+÷ ,?AT?E>÷ 6?
+ROW+<?h$÷ a?COL+<?2$+Õ)Ä| 	ó(l
+Ã(í·ÍøÉ$÷ q?INPUT:+Õ))0ó(lÃ(·$
+÷ ‹?KEYÀáøR0øi4$¬ õ4#S+ü4±ab
+¯ˇ$√ D4D.R+"dÈ`4I4·ä4—4·º£º1
+(4?$√ Y4.R+sX·ﬂ4$√ 5U.R+…sﬂ4
+$√ 5D.+…ﬂ44$√ (5.+X-5$√ 95U.
++…-5$ƒ g5.S+òÍº1R E¡ˇ:ˇ „ˇÍ
+l5éπˇ◊ˇ$ƒ v5C/Ly+) ƒ Ç5L/Sy+ ƒ é5LI
+ST+3 $Scr 3ÍÄ ä=(FORGET+Ä@(ƒ3
+	is symbol˙; =$‘ §=FORGET+V.Ä˜$ÍJ
+ƒ3	protectedu*Ä@(b ñ*  mmÆ=$‘ H=
+EMPTY+˜$Í] =˜2Í$’ >SAVE+ñ
+ ] =ÍÄmmÍºmÍ•¡bÍˇ]ç˜ 
+Ç$’ '>BYE+g:>Wc$+û?ò1b [$’
+ `>STOP?+™?b –>–>…$’ Ñ>3$$` ©3
+BLy+  ` æ3	-TRAILINGW3ò õ°Ö&±≈%Ö'§$
+êà±&I HPÊ%òh•%l›òPÍF'F%‰òlZ¡ I3SP
+ACE+C3˙>$¡ 4SPACES+…:ˇ 4àˇ◊ˇ$+¶
+ m$¬ 4HOLD+[84#84Í¨$¬ b4<#+84
+84$¬ [4#>+¶84Í84º1$¬ Ã4SIGN+k
+b R-i4$¬ É4#+FÍ¬·R	ºùb R
+-Â'l≥<•(E,•)Â-∞°,Å$±,ë$lH<•,Ö$•-Ö%lä<l
+}+Í•b Ä∞¢1Ã<O Íˇ$+]ÎÄÍ
+]1b( ±Ísñ ◊b ÄÍÎÍº/  
+Í Nˇ¶$+Ã<Õ,)ˇ  ±„ˇÍ"◊b
+ ˜-„
+ˇ˜˛ˇπˇ◊ˇ±o,Í"◊b
+ ˜-o,$+ºÏ<
+(=N<,(s1ı'¨…*'$‘ ª;CLEAR+ñ Ä]
+ =¨$‘QUIT+¢Í¢0∞2^ ∂2STANDARD
+I/O+˜*T¢Ç$^ K2'ABORT]0Ä^ È2ABOR
+T+X'cÚ2Y2Ω2_ ¯2SCRZ) _ 3R#Z)  _ ˇ3
+(ERROR+Y24ñ G** ?4§>Ç!Í•b 3÷!Í
+3Ω2_ %3á(ABORT"+3$sb ∞X'OıÉ$
+h$+3$sb ıÉ$h$_ z3FABORT"+Ù ƒ3
+$$_ î3FERROR"+Ù ~*;ÍÍsù6*;#$–
+ “;ALL-BUFFERS+*;Í>;*;Í1bÚˇ$+íR
+ ˘$+ñ*dÎJs@(|$+,(Í∞OÍ•b
+^ Ä∞¢1∞OÍ∞º/Ä˘Js˘	ñ*J˘b
+. ˘@(bZˇ˘	›;b º˘	Ë;b ˘	*	
+¥ ∂ˇ úˇ$Œ<†±ô$ à¯†±…Ö*H±… Ö
++†°$Ö,±$Ö-,5•,E*•-Â+ê•,E&•Ç!÷!ê1÷
+!øŸ1î/$] ®1+LOAD+Ç!ÍøØ1$] O1THRU
++Îs)ˇ
+ „ˇØ1àˇ◊ˇ$] Â1+THRU+Îs)ˇ
+ „ˇ
+W1àˇ◊ˇ$] 2c-->+ÑÇ!#÷!øŸ1$]  2RDEP
+TH+¢Íì	1€$] 82DEPTH+òÍs1€
+$+Ï#Íb  $
+ compiling$ $ ok$^ s2
+(QUIT+Ÿ1?≠!î/À2 Ùˇ^ é2'QUIT]0ñ2^ ®2
+	[˜˛ˇΩ±o:àˇ◊ˇ  O…:ˇ ±o:ÑÑΩà
+ˇ◊ˇÛ9¶$œ ?:COPY+Ñ}:$œ €:CONVEY+s
+Îéu1Äqƒ3nein}:$– Ï:LIMITy+ ‰– 
+;FIRSTZ)  – ";ALLOTBUFFER+*;Í¢Í1ù
+6	J;ù6Ã*;#*;ÍÄÜ8ã6Íºã6$– 0;
+
+FREEBUFFER+*;Í;ù61Jb( Û9ÄÍ*;Í1
+b Í Óˇ
+V.Äá0∑*Ï#Íb
+ Ù ◊0I $$
++[2R ıƒ3tight stack`'.'b Ä@(b ñ* 
+ ¢1Æ=[ƒ3dictionary full$[ ∂0?STAC
+K/1†8•ÒÖ$H•ÒP	† ∆Y0$†±EH±Â†
+êl	  ∆[ƒ3stack empty\ $1.STATUS]0ÄZ
+)OO$\ œ1ÑPUSH+OsÄ∞Í∞}1∞∞$\
+ â1LOAD+•¡;Ç!ê1R+î9œ9$Õ £9BLOCK
++î9Ü9$Œ ∂9UPDATE+RÄã6Í"Î¨$Œ H9
+SAVE-BUFFERS+è669•b ,8 Ùˇè686$Œ ‰
+9EMPTY-BUFFERS+è66ã6Í•b
+ ÄÜ8 Úˇè6
+86$Œ :FLUSH+Û9:$+Äî9y9b ã6ÍÜ87
+9b Û9∫Íøsæ9mmQ9$+Û9∞º˘øº
+#∞±JO˘b$ ˘˘ΩO…:ˇ ly/;á&¡
+b ƒ/s/+-1V#ê.•b b _s/I s//;
+á&•b b s&&  ƒ/s/y à/a[+˜ò/◊
+0u/Ï#ø$y 0]+˜Q/◊0u/Ï#≠$+[ƒ3Cra
+sh$z %0DEFER+Õ)˜90I ó(†±hH±Ö»Ö†
+l z i0(IS+OÄ	∞Í$+Í˜ƒ/Íº1
+s˜s/Í1|qƒ3not deferred$z —0bIS+
+º˘Rø"Ñ(8b  $read 8 YˇO$
++ã6ÄÍb ÍÄ	Í[1bÍˇè66Ä,8$+	
+∞±˘∫Íø˘	Oøè686$+ã6ÍÄb
+ Ä"ÍkbÓˇ$+ã6ÍÄÍ¡bˆˇ"Ík$
+Ã "8CORE?+i7¶…$Õ q9(BUFFER+i7S8˘8 
+¯ˇÕ ≈9(BLOCK+i7S8î8˘8 ˆˇñ9†±hH±l›
+Õ }9BUFFEñ2◊0≤2¬dñ@˜.Íı˜Ä◊0Ù2
+ 3Ÿ ã@COLDG@©@h©¬h Xix† ≠ …Ö$≠!… Ö%π
+ë$HP¯ Xi†πô à˜≠ …Ö≠!… Ö†±Ö
+H±Ö†
+±ÖH±Ö¢ †äÅë»Ö»Ö¢ †l	 ⁄ 
+æ@RESTARTaa©@h©úhlÍ@~ 5aC64KEY?xa•Ô]
+©ˇhl›~ laGETKEY“aç>ˇ ›Îç?ˇlZ «aCURO
+Näa•J≈Hçˇ•I… ÈçˇÍ·ã6Íºã6
+ Éˇ  ï6(DISKERR+ $error !  r to r
+etry û?ÄRr1sRR1|qƒ3aborted$  L7
+DISKERR]0W7  8R/W]0‡g+Ä"Íkbj 	Ä
+ÍÎb3 ·ê1Tê1Y2Ä"º	ÍéuÍ…(8b
+  $write 8 €ˇRÄºÎVh$+	Ä≠
+ø$+ÄÜ8·ê1Tê1Y2∞º∫ÍøINDEX+ h
+)ˇ! ?„ˇé5„ˇæ9ÎR%?å>b bàˇ◊ˇ$å äh
+FINDEX+•gb ¶$ h)ˇ1 ?„ˇé5¶ Ä„ˇÒ
+ÒPfg∞ÎR%?Oå>|b bàˇ◊ˇGg$ç ΩhI
+NK-POTZ)ˆˆ Óˆ ˆˆ é iC64INIT3iÿ¢˜öç>ˇ
+ Ñˇç?ˇç>ˇ äˇç?ˇ≠içˇ≠ˇiçˇ≠iç;©Äç@≠ˇ
+	çˇxl,aè 'i(BSAVEŸiÜö¶ù§û©≤ç>ˇ Xˇç?ˇ∞
+
+ û(2064)    ÍlG8Íla9l{ b. { { ‹b
+   F;Å:.+æa                            
+                                         
+                                         
+                                         
+                                         
+ $volksFOR ed˙5;f$ã ?gDISKOPEN+dR
+teR#Ced;f$ã ög	DISKCLOSE+dRÃed$ã
+ ªg1541R/W+sƒ3no file"˘cÙÄ˝cò#
+bˇ =5 $beyond capacity2$•gb h2$…
+sÒÒ¢¡ˇ)ˇ. h±„ˇ·b
+ Pfg  Pfmg∞
+ıføOÄb bàˇ◊ˇ"¶Gg$+R©EsR©E±
+ıb sÎs$å VgTH-83 3.51 c64 clv9
+.4.87    çˇˇ±Ö≠ˇˇÖ•…Ö∞ÃˇˇÊ∞˘   
+	END-TRACEe	©•Ö©Ö©…Ö©Öl	  7	RECOV
+ERZ!»Ö»Ö•PFFl# z	NOOP	  Ÿ	ORIG
+INy# Ñ	S0V# ì	R0V#
+ ù	DPV# ß	
+OFFSETV# ±	BASEV# ø	OUTPUTV# K	I
+NPUTV# Y	ERRORHANDLERV# Êb …f1
+RÙRø$Ä—fJb Õf1RÙRø$—f1
+RÙRø$+’fÎs$+Fê1%…`4I4hR
+,i4I4—4$y+ ä 1f
+READSECTOR+dR>el$u
+1:13,0,* ﬂeZfﬂed˙5;f;dR∞eıffd…$ä
+ ˚fWRITESECTOR+·dR>el$b-p:13,0* ﬂe
+ddR>eıfﬂeddR>el$u2:13,0,* ﬂeZfﬂ
+	VOC-LINKV# ˙	UDPV#ˇ 
+
+SP@
+•Ö$•
+Ö%¢$•8ÈÖ∞Fµëµ ¢ l  
+SP!g
+°™±
+ÖÜ¢ l	  ?
+UP@_
+¢l'
+ w
+ÉUP!Œ
+¢±ï
+à±ï ¢ †•…ÖêÊl	  ∆
+RP@ï
+¢l'
+ ç
+
+ÉRP!§
+¢l–
+ ú
+Ç>R≤
+•8ÈÖ∞F°Å±ël
+}
+ ´
+ÇR>Q
+•8ÈÖ∞F°Å±ë©≈ÖêÊ
+l	  J
+R@$	`ç>ˇ ñˇç?ˇ¶&Üòl,aá ¡eBUSIN
++–d6Ÿe$à ®eBUS!Ee°ç>ˇ ®ˇç?ˇlŸà ºeB
+USTYPE+¡ˇ:ˇ „ˇíCeàˇ◊ˇ˙5$à UeBUS@ fç>
+ˇ •ˇç?ˇlZà ˜eBUSINPUT+¡ˇ:ˇ ˛e„ˇ¨àˇ◊ˇ
+˙5$à fDERROR?+dR∞e˛eÄR01b ˙>˛
+eÄÁa1bÙˇ¡?¡d$y+≈y+Íy+v+Ä…fJ
+b	 RÙ$òøÄÕfJ	˚
+•8ÈÖ∞F±ë°
+l  Ù
+ÖRDROP‰
+ EXIT&°Ö±Öl‰
+ 
+?EXIT=°•…ÖêÊ(PVl	  3EXECUT
+E¡°Ö±Ö•…ÖêÊl  uPERFORM#Í
+_$ ŸC@î°Ö$±Ö%© ë°$l  çC!Æ°
+Ö$±Ö%H±Å$à•…ÖêÊl	  ßCTOGGLE#d
+ís¨$ˇ L@Ï°Ö$±Ö%±$ë$¢ † ∆
+dè686[ƒ3	no deviceÜêç>ˇ ±ˇç?ˇ©`ç>ˇ ìˇç?
+ˇç>ˇ Æˇç?ˇ•ê»»lód`›d° ≤d•…ÖêÊläd
+Ü ÷d?DEVICE+–d6€d$eÜö© õ•& ≤d•&ç>ˇ
+ ±ˇç?ˇ•$	`ç>ˇ ìˇç?ˇ¶&Üôl,aá ÚdBUSOUT+–d
+6e$á 5eBUSOPEN+R|>e$á jeBUSCLOS
+E+R‡|>ed${eÜö© õ•& ≤d•&ç>ˇ ¥ˇç?ˇ•
+°$l ˇ Ê!°Ö$±Ö%H±Å$H±†ë$lºˇ 
+ˇ+!%°Ö$±Ö%H±¡$Å$H±†—$l DRO
+P}
+ aSWAPu±™†±Ö$äë•$†ëH¢ ±Ö$°
+ëà•$l  lDUPÇ•8ÈÖ∞F†±†ëH±à
+l  ⁄?DUPß°Pl	 lÇ ûOVERæ•8È
+Ö∞F†±ÅH±†ël	  µROT„†±Ö%†
+±†ë†±© õ† D$±& ®b∞©.ç>ˇ lˇç?ˇ
+HlûclõbÉ ãcDISPLAYË>·b˘bïcc(c;c^cYcç>ˇl
+rˇÑ ΩcB/BLKy+ Ñ ·cBLK/DRVy+™ Z)  +˝cÍ
+Rø$Ñ ÔcDRIVE+˘c‚∫$Ñ d>DRIVE
++˘c‚ø∫Í1$Ñ &dDRV?+∫Íø˘c$Ñ 
+adDRVINIT+Ä$Ö xdI/OZ)  Ö  dBUSOFFÅd
+ç>ˇ Lˇç?ˇ†¢  ∆–d86Ö$•%ë†•$ëH±Ö%°
+ë†±Å•%ë†l	  €-ROT#··$ NI
+P#sh$ ,UNDER#sº$ <PICK#ÎÒ
+
+øÍ$ nROLL#Ä∞
+u
+Ä	O
+ÎÒ∞h
+$ ≈2SWAP#·∞
+·O
+$ à2DROPº û
+2DUP#ºº$  ™+AH°—ëà±†—ëlŸ
+
+  ªORﬁH°ëà±†ëlŸ
+  
+ÊÜKÜO† 
+∆˙5$IÄ∞I `I‡∞I¿``Å ‹b
+PRINTABLE?Ib°
+ ®bêJälPÇ ∫bC64EMIT„b° ®b∞©.lábÇ Wb
+C64CR+ÁaÉb$Ç ÒbC64DEL+RùÉb4RùÉb$Ç
+ cC64PAGE+RìÉb$Ç cC64AT=c© õ¶&§$
+ç>ˇ ˇç?ˇl,aÇ 3cC64AT?`c•8ÈÖ∞Fäë8
+ç>ˇ ˇç?ˇ¿(òêÈ(hä¢ Å»lZÉ ucC64TYPEóc
+WAND˚H°1ëà±†1ëlŸ
+  ÛXORH°
+qëà±†qëlŸ
+! -3H±8·ëH±†Ò†
+ëlŸ
+! -NOTsä·ÅäÒël	 ! kNEGATE
+Œ8∞„" √DNEGATEH8äÒëHäÒëä·Å†äÒ
+ël	 
+™®à±ô$ à¯ä≈ÖêÊ¢ †`" ”D+ø
+© õH±≈&ëH±≈'ë°≈$Å†±≈%ël	 # ∏
+1+Ì©¡l	  ÄaCUROFF´a©ˇçˇçˇl	 Ä 
+†aC64KEY+àa˙5vab˙ˇ©a–a$Ä ∏a#BSy+ Ä 
+Ua#CRy+ Ä ·a	C64DECODE+€a˛b Äb 
+?/$Áa˛b
+ Äè!$∞±ø˘s¨O˙>Î$
+Ä Ìa	C64EXPECT+è!…Äè!ÍJb
+ û?∏? Ó
+ˇ¶4$Ä 5bKEYBOARDç?Aava˘aabÅ ≈bCON!Öb
+°ç>ˇ lˇç?ˇ•…Öê yPUTAy+ { ájWy+ 
+{ îjSETUPy+õ{ ûjNEXTy+	 { ¨jXYNEXTy+,
+a{ πjPOPTWOy+º{ HjPOPy+}ˇÒÒPfg∞Î
+R%?Oå>|b bàˇ◊ˇGg$ç ΩhINK-POTZ)ˆˆ
+ Óˆ ˆˆ é iC64INIT3iÿ¢˜öç>ˇ Ñˇç?ˇç>ˇ 
+äˇç?ˇ≠içˇ≠ˇiçˇ≠iç;©Äç@≠ˇ	çˇxl,aè
+ 'i(BSAVEŸiÜö¶ù§û©≤ç>ˇ Xˇç?ˇ∞∞l Å±
+… ël	 # Ê2+©P‡# 3+©PS©PM$
+©PG# 1-18°Èêl Å±È ël	 # *2
+-oê‡$ hTRUEy#ˇˇ$ tFALSEy#  $ ¡"-1[
+$ œ!0…$ ÿ1y# $ Ä2y# $ ä3y# $ 
+î4y# $ ûON#[s$$ ®OFF#…s
+$% πÑCLITT•8ÈÖ∞F°ÅäëÊPÊl	 
+© lP©ˇlPè Œi(BLOAD£iÜöÑ≠¶≤§≥© ç>ˇ U
+ˇç?ˇläiç>ˇçé©h©h∫Ωh© ¢ l≥¸ç?ˇ@8ç>
+ˇ ôˇé;å;†ππiô à˜©çˇˇ© ç˛ˇç?ˇ`⁄ òiF
+ORTH-83+${  j	ASSEMBLERÒ,  Wj-{   PUS
+HAy+P{ 'jPUSH0Ay+Z{ 5jPUSHy+›{ djRP
+y+ { qjUPy+ { \jSPy+ { «jIPy+ { “j
+Ny+$ { }j ë° l 6 V/MOD#∞
+XO
+û
+$6 Ì/#Ù2$6 MOD#Ùh$6 */MO
+D#∞
+ÆO
+û$6  */#(2$6 6U/MOD#…
+s%$6 eUD/MOD#∞
+…˘
+%O
+s∞
+%O
+$7
+ yCMOVEÑ© õàD$P	F%†l	 ±(ë&HPÏÊ)Ê'
+lä7 ⁄CMOVE>≤© õ•%≈'Ö'•%≈)Ö)Ê%§$ê
+à±(ë&òP¯F'F)F%P†lLEARSTACKZ†±ÖH±
+Ö†l	 i KHALLOT#ò	Íº1s
+	Ä·1
+Äò	éuº1ÍXò	$i ÏHEAP#ò	Í"
+$i % HEAP?#, ]
+◊$#Äñº1Äı, sÇ
+, º1*#`$•8ÈÖ∞F•ë•Å°…Ö
+ä—Ö©≈hä≈l›#O
+*Íñ"$j 8 EDOES>
+#Ùó Rl|ÙÃ $#ÄRˇ˘Rˇ1 #\h$3 
+ﬁ2*Û°
+Å±*ël	 #[ƒ+division overf
+low$4 ÏUM/MOD'°Ö)±Ö(•…ÖêÊ°Ö%
+±Ö$H±Ö'H±Ö&¢∆*8•%Â)®•$Â(∞&*êÖ$Ñ%&'
+&&&%&$JPﬂ†∆$∆%ê ∆	 $•&ëH•%ëH•$ë†•
+'l 5 M/MOD#Ä∞
+˝ºkb døs%˘
+k
+b Ãºb s˘
+øs/$5 ñ2/›±
+±
+¡R»√®‰≤%¡bˇæo¡RNø®‰
+≤ Tˇ$g }NUMBER#á•¡ƒ+?kb X$
+h LASTZ!  #*Í•$h #HIDE#.b m
+Ío$Í$h :REVEAL#.b
+ mo$Í$h
+ wIRECURSIVE#`$#.b dí|º¨h$
+h ‘	IMMEDIATE#R@Ü$h ûRESTRICT#RÄ
+Ü$i µ
+C)ƒò$1 |C?DO#Ù:ƒò$1
+ ÔDLOOP#òªÙàÙ◊{$1 E+LOOP#òª
+ÙπÙ◊{$1 ÖLEAVE#◊O
+mÄÍø∞
+$
+2 :UM*^±Ö$°Ö%HÜ&Ü'¢'&&&%&$ê±≈'Ö
+'H±à≈&Ö&êÊ%PÊ$JP|•'ëH•&ë†•$ë•%Ål	
+ 3 vM*#ÄkÄ∞
+b ÃsÄkb
+ ÃO
+q∞
+
+\O
+b }$3 ©*#b ¶h…$#
+b  hO
+b }·hNÍÎ•;h[$#R&
+˛b	 R
+[$R$˛b	 R[$RH˛b	 R
+[$R%˛b é[$…$#R,º1sR.1|
+$#NÍ[1;ÑN#$Z!  g HNUMBER?#F
+	ê)Ä*◊N≠…∞
+R R ·®R≤R-˛b
+ [∞
+®R≤
+b F	®R≤%Fä†ë»¢
+ l / ≤CASE? © õ•$AP	•%QPlqälZ0
+ ˆBIF#ÙbƒÑ$0 ˇDTHEN#˝Ñª{$0 
+-DELSE#ÑªÙ ƒs{[$0 bEBEGIN#ì
+é$0 _EWHILE#éªéÙbƒ˜˛ˇê$#¶Ä
+˜˛ˇ1b
+ h{ Óˇ$0 —FREPEAT#éªÙ 
+è$0 ´EUNTIL#éªÙbè$1 DBDO#Ù
+d F\NEEDS#Vê&2b Æ$d WHEX#R
+F	$d ÚDECIMAL#R
+F	$e DIGIT?
+#R01ÄR	#b Rá1ÄR	#b F	Íº#
+•;h…$e 
+ACCUMULATE#s∞
+sF	Í\h
+·F	Í\ΩO
+$e [CONVERT#Î*%b »
+ Ùˇ/$#◊Í¡$#*[◊#$#/*$f à
+DPLZ!ˇˇ8ÈÖ∞F±HH—Åà±HH—†ë
+l	 , ﬂÅJ†PR- ÜBRANCH"•¡Ö$•—Ö
+•$Öl	 - á?BRANCHd°•…ÖêÊ(Kl
+. 8>MARK#ñ…I$. \>RESOLVE#ñº
+1s$. –<MARK#ñ$. ã<RESOLVE#ñ
+1I$. õ?PAIRS#1ƒ+unstructured$I 
+h©ˇl›h© ™•8ÈÖ∞#C+ì}ˇ$$c OSTA
+TEZ!  c ‰eASCII#C+ìÎíÏÍb &$c Ú
+,"#R"•ñºÎª$c Ñ"LIT#O
+O
+d*
+ø∞
+∞
+$c ,Ç("#3$c gA"#Ùl$d t
+É(."#3*7$d ƒB."#Ù $d ÷a(#R
+)•¶$d áb.(#R)•7$d òa\#÷Íà-
+Îà-‚÷$d ™b\\#‡;÷$Xb }$
+) ‚ABS#Xb Ã$#O
+	Ä∞
+·∞
+s∞
+
+∞
+$* ˜É(DO#º1	* #Ñ(?DO#º1•b 
+	O
+ÄÍø∞
+h$* 3BOUNDS#ºøs$* x
+áENDLOOPŸ©lÊ
++ ÕÖ(LOOPä©¡Åê±… ë
+êl	 †±Öà±Ö†l	 + ÄÜ(+LOOPª°¡Å
+±—ë q•…ÖêÊ(Dl	 , ∞ÅIÂ† •
+	l4†•$%=°&QPÊ&PÊ'•$PF%F$lﬂˇ•&Ö(
+•'Ö)°&QÊ&PÊ'•$PF%F$(Ê*•$%P‚8†•&Ò
+çÿH•'ÒçŸ©≈ÖêÊ†±ÅÖ$H±†ëÖ%à•
+*ë$±(HF*˜© ë$†l	 b –ˇSOURCE#ÇÍ•b
+ æ1‡;$õÍ$b «WORD#–†ˇ$b åPARS
+E#∞
+–÷Í2ˇºsO
+Q∞
+º1ÄO
+1÷#$
+b ùNAME
+t( E>#sù$( Ò0>#Ãk
+$( ˇ0<>#¡q$( U>#sJ$( =#
+1¡$( -D0=#|¡$( ;D=#}Ωa$( 
+kD<#·±1b ı22  ¶J$#b 
+sh$) \MIN#±ı}) çMAX#±ù}) ù
+UMAX#±J}) ≠UMIN#±#}) æEXTEN
+D#Äk$) ODABS#ºí˘
+1b /sÎs
+ ‰ˇ$< JSKIP#∞
+Äbˇ ºí˘
+1b /
+sÎs ‰ˇ$< ˘/STRING#ºE·ºø"
+1$h)ﬂIaê	I[∞»…Ä`»`= (ˇCAPITALƒˇ° dˇ
+Ål	 > xˇ
+CAPITALIZEˇ°Ö$±Ö%°$Ö&àD&P†
+l	 H±$ dˇë$låˇ¢ˇÜ*†±ô$ à¯†≠ÿ≈&Ö&≠Ÿ
+≈'Ö'8•$ÌÿÖ$•%ÌŸÖ%∞°çÿ±çŸ% KÉLIT˘
+•8ÈÖ∞F±ë°Å•…ÖêÊl	 % ÒGLI
+TERAL#Ä˜ ˇ˘b
+ Ù˜I$ÙR|$& 0
+<m±©ˇ$äël & f0=√°ËPÈ& \UWI
+THINŸ© õ†°E$±Â%∞
+°E&±Â'∞Ωlt' Õ
+<ü°Ö$±Ö%•…ÖêÊ•%q0ï°E$±Â%lo' 
+ôU<L°Ö$±Ö%•…ÖêÊ°E$±Â%∞lql
+#ñ¨Ñª$: WáCOMPILE#O
+Ä	∞
+ÍI$
+; Í#TIBZ!  ; >TIBZ!               
+                                         
+                        ; >INZ!  ; –
+BLKZ!  ; ‹SPANZ!  ; àTIB#ˇÍ$; ï
+QUERY#õRpF7èÍ÷øÇø$< •SCAN
+#∞
+Äbˇ 1$#ñRˇ˘Rˇ1b ÄÄÎ
+ñº1Î∞Ñ*#Ñª$k ß ?HEADZ!  k !
+|#
+!Í;[
+!$l !WARNINGZ!  #0!Í;
+*Ío$ÍT%2b ,*ÍG" exists §6$l &
+!CREATE#ñÇÍIo$ÍÍIVíÄÑR ◊q
+ƒ+invalid nameñ*Îª4!
+!Íb Ñ
+!#
+Ä¿ Ij R Ü¿ ¨	 	 7 ßMOVE#∞
+±J
+b O
+∞$O
+Ç$8 „PLACE#º∞
+·ºÎO
+Í
+¨$8 COUNT,°Ö$…Å±Ö%… ë•8ÈÖ
+∞Flú8 "ERASE#…∆$9 mFILL»© õ
+à•$¶'
+ë(HP˚Ê)JPˆ¶&ë(HJP˙†l	 : _HERE
+#¨	Í$: èPAD#ñRbø$: †ALLOT#¨	
+#$: ≥,#ñéª$: EC,º˘
+Rø
+"Ñ(0b  read 0 YˇO
+$#ã.ÄÍb 
+ÍÄ	Í[1bÍˇè..Ä,0$#	∞
+±˘
+∫	Í
+ø˘
+	O
+øè.8.$#ã.ÍÄb Ä"Ík
+bÓˇ$#ã.ÍÄÍ¡bˆˇ"Ík$Ã "0CORE?
+#i/¶…$Õ q1(BUFFER#i/S0˘0 ¯ˇÕ ≈1(BL
+OCK#i/S0î0˘0 ˆˇñ1†±hH±l›Õ }1BUFFE
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                               clv8feb89 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        

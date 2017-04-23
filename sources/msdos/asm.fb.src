@@ -1,0 +1,391 @@
+Screen 0 not modified     
+ 0 \ 8086 Assembler                                     cas 10nov05
+ 1 This 8086 Assembler was written by Klaus Schleisiek.            
+ 2 Assembler Definitions are created with the definig word         
+ 3 CODE and closed with the word END-CODE.                         
+ 4                                                                 
+ 5 The 8086 Registers naming and usage in volksFORTH               
+ 6                                                                 
+ 7 Intel vForth  Used for                   8bit-Register          
+ 8 AX      A     free                           A+ A-              
+ 9 DX      D     topmost Stackitem              D+ D-              
+10 CX      C     free                           C+ C-              
+11 BX      R     Returnstack Pointer            R+ R-              
+12 BP      U     User Pointer                                      
+13 SP      S     Stack Pointer                                     
+14 SI      I     Instruction Pointer                               
+15 DI      W     Word Pointer, mostly free                         
+Screen 1 not modified     
+ 0 \ 8086 Assembler   loadscreen                        cas 10nov05
+ 1   Onlyforth                                                     
+ 2                                                                 
+ 3 | : u2/ ( 16b -- 15b )   2/ $7FFF and ;                         
+ 4 | : 8*  ( 15b -- 16b )   2* 2* 2* ;                             
+ 5 | : 8/  ( 16b -- 13b )   u2/ 2/ 2/ ;                            
+ 6                                                                 
+ 7   Vocabulary Assembler                                          
+ 8   Assembler also definitions                                    
+ 9                                                                 
+10   3 &21 thru clear  .( Assembler loaded ) cr                    
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ conditional Assembler compiler                     cas 10nov05
+ 1   here                                                          
+ 2                                                                 
+ 3   : temp-assembler  ( addr -- )  hide  last off  dp !           
+ 4      " ASSEMBLER"  find nip ?exit   here $1800 + sp@ u>         
+ 5      IF  display cr ." Assembler won't fit" abort  THEN         
+ 6      here   sp@ $1800 - dp !  1 load   dp ! ;                   
+ 7                                                                 
+ 8   temp-assembler   \\                                           
+ 9                                                                 
+10   : blocks   ( n -- addr / ff )                                 
+11      first @ >r   dup 0 ?DO  freebuffer  LOOP                   
+12      [ b/blk negate ] Literal * first @ +   r@ u> r> and ;      
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0 \ Code generating primitives                         cas 10nov05
+ 1                                                                 
+ 2   Variable >codes  \ points at table of execution vectors       
+ 3                                                                 
+ 4 | Create nrc  ] c, , here ! c! [                                
+ 5                                                                 
+ 6   : nonrelocate  nrc >codes ! ;  nonrelocate                    
+ 7                                                                 
+ 8 | : >exec ( n -- n+2 )   Create dup c, 2+                       
+ 9     Does> c@  >codes @ + perform ;                              
+10                                                                 
+11 0 | >exec >c,       | >exec >,       | >exec >here              
+12   | >exec >!        | >exec >c!   drop                          
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 4 not modified     
+ 0 \ 8086 Registers                                     cas 10nov05
+ 1                                                                 
+ 2  0 Constant A    1 Constant C    2 Constant D    3 Constant R   
+ 3  4 Constant S    5 Constant U    6 Constant I    7 Constant W   
+ 4 ' I Alias SI    ' W Alias DI    ' R Alias BX                    
+ 5                                                                 
+ 6  8 Constant A-   9 Constant C-  $A Constant D-  $B Constant R-  
+ 7 $C Constant A+  $D Constant C+  $E Constant D+  $F Constant R+  
+ 8 ' R- Alias B-   ' R+ Alias B+                                   
+ 9                                                                 
+10   $100 Constant E:         $101 Constant C:                     
+11   $102 Constant S:         $103 Constant D:                     
+12                                                                 
+13 | Variable isize        ( specifies Size by prefix)             
+14 | : Size: ( n -- )  Create c,  Does>  c@ isize ! ;              
+15   0 Size: byte      1 Size: word  word    2 Size: far           
+Screen 5 not modified     
+ 0 \ 8086 Assembler  System variables                   cas 10nov05
+ 1                                                                 
+ 2 | Variable direction    \ 0 reg>EA, -1 EA>reg                   
+ 3 | Variable size         \ 1 word, 0 byte, -1 undefined          
+ 4 | Variable displaced    \ 1 direct, 0 nothing, -1 displaced     
+ 5 | Variable displacement                                         
+ 6                                                                 
+ 7 | : setsize              isize @  size ! ;                      
+ 8 | : long?   ( n -- f )   $FF80 and dup 0< not ?exit $FF80 xor ; 
+ 9 | : wexit                rdrop word ;                           
+10 | : moderr               word true Abort" invalid" ;            
+11 | : ?moderr ( f -- )     0=exit  moderr ;                       
+12 | : ?word                size @ 1- ?moderr ;                    
+13 | : far?    ( -- f )     size @ 2 = ;                           
+14                                                                 
+15                                                                 
+Screen 6 not modified     
+ 0 \ 8086 addressing modes                              cas 10nov05
+ 1                                                                 
+ 2 | Create (EA  7 c, 0 c, 6 c, 4 c, 5 c,                          
+ 3 | : ()  ( 8b1 -- 8b2 )                                          
+ 4      3 - dup 4 u> over 1 = or ?moderr (EA + c@ ;                
+ 5                                                                 
+ 6  -1 Constant #       $C6 Constant #)       -1 Constant C*       
+ 7                                                                 
+ 8   : )   ( u1 -- u2 )                                            
+ 9      () 6 case? IF  0 $86 exit  THEN  $C0 or ;                  
+10   : I)  ( u1 u2 -- u3 )  + 9 - dup 3 u> ?moderr $C0 or ;        
+11                                                                 
+12   : D)  ( n u1 -- n u2 )                                        
+13      () over long? IF  $40  ELSE  $80  THEN or ;                
+14   : DI) ( n u1 u2 -- n u3 )                                     
+15      I) over long? IF  $80  ELSE  $40  THEN xor ;               
+Screen 7 not modified     
+ 0 \ 8086 Registers and addressing modes                cas 10nov05
+ 1                                                                 
+ 2 | : displaced?  ( [n] u1 -- [n] u1 f )                          
+ 3      dup #) = IF  1 exit  THEN                                  
+ 4      dup $C0 and dup $40 = swap $80 = or ;                      
+ 5                                                                 
+ 6 | : displace    ( [n] u1 -- u1 )   displaced? ?dup 0=exit       
+ 7      displaced @ ?moderr   displaced !   swap displacement !  ; 
+ 8                                                                 
+ 9 | : rmode   ( u1 -- u2 )   1 size !  dup 8 and 0=exit           
+10      size off  $FF07 and ;                                      
+11                                                                 
+12 | : mmode?  ( 9b - 9b f)     dup $C0 and ;                      
+13                                                                 
+14 | : rmode?  ( 8b1 - 8b1 f)   mmode? $C0 = ;                     
+15                                                                 
+Screen 8 not modified     
+ 0 \ 8086  decoding addressing modes                    cas 10nov05
+ 1                                                                 
+ 2 | : 2address  ( [n] source [displ] dest -- 15b / [n] 16b )      
+ 3      size on   displaced off   dup # = ?moderr   mmode?         
+ 4      IF  displace False  ELSE  rmode True  THEN  direction !    
+ 5      >r # case?  IF  r> $80C0 xor  size @ 1+ ?exit  setsize exit
+ 6                  THEN  direction @                              
+ 7      IF  r> 8* >r mmode? IF  displace                           
+ 8          ELSE  dup 8/ 1 and  size @ = ?moderr $FF07 and  THEN   
+ 9      ELSE  rmode 8*                                             
+10      THEN  r> or $C0 xor ;                                      
+11                                                                 
+12 | : 1address  ( [displ] 9b -- 9b )                              
+13      # case? ?moderr   size on   displaced off   direction off  
+14      mmode? IF  displace setsize  ELSE  rmode  THEN  $C0 xor ;  
+15                                                                 
+Screen 9 not modified     
+ 0 \ 8086 assembler                                     cas 10nov05
+ 1 | : immediate?   ( u -- u f )  dup 0< ;                         
+ 2                                                                 
+ 3 | : nonimmediate ( u -- u )    immediate? ?moderr ;             
+ 4                                                                 
+ 5 | : r/m                        7 and ;                          
+ 6                                                                 
+ 7 | : reg                        $38 and ;                        
+ 8                                                                 
+ 9 | : ?akku  ( u -- u ff / tf )  dup r/m 0= dup 0=exit  nip ;     
+10                                                                 
+11 | : smode? ( u1 -- u1 ff / u2 tf )  dup $F00 and                
+12      IF  dup $100 and IF  dup r/m 8* swap reg 8/                
+13                           or $C0 or  direction off              
+14                       THEN  True exit                           
+15      THEN  False ;                                              
+Screen 10 not modified     
+ 0 \ 8086 Registers and addressing modes                cas 10nov05
+ 1                                                                 
+ 2 | : w,          size @ or >c, ;                                 
+ 3                                                                 
+ 4 | : dw,         size @ or  direction @ IF  2 xor  THEN  >c, ;   
+ 5                                                                 
+ 6 | : ?word,  ( u1 f -- )  IF  >, exit  THEN  >c, ;               
+ 7                                                                 
+ 8 | : direct,     displaced @ 0=exit                              
+ 9      displacement @ dup long?  displaced @ 1+ or ?word, ;       
+10                                                                 
+11 | : r/m,        >c, direct, ;                                   
+12                                                                 
+13 | : data,       size @ ?word, ;                                 
+14                                                                 
+15                                                                 
+Screen 11 not modified     
+ 0 \ 8086 Arithmetic instructions                       cas 10nov05
+ 1                                                                 
+ 2 | : Arith: ( code -- )  Create ,                                
+ 3   Does> @ >r   2address  immediate?                             
+ 4      IF  rmode? IF  ?akku IF  r> size @                         
+ 5                               IF  5 or >c, >, wexit  THEN       
+ 6                               4 or >c, >c, wexit  THEN THEN     
+ 7          r@ or  $80 size @ or   r> 0<                           
+ 8          IF  size @ IF  2 pick long? 0= IF  2 or  size off  THEN
+ 9          THEN       THEN  >c, >c, direct,  data,  wexit         
+10      THEN  r> dw, r/m,  wexit ;                                 
+11                                                                 
+12   $8000 Arith: add      $0008 Arith: or                         
+13   $8010 Arith: adc      $8018 Arith: sbb                        
+14   $0020 Arith: and      $8028 Arith: sub                        
+15   $0030 Arith: xor      $8038 Arith: cmp                        
+Screen 12 not modified     
+ 0 \ 8086 move push pop                                 cas 10nov05
+ 1                                                                 
+ 2   : mov    [ Forth ] 2address  immediate?                       
+ 3      IF  rmode? IF  r/m $B0 or size @ IF  8 or  THEN            
+ 4                     >c, data, wexit                             
+ 5                 THEN  $C6 w, r/m, data, wexit                   
+ 6      THEN  6 case? IF  $A2 dw, direct, wexit  THEN              
+ 7      smode? IF  $8C direction @ IF  2 or  THEN  >c, r/m, wexit  
+ 8             THEN  $88 dw, r/m, wexit ;                          
+ 9                                                                 
+10 | : pupo   [ Forth ] >r  1address  ?word                        
+11      smode? IF  reg 6 r> IF  1+  THEN  or >c, wexit  THEN       
+12      rmode? IF  r/m $50 or r> or >c, wexit  THEN                
+13      r> IF  $8F  ELSE  $30 or $FF  THEN  >c, r/m, wexit ;       
+14                                                                 
+15   : push  0 pupo ;        : pop   8 pupo ;                      
+Screen 13 not modified     
+ 0 \ 8086 inc & dec , effective addresses               cas 10nov05
+ 1                                                                 
+ 2 | : inc/dec   [ Forth ] >r 1address   rmode?                    
+ 3      IF  size @ IF  r/m $40 or r> or >c, wexit  THEN            
+ 4      THEN  $FE w, r> or r/m, wexit ;                            
+ 5                                                                 
+ 6   : dec   8 inc/dec ;         : inc   0 inc/dec ;               
+ 7                                                                 
+ 8 | : EA:  ( code -- )   Create c, [ Forth ]                      
+ 9   Does> >r 2address nonimmediate                                
+10      rmode? direction @ 0= or ?moderr r> c@ >c, r/m, wexit ;    
+11                                                                 
+12   $C4 EA: les   $8D EA: lea   $C5 EA: lds                       
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 14 not modified     
+ 0 \ 8086  xchg  segment prefix                         cas 10nov05
+ 1   : xchg  [ Forth ]  2address nonimmediate rmode?               
+ 2    IF  size @ IF  dup r/m 0=                                    
+ 3                   IF  8/ true  ELSE  dup $38 and 0=  THEN       
+ 4                   IF  r/m $90 or >c, wexit  THEN                
+ 5    THEN       THEN  $86 w, r/m, wexit ;                         
+ 6                                                                 
+ 7 | : 1addr:  ( code -- )  Create c, [ Forth ]                    
+ 8   Does> c@ >r 1address $F6 w, r> or r/m, wexit ;                
+ 9                                                                 
+10   $10 1addr: com     $18 1addr: neg                             
+11   $20 1addr: mul     $28 1addr: imul                            
+12   $38 1addr: idiv    $30 1addr: div                             
+13                                                                 
+14   : seg   ( 8b -)    [ Forth ]                                  
+15      $100 xor dup $FFFC and ?moderr  8* $26 or >c, ;            
+Screen 15 not modified     
+ 0 \ 8086  test not neg mul imul div idiv               cas 10nov05
+ 1                                                                 
+ 2   : test   [ Forth ]  2address immediate?                       
+ 3      IF  rmode? IF  ?akku IF  $A8 w, data, wexit  THEN THEN     
+ 4          $F6 w, r/m, data, wexit                                
+ 5      THEN  $84 w, r/m, wexit ;                                  
+ 6                                                                 
+ 7 | : in/out  [ Forth ] >r 1address setsize                       
+ 8      $C2 case? IF  $EC r> or w, wexit  THEN                     
+ 9      6 - ?moderr  $E4 r> or w,  displacement @ >c, wexit ;      
+10                                                                 
+11   : out  2 in/out ;          : in   0 in/out ;                  
+12                                                                 
+13   : int    3 case? IF  $CC >c, wexit  THEN  $CD >c, >c, wexit ; 
+14                                                                 
+15                                                                 
+Screen 16 not modified     
+ 0 \ 8086 shifts  and  string instructions              cas 10nov05
+ 1                                                                 
+ 2 | : Shifts:  ( code -- )   Create c,  [ Forth ]                 
+ 3   Does> c@ >r C* case? >r 1address                              
+ 4         r> direction !  $D0 dw, r> or r/m, wexit ;              
+ 5                                                                 
+ 6   $00 Shifts: rol     $08 Shifts: ror                           
+ 7   $10 Shifts: rcl     $18 Shifts: rcr                           
+ 8   $20 Shifts: shl     $28 Shifts: shr                           
+ 9   $38 Shifts: sar     ' shl Alias sal                           
+10                                                                 
+11 | : Str:  ( code -- )   Create c,                               
+12   Does> c@ setsize w, wexit ;                                   
+13                                                                 
+14   $A6 Str: cmps      $AC Str: lods     $A4 Str: movs            
+15   $AE Str: scas      $AA Str: stos                              
+Screen 17 not modified     
+ 0 \ implied 8086 instructions                          cas 10nov05
+ 1                                                                 
+ 2   : Byte:  ( code -- )  Create c,  Does> c@ >c, ;               
+ 3   : Word:  ( code -- )  Create ,   Does> @ >, ;                 
+ 4                                                                 
+ 5  $37 Byte: aaa    $AD5 Word: aad    $AD4 Word: aam              
+ 6  $3F Byte: aas     $98 Byte: cbw     $F8 Byte: clc              
+ 7  $FC Byte: cld     $FA Byte: cli     $F5 Byte: cmc              
+ 8  $99 Byte: cwd     $27 Byte: daa     $2F Byte: das              
+ 9  $F4 Byte: hlt     $CE Byte: into    $CF Byte: iret             
+10  $9F Byte: lahf    $F0 Byte: lock    $90 Byte: nop              
+11  $9D Byte: popf    $9C Byte: pushf   $9E Byte: sahf             
+12  $F9 Byte: stc     $FD Byte: std     $FB Byte: sti              
+13  $9B Byte: wait    $D7 Byte: xlat                               
+14  $C3 Byte: ret     $CB Byte: lret                               
+15  $F2 Byte: rep     $F2 Byte: 0<>rep  $F3 Byte: 0=rep            
+Screen 18 not modified     
+ 0 \ 8086  jmp call  conditions                         cas 10nov05
+ 1 | : jmp/call    >r setsize # case?  [ Forth ]                   
+ 2      IF  far? IF  r> IF $EA ELSE $9A THEN  >c, swap >, >, wexit 
+ 3               THEN  >here 2+ - r>                               
+ 4          IF  dup long? 0= IF  $EB >c, >c, wexit  THEN  $E9      
+ 5          ELSE  $E8  THEN  >c, 1- >, wexit                       
+ 6      THEN  1address $FF >c, $10 or r> +                         
+ 7      far? IF  8 or  THEN  r/m, wexit ;                          
+ 8   : call    0 jmp/call ;         : jmp   $10 jmp/call ;         
+ 9                                                                 
+10   $71 Constant OS    $73 Constant CS                            
+11   $75 Constant 0=    $77 Constant >=                            
+12   $79 Constant 0<    $7B Constant PE                            
+13   $7D Constant <     $7F Constant <=                            
+14   $E2 Constant C0=   $E0 Constant ?C0=                          
+15   : not  1 [ Forth ] xor ;                                      
+Screen 19 not modified     
+ 0 \ 8086 conditional branching                         cas 10nov05
+ 1                                                                 
+ 2   : +ret   $C2 >c, >, ;                                         
+ 3   : +lret  $CA >c, >, ;                                         
+ 4                                                                 
+ 5 | : ?range    dup long? abort" out of range" ;                  
+ 6                                                                 
+ 7   : ?[     >, >here 1- ;                                        
+ 8   : ]?     >here over 1+ - ?range swap >c! ;                    
+ 9   : ][     $EB ?[ swap ]? ;                                     
+10   : ?[[    ?[ swap ;                                            
+11   : [[     >here ;                                              
+12   : ?]     >c, >here 1+ - ?range >c, ;                          
+13   : ]]     $EB ?] ;                                             
+14   : ]]?    ]] ]? ;                                              
+15                                                                 
+Screen 20 not modified     
+ 0 \ Next  user'  end-code  ;c:                         cas 10nov05
+ 1                                                                 
+ 2   : Next  lods  A W xchg  W ) jmp                               
+ 3      >here   next-link @ >,   next-link ! ;                     
+ 4                                                                 
+ 5   : u'   ' >body c@ ;                                           
+ 6                                                                 
+ 7   Forth definitions                                             
+ 8                                                                 
+ 9 \needs end-code    : end-code   toss also ;                     
+10                                                                 
+11   Assembler definitions                                         
+12                                                                 
+13   : ;c:   recover # call last off  end-code  0 ] ;              
+14                                                                 
+15                                                                 
+Screen 21 not modified     
+ 0 \ 8086 Assembler, Forth words                        cas 10nov05
+ 1   Onlyforth                                                     
+ 2                                                                 
+ 3   : Assembler     Assembler [ Assembler ] wexit ;               
+ 4                                                                 
+ 5   : ;code   0 ?pairs compile (;code                             
+ 6      reveal  [compile] [  Assembler ; immediate                 
+ 7                                                                 
+ 8   : Code    Create [ Assembler ] >here dup 2- >!  Assembler ;   
+ 9                                                                 
+10   : >label   ( addr -- )                                        
+11      here  | Create immediate swap ,  4 hallot                  
+12      here 4 - heap 4 cmove   heap  last @ (name> !   dp !       
+13   Does>  ( -- addr )  @  state @ 0=exit  [compile] Literal ;    
+14                                                                 
+15   : Label   [ Assembler ] >here >label  Assembler ;             
+Screen 22 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

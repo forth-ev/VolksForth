@@ -1,0 +1,58 @@
+ca65 V2.11.0 - (C) Copyright 1998-2005 Ullrich von Bassewitz
+Main file   : mcstest.asm
+Current file: mcstest.asm
+
+000000r 1               	.P816
+000000r 1               	.ORG $4000
+004000  1               	.SMART +
+004000  1               
+004000  1  78           S1:	SEI
+004001  1  E2 30        	SEP #$30
+004003  1  38           	SEC
+004004  1  FB           	XCE
+004005  1               S2:
+004005  1               
+004005  1               
+004005  1               loop:
+004005  1  18           	CLC
+004006  1  FB           	XCE
+004007  1  C2 30        	REP #$30
+004009  1               
+004009  1  3A           	DEA
+00400A  1  A5 F2                LDA $F2
+00400C  1  87 80        	STA [$80]
+00400E  1  EB           	XBA
+00400F  1  44 01 02     	MVP 1,2
+004012  1               
+004012  1  58           	CLI
+004013  1  A5 43        nodata:	LDA $43
+004015  1  29 01 00     	AND #1
+004018  1  F0 F9        	BEQ nodata
+00401A  1  22 33 E0 00  	JSL $E033
+00401E  1  85 FE        	STA $FE
+004020  1  22 63 E0 00  	JSL $E063
+004024  1               
+004024  1               
+004024  1  78           	SEI
+004025  1  E2 30        	SEP #$30
+004027  1  38           	SEC
+004028  1  FB           	XCE
+004029  1               
+004029  1               
+004029  1  D0 DA                BNE loop
+00402B  1               
+00402B  1  18           	CLC
+00402C  1  FB           	XCE
+00402D  1  C2 30        	REP #$30
+00402F  1  58           	CLI
+004030  1               
+004030  1  CE 40 40     	DEC count
+004033  1  AD 40 40     	LDA count
+004036  1  C9 01 00     	cmp #$01
+004039  1  D0 C5        	BNE S1
+00403B  1               
+00403B  1  22 66 E0 00  done:	JSL $E066
+00403F  1  6B           	RTL
+004040  1               
+004040  1  00           count:  .BYT $0000
+004040  1               

@@ -1,0 +1,102 @@
+Screen 0 not modified     
+ 0 \\ Startup: Load Standard System                     cas 11nov05
+ 1                                                                 
+ 2 This file can be used to create a minimal volksFORTH from       
+ 3 a plain KERNEL.COM.                                             
+ 4                                                                 
+ 5 The System will be saved as "MINIMAL.COM".                      
+ 6                                                                 
+ 7 The minimal volksFORTH contains a simple line editor from       
+ 8 the book "Starting Forth". The minimal system can be used to    
+ 9 adapt EDITOR.FB and VOLKS4TH.SYS for special hardware.          
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ System LOAD-Screen for MS-DOS volksFORTH           cas 11nov05
+ 1   Onlyforth   warning off                                       
+ 2                                                                 
+ 3   include extend.fb                                             
+ 4   include tools.fb                                              
+ 5   include rfe.fb  \ retro forth editor                          
+ 6                                                                 
+ 7   : initial  rfe.fb 0 list restart ;  ' initial Is 'cold        
+ 8                                                                 
+ 9   warning on   clear                                            
+10   savesystem MINIMAL.COM bell                                   
+11                                                                 
+12   .( New System saved as "MINIMAL.COM". ) cr                    
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 4 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 5 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

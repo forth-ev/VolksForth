@@ -1,0 +1,94 @@
+ERGNZUNG zum Info-Zettel volksFORTH83 vom 30.11.87    clv01dec87
+
+
+****************************************************************
+*** Wir haben s„mtliche Bestellungen von ultraFORTH83	      **
+*** auf Kassette vorerst storniert! Wenn Sie sich fr eine    **
+*** der Notl”sungen entscheiden k”nnen, bestellen Sie bitte   **
+*** neu und geben Sie an, welche der L”sungen Sie m”chten.    **
+****************************************************************
+   Bestellungen von ultraFORTH83 fr Rekorder bitte an:
+     Claus Vogt; Blowstr.67; D-1000 Westberlin 30
+     Zahlung bevorzugt per beigelegtem Verrechnungsscheck.
+
+ultraFORTH83 fr C16 & C64 ist
+Lauff„hig auf: C64, C128 im C64-Modus, C16/116 (min 32kB) und Plus4
+mit Diskettenlaufwerk. Kostet 50.-DM +NN (2 Disks, 200 S. Handbuch)
+
+*******Lieferung von ultraFORTH83 rev 3.8 auf Kassette: ***********
+******* fr C16/116 mit 64kB oder Plus 4		***********
+Da es uns leider nicht gelungen ist, zu einem vertretbaren Preis
+eine Kassette im von uns gewnschten Format zu produzieren, die
+auch auf jedem Rekorder problemlos gelesen werden kann, k”nnen wir
+vorerst nur verschiedene Notl”sungen anbieten:
+
+1) Lieferung auf Kassette im Format: C16 und Supertape gemischt (15 min) .
+
+   Diese Kassette erfordert aufgrund des empfindlichen
+   Formats auf den meisten Rekordern ein Einjustieren des
+   Tonkopf. Ein kleines Programm das dieses Einjustieren erleichtert,
+   wird mitgeliefert, allerdings muá selbst danach i.a. noch
+   mehrmals mit geringem Verstellen noch einige Zeit getestet werden,
+   bis die Kassette wirklich gelesen werden. Fr alle, die die
+   entsprechenden Kenntnisse haben oder die entsprechende Hardware
+   (z.B. die in 64er und ComputeMit! vorgestellten Kontrollplatinen)
+   drfte diese L”sung die beste sein. Bitte haben sie Verst„ndnis,
+   daá wir keinerlei Gew„hrleistung bernehmen, wenn die Kassette
+   aufgrund mangelnder Tonkopfeinstellung nicht gelesen werden kann.
+   Kosten: wie normale Diskettenversion
+
+2) Lieferung auf Kassette im Format: C16 (120 min) .
+
+   Diese Kassette im normalen C16-Format bedingt frchterlich
+   lange Ladezeiten. Ein normales Forth-System braucht
+   ca. 10 min, ebenso wie eine Ramdisk. Die Arbeit wird zur Qual und
+   bei solchen Ladezeiten werden auch die Ladefehler h„ufig.
+   Sie k”nnen selbstverst„ndlich die Kassette (wenn Sie sie
+   einmal geladen haben) im Supertape-Format auf eine andere
+   Kassette sichern. Bitte haben sie Verst„ndnis,
+   daá wir keinerlei Gew„hrleistung bernehmen, wenn die Kassette
+   aufgrund mangelnder Tonkopfeinstellung nicht gelesen werden kann.
+   Kosten: Aufpreis von 10.-DM auf normale Diskettenversion
+
+3) Lieferung auf Diskette fr 1541/1551 im komprimierten Ramdisk-Format.
+
+   Dazu brauchen Sie Zugang zu einem Diskettenlaufwerk. Die Forth-
+   Quelltexte des Lieferumfangs sind hier bereits in Files zusammengefaát,
+   die Sie nur auf Ihren Rekorder kopieren brauchen. Dies kann mit
+   normalen Betriebssystemmitteln, Kopierprogrammen oder einer
+   mitgelieferten (Forth)-Kopiermethode geschehen. Die reine Kopierzeit
+   betr„gt ca. 40 min (Supertape-Format) bis zu ca. 200 min (Commodore-Format),
+   sodaá Sie schon einen Nachmittag zum Kopieren rechnen sollten.
+   Kosten: wie normale Diskettenversion
+
+Noch zu einer oft gestellte Frage:
+ 'Enth„lt die Kassettenversion alles, was auch die Diskettenversion enth„lt?'
+Ja, tut sie.
+
+Claus Vogt
+
+
+Erg„nzung zum Kassettenbeipackzettel.
+
+Eine Ramdisk namens RD.makecopy  ist zum Lieferumfang hinzugekommen.
+Sie ist insbesondere sinnvoll, wenn Sie die Kassettenversion auf
+einer Diskette mit komprimierten Ramdisks erhalten. In diesem Fall
+geben Sie ein:
+  LOAD"C16DEMO"                 ; Laden eines Forth-Systems
+  RUN				; Starten
+  LIMIT N" RD.makecopy*" BLOAD  ; Laden einer Ramdisk
+  1 DRIVE			; Umschalten auf virtuelles Laufwerk 1
+  1 LIST			; Listen der Directory desselben
+  25 LOAD			; Laden des Kopierprogramms
+  im Fehlerfall k”nnen Sie mit CONT fortsetzen.
+Ein Programm namens JUSTAGE zum Tonkopfjustieren wird - wenn fertig -
+demn„chst hinzugefgt. Es wird das erste Programm auf der Kassette sein.
+Die angegebenen Z„hlerst„nde sind nur als grobe Anhaltspunkte zu
+verstehen und gelten nur fr Supertape-Format.
+Die Schriftzge 'ultraFORTH83' auf dem Beipackzettel sind zum
+bekleben der Kassetten gedacht.
+
+Claus Vogt
+
+
+

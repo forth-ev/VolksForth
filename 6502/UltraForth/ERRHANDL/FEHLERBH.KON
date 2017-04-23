@@ -1,0 +1,225 @@
+set margins 1 40
+(mit c-t in Kommandozeile)
+
+Artikel Fehlerbehandlung in Forth
+clv01mar88
+
+
+Kurzfassung: Ausgehend von einer Analyse
+des BedÅrfnisses nach
+programmspezifische Fehlerbehandlung
+(die insbesondere zum erweiterten
+Begriff des 'Exception handling' fÅhrt)
+werden Konzepte aus verschiedenen Programmiersprachen
+und bisher zu Forth83 vorgeschlagene
+FORML-Konferenzen auf ihre Brauchbarkeit
+hin diskutiert. Es folgt eine unter
+ultraFORTH83 rev 3.8 auf einem C16
+entwickelte
+Lîsung des Autors, die abhÑngig von
+der AusfÅhrungsebene eine spezielle
+mittels FAILS..THEN installierte
+Behandlung der Worte ABORT" und ERROR"
+gestattet.
+
+Stichworte: Fehlerbehandlung,
+Exzeption-Handling, Returnstack
+
+1) ABORT" und ERROR"
+
+Im 83er-Standard ist das zentrale Wort
+zur Fehlerbehandlung ABORT". Es
+gibt den folgenden String als
+Fehlernachricht aus, versetzt das System
+in einen (einigerma·en) definierten
+Zustand und ruft das Top-Level-Wort QUIT
+auf, das Eingaben von der Tastatur
+entgegennimmt und verarbeitet.
+Jedes laufende Programm wird also ohne
+RÅcksicht auf Verluste gestoppt und
+gewisserma·en Forth neu gestartet.
+
+Eine Ñhnliche Wirkung haben die Worte
+ABORT, ERROR" und QUIT selbst.
+
+2.) Diese Art der Fehlerbehandlung
+funktioniert zwar meistens recht gut,
+wirft aber einige Probleme auf.
+Im folgenden wird versucht,
+Anforderungen an eine problemspezifische
+Fehlerbehandlung zu formulieren:
+    - Reservierte  Ressourcen
+      schlie·en
+    - Informationen Åber den
+      Fehlerzustand erhalten.
+    - Behandlung von Ausnahmesituationen
+      Åbersichtlich programmieren
+    - Fehler auch wÑhrend der
+      Fehlerbehandlung (ohne
+      Endlosschleifen)
+
+ Falls das Programm gewisse
+Ressourcen
+reserviert hat, werden sie nicht wieder
+frei gegeben. Dies kînnte ein geîffnetes
+File sein, das nicht geschlossen wird;
+ein Semaphor, das gelockt bleibt; ein
+menÅartiger Bildschirm, der weiter in
+allen Farben des Spektrums blinkt; eine
+hoffnungslos verdrehte Schnittstelle
+etc.. Am auffÑlligsten ist eine z.B. auf
+den Drucker umgeleitete Standardausgabe.
+In diesem Fall wird schon die Ausgabe
+der ABORT"-Meldung (auf den Drucker)
+fehlschlagen, insb. wenn die gewÅnschte
+Fehlermeldung "Drucker ausgeschaltet"
+hei·en mag. Dieser Effekt wird in jedem
+intelligenten Forth-System natÅrlich
+abgefangen, unter MS-DOS lÑ·t er
+sich allerdings noch sehr hÅbsch
+beobachten. Die gelockten Semaphore
+machen sich allerdings - in seltenen
+FÑllen - auch unter volksFORTH
+bemerkbar. Vîllig hoffnungslos wird der
+Fall, wenn eine grî·ere
+Stand-Alone-Anwendung (z.B. ein
+fÅrchterlich kompliziertes MenÅprogramm)
+grade sÑmtliche Systemvektoren
+erfolgreich verbogen hat und nun durch
+einem jÑmmerlich kleinen Fehler
+(vielleicht einen offengelassener
+Diskettenschacht) jÑh in die
+Forth-Hauptschleife geschleudert wird.
+In einem Fall wie letzterem wÑre es
+sogar denkbar,
+den Fehler noch in der Systemroutinem
+zu beseitigen
+(z.B. den Benutzer aufzufordern doch
+bitte den Schacht zu schlie·en) und
+anschlie·end fortzufahren, ohne da·
+das darÅberliegende Programm etwas
+bemerkt. Derartiges kann sogar das
+prÑhistorische MS-DOS. Alle Fehler die
+in Zusammenhang mit Diskettenlaufwerkern
+stehen werden noch innerhalb des
+Betriebssystems mit einer Meldung der
+Form:
+
+allgemeiner Fehler. Kaffee in Laufwerk A:
+(A)bbruch, (W)iederholen, (I)gnorieren ?
+
+beantwortet. Der Benutzer kann sich nun
+fÅr eine der Alternativen entscheiden.
+Tippt er 'W', so versucht das System
+denselben Zugriff nochmal. Dies ist bei
+einem offen gelassenen Schacht nÅtzlich,
+gegen Kaffee hilft es natÅrlich nicht.
+'A' terminiert das laufende Programm und
+springt zurÅck ins Betriebssystem (in
+etwa wie unser QUIT). Dies funktioniert
+meistens, es sei denn das Betriebssystem
+mîchte selbst Teile seiner selbst von
+der Diskette lesen: Wir bekommen die
+beliebte Endlosschleife, bis wir eine
+saubere Diskette eingelegt haben.
+Die Alternative 'I' ist die hÅbscheste.
+Das System vergi·t die Operation und
+kehrt ins rufende Programm zurÅck.
+Dieses arbeitet brav weiter, bis es an
+sich an irgendwelchenden Zufallsergebnissen
+den Magen verdirbt.
+
+Ein anderes hÅbsches Beispiel
+fÅr sinnvolle Fehler-Behandlung kînnte
+die Behandlung eines File-Ende-Fehlers
+sein. Ein Programm lese beispielsweise
+Daten von einem File und verarbeite sie.
+Es mu· somit (wenn es strukturiert sein
+mîchte) vor dem Lesen jedes einzelnen
+Zeichens das Betriebssystem befragen, ob
+das File vielleicht schon erschîpft ist.
+Das ergibt beispielsweise in Pascal
+endlose Konstrukte des Strickmusters:
+
+   WHILE not eof(input) DO
+   WHILE not eoLn(input) DO
+   BEGIN
+      READ (input,char);
+      IF char=...THEN
+         ....
+         IF or(eof(input),eoLn(input)
+         THEN schweinkram;
+         ELSE  read (input,nochn_char);
+               ....
+         ENDIF;
+         ....
+      ENDIF;
+   END;
+
+Viel einfacher haben es da Sprachen, die
+keinerlei Anspruch auf strukturiertes
+Programmieren erheben. Das obrige
+Kuddelmuddel lie·e sich in Fortran etwa
+so umgehen:
+
+      READ (input,char,err=100)
+      READ (input,nochnchar,err=200)
+      ...
+ 100  ...
+ 200  ...
+
+Hier wird (vîllig unstrukturiert) der
+Programmflu· im Fehlerfall unterbrochen
+und an den durch 100 und 200
+gekennzeichneten Stellen fortgesetzt.
+Ein Ñhnliches GOTO-Konstrukt bietet auch
+Pascal an. Jedes gute Lehrbuch bittet
+aber darum es mîglichst nie zu benutzen.
+Als einzigen tolerierbaren Zweck wird
+meist die Fehlerbehandlung angegeben.
+Ein sehr treffender Beleg dafÅr, da·
+selbst von VÑtern der strukturierten
+Programmierung die Fehlerbehandlung
+Kopfzerbrechen bereitet.
+
+Einen gÑnzlich anderen Anwendungsfall
+fÅr Fehlerbehandlung stellt die Ausgabe
+von Informationen im Fehlerfall dar. So
+wird hÑufig die komplette Aufrufliste
+im Fehlerzustand ausgegeben. Dies kînnte
+etwa so aussehen:
+
+FEHLER divide by Zero AUFGETRETEN.
+   Der Fehler geschah in Wort: 0/
+               aufgerufen von: MEINWORT
+               aufgerufen von: TEST
+               aufgerufen von: EDIT
+               aufgerufen von: L
+
+Derartige POST-MORTEM-DUMPS ermîglichen
+i.a. ein schnelles Lokalisieren des
+Fehlers. Sie enthalten des îfteren nicht
+nur die Aufrufhierarchie sondern
+diverse Register- und Variablen-Inhalte
+zum Zeitpunkt des Fehlers (am besten
+noch aus allen Unterprogrammen...),
+soda· sie manchmal den Benutzer eher in
+hunderten von Seiten Papier ersticken,
+als ihm bei der Fehlersuche zu helfen.
+Aber selbst dagegen sind KrÑuter
+gewachsen. Logitech's Modula-2-Compiler
+teilt dem Benutzer au·er einer sehr
+knappen Fehlerbeschreibung nichts mit
+und schreibt ersatzweise den kompletten
+Systemzustand auf Diskette, wo man ihn
+anschlie·end mit einem
+Post-Mortem-Debugg-Programm umgraben
+kann. Es frage mich bitte niemand, was
+passiert, wenn die Diskette voll war.
+Ruft der Fehler dann einen erneuten
+Post-Mortem-Dump hervor?
+
+Die schînste, allgemeinste Art der
+Fehlerbehandlung ist das
+CATCH-THROW-Konstrukt aus TLC-Lisp.
+

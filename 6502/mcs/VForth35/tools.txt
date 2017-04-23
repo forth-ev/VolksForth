@@ -1,0 +1,17 @@
+\ tools for decompiling, interactive use          ks 04 jul 87  
+                                                                
+| : ?:  ( addr -- addr )   dup    5 u.r ." :"  ;                
+| : @?  ( addr -- addr )   dup  @ 6 u.r ;                       
+| : c?  ( addr -- addr )   dup c@ 3  .r ;                       
+                                                                
+  : sx  ( addr1 -- addr2 )                                       
+     ?: 3 spaces c? 2 spaces count 2dup type ;       
+  : nx  ( addr1 -- addr2 )                                       
+     ?: @? 2 spaces dup @ >name .name 2+ ;                  
+  : dx  ( addr1 n -- addr2 )  2dup swap ?: 3 spaces              
+     swap 0 DO  c? 1+  LOOP  2 spaces -rot type ;           
+  : l  ( addr1 -- addr2 )   ?: 6 spaces @? 2+  ;             
+  : c  ( addr1 -- addr2 )   1 dx ;                           
+  : b  ( addr1 -- addr2 )   ?: @? dup @  over + 6 u.r 2+ ;  
+  : dump  ( addr n -- )    base push hex                        
+  bounds ?DO  cr I $10 dx drop stop? IF LEAVE THEN  $10 +LOOP ;               

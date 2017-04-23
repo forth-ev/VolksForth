@@ -1,0 +1,374 @@
+Screen 0 not modified     
+ 0 \ Serial interface for IBM-PC using 8250 chip        cas 11nov05
+ 1                                                                 
+ 2  INCLUDE SERIAL.FB  will load code for COM1,                    
+ 3  2 LOADFROM SERIAL.FB  for COM2                                 
+ 4                                                                 
+ 5 Bytes recieved will be buffered in a 128 Byte deep Queue        
+ 6 by an interrupt Routine.                                        
+ 7                                                                 
+ 8 The DTR Line will be used to signal that new bytes can be       
+ 9 recieved.                                                       
+10 The Sender will recognize CTS, a full Handshake is implemented  
+11                                                                 
+12 Xon/Xoff Protocoll using ^S/^Q is _not_ implemented.            
+13                                                                 
+14 Sender:     TX? ( -- f )      TX ( -- char )                    
+15 Empf„nger:  RX? ( -- f )      RX ( char -- )                    
+Screen 1 not modified     
+ 0 \ Driver for IBM-PC Serial card using 8250           cas 11nov05
+ 1   Onlyforth   \needs Assembler  2 loadfrom asm.fb               
+ 2                                                                 
+ 3 cr .( COM1: )                                                   
+ 4                                                                 
+ 5 | $C 4 * Constant SINT@  \ absolute loc. of serial interrupt    
+ 6                                                                 
+ 7   $3F8 >label Portadr                                           
+ 8                                                                 
+ 9 | $10 Constant I_level   \ 8259 priority                        
+10                                                                 
+11   2 7 +thru                                                     
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ Driver for IBM-PC Serial card using 8250           cas 11nov05
+ 1   Onlyforth   \needs Assembler  2 loadfrom asm.fb               
+ 2                                                                 
+ 3 cr .( COM2: )                                                   
+ 4                                                                 
+ 5 | $B 4 * Constant SINT@  \ absolute loc. of serial interrupt    
+ 6                                                                 
+ 7   $2F8 >label Portadr                                           
+ 8                                                                 
+ 9 |   8 Constant I_level   \ 8259 priority                        
+10                                                                 
+11   1 6 +thru                                                     
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0 \ Driver for IBM-PC Serial card using 8250        ks 11 mai 88  
+ 1 \   3 .( 38.4 kbaud )                                           
+ 2 \  &6 .( 19.2 kbaud )                                           
+ 3   &12 .( 9.6 kbaud )                                            
+ 4 \ &24 .( 4.8 kbaud )                                            
+ 5 \ &96 .( 1200 baud )                                            
+ 6   >label baud                                                   
+ 7                                                                 
+ 8   $20 >label I_ctrl      $21 >label I_mask   \ 8259 addresses   
+ 9                                                                 
+10   Create Queue  0 , $80 allot                                   
+11 \  0     1     2                      130  byte address         
+12 \ | len | out |<-- 128 byte Queue -->|                          
+13 \ len ::= number of characters queued                           
+14 \ out ::= relativ address of next output character              
+15 \ (len+out)mod(128) ::= relative address of first empty byte    
+Screen 4 not modified     
+ 0 \ transmit to 8250                                ks 11 dez 87  
+ 1                                                                 
+ 2   Code tx?  ( -- f )   D push   Portadr 5 + # D mov             
+ 3      D in   D D xor   $1020 # A and   $1020 # A cmp             
+ 4      0= ?[  D dec  ]?   Next   end-code                         
+ 5                                                                 
+ 6   Code tx   ( c -- )   D- A- xchg   Portadr # D mov             
+ 7      D byte out   D pop   Next   end-code                       
+ 8                                                                 
+ 9   Code -dtr    D push   Portadr 4 + # D mov                     
+10      D byte in   $1E # A- and   D byte out   D pop   Next       
+11   end-code                                                      
+12                                                                 
+13   Code +dtr    D push   Portadr 4 + # D mov                     
+14      D byte in   1 # A- or   D byte out   D pop   Next          
+15   end-code                                                      
+Screen 5 not modified     
+ 0 \ receive queue and interrupt service routine     ks 11 dez 87  
+ 1                                                                 
+ 2   Label S_INT     D push   I push   A push                      
+ 3      Portadr # D mov   D byte in   A- D+ mov                    
+ 4      Queue # I mov   C: seg I ) A mov   A- D- mov   D- inc      
+ 5      C: seg D- I ) mov   A+ A- add   $7F # A and   A I add      
+ 6      C: seg D+ 2 I D) mov   $68 # D- cmp  CS not                
+ 7      ?[  Portadr 4 + # D mov                                    
+ 8          D byte in   $1E # A- and   D byte out  ]?  \ -DTR      
+ 9      $20 # A- mov   I_ctrl #) byte out          \ EOI for 8259  
+10      A pop   I pop   D pop   iret                               
+11   end-code                                                      
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 6 not modified     
+ 0 \ rx?  rx                                         ks 30 dez 87  
+ 1                                                                 
+ 2   Code rx?  ( -- f )   D push   D D xor                         
+ 3      Queue #) D- mov   D- D- or  0=                             
+ 4      ?[  [[  D push   Portadr 4 + # D mov   \ +DTR              
+ 5              D byte in   9 # A- or   D byte out   D pop         
+ 6 swap ]?  Next   end-code                                        
+ 7                                                                 
+ 8   Code rx   ( -- 8b )  I W mov   Queue # I mov                  
+ 9      D push   D D xor   cli   lods   A- A- or  0= not           
+10      ?[  A+ C- mov   A- dec   A+ inc   $7F # A+ and             
+11          A -2 I D) mov   D- C+ mov   C I add   I ) D- mov       
+12      ]?  sti   W I mov   $18 # A- cmp  CS not ?]   Next         
+13   end-code                                                      
+14                                                                 
+15                                                                 
+Screen 7 not modified     
+ 0 \ Serial initialization                           ks 25 apr 86  
+ 1                                                                 
+ 2 | Code S_init  D push   D: push   A A xor   A D: mov   C: A mov 
+ 3      SINT@ # W mov   S_INT # W ) mov   A 2 W D) mov   D: pop    
+ 4      Portadr 3 + # D mov   $80 # A- mov   D byte out \ DLAB = 1 
+ 5      2 # D sub   baud # A mov   A- A+ xchg   D byte out         
+ 6      D dec   A- A+ xchg   D byte out                 \ baudrate 
+ 7      3 # D add   $A07 # A mov   D out     \ 8bit, noP, +RTS +OUT
+ 8      2 # D sub   1 # A- mov   D byte out             \ +rxINT   
+ 9      I_mask #) byte in   I_level Forth not Assembler # A- and   
+10      I_mask #) byte out   D pop   Next                          
+11   end-code                                                      
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 8 not modified     
+ 0 \ init  bye                                       ks 11 dez 87  
+ 1   \needs init   : init ;                                        
+ 2                                                                 
+ 3   : init   init   Queue off  S_init ;  init                     
+ 4                                                                 
+ 5   : bye    0 [ Portadr 1+ ] Literal  pc!  \ -rxINT              
+ 6            0 [ Portadr 4 + ] Literal pc!  \ -dtr/-rts/-out2     
+ 7            I_mask pc@ I_level or I_mask pc! bye ;               
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 9 not modified     
+ 0 \ dumb terminal via 8250                          ks 11 dez 87  
+ 1                                                                 
+ 2   Variable Fkeys   Fkeys on                                     
+ 3                                                                 
+ 4 | : ?rx   ( -- )   pause rx? 0=exit rx                          
+ 5      Fkeys @ 0= IF  emit ?cr exit  THEN                         
+ 6      #LF case? IF  cr       exit    THEN                        
+ 7      #CR case? IF  Row 0 at exit    THEN                        
+ 8      #BS case? IF  del exit  THEN   emit ;                      
+ 9                                                                 
+10 | : ?tx   ( c -- )   BEGIN ?rx tx? UNTIL tx ;                   
+11                                                                 
+12   : dumb   BEGIN BEGIN  ?rx key?  UNTIL  key                    
+13                  $1B case? IF -dtr exit THEN ?tx REPEAT ;       
+14                                                                 
+15                                                                 
+Screen 10 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 11 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 12 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 13 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 14 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 15 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 16 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 17 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 18 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 19 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 20 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 21 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

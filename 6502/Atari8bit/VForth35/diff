@@ -1,0 +1,190 @@
+17c17
+< \                                                     cas21dec05
+---
+> \                                                      cs08aucas
+20c20
+< 
+---
+> include assemble.scr 2 loadfrom as65.scr include crostarg.scr
+28,29c28,29
+< .( Unresolved: )
+< .UNRESOLVED cr
+---
+> 
+> .UNRESOLVED
+49c49
+< \ HIER BEGINNEN DIE KALTSTARTWERTE DER                cas21dec05
+---
+> \ HIER BEGINNEN DIE KALTSTARTWERTE DER                 cs09aug05
+57c57
+< ," VOLKSFORTH-83 3.8 COMPILED 21DEC05CS"
+---
+> ," VOLKSFORTH-83 3.5 COMPILED 09AUG05CS"
+129c129
+< \ USER VARIABLES              17MAR84KS)              cas09dec05
+---
+> \ USER VARIABLES              17MAR84KS)               er14dez88
+135c135
+< USER S0      $7000 S0 !         USER R0      $7500 R0 !
+---
+> USER S0      $5000 S0 !         USER R0      $5500 R0 !
+977c977
+< \ SOURCE WORD PARSE NAME      08APR85BP)              cas21dec05
+---
+> \ SOURCE WORD PARSE NAME      08APR85BP)
+980c980
+< TIB #TIB @  ;
+---
+> BLK @  ?DUP IF  BLOCK B/BLK EXIT THEN  TIB #TIB @  ;
+1345c1345
+< \ FIND  ' [']                 13JAN85BP)              cas21dec05
+---
+> \ FIND  ' [']                 13JAN85BP)
+1353c1353
+< : '  ( -- CFA ) NAME FIND 0= ABORT" WHAT?"  ;
+---
+> : '  ( -- CFA ) NAME FIND 0= ABORT" HAEH?"  ;
+1377c1377
+< \ INTERPRET INTERACTIVE    31DEC84KS/BP)              cas21dec05
+---
+> \ INTERPRET INTERACTIVE    31DEC84KS/BP)
+1381c1381
+< : NO.EXTENSIONS ( STRING -- ) ERROR" WHAT?"   ;  \ STRING NOT 0
+---
+> : NO.EXTENSIONS ( STRING -- ) ERROR" HAEH?"   ;  \ STRING NOT 0
+1441c1441
+< \ .STATUS PUSH LOAD           08SEP84KS)              cas21dec05
+---
+> \ .STATUS PUSH LOAD           08SEP84KS)
+1450c1450
+< \\
+---
+> 
+1457c1457
+< \ +LOAD THRU +THRU --> RDEPTH DEPTH  KS)              cas21dec05
+---
+> \ +LOAD THRU +THRU --> RDEPTH DEPTH  KS)
+1459c1459
+< \ : +LOAD  ( OFFSET --)  BLK @  + LOAD ;
+---
+> : +LOAD  ( OFFSET --)  BLK @  + LOAD ;
+1461c1461
+< \ : THRU  ( FROM TO --)      1+  SWAP  DO  I LOAD  LOOP ;
+---
+> : THRU  ( FROM TO --)      1+  SWAP  DO  I LOAD  LOOP ;
+1463c1463
+< \ : +THRU  ( OFF0 OFF1 --)   1+  SWAP  DO  I +LOAD LOOP ;
+---
+> : +THRU  ( OFF0 OFF1 --)   1+  SWAP  DO  I +LOAD LOOP ;
+1465c1465
+< \ : -->  1 BLK +! >IN OFF .STATUS  ;  IMMEDIATE
+---
+> : -->  1 BLK +! >IN OFF .STATUS  ;  IMMEDIATE
+1585c1585
+< \ .S LIST C/L L/S             24DEC83KS)              cas21dec05
+---
+> \ .S LIST C/L L/S             24DEC83KS)
+1592c1592
+< \\
+---
+> 
+1649,1650c1649,1650
+< \ SEARCH FOR BLOCKS IN MEMORY 11JUN85BP)              cas21dec05
+< \\
+---
+> \ SEARCH FOR BLOCKS IN MEMORY 11JUN85BP)
+> 
+1665,1666c1665,1666
+< \   "                         11JUN85BP)              cas21dec05
+< \\
+---
+> \   "                         11JUN85BP)
+> 
+1697,1698c1697,1698
+< \ (DISKERR                    11JUN85BP)              cas21dec05
+< \\
+---
+> \ (DISKERR                    11JUN85BP)
+> 
+1713c1713
+< \\ BACKUP EMPTYBUF READBLK     11JUN85BP)             cas21dec05
+---
+> \ BACKUP EMPTYBUF READBLK     11JUN85BP)
+1729c1729
+< \\ TAKE MARK UPDATES? FULL? CORE?     BP)             cas21dec05
+---
+> \ TAKE MARK UPDATES? FULL? CORE?     BP)
+1745c1745
+< \\ BLOCK & BUFFER MANIPULATION 11JUN85BP)             cas21dec05
+---
+> \ BLOCK & BUFFER MANIPULATION 11JUN85BP)
+1761c1761
+< \\ BLOCK & BUFFER MANIPULATION 09SEP84KS)             cas21dec05
+---
+> \ BLOCK & BUFFER MANIPULATION 09SEP84KS)
+1777c1777
+< \\ MOVING BLOCKS               15DEC83KS)             cas21dec05
+---
+> \ MOVING BLOCKS               15DEC83KS)
+1793c1793
+< \ ALLOCATING BUFFERS          23SEP83KS)              cas21dec05
+---
+> \ ALLOCATING BUFFERS          23SEP83KS)
+1796c1796
+< \\
+---
+> 
+1889c1889
+< \ SAVE BYE STOP? ?CR       20OCT84KS/BP)              cas21dec05
+---
+> \ SAVE BYE STOP? ?CR       20OCT84KS/BP)
+1896c1896
+< : BYE (BYE ;
+---
+> : BYE       FLUSH EMPTY (BYE ;
+1937c1937
+< \ 'COLD                       07JUN85BP)              cas21dec05
+---
+> \ 'COLD                       07JUN85BP)
+1941c1941
+< | : INIT-BUFFERS 0 PREV ! LIMIT FIRST ! ;
+---
+> | : INIT-BUFFERS 0 PREV ! LIMIT FIRST !  ALL-BUFFERS ;
+1945,1946c1945,1946
+< | : (COLD INIT-VOCABULARYS INIT-BUFFERS PAGE 'COLD ONLYFORTH
+< ." volksFORTH-83  REV 3.81.02" CR   RESTART ; -2 ALLOT
+---
+> | : (COLD INIT-VOCABULARYS  INIT-BUFFERS  PAGE 'COLD ONLYFORTH
+> ." ULTRAFORTH-83  REV 3.5" CR   RESTART ; -2 ALLOT
+1950c1950
+< 'RESTART  [ ERRORHANDLER ] LITERAL @ ERRORHANDLER !
+---
+> DRVINIT 'RESTART  [ ERRORHANDLER ] LITERAL @ ERRORHANDLER !
+1953c1953
+< \ COLD BOOTSYSTEM RESTART     09JUL85WE)              cas09dec05
+---
+> \ COLD BOOTSYSTEM RESTART     09JUL85WE)
+1955a1956
+> 
+1959,1960c1960
+< $C lda  HERE 9 + sta  $D lda HERE 5 + sta
+< LABEL WARMBOOT  $e474 jsr BOOTNEXTLEN 1- # LDY
+---
+> LABEL WARMBOOT  BOOTNEXTLEN 1- # LDY
+1966,1967c1966
+< PLA IP STA PLA IP 1+ STA  warmboot 100 U/MOD # lda $D sta
+< # lda $C sta
+---
+> PLA IP STA PLA IP 1+ STA
+1968a1968
+> 
+2033c2033
+< \ SYSTEM PATCHUP              05JAN85BP)              cas09dec05
+---
+> \ SYSTEM PATCHUP              05JAN85BP)
+2037,2038c2037,2038
+< A000 ' LIMIT >BODY !
+< $9800 S0 !  $9B00 R0 !
+---
+> 6000 ' LIMIT >BODY !
+> $5800 S0 !  $5B00 R0 !

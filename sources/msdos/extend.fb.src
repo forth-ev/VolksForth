@@ -1,0 +1,187 @@
+Screen 0 not modified     
+ 0 \                                                 ks 11 mai 88  
+ 1 Dieses File enth„lt Definitionen, die zum Laden der weiteren    
+ 2 System- und Applikationsfiles ben”tigt werden.                  
+ 3                                                                 
+ 4 Unter anderem finden sich hier auch MS-DOS spezifische          
+ 5 Befehle wie zum Beispiel das Allokieren von Speicher-           
+ 6 platz ausserhalb des auf 64k begrenzten Forthsystems            
+ 7 und einige Routinen, die das Arbeiten mit dem Video-            
+ 8 Display erleichtern sowie einige Operatoren zur String-         
+ 9 manipulation.                                                   
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ loadscreen for often used words                 ks cas 25sep16
+ 1                                                                 
+ 2   Onlyforth  \needs Assembler   2 loadfrom asm.fb               
+ 3                                                                 
+ 4   ' save-buffers Alias sav                                      
+ 5                                                                 
+ 6   ' name &12 + Constant 'name                                   
+ 7                                                                 
+ 8   ' page Alias cls                                              
+ 9                                                                 
+10    1 8 +thru  .( Systemerweiterung geladen) cr                  
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ Postkernel words                                ks 22 dez 87  
+ 1                                                                 
+ 2   : blank   ( addr quan -- )   bl fill ;                        
+ 3                                                                 
+ 4   Code stash ( u1 u2 -- u1 u1 u2 )                              
+ 5      S W mov   W ) push   Next   end-code                       
+ 6 \ : stash    ( u1 u2 -- u1 u1 u2 )   over swap ;                
+ 7                                                                 
+ 8   : >expect  ( addr len -- )  stash expect  span @ over place ; 
+ 9                                                                 
+10   : .field   ( addr len quan -- )                               
+11      over - >r type r> 0 max spaces ;                           
+12                                                                 
+13   : tab  ( n -- )   col - 0 max spaces ;                        
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0 \ postkernel                                      ks 08 m„r 89  
+ 1 \ hier sollte END-CODE eigentlich aehem, also z.B. -TRANSIENT   
+ 2                                                                 
+ 3 \needs end-code  : end-code   toss also ;                       
+ 4                                                                 
+ 5   : u?     ( addr -- )   @ u. ;                                 
+ 6                                                                 
+ 7   : adr   ' >body  state @ 0=exit  [compile] Literal ; immediate
+ 8                                                                 
+ 9   : Abort(  ( f -- )  IF  [compile] .(  true abort"  !"  THEN   
+10                       [compile] ( ;                             
+11                                                                 
+12   : arguments  ( n -- )                                         
+13      depth 1- > Error" zu wenige Parameter" ;                   
+14                                                                 
+15                                                                 
+Screen 4 not modified     
+ 0 \ MS-DOS memory management                                      
+ 1                                                                 
+ 2   Code lallocate  ( pages -- seg ff / rest err# )               
+ 3      R push   D R mov   $48 # A+ mov   $21 int  CS              
+ 4      ?[  A D xchg   A pop   R push   A R xchg                   
+ 5      ][  R pop   A push   0 # D mov  ]?   Next   end-code       
+ 6                                                                 
+ 7   Code lfree      ( seg -- err# )                               
+ 8      E: push   D E: mov   $49 # A+ mov   $21 int  CS            
+ 9      ?[  A D xchg  ][  0 # D mov  ]?   E: pop   Next   end-code 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 5 not modified     
+ 0 \ postkernel                                      ks 03 aug 87  
+ 1                                                                 
+ 2   c/row c/col * 2* Constant c/dis   \ characters per display    
+ 3                                                                 
+ 4   Code video@    ( -- seg )   D push   R D mov   $F # A+ mov    
+ 5      $10 int   R D xchg   0 # D- mov   7 # A- cmp               
+ 6      0= ?[  $B0 # D+ mov  ][  $B8 # D+ add  ]?  Next            
+ 7   end-code                                                      
+ 8                                                                 
+ 9   : savevideo  ( -- seg / ff )                                  
+10       [ c/dis b/seg /mod swap 0<> - ] Literal lallocate         
+11       IF  drop false exit  THEN  video@ 0 2 pick 0 c/dis lmove ;
+12                                                                 
+13   : restorevideo  ( seg -- )   ?dup 0=exit                      
+14      dup 0 video@ 0 c/dis lmove  lfree drop ;                   
+15                                                                 
+Screen 6 not modified     
+ 0 \ string operators   append attach                ks 21 jun 87  
+ 1                                                                 
+ 2 | : .stringoverflow   true Abort" String zu lang" ;             
+ 3                                                                 
+ 4   Code append  ( char addr -- )                                 
+ 5      D W mov   D pop   W ) A- mov   1 # A- add  CS              
+ 6      ?[  ;c: .stringoverflow ; Assembler ]?                     
+ 7      A- W ) mov   0 # A+ mov   A W add                          
+ 8      D- W ) mov   D pop   Next   end-code                       
+ 9                                                                 
+10   Code attach  ( addr len addr1 -- )  D W mov   C pop           
+11      I D mov   I pop   W ) A- mov   A- A+ mov   C- A+ add  CS   
+12      ?[  ;c: .stringoverflow ; Assembler ]?                     
+13      A+ W ) mov   A+ A+ xor   A+ C+ mov   A W add   W inc       
+14      rep byte movs   D I mov   D pop   Next   end-code          
+15                                                                 
+Screen 7 not modified     
+ 0 \\ string operators   append attach detract        ks 21 jun 87 
+ 1                                                                 
+ 2   : append   ( char addr -- )                                   
+ 3      under   count + c!   dup c@ 1+ swap c! ;                   
+ 4                                                                 
+ 5   : attach ( addr len addr.to -- )                              
+ 6      >r under   r@ count + swap move   r@ c@ + r> c! ;          
+ 7                                                                 
+ 8   : detract ( addr -- char )                                    
+ 9      dup c@ 1- dup 0> and  over c!                              
+10      count >r  dup count -rot  swap r> cmove ;                  
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 8 not modified     
+ 0 \ ?"  string operator                             ks 09 feb 88  
+ 1                                                                 
+ 2 \ : (?"  ( 8b -- index )  "lit under count rot                  
+ 3 \    scan IF  swap - exit  THEN  2drop false ;                  
+ 4                                                                 
+ 5 | Create months  ," janfebm„raprmaijunjulaugsepoktnovdez"       
+ 6                                                                 
+ 7   : >months   ( n -- addr len )   3 * 2- months + 3 ;           
+ 8                                                                 
+ 9 | Code (?"  ( 8b -- index )                                     
+10      A D xchg   I ) C- mov   0 # C+ mov   C I add               
+11      I W mov   I inc   std   0<>rep byte scas   cld             
+12      0= ?[  C inc  ]?  C D mov   Next                           
+13   end-code                                                      
+14                                                                 
+15   : ?"   compile (?" ," align ; immediate restrict              
+Screen 9 not modified     
+ 0 \ Conditional compilation                         ks 12 dez 88  
+ 1 | Defer cond                                                    
+ 2                                                                 
+ 3   : .THEN ; immediate                                           
+ 4                                                                 
+ 5   : .ELSE  ( -- )   0                                           
+ 6      BEGIN  name nullstring? IF  drop exit  THEN                
+ 7             find IF  cond -1 case? ?exit  ELSE  drop  THEN      
+ 8      REPEAT ; immediate                                         
+ 9                                                                 
+10   : .IF ( f -- )  ?exit [compile] .ELSE ; immediate             
+11                                                                 
+12 | : (cond  ( n cfa -- n' )                                      
+13      ['] .THEN case? IF  1- exit  THEN                          
+14      ['] .ELSE case? IF  dup 0= + exit  THEN                    
+15      ['] .IF   = 0=exit  1+ ; ' (cond is cond                   
+Screen 10 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

@@ -1,0 +1,85 @@
+Screen 0 not modified     
+ 0 \\ Startup: Load Standard System                     cas 10nov05
+ 1                                                                 
+ 2 This file contains commands to create a full volksFORTH from the
+ 3 KERNEL.COM file.                                                
+ 4                                                                 
+ 5 The new system will be saved as "VOLKS4TH.COM".                 
+ 6                                                                 
+ 7 If needed this file must be adapted with the simple editor in   
+ 8 MINIMAL.COM to create a volksFORTH that can work with not       
+ 9 100% compatible display hardware.                               
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ System LOAD-Screen for MS-DOS volksFORTH           cas 11nov05
+ 1   Onlyforth    warning off                                      
+ 2                                                                 
+ 3   include asm.fb                                                
+ 4   include extend.fb                                             
+ 5   include multi.vid                                             
+ 6   include dos.fb                                                
+ 7   include tasker.fb                                             
+ 8   include timer.fb                                              
+ 9   include tools.fb                                              
+10   include editor.fb                                             
+11   include graphic.prn                                           
+12                                                                 
+13   warning on clear status on .status                            
+14   savesystem volks4th.com bell                                  
+15   .( new system saved as VOLKS4TH.COM ) cr                      
+Screen 2 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 4 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

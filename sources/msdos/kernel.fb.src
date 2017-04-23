@@ -1,0 +1,2720 @@
+Screen 0 not modified     
+ 0 \  ####  volksFORTH   ####                        ks 11 mai 88  
+ 1 Entwicklung des volksFORTH-83 von                               
+ 2                                                                 
+ 3    K. Schleisiek, B. Pennemann, G. Rehfeld, D. Weineck          
+ 4                                                                 
+ 5 Zuerst fÅr den 6502 von B.Pennemann und K.Schleisiek            
+ 6 Anpassung fÅr C64 "ultraFORTH"   von G.Rehfeld                  
+ 7 Anpassung fÅr 68000   und TOS    von D.Weineck und B.Pennemann  
+ 8 Anpassung fÅr 8080    und CP/M   von U.Hoffmann    jul 86       
+ 9 Anpassung fÅr C16 "ultraFORTH"   von C.Vogt                     
+10 Anpassung fÅr 8088/86 und MS-DOS von K.Schleisiek  dez 87       
+11                                                                 
+12 Diese Version 3.80 steht auf den aufgefÅhrten Rechnern in       
+13 identischen Versionen zur VerfÅgung. Das Fileinterface ist      
+14 unausgereift und wird in der Version 3.90 entscheidend ver-     
+15 bessert sein.                                                   
+Screen 1 not modified     
+ 0 \ MS-DOS   volksForth Load Screen                 ks 03 apr 88  
+ 1   Onlyforth  \needs Transient   include meta.scr                
+ 2                                                                 
+ 3   2 loadfrom META.SCR                                           
+ 4                                                                 
+ 5   new FORTH.COM   Onlyforth Target definitions                  
+ 6                                                                 
+ 7   4 &111 thru          \ Standard 8088-System                   
+ 8                                                                 
+ 9   flush                 \ close FORTH.COM                       
+10                                                                 
+11 cr .( neuer Kern als FORTH.COM erzeugt) cr bell                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \\ Die Nutzung der 8088/86 Register                ks 27 oct 86 
+ 1                                                                 
+ 2 Im Assembler sind Forthgemaesse Namen fuer die Register gewaehlt
+ 3 Dabei ist die Zuordnung zu den Intel Namen folgendermassen:     
+ 4                                                                 
+ 5 A <=> AX      A- <=> AL     A+ <=> AH                           
+ 6 C <=> CX      C- <=> CL     C+ <=> CH                           
+ 7   Register A und C sind zur allgemeinen Benutzung frei          
+ 8                                                                 
+ 9 D <=> DX      D- <=> DL     D+ <=> DH                           
+10   das oberste Element des (Daten)-Stacks.                       
+11                                                                 
+12 R <=> BX      R- <=> RL     R+ <=> RH                           
+13   der Return_stack_pointer                                      
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0 \\ Die Nutzung der 8088/86 Register                ks 27 oct 86 
+ 1                                                                 
+ 2 U <=> BP     User_area_pointer                                  
+ 3 S <=> SP     Daten_stack_pointer                                
+ 4 I <=> SI     Instruction_pointer                                
+ 5 W <=> DI     Word_pointer, im allgemeinen zur Benutzung frei.   
+ 6                                                                 
+ 7 D: <=> DS    E: <=> ES    S: <=> SS    C: <=> CS                
+ 8    Alle Segmentregister werden beim booten auf den Wert des     
+ 9    Codesegments C: gesetzt und muessen, wenn sie "verstellt"    
+10    werden, wieder auf C: zurueckgesetzt werden.                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 4 not modified     
+ 0 \ FORTH Preamble and ID                           ks 11 mÑr 89  
+ 1 Assembler                                                       
+ 2                                                                 
+ 3 nop   5555 # jmp              here 2- >label >cold              
+ 4 nop   5555 # jmp              here 2- >label >restart           
+ 5                                                                 
+ 6 Create origin   here origin!    here $100 0 fill                
+ 7 \ Hier beginnen die Kaltstartwerte der Benutzervariablen        
+ 8                                                                 
+ 9   $E9 int  end-code  -4 ,  $FC allot                            
+10 \ this is the multitasker initialization in the user area       
+11                                                                 
+12 | Create logo ," volksFORTH-83 rev. 3.81.41"                    
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 5 not modified     
+ 0 \ Next                                            ks 27 oct 86  
+ 1                                                                 
+ 2   Variable next-link    0 next-link !                           
+ 3                                                                 
+ 4   Host Forth Assembler also definitions                         
+ 5                                                                 
+ 6   : Next    lods   A W xchg   W ) jmp                           
+ 7             there tnext-link @ T , H tnext-link ! ;             
+ 8                                                                 
+ 9 \ Next ist in-line code. Fuer den debugger werden daher alle    
+10 \ "nexts" in einer Liste mit dem Anker NEXT-LINK verbunden.     
+11                                                                 
+12   : u'       ( -- offset )    T ' 2+ c@ H ;                     
+13                                                                 
+14   Target                                                        
+15                                                                 
+Screen 6 not modified     
+ 0 \ recover ;c: noop                                ks 27 oct 86  
+ 1                                                                 
+ 2   Create recover   Assembler                                    
+ 3      R dec   R dec   I R ) mov   I pop   Next                   
+ 4   end-code                                                      
+ 5                                                                 
+ 6 Host Forth Assembler also definitions                           
+ 7                                                                 
+ 8   :  ;c:   0 T recover # call ] end-code H ;                    
+ 9                                                                 
+10 Target                                                          
+11                                                                 
+12 | Code di    cli               Next   end-code                  
+13 | Code ei    sti     here      Next   end-code                  
+14                                                                 
+15   Code noop        here 2- !   end-code                         
+Screen 7 not modified     
+ 0 \ User variables                                  ks 16 sep 88  
+ 1   8 uallot drop  \ Platz fuer Multitasker                       
+ 2        \ Felder: entry  link  spare  SPsave                     
+ 3        \ Laenge kompatibel zum 68000, 6502 und 8080 volksFORTH  
+ 4   User s0                                                       
+ 5   User r0                                                       
+ 6   User dp                                                       
+ 7   User offset            0 offset !                             
+ 8   User base              &10 base !                             
+ 9   User output                                                   
+10   User input                                                    
+11   User errorhandler   \ pointer for Abort" -code                
+12   User aborted        \ code address of latest error            
+13   User voc-link                                                 
+14   User file-link   cr .( Wieso ist UDP Uservariable? )          
+15   User udp            \ points to next free addr in User_area   
+Screen 8 not modified     
+ 0 \ manipulate system pointers                      ks 03 aug 87  
+ 1                                                                 
+ 2   Code sp@ ( -- addr )   D push   S D mov   Next   end-code     
+ 3                                                                 
+ 4   Code sp! ( addr -- )   D S mov   D pop   Next   end-code      
+ 5                                                                 
+ 6                                                                 
+ 7   Code up@ ( -- addr )   D push   U D mov   Next   end-code     
+ 8                                                                 
+ 9   Code up! ( addr -- )   D U mov   D pop    Next   end-code     
+10                                                                 
+11   Code ds@ ( -- addr )   D push   D: D mov   Next   end-code    
+12                                                                 
+13   $10 Constant b/seg    \ bytes per segment                     
+14                                                                 
+15                                                                 
+Screen 9 not modified     
+ 0 \ manipulate returnstack                          ks 27 oct 86  
+ 1                                                                 
+ 2   Code rp@ ( -- addr )   D push   R D mov   Next   end-code     
+ 3                                                                 
+ 4   Code rp! ( addr -- )   D R mov   D pop    Next   end-code     
+ 5                                                                 
+ 6                                                                 
+ 7   Code >r  ( 16b -- )  R dec   R dec   D R ) mov   D pop   Next 
+ 8   end-code restrict                                             
+ 9                                                                 
+10   Code r>  ( -- 16b )  D push   R ) D mov   R inc   R inc   Next
+11   end-code restrict                                             
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 10 not modified     
+ 0 \ r@ rdrop  exit unnest ?exit                     ks 27 oct 86  
+ 1   Code r@ ( -- 16b )   D push   R ) D mov   Next   end-code     
+ 2                                                                 
+ 3   Code rdrop           R inc   R inc   Next   end-code restrict 
+ 4                                                                 
+ 5   Code exit                                                     
+ 6   Label >exit   R ) I mov   R inc   R inc   Next   end-code     
+ 7                                                                 
+ 8   Code unnest   >exit  here 2- !   end-code                     
+ 9                                                                 
+10   Code ?exit  ( flag -- )                                       
+11      D D or   D pop   >exit 0= ?]      [[  Next   end-code      
+12                                                                 
+13   Code 0=exit ( flag -- )                                       
+14      D D or   D pop   >exit 0= not ?]  ]]   end-code            
+15 \ : ?exit ( flag -- )   IF rdrop THEN ;                         
+Screen 11 not modified     
+ 0 \ execute  perform                                ks 27 oct 86  
+ 1                                                                 
+ 2   Code execute ( acf -- )   D W mov   D pop   W ) jmp   end-code
+ 3                                                                 
+ 4   Code perform ( addr -- )  D W mov  D pop   W ) W mov   W ) jmp
+ 5   end-code                                                      
+ 6                                                                 
+ 7 \ : perform   ( addr -- )      @ execute ;                      
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 12 not modified     
+ 0 \ c@ c! ctoggle                                   ks 27 oct 86  
+ 1                                                                 
+ 2   Code c@   ( addr -- 8b )                                      
+ 3      D W mov   W ) D- mov   0 # D+ mov   Next   end-code        
+ 4                                                                 
+ 5   Code c!   ( 16b addr -- )                                     
+ 6      D W mov   A pop   A- W ) mov   D pop   Next   end-code     
+ 7                                                                 
+ 8   Code ctoggle   ( 8b addr -- )                                 
+ 9      D W mov   A pop   A- W ) xor   D pop   Next   end-code     
+10                                                                 
+11 \ : ctoggle   ( 8b addr -- )   under c@ xor swap c! ;           
+12                                                                 
+13   Code flip ( 16b1 -- 16b2 )   D- D+ xchg   Next   end-code     
+14                                                                 
+15                                                                 
+Screen 13 not modified     
+ 0 \ @ ! 2@ 2!                                       ks 27 oct 86  
+ 1                                                                 
+ 2   Code @  ( addr -- 16b )  D W mov   W ) D mov   Next   end-code
+ 3                                                                 
+ 4   Code !  ( 16b addr -- )  D W mov   W ) pop   D pop   Next     
+ 5   end-code                                                      
+ 6                                                                 
+ 7   : 2@   ( addr -- 32b )    dup 2+ @   swap @ ;                 
+ 8                                                                 
+ 9   : 2!   ( 32b addr -- )    under !   2+ ! ;                    
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 14 not modified     
+ 0 \ +! drop swap                                    ks 27 oct 86  
+ 1                                                                 
+ 2   Code +!     ( 16b addr -- )                                   
+ 3      D W mov   A pop   A W ) add   D pop   Next   end-code      
+ 4                                                                 
+ 5 \  : +!       ( n addr -- )   under @ + swap ! ;                
+ 6                                                                 
+ 7                                                                 
+ 8   Code drop   ( 16b -- )   D pop   Next   end-code              
+ 9                                                                 
+10   Code swap   ( 16b1 16b2 -- 16b2 16b1 )                        
+11      A pop   D push   A D xchg   Next   end-code                
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 15 not modified     
+ 0 \ dup  ?dup                                       ks 27 oct 86  
+ 1                                                                 
+ 2   Code dup    ( 16b -- 16b 16b )  D push   Next   end-code      
+ 3                                                                 
+ 4 \ : dup       ( 16b -- 16b 16b )    sp@ @ ;                     
+ 5                                                                 
+ 6   Code ?dup   ( 16b -- 16b 16b / false )                        
+ 7      D D or   0= not ?[  D push  ]?  Next   end-code            
+ 8                                                                 
+ 9 \ : ?dup      ( 16b -- 16b 16b / false)   dup 0=exit dup ;      
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 16 not modified     
+ 0 \ over rot nip under                              ks 27 oct 86  
+ 1                                                                 
+ 2   Code over   ( 16b1 16b2 -- 16b1 16b2 16b1 )                   
+ 3      A D xchg   D pop   D push   A push   Next   end-code       
+ 4 \ : over  >r dup r> swap ;                                      
+ 5                                                                 
+ 6   Code rot    ( 16b1 16b2 16b3 -- 16b2 16b3 16b1 )              
+ 7      A D xchg  C pop   D pop   C push   A push   Next  end-code 
+ 8 \ : rot   >r swap r> swap ;                                     
+ 9                                                                 
+10   Code nip ( 16b1 16b2 -- 16b2 )  S inc  S inc   Next  end-code 
+11 \ : nip   swap drop ;                                           
+12                                                                 
+13   Code under ( 16b1 16b2 -- 16b2 16b1 16b2 )                    
+14      A pop   D push   A push   Next   end-code                  
+15 \ : under swap over ;                                           
+Screen 17 not modified     
+ 0 \ -rot pick                                       ks 27 oct 86  
+ 1                                                                 
+ 2   Code -rot    ( 16b1 16b2 16b3 -- 16b3 16b1 16b2 )             
+ 3      A D xchg   D pop   C pop   A push   C push   Next  end-code
+ 4                                                                 
+ 5 \ : -rot    ( 16b1 16b2 16b3 -- 16b3 16b1 16b2 )   rot rot ;    
+ 6                                                                 
+ 7   Code pick    ( n -- 16b.n )                                   
+ 8      D sal   D W mov   S W add   W ) D mov   Next   end-code    
+ 9                                                                 
+10 \ : pick    ( n -- 16b.n )     1+ 2* sp@ + @ ;                  
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 18 not modified     
+ 0 \ roll -roll                                      ks 27 oct 86  
+ 1                                                                 
+ 2   Code roll  ( n -- )                                           
+ 3      A I xchg   D sal   D C mov   D I mov   S I add             
+ 4      I ) D mov   I W mov   I dec   W inc   std                  
+ 5      rep byte movs   cld   A I xchg   S inc   S inc   Next      
+ 6   end-code                                                      
+ 7 \ : roll   ( n -- )                                             
+ 8 \    dup >r  pick sp@ dup 2+  r> 1+ 2* cmove> drop ;            
+ 9                                                                 
+10   Code -roll ( n -- )   A I xchg   D sal   D C mov              
+11      S W mov   D pop   S I mov   S dec   S dec                  
+12      rep byte movs   D W ) mov   D pop   A I xchg   Next        
+13   end-code                                                      
+14 \ : -roll   ( n -- ) >r dup sp@ dup 2+                          
+15 \    dup 2+ swap r@ 2* cmove r> 1+ 2* + ! ;                     
+Screen 19 not modified     
+ 0 \ 2swap  2drop  2dup 2over                        ks 27 oct 86  
+ 1   Code 2swap ( 32b1 32b2 -- 32b2 32b1 )   C pop   A pop   W pop 
+ 2      C push   D push   W push   A D xchg   Next   end-code      
+ 3 \ : 2swap ( 32b1 32b2 -- 32b2 32b1 ) rot >r rot r> ;            
+ 4                                                                 
+ 5   Code 2drop ( 32b -- )  S inc   S inc   D pop   Next  end-code 
+ 6 \ : 2drop ( 32b -- ) drop drop ;                                
+ 7                                                                 
+ 8   Code 2dup ( 32b -- 32b 32b )                                  
+ 9      S W mov   D push   W ) push   Next   end-code              
+10 \ : 2dup ( 32b -- 32b 32b ) over over ;                         
+11                                                                 
+12   Code 2over  ( 1 2 x x -- 1 2 x x 1 2 )                        
+13      D push   S W mov   6 W D) push   4 W D) D mov   Next       
+14   end-code                                                      
+15 \ : 2over     ( 1 2 x x -- 1 2 x x 1 2 )  3 pick  3 pick ;      
+Screen 20 not modified     
+ 0 \ and or xor not                                  ks 27 oct 86  
+ 1                                                                 
+ 2   Code not   ( 16b1 -- 16b2 )  D com   Next   end-code          
+ 3                                                                 
+ 4   Code and   ( 16b1 16b2 -- 16b3 )                              
+ 5      A pop   A D and   Next   end-code                          
+ 6                                                                 
+ 7   Code or    ( 16b1 16b2 -- 16b3 )                              
+ 8      A pop   A D or   Next   end-code                           
+ 9 \ : or       ( 16b1 16b2 -- 16b3 )   not swap not and not ;     
+10                                                                 
+11   Code xor   ( 16b1 16b2 -- 16b3 )                              
+12      A pop   A D xor   Next   end-code                          
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 21 not modified     
+ 0 \ + -  negate                                     ks 27 oct 86  
+ 1                                                                 
+ 2   Code +   ( n1 n2 -- n3 )   A pop   A D add   Next   end-code  
+ 3                                                                 
+ 4   Code negate  ( n1 -- n2 )    D neg   Next  end-code           
+ 5 \ : negate     ( n1 -- n2 )    not 1+ ;                         
+ 6                                                                 
+ 7   Code -    ( n1 n2 -- n3 )                                     
+ 8      A pop   D A sub   A D xchg   Next    end-code              
+ 9 \ : -    ( n1 n2 -- n3 )   negate + ;                           
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 22 not modified     
+ 0 \ dnegate d+                                      ks 27 oct 86  
+ 1                                                                 
+ 2   Code dnegate ( d1 -- -d1 )     D com   A pop   A neg          
+ 3      CS not ?[  D inc  ]?   A push   Next   end-code            
+ 4                                                                 
+ 5   Code d+      ( d1 d2 -- d3 )   A pop   C pop   W pop          
+ 6      W A add   A push   C D adc   Next   end-code               
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 23 not modified     
+ 0 \ 1+ 2+ 3+ 4+ 6+    1- 2- 4-                      ks 27 oct 86  
+ 1                                                                 
+ 2   Code 1+ ( n1 -- n2 )    [[   D inc   Next                     
+ 3   Code 2+ ( n1 -- n2 )    [[   D inc   swap ]]                  
+ 4   Code 3+ ( n1 -- n2 )    [[   D inc   swap ]]                  
+ 5   Code 4+ ( n1 -- n2 )    [[   D inc   swap ]]                  
+ 6 | Code 6+ ( n1 -- n2 )    D inc   D inc   ]]   end-code         
+ 7                                                                 
+ 8   Code 1- ( n1 -- n2 )    [[   D dec   Next                     
+ 9   Code 2- ( n1 -- n2 )    [[   D dec   swap ]]                  
+10   Code 4- ( n1 -- n2 )    D dec   D dec   ]]   end-code         
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 24 not modified     
+ 0 \ number Constants                                ks 30 jan 88  
+ 1 -1 Constant true      0 Constant false                          
+ 2                                                                 
+ 3       0 ( --  0 )   Constant   0                                
+ 4       1 ( --  1 )   Constant   1                                
+ 5       2 ( --  2 )   Constant   2                                
+ 6       3 ( --  3 )   Constant   3                                
+ 7       4 ( --  4 )   Constant   4                                
+ 8      -1 ( -- -1 )   Constant  -1                                
+ 9                                                                 
+10   Code on  ( addr -- )   -1 # A mov                             
+11 [[   D W mov   A W ) mov   D pop   Next                         
+12   Code off ( addr -- )    0 # A mov   ]]   end-code             
+13                                                                 
+14 \ : on   ( addr -- )   true  swap ! ;                           
+15 \ : off  ( addr -- )   false swap ! ;                           
+Screen 25 not modified     
+ 0 \ words for number literals                       ks 27 oct 86  
+ 1                                                                 
+ 2   Code lit    ( -- 16b )   D push   I ) D mov   I inc           
+ 3 [[   I inc   Next   end-code restrict                           
+ 4                                                                 
+ 5   Code clit   ( -- 8b )                                         
+ 6      D push   I ) D- mov   0 # D+ mov   ]]   end-code restrict  
+ 7                                                                 
+ 8   : Literal  ( 16b -- )                                         
+ 9      dup $FF00 and   IF  compile lit , exit  THEN               
+10      compile clit c, ; immediate restrict                       
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 26 not modified     
+ 0 \ comparision code words                          ks 27 oct 86  
+ 1                                                                 
+ 2   Code 0=    ( 16b -- flag )                                    
+ 3      D D or   0 # D mov   0= ?[  D dec  ]?  Next   end-code     
+ 4                                                                 
+ 5   Code 0<>  ( n -- flag )                                       
+ 6      D D or   0 # D mov   0= not ?[  D dec  ]?  Next   end-code 
+ 7 \ : 0<> ( n -- flag )        0= not ;                           
+ 8                                                                 
+ 9   Code u<    ( u1 u2 -- flag )   A pop                          
+10 [[   D A sub   0 # D mov  CS ?[  D dec  ]?  Next   end-code     
+11                                                                 
+12   Code u>    ( u1 u2 -- flag )   A D xchg   D pop  ]]  end-code 
+13 \ : u>  ( u1 u2 -- flag )    swap u< ;                          
+14                                                                 
+15                                                                 
+Screen 27 not modified     
+ 0 \  comparision words                              ks 13 sep 88  
+ 1   Code <     ( n1 n2 -- flag )   A pop                          
+ 2 [[ [[   D A sub   0 # D mov   < ?[  D dec  ]?  Next   end-code  
+ 3                                                                 
+ 4   Code >    ( n1 n2 -- flag )   A D xchg   D pop  ]]  end-code  
+ 5                                                                 
+ 6   Code 0>   ( n -- flag )       A A xor           ]]  end-code  
+ 7                                                                 
+ 8 \ : <   ( n1 n2 -- flag )                                       
+ 9 \    2dup xor 0< IF  drop 0< exit  THEN  - 0< ;                 
+10 \ : >   ( n1 n2 -- flag )    swap < ;                           
+11 \ : 0>  ( n -- flag )        negate 0< ;                        
+12                                                                 
+13   Code 0<   ( n1 n2 -- flag )                                   
+14      D D or   0 # D mov   0< ?[  D dec  ]?   Next   end-code    
+15 \ : 0<  ( n1 -- flag )       8000 and 0<> ;                     
+Screen 28 not modified     
+ 0 \ comparision words                               ks 27 oct 86  
+ 1                                                                 
+ 2   Code =    ( n1 n2 -- flag )   A pop   A D cmp                 
+ 3      0 # D mov  0= ?[  D dec  ]?   Next   end-code              
+ 4 \ : =   ( n1 n2 -- flag )    - 0= ;                             
+ 5                                                                 
+ 6   Code uwithin  ( u1 [low high[  -- flag )   A pop   C pop      
+ 7      A C cmp  CS ?[ [[ swap   0 # D mov   Next  ]?              
+ 8            D C cmp  CS ?]  -1 # D mov   Next   end-code         
+ 9 \ : uwithin  ( u1 [low up[  -- f )   over - -rot   - u> ;       
+10                                                                 
+11   Code case?  ( 16b1 16b2 -- 16b1 ff / tf )  A pop   A D sub    
+12      0= ?[  D dec  ][  A push   D D xor  ]?  Next   end-code    
+13 \ : case? ( 16b1 16b2 -- 16b1 false / true )                    
+14 \    over = dup 0=exit  nip ;                                   
+15                                                                 
+Screen 29 not modified     
+ 0 \ double number comparisons                       ks 27 oct 86  
+ 1                                                                 
+ 2   Code d0=  ( d - f)      A pop   A D or                        
+ 3      0= not ?[  1 # D mov  ]?  D dec   Next   end-code          
+ 4 \ : d0= ( d -- flag )        or 0= ;                            
+ 5                                                                 
+ 6   : d=  ( d1 d2 -- flag )    dnegate d+ d0= ;                   
+ 7                                                                 
+ 8 Code d<    ( d1 d2 -- flag )    C pop   A pop                   
+ 9    D A sub   A pop   -1 # D mov  < ?[  [[ swap   Next  ]?       
+10    0= ?[  C A sub  CS ?[  D dec  ]? ]?  D inc   ]]   end-code   
+11 \ : d<  ( d1 d2 -- flag )                                       
+12 \    rot 2dup -  IF  > nip nip exit  THEN  2drop u< ;           
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 30 not modified     
+ 0 \ min max umax umin abs dabs extend               ks 27 oct 86  
+ 1   Code min  ( n1 n2 -- n3 )  A pop   A D sub  < ?[  D A add  ]? 
+ 2                        [[ [[ [[   A D xchg   Next   end-code    
+ 3   Code max  ( n1 n2 -- n3 )                                     
+ 4      A pop   A D sub  dup < not ?]  D A add    ]]   end-code    
+ 5   Code umin ( u1 u2 -- u3 )                                     
+ 6      A pop   A D sub  dup CS ?]  D A add       ]]   end-code    
+ 7   Code umax ( u1 u2 -- u3 )                                     
+ 8      A pop   A D sub  dup CS not ?]  D A add   ]]   end-code    
+ 9                                                                 
+10   Code extend ( n -- d )                                        
+11      A D xchg   cwd   A push   Next   end-code                  
+12                                                                 
+13   Code abs ( n -- u )   D D or  0< ?[  D neg  ]?  Next  end-code
+14                                                                 
+15   : dabs  ( d -- ud )      extend 0=exit  dnegate ;             
+Screen 31 not modified     
+ 0 \\ min max umax umin extend                               10Mar8
+ 1                                                                 
+ 2 | : minimax  ( n1 n2 flag -- n3 )   rdrop IF swap THEN drop ;   
+ 3                                                                 
+ 4 : min  ( n1 n2 -- n3 )              2dup  > minimax ;           
+ 5 : max  ( n1 n2 -- n3 )              2dup  < minimax ;           
+ 6 : umax  ( u1 u2 -- u3 )             2dup u< minimax ;           
+ 7 : umin  ( u1 u2 -- u3 )             2dup u> minimax ;           
+ 8 : extend   ( n -- d )               dup 0< ;                    
+ 9 : dabs  ( d -- ud )                 extend IF dnegate THEN ;    
+10 : abs   ( n -- u)                   extend IF  negate THEN ;    
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 32 not modified     
+ 0 \ (do (?do endloop  bounds                        ks 30 jan 88  
+ 1                                                                 
+ 2   Code (do  ( limit start -- )   A pop                          
+ 3 [[   $80 # A+ xor   R dec   R dec   I inc   I inc               
+ 4      I R ) mov   R dec   R dec   A R ) mov   R dec   R dec      
+ 5      A D sub   D R ) mov   D pop   Next  end-code  restrict     
+ 6                                                                 
+ 7   Code (?do ( limit start -- )   A pop   A D cmp  0= ?]         
+ 8      I ) I add   D pop   Next   end-code  restrict              
+ 9                                                                 
+10   Code endloop    6 # R add   Next   end-code restrict          
+11                                                                 
+12   Code bounds  ( start count -- limit start )                   
+13      A pop   A D xchg   D A add   A push   Next   end-code      
+14 \ : bounds ( start count -- limit start )     over + swap ;     
+15                                                                 
+Screen 33 not modified     
+ 0 \ (loop  (+loop                                   ks 27 oct 86  
+ 1                                                                 
+ 2   Code (loop   R ) word inc                                     
+ 3 [[   OS not ?[  4 R D) I mov  ]?  Next   end-code restrict      
+ 4                                                                 
+ 5   Code (+loop   D R ) add   D pop  ]]  end-code restrict        
+ 6                                                                 
+ 7 \\                                                              
+ 8                                                                 
+ 9 | : dodo              rdrop r> 2+ dup >r rot >r swap >r >r ;    
+10 \ dodo puts "index | limit | adr.of.DO" on return-stack         
+11                                                                 
+12   : (do  ( limit start -- )  over - dodo ;  restrict            
+13   : (?do ( limit start -- )  over - ?dup IF dodo THEN           
+14                            r> dup  @ +  >r drop ; restrict      
+15                                                                 
+Screen 34 not modified     
+ 0 \ loop indices                                    ks 27 oct 86  
+ 1                                                                 
+ 2   Code I  ( -- n )  D push   R ) D mov   2 R D) D add   Next    
+ 3   end-code                                                      
+ 4 \ : I     ( -- n )  r>  r> dup r@ + -rot  >r >r ;               
+ 5                                                                 
+ 6   Code J  ( -- n )  D push   6 R D) D mov   8 R D) D add   Next 
+ 7   end-code                                                      
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 35 not modified     
+ 0 \ branch ?branch                                  ks 27 oct 86  
+ 1                                                                 
+ 2   Code branch                                                   
+ 3 [[   I ) I add   Next   end-code restrict                       
+ 4 \ : branch r> dup @ + >r ;                                      
+ 5                                                                 
+ 6   Code ?branch  D D or  D pop   0= not ?]                       
+ 7      I inc   I inc   Next   end-code restrict                   
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 36 not modified     
+ 0 \ resolve loops and branches                      ks 02 okt 87  
+ 1                                                                 
+ 2   : >mark     ( -- addr )          here 0 , ;                   
+ 3                                                                 
+ 4   : >resolve  ( addr -- )          here over - swap ! ;         
+ 5                                                                 
+ 6   : <mark     ( -- addr )          here ;                       
+ 7                                                                 
+ 8   : <resolve  ( addr -- )          here - , ;                   
+ 9                                                                 
+10   : ?pairs    ( n1 n2 -- )         - Abort" unstructured" ;     
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 37 not modified     
+ 0 \ Branching                                       ks 17 jul 87  
+ 1                                                                 
+ 2   : IF     compile ?branch >mark  1 ; immediate restrict        
+ 3   : THEN   abs 1 ?pairs  >resolve ;   immediate restrict        
+ 4   : ELSE   1 ?pairs  compile branch >mark                       
+ 5            swap >resolve  -1 ;        immediate restrict        
+ 6                                                                 
+ 7   : BEGIN   <mark 2 ;                 immediate restrict        
+ 8   : WHILE   2 ?pairs  2 compile ?branch                         
+ 9             >mark -2 2swap  ;         immediate restrict        
+10                                                                 
+11 | : (repeat   2 ?pairs  <resolve                                
+12      BEGIN  dup -2 = WHILE  drop >resolve  REPEAT ;             
+13                                                                 
+14   : REPEAT compile branch   (repeat ; immediate restrict        
+15   : UNTIL  compile ?branch  (repeat ; immediate restrict        
+Screen 38 not modified     
+ 0 \ Loops                                           ks 27 oct 86  
+ 1                                                                 
+ 2   : DO       compile (do  >mark  3 ; immediate restrict         
+ 3   : ?DO      compile (?do >mark  3 ; immediate restrict         
+ 4   : LOOP     3 ?pairs  compile (loop                            
+ 5              compile endloop  >resolve ;  immediate restrict    
+ 6   : +LOOP    3 ?pairs  compile (+loop                           
+ 7              compile endloop  >resolve ;  immediate restrict    
+ 8                                                                 
+ 9   Code LEAVE    6 # R add   -2 R D) I mov                       
+10      I dec   I dec   I ) I add   Next   end-code restrict       
+11                                                                 
+12 \ : LEAVE     endloop r> 2- dup @ + >r ;         restrict       
+13 \ Returnstack: | calladr | index | limit | adr of DO |          
+14                                                                 
+15                                                                 
+Screen 39 not modified     
+ 0 \ um*  m*  *                                      ks 29 jul 87  
+ 1                                                                 
+ 2   Code um* ( u1 u2 -- ud3 )                                     
+ 3      A D xchg   C pop   C mul   A push   Next   end-code        
+ 4                                                                 
+ 5   Code m*  ( n1 n2 -- d3 )                                      
+ 6      A D xchg   C pop   C imul   A push   Next   end-code       
+ 7 \ : m*  ( n1 n2 -- d )  dup 0< dup >r IF  negate  THEN  swap    
+ 8 \    dup 0< IF negate r> not >r THEN  um* r> 0=exit  dnegate ;  
+ 9                                                                 
+10   : *      ( n1 n2 - prod )   um* drop ;                        
+11                                                                 
+12   Code 2*  ( u -- 2*u )   D shl   Next   end-code               
+13 \ : 2*     ( u -- 2*u )   dup + ;                               
+14                                                                 
+15                                                                 
+Screen 40 not modified     
+ 0 \ um/mod  m/mod                                   ks 27 oct 86  
+ 1                                                                 
+ 2   Code um/mod  ( ud1 u2 -- urem uquot )                         
+ 3      D C mov   D pop   A pop   C div   A D xchg   A push   Next 
+ 4   end-code                                                      
+ 5                                                                 
+ 6   Code m/mod  ( d1 n2 -- rem quot )   D C mov   D pop           
+ 7 Label divide    D+ A+ mov   C+ A+ xor   A pop  0< not           
+ 8      ?[  C idiv  [[ swap   A D xchg   A push   Next  ]?         
+ 9      C idiv   D D or   dup 0= not ?]  A dec   C D add  ]]       
+10   end-code                                                      
+11                                                                 
+12 \ : m/mod ( d n -- mod quot )   dup >r                          
+13 \    abs over 0< IF  under + swap  THEN   um/mod   r@ 0<        
+14 \    IF  negate over IF  swap r@ + swap 1-  THEN THEN  rdrop ;  
+15                                                                 
+Screen 41 not modified     
+ 0 \ /mod division trap  2/                          ks 13 sep 88  
+ 1                                                                 
+ 2   Code /mod  ( n1 n2 -- rem quot )                              
+ 3      D C mov   A pop   cwd   A push   divide ]]  end-code       
+ 4 \ : /mod   ( n1 n2 -- rem quot )      over 0< swap m/mod ;      
+ 5                                                                 
+ 6   0 >label >divINT                                              
+ 7                                                                 
+ 8   Label divovl Assembler                                        
+ 9      4 # S add   popf   1 # D- mov  ;c: Abort" / overflow" ;    
+10                                                                 
+11   Code 2/  ( n1 -- n/2 )   D sar   Next   end-code              
+12 \ : 2/  ( n -- n/2 )   2 / ;                                    
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 42 not modified     
+ 0 \ / mod */mod */ u/mod  ud/mod                    ks 27 oct 86  
+ 1                                                                 
+ 2   : /      ( n1 n2 --     quot )      /mod nip ;                
+ 3                                                                 
+ 4   : mod    ( n1 n2 -- rem )           /mod drop ;               
+ 5                                                                 
+ 6   : */mod  ( n1 n2 n3 -- rem quot )   >r m* r> m/mod ;          
+ 7                                                                 
+ 8   : */     ( n1 n2 n3 -- quot )       */mod nip ;               
+ 9                                                                 
+10   : u/mod  ( u1 u2 -- urem uquot )    0 swap um/mod ;           
+11                                                                 
+12   : ud/mod ( ud1 u2 -- urem udquot )                            
+13      >r   0 r@ um/mod   r> swap >r   um/mod r> ;                
+14                                                                 
+15                                                                 
+Screen 43 not modified     
+ 0 \ cmove cmove> move                               ks 27 oct 86  
+ 1                                                                 
+ 2   Code cmove  ( from to quan -- )   A I xchg   D C mov          
+ 3      W pop   I pop   D pop   rep byte movs   A I xchg   Next    
+ 4   end-code                                                      
+ 5                                                                 
+ 6   Code cmove>  ( from to quan -- )                              
+ 7      A I xchg  D C mov  W pop  I pop   D pop                    
+ 8 Label moveup   C dec   C W add   C I add   C inc                
+ 9      std   rep byte movs   A I xchg   cld   Next   end-code     
+10                                                                 
+11   Code move  ( from to quan -- )                                
+12      A I xchg   D C mov   W pop   I pop   D pop                 
+13 Label domove   I W cmp   moveup CS ?]                           
+14      rep byte movs   A I xchg   Next   end-code                 
+15                                                                 
+Screen 44 not modified     
+ 0 \ place count                                     ks 27 oct 86  
+ 1                                                                 
+ 2 | Code (place ( addr len to - len to)   A I xchg   D W mov      
+ 3      C pop   I pop   C push   W inc   domove ]]  end-code       
+ 4                                                                 
+ 5   : place  ( addr len to -)   (place c! ;                       
+ 6                                                                 
+ 7   Code count ( addr -- addr+1 len )   D W mov                   
+ 8      W ) D- mov   0 # D+ mov   W inc   W push   Next   end-code 
+ 9                                                                 
+10 \ : move   ( from to quan -- )                                  
+11 \    >r  2dup u< IF  r> cmove> exit  THEN  r> cmove ;           
+12 \ : place  ( addr len to -- ) over >r  rot over 1+  r> move c! ;
+13 \ : count ( adr -- adr+1 len ) dup 1+ swap c@ ;                 
+14                                                                 
+15                                                                 
+Screen 45 not modified     
+ 0 \       fill erase                                ks 27 oct 86  
+ 1                                                                 
+ 2   Code fill ( addr quan 8b -- )                                 
+ 3      D A xchg   C pop   W pop   D pop   rep byte stos   Next    
+ 4   end-code                                                      
+ 5                                                                 
+ 6 \ : fill ( addr quan 8b -- )   swap ?dup                        
+ 7 \    IF >r over c! dup 1+ r> 1- cmove exit THEN 2drop ;         
+ 8                                                                 
+ 9   : erase   ( addr quan --)            0 fill ;                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 46 not modified     
+ 0 \ here allot , c, pad compile                     ks 27 oct 86  
+ 1                                                                 
+ 2   Code here ( -- addr )   D push   u' dp U D) D mov   Next      
+ 3   end-code                                                      
+ 4 \ : here    ( -- addr ) dp @ ;                                  
+ 5                                                                 
+ 6   Code allot   ( n -- )   D  u' dp U D) add   D pop   Next      
+ 7   end-code                                                      
+ 8 \ : allot  ( n -- )    dp +! ;                                  
+ 9                                                                 
+10   : ,      ( 16b -- )  here  ! 2 allot ;                        
+11   : c,     ( 8b -- )   here c! 1 allot ;                        
+12   : pad    ( -- addr ) here $42 + ;                             
+13   : compile            r> dup 2+ >r @ , ; restrict              
+14                                                                 
+15                                                                 
+Screen 47 not modified     
+ 0 \ input strings                                   ks 23 dez 87  
+ 1                                                                 
+ 2   Variable #tib     #tib off                                    
+ 3   Variable >tib     here >tib ! $50 allot                       
+ 4   Variable >in      >in off                                     
+ 5   Variable blk      blk off                                     
+ 6   Variable span     span off                                    
+ 7                                                                 
+ 8   : tib ( -- addr )  >tib @ ;                                   
+ 9                                                                 
+10   : query     tib $50 expect span @ #tib !  >in off ;           
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 48 not modified     
+ 0 \ skip scan /string                               ks 22 dez 87  
+ 1                                                                 
+ 2   Code skip  ( addr len char -- addr1 len1 )                    
+ 3      A D xchg   C pop   C0= not                                 
+ 4      ?[  W pop   0=rep byte scas   0= not ?[  W dec   C inc  ]? 
+ 5          W push  ]?  C D mov   Next   end-code                  
+ 6                                                                 
+ 7   Code scan  ( addr0 len0 char -- addr1 len1 )                  
+ 8      A D xchg   C pop  C0= not                                  
+ 9      ?[  W pop  0<>rep byte scas   0= ?[  W dec   C inc  ]?     
+10          W push  ]?   C D mov   Next   end-code                 
+11                                                                 
+12   Code /string  ( addr0 len0 +n -- addr1 len1 )                 
+13      A pop   C pop   D A sub  CS ?[  A D add   A A xor  ]?      
+14      C D add   D push   A D xchg   Next   end-code              
+15                                                                 
+Screen 49 not modified     
+ 0 \\ scan skip /string                              ks 29 jul 87  
+ 1                                                                 
+ 2   : skip ( addr0 len0 char -- addr1 len1 )   >r                 
+ 3      BEGIN  dup                                                 
+ 4      WHILE  over c@ r@ = WHILE  1- swap 1+ swap                 
+ 5      REPEAT  rdrop ;                                            
+ 6                                                                 
+ 7   : scan ( addr0 len0 char -- addr1 len1 )   >r                 
+ 8      BEGIN  dup                                                 
+ 9      WHILE  over c@ r@ - WHILE  1- swap 1+ swap                 
+10      REPEAT  rdrop ;                                            
+11                                                                 
+12   : /string ( addr0 len0 +n -- addr1 len1 )                     
+13      over umin rot over + -rot - ;                              
+14                                                                 
+15                                                                 
+Screen 50 not modified     
+ 0 \ capital                                         ks 19 dez 87  
+ 1                                                                 
+ 2   Create (capital  Assembler   $61 # A- cmp  CS not             
+ 3      ?[  $7B # A- cmp  CS not                                   
+ 4          ?[  $84 # A- cmp  0= ?[  $8E # A- mov  ret  ]?  \ Ñ    
+ 5              $94 # A- cmp  0= ?[  $99 # A- mov  ret  ]?  \ î    
+ 6              $81 # A- cmp  0= ?[  $9A # A- mov  ]?  ret  \ Å    
+ 7          ]?  $20 # A- xor                                       
+ 8      ]?  ret   end-code                                         
+ 9                                                                 
+10   Code capital ( char -- char' )                                
+11      A D xchg   (capital # call   A D xchg   Next               
+12   end-code                                                      
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 51 not modified     
+ 0 \ upper                                           ks 03 aug 87  
+ 1                                                                 
+ 2   Code upper   ( addr len -- )                                  
+ 3      D C mov   W pop   D pop   C0= not                          
+ 4      ?[  [[  W ) A- mov   (capital # call                       
+ 5              A- W ) mov  W inc  C0= ?]  ]?   Next               
+ 6   end-code                                                      
+ 7                                                                 
+ 8 \\ high level, ohne Umlaute                                     
+ 9                                                                 
+10   : capital ( char -- char')                                    
+11      dup  Ascii a   [ Ascii z 1+ ] Literal                      
+12      uwithin not ?exit   [ Ascii a Ascii A - ] Literal - ;      
+13                                                                 
+14   : upper  ( addr len -- )                                      
+15      bounds ?DO  I c@ capital I c!  LOOP ;                      
+Screen 52 not modified     
+ 0 \ (word                                           ks 28 mai 87  
+ 1                                                                 
+ 2 | Code (word  ( char addr0 len0 -- addr1 )   D C mov   W pop    
+ 3      A pop   >in #) D mov   D C sub  >= not                     
+ 4      ?[  C push   D W add   0=rep byte scas   W D mov  0= not   
+ 5          ?[  W dec   D dec   C inc                              
+ 6              0<>rep byte scas   0= ?[  W dec  ]?                
+ 7          ]?  A pop   C A sub   A >in #) add                     
+ 8          W C mov   D C sub  0= not                              
+ 9          ?[  D I xchg   u' dp U D) W mov   C- W ) mov           
+10              W inc   rep byte movs   $20 # W ) byte mov         
+11              D I mov   u' dp U D) D mov   Next                  
+12 swap ]?  C >in #) add                                           
+13          ]?  u' dp U D) W mov   $2000 # W ) mov   W D mov   Next
+14   end-code                                                      
+15                                                                 
+Screen 53 not modified     
+ 0 \\  (word                                          ks 27 oct 86 
+ 1                                                                 
+ 2 | : (word  ( char adr0 len0 -- addr )                           
+ 3      rot  >r  over swap   >in @ /string   r@ skip               
+ 4      over swap   r> scan >r   rot over swap - r> 0<> - >in !    
+ 5      over - here  dup >r  place  bl r@ count  + c!  r> ;        
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 54 not modified     
+ 0 \ source word parse name                          ks 03 aug 87  
+ 1                                                                 
+ 2   Variable loadfile     loadfile off                            
+ 3                                                                 
+ 4   : source ( -- addr len )   blk @ ?dup                         
+ 5      IF  loadfile @ (block b/blk  exit  THEN  tib #tib @ exit ; 
+ 6                                                                 
+ 7   : word ( char -- addr )   source (word ;                      
+ 8                                                                 
+ 9   : parse ( char -- addr len )   >r  source  >in @ /string      
+10      over swap   r> scan >r  over - dup  r> 0<>  -  >in +! ;    
+11                                                                 
+12   : name ( -- string )   bl word dup count upper exit ;         
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 55 not modified     
+ 0 \ state Ascii ," "lit ("  "                       ks 16 sep 88  
+ 1   Variable state   state off                                    
+ 2                                                                 
+ 3   : Ascii  ( char -- n )   bl word  1+ c@                       
+ 4      state @ 0=exit   [compile] Literal ; immediate             
+ 5                                                                 
+ 6   : ,"    Ascii " parse  here over 1+ allot place ;             
+ 7                                                                 
+ 8   Code "lit    ( -- addr )   D push   R ) D mov   D W mov       
+ 9      W ) A- mov   0 # A+ mov   A inc   A R ) add   Next         
+10   end-code restrict                                             
+11 \ : "lit  r> r> under  count + even >r >r ;   restrict          
+12                                                                 
+13   : ("    "lit ; restrict                                       
+14                                                                 
+15   : "     compile (" ," align ; immediate restrict              
+Screen 56 not modified     
+ 0 \ ." ( .( \ \\ hex decimal                        ks 12 dez 88  
+ 1                                                                 
+ 2   : (."      "lit count type ; restrict                         
+ 3   : ."       compile (." ," align ; immediate restrict          
+ 4                                                                 
+ 5   : (        Ascii ) parse 2drop ; immediate                    
+ 6   : .(       Ascii ) parse type ; immediate                     
+ 7                                                                 
+ 8   : \        >in @ negate   c/l mod   >in +! ; immediate        
+ 9   : \\       b/blk >in ! ; immediate                            
+10   : have   ( <name> -- f )  name find nip   0<> ; immediate     
+11   : \needs   have 0=exit  [compile] \  ;                        
+12                                                                 
+13   : hex      $10 base ! ;                                       
+14   : decimal  &10 base ! ;                                       
+15                                                                 
+Screen 57 not modified     
+ 0 \ number conversion: digit? accumulate convert    ks 08 okt 87  
+ 1                                                                 
+ 2   : digit? ( char -- digit true/ false )  dup  Ascii 9 >        
+ 3      IF  [ Ascii A Ascii 9 - 1- ] Literal -  dup Ascii 9 >  and 
+ 4      THEN  Ascii 0 -   dup base @ u<  dup ?exit  nip ;          
+ 5                                                                 
+ 6   : accumulate ( +d0 adr digit -- +d1 adr )   swap >r           
+ 7      swap  base @ um* drop   rot  base @ um*  d+   r> ;         
+ 8                                                                 
+ 9   : convert ( +d1 addr0 -- +d2 addr2 )                          
+10      1+  BEGIN  count digit? WHILE  accumulate  REPEAT 1- ;     
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 58 not modified     
+ 0 \ number conversion                               ks 29 jun 87  
+ 1 | : end?       ( -- flag )               >in @ 0= ;             
+ 2                                                                 
+ 3 | : char       ( addr0 -- addr1 char )   count -1 >in +! ;      
+ 4                                                                 
+ 5 | : previous   ( addr0 -- addr0 char )   1- count ;             
+ 6                                                                 
+ 7 | : punctuation?   ( char -- flag )                             
+ 8      Ascii , over =   swap Ascii . =  or ;                      
+ 9 \ : punctuation?  ( char -- f )   ?" .," ;                      
+10                                                                 
+11 | : fixbase?   ( char -- char false / newbase true )  capital   
+12      Ascii $ case? IF $10 true exit  THEN                       
+13      Ascii H case? IF $10 true exit  THEN                       
+14      Ascii & case? IF &10 true exit  THEN                       
+15      Ascii % case? IF   2 true exit  THEN     false ;           
+Screen 59 not modified     
+ 0 \ number conversion: dpl ?num ?nonum ?dpl         ks 27 oct 86  
+ 1                                                                 
+ 2   Variable dpl      -1 dpl !                                    
+ 3                                                                 
+ 4 | : ?num      ( flag -- exit if true )  0=exit                  
+ 5      rdrop drop r> IF  dnegate  THEN   rot drop                 
+ 6      dpl @ 1+ ?dup ?exit  drop true ;                           
+ 7                                                                 
+ 8 | : ?nonum     ( flag -- exit if true ) 0=exit                  
+ 9      rdrop 2drop drop rdrop false ;                             
+10                                                                 
+11 | : ?dpl     dpl @  -1 =  ?exit  1 dpl +! ;                     
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 60 not modified     
+ 0 \ number conversion: number?  number              ks 27 oct 86  
+ 1                                                                 
+ 2   : number?   ( string -- string false / n 0< / d 0> )          
+ 3      base push  >in push  dup count >in !  dpl on               
+ 4      0 >r ( +sign)   0.0   rot end? ?nonum char                 
+ 5      Ascii - case?  IF  rdrop true >r end? ?nonum char  THEN    
+ 6      fixbase?       IF  base !        end? ?nonum char  THEN    
+ 7      BEGIN digit? 0= ?nonum                                     
+ 8            BEGIN  accumulate ?dpl end? ?num char digit?         
+ 9         0= UNTIL  previous  punctuation?  0= ?nonum             
+10            dpl off  end? ?num  char                             
+11      REPEAT ;                                                   
+12                                                                 
+13   : number ( string -- d )                                      
+14      number? ?dup 0= Abort" ?"  0> ?exit  extend ;              
+15                                                                 
+Screen 61 not modified     
+ 0 \ hide reveal immediate restrict                  ks 18 mÑr 88  
+ 1   Variable last     last off                                    
+ 2                                                                 
+ 3   : last'   ( -- cfa )                last @ name> ;            
+ 4                                                                 
+ 5 | : last?   ( -- false / nfa true)    last @ ?dup ;             
+ 6   : hide          last? 0=exit  2- @ current @ ! ;              
+ 7   : reveal        last? 0=exit  2-   current @ ! ;              
+ 8                                                                 
+ 9   : Recursive     reveal ; immediate restrict                   
+10                                                                 
+11 | : flag!    ( 8b --)                                           
+12      last?  IF  under c@ or over c!  THEN   drop  ;             
+13                                                                 
+14   : immediate     $40 flag! ;                                   
+15   : restrict      $80 flag! ;                                   
+Screen 62 not modified     
+ 0 \ clearstack hallot heap heap?                    ks 27 oct 86  
+ 1                                                                 
+ 2   Code clearstack   u' s0 U D) S mov   D pop   Next   end-code  
+ 3                                                                 
+ 4   : hallot  ( quan -- )                                         
+ 5      s0 @  over -  swap    sp@ 2+  dup rot -   dup s0 !         
+ 6      2 pick  over -    di  move  clearstack  ei   s0 ! ;        
+ 7                                                                 
+ 8   : heap    ( -- addr )        s0 @ 6 + ;                       
+ 9   : heap?   ( addr -- flag )   heap up@ uwithin ;               
+10                                                                 
+11 | : heapmove   ( from -- from )                                 
+12      dup  here over -  dup hallot                               
+13      heap swap cmove   heap over - last +!  reveal ;            
+14                                                                 
+15                                                                 
+Screen 63 not modified     
+ 0 \ Does>  ;                                        ks 18 mÑr 88  
+ 1                                                                 
+ 2 | Create dodo   Assembler                                       
+ 3      R dec   R dec   I R ) mov      \ push IP                   
+ 4      D push   2 W D) D lea          \ load parameter address    
+ 5      W ) I mov   3 # I add   Next   end-code                    
+ 6                                                                 
+ 7   dodo Host tdodo ! Target       \ target compiler needs to know
+ 8                                                                 
+ 9   : (;code          r> last' ! ;                                
+10                                                                 
+11   : Does>     compile (;code   $E9 c,  ( jmp instruction)       
+12      dodo here 2+ - , ; immediate restrict                      
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 64 not modified     
+ 0 \ ?head  |  alignments                            ks 19 mÑr 88  
+ 1   Variable ?head     ?head off                                  
+ 2                                                                 
+ 3   : |                ?head @  ?exit  ?head on ;                 
+ 4                                                                 
+ 5   : even   ( addr -- addr1 ) ; immediate                        
+ 6   : align  ( -- )            ; immediate                        
+ 7   : halign ( -- )            ; immediate                        
+ 8 \ machen nichts beim 8088. 8086 koennte etwas schneller werden  
+ 9                                                                 
+10   Variable warning    warning on                                
+11                                                                 
+12 | : ?exists   warning @  0=exit                                 
+13      last @ current @ (find nip 0=exit                          
+14      space last @ .name ." exists " ?cr ;                       
+15                                                                 
+Screen 65 not modified     
+ 0 \ Create Variable                                 ks 19 mÑr 88  
+ 1                                                                 
+ 2   Defer makeview         ' 0 Is makeview                        
+ 3                                                                 
+ 4   : Create    align  here  makeview ,  current @ @ ,            
+ 5      name c@ dup 1 $20 uwithin  not Abort" invalid name"        
+ 6      here last !  1+ allot  align   ?exists                     
+ 7      ?head @ IF    1 ?head +!   dup ,   \ Pointer to Code       
+ 8                    halign  heapmove   $20 flag!   dup dp !      
+ 9              THEN  drop reveal 0 ,                              
+10   ;Code  ( -- addr )    D push   2 W D) D lea   Next  end-code  
+11                                                                 
+12   : Variable            Create 0 , ;                            
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 66 not modified     
+ 0 \ nfa?                                            ks 28 mai 87  
+ 1                                                                 
+ 2   Code nfa?   ( thread cfa -- nfa / false )                     
+ 3      W pop   R A mov   $1F # C mov                              
+ 4      [[  W ) W mov   W W or  0= not                             
+ 5      ?[[  2 W D) R- mov   C R and   3 R W DI) R lea             
+ 6           $20 # 2 W D) test  0= not ?[  R ) R mov  ]?           
+ 7           D R cmp  0= ?]  2 W D) W lea                          
+ 8      ]?  W D mov   A R mov   Next   end-code                    
+ 9                                                                 
+10 \\                                                              
+11                                                                 
+12   : nfa?    ( thread cfa -- nfa / false )   >r                  
+13      BEGIN  @ dup 0= IF  rdrop exit  THEN                       
+14             dup 2+ name> r@ = UNTIL  2+ rdrop ;                 
+15                                                                 
+Screen 67 not modified     
+ 0 \ >name name> >body .name                         ks 13 aug 87  
+ 1                                                                 
+ 2   : >name   ( acf -- anf / ff )     voc-link                    
+ 3      BEGIN  @ dup WHILE  2dup 4 - swap nfa?                     
+ 4             ?dup IF  -rot 2drop exit  THEN  REPEAT nip ;        
+ 5                                                                 
+ 6   : (name>   ( nfa -- cfa )   count  $1F and + even ;           
+ 7                                                                 
+ 8   : name> ( nfa -- cfa )                                        
+ 9      dup (name> swap  c@ $20 and 0=exit  @ ;                    
+10                                                                 
+11   : >body   ( cfa -- pfa )       2+ ;                           
+12   : body>   ( pfa -- cfa )       2- ;                           
+13                                                                 
+14   : .name   ( nfa -- ) ?dup  IF  dup heap?  IF ." | " THEN      
+15      count $1F and type  ELSE ." ???"  THEN space ;             
+Screen 68 not modified     
+ 0 \ : ; Constant Variable                           ks 29 oct 86  
+ 1                                                                 
+ 2   : Create:  Create  hide  current @ context !  0 ] ;           
+ 3                                                                 
+ 4   : :        Create:                                            
+ 5   ;Code   R dec   R dec   I R ) mov   2 W D) I lea   Next       
+ 6   end-code                                                      
+ 7                                                                 
+ 8   : ;        0 ?pairs   compile unnest   [compile] [   reveal ; 
+ 9   immediate restrict                                            
+10                                                                 
+11   : Constant ( n -- )   Create ,                                
+12   ;Code      ( -- n )   D push   2 W D) D mov   Next   end-code 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 69 not modified     
+ 0 \ uallot User Alias Defer                         ks 02 okt 87  
+ 1   : uallot   ( quan -- offset )   even    dup udp @ +           
+ 2      $FF u> Abort" Userarea full"   udp @   swap udp +! ;       
+ 3                                                                 
+ 4   : User    Create 2 uallot c,                                  
+ 5   ;Code   ( -- addr )   D push   2 W D) D- mov                  
+ 6                         0 # D+ mov   U D add   Next   end-code  
+ 7                                                                 
+ 8   : Alias ( cfa -- )                                            
+ 9      Create  last @ dup c@ $20 and                              
+10      IF  -2 allot  ELSE  $20 flag!  THEN  (name> ! ;            
+11                                                                 
+12 | : crash           true Abort" crash" ;                        
+13                                                                 
+14   : Defer     Create ['] crash ,                                
+15   ;Code   2 W D) W mov   W ) jmp   end-code                     
+Screen 70 not modified     
+ 0 \ vp current context also toss                    ks 02 okt 87  
+ 1                                                                 
+ 2   Create vp  $10 allot                                          
+ 3   Variable current                                              
+ 4                                                                 
+ 5   : context   ( -- adr )          vp dup @ + 2+ ;               
+ 6                                                                 
+ 7 | : thru.vocstack ( -- from to )    vp 2+ context ;             
+ 8                                                                 
+ 9 \ "Only Forth also Assembler" gives                             
+10 \ vp:  countword = 6 | Root | Forth | Assembler |               
+11                                                                 
+12   : also          vp @ &10 > Error" Vocabulary stack full"      
+13                   context @  2 vp +!  context ! ;               
+14                                                                 
+15   : toss          vp @ 0=exit   -2 vp +! ;                      
+Screen 71 not modified     
+ 0 \ Vocabulary Forth Only Onlyforth definitions     ks 19 jun 88  
+ 1   : Vocabulary  Create  0 , 0 ,  here  voc-link @ ,  voc-link ! 
+ 2   Does>   context ! ;                                           
+ 3 \  | Name | Code | Thread | Coldthread | Voc-link |             
+ 4                                                                 
+ 5   Vocabulary Forth                                              
+ 6 Host  h' Transient 8 + @  T h' Forth 8 + H !                    
+ 7 Target  Forth also definitions                                  
+ 8                                                                 
+ 9   Vocabulary Root                                               
+10                                                                 
+11   : Only     vp off  Root also ;                                
+12                                                                 
+13   : Onlyforth   Only Forth also definitions ;                   
+14                                                                 
+15   : definitions            context @ current ! ;                
+Screen 72 not modified     
+ 0 \ order vocs words                                ks 19 jun 88  
+ 1 | : init-vocabularys        voc-link @                          
+ 2      BEGIN  dup 2- @ over 4- ! @ ?dup 0= UNTIL ;                
+ 3 | : .voc   ( adr -- )      @ 2- >name .name ;                   
+ 4                                                                 
+ 5   : order    vp 4+  context over umax                           
+ 6      DO  I .voc  -2 +LOOP   2 spaces current .voc ;             
+ 7                                                                 
+ 8   : vocs   voc-link                                             
+ 9      BEGIN  @ ?dup WHILE  dup 6 - >name .name  REPEAT ;         
+10                                                                 
+11   : words  ( -- )   [compile] Ascii capital >r   context @      
+12      BEGIN  @ dup  stop? 0=  and                                
+13      WHILE  ?cr dup 2+  r@ bl = over 1+ c@ r@ = or              
+14        IF  .name space  ELSE  drop  THEN                        
+15      REPEAT drop rdrop ;                                        
+Screen 73 not modified     
+ 0 \ (find  found                                    ks 09 jul 87  
+ 1 | : found ( nfa -- cfa n )   dup c@ >r                          
+ 2      (name> r@ $20 and  IF  @       THEN                        
+ 3          -1 r@ $80 and  IF  1-      THEN                        
+ 4             r> $40 and  IF  negate  THEN ;                      
+ 5                                                                 
+ 6   Code (find   ( string thread -- string ff / anf tf )          
+ 7      D I xchg   W pop   D push   W ) A- mov   W inc             
+ 8      W D mov   0 # C+ mov   $1F # A+ mov   A+ A- and            
+ 9      [[  I ) I mov   I I or  0= not                             
+10     ?[[  2 I D) C- mov   A+ C- and   A- C- cmp   dup 0= ?]      
+11          I push   D W mov   3 # I add                           
+12                             0=rep byte cmps   I pop  0= ?]      
+13          3 # I add   I W mov   -1 # D mov                       
+14      ][  D W mov   0 # D mov  ]?   W dec   I pop   W push   Next
+15   end-code                                                      
+Screen 74 not modified     
+ 0 \\  -text (find                                   ks 02 okt 87  
+ 1                                                                 
+ 2   : -text ( adr1 len adr2 -- 0< 1<2 / 0= 1=2 / 0> 1>2 )         
+ 3      over bounds                                                
+ 4      DO  drop count I c@ - dup IF LEAVE THEN  LOOP nip ;        
+ 5                                                                 
+ 6   : (find    ( string thread -- str false / NFA +n )            
+ 7      over c@ $1F and >r  @                                      
+ 8      BEGIN  dup WHILE  dup @   swap 2+   dup c@ $1F and  r@  =  
+ 9                        IF  dup 1+  r@  4 pick 1+ -text          
+10                            0= IF  rdrop -rot drop exit          
+11                        THEN   THEN  drop                        
+12      REPEAT  rdrop ;                                            
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 75 not modified     
+ 0 \ find  '  [compile]  [']  nullstring?            ks 29 oct 86  
+ 1                                                                 
+ 2   : find    ( string -- acf n / string false )                  
+ 3      context   dup @  over 2- @  = IF  2-  THEN                 
+ 4      BEGIN  under @ (find  IF  nip found exit  THEN             
+ 5             swap 2-   dup vp = UNTIL  drop false ;              
+ 6                                                                 
+ 7   : '    ( -- cfa )      name find ?exit Error" ?" ;            
+ 8                                                                 
+ 9   : [compile]       ' , ;                 immediate restrict    
+10                                                                 
+11   : [']             ' [compile] Literal ; immediate restrict    
+12                                                                 
+13   : nullstring?   ( string -- string false / true )             
+14      dup c@  0= dup 0=exit  nip ;                               
+15                                                                 
+Screen 76 not modified     
+ 0 \ interpreter                                     ks 07 dez 87  
+ 1                                                                 
+ 2   Defer notfound                                                
+ 3                                                                 
+ 4 | : interpreter   ( string -- )   find ?dup                     
+ 5      IF  1 and IF  execute exit  THEN                           
+ 6          Error" compile only"                                   
+ 7      THEN  number? ?exit  notfound ;                            
+ 8                                                                 
+ 9 | : compiler    ( string -- )   find ?dup                       
+10      IF  0> IF  execute exit  THEN   , exit  THEN               
+11      number? ?dup IF  0> IF  swap [compile] Literal  THEN       
+12                          [compile] Literal  exit                
+13                   THEN  notfound ;                              
+14                                                                 
+15                                                                 
+Screen 77 not modified     
+ 0 \ compiler [ ]                                    ks 16 sep 88  
+ 1                                                                 
+ 2   : no.extensions  ( string -- )                                
+ 3      state @ IF  Abort" ?"  THEN  Error" ?" ;                   
+ 4                                                                 
+ 5   ' no.extensions Is notfound                                   
+ 6                                                                 
+ 7   Defer parser   ( string -- )    ' interpreter Is parser       
+ 8                                                                 
+ 9   : interpret                                                   
+10      BEGIN  ?stack name nullstring? IF  aborted off exit  THEN  
+11             parser  REPEAT ;                                    
+12                                                                 
+13   : [      ['] interpreter Is parser  state off ; immediate     
+14                                                                 
+15   : ]      ['] compiler    Is parser  state on ;                
+Screen 78 not modified     
+ 0 \  Is                                             ks 07 dez 87  
+ 1                                                                 
+ 2   : (is      r> dup 2+ >r @ ! ;                                 
+ 3                                                                 
+ 4 | : def?  ( cfa -- )                                            
+ 5      @  [ ' notfound @   ] Literal   - Abort" not deferred" ;   
+ 6                                                                 
+ 7   : Is   ( addr -- )     '  dup def?   >body                    
+ 8      state @ IF  compile (is , exit  THEN  ! ; immediate        
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 79 not modified     
+ 0 \ ?stack                                          ks 01 okt 87  
+ 1                                                                 
+ 2 | : stackfull ( -- )     depth $20 > Abort" tight stack"        
+ 3     reveal last? IF dup heap? IF name> ELSE 4- THEN (forget THEN
+ 4     true Abort" dictionary full" ;                              
+ 5                                                                 
+ 6   Code ?stack    u' dp U D) A mov   S A sub  CS                 
+ 7      ?[ $100 # A add  CS ?[ ;c: stackfull ; Assembler  ]? ]?    
+ 8      u' s0 U D) A mov   A inc   A inc   S A sub                 
+ 9      CS not ?[  Next  ]?  ;c: true Abort" stack empty" ;        
+10                                                                 
+11 \ : ?stack     sp@ here - $100 u< IF  stackfull  THEN           
+12 \              sp@ s0 @ u> Abort" stack empty" ;                
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 80 not modified     
+ 0 \ .status push load                               ks 29 oct 86  
+ 1                                                                 
+ 2 | Create: pull  r> r> ! ;                                       
+ 3   : push   ( addr -- )                                          
+ 4      r> swap dup >r @ >r pull >r >r ; restrict                  
+ 5                                                                 
+ 6   Defer .status   ' noop Is .status                             
+ 7                                                                 
+ 8   : (load  ( blk offset -- )   isfile@ >r                       
+ 9      loadfile @ >r   fromfile @ >r   blk @ >r   >in @ >r        
+10      >in !   blk !  isfile@ loadfile !  .status  interpret      
+11      r> >in !   r> blk !   r> fromfile !   r> loadfile !        
+12      r> isfile ! ;                                              
+13                                                                 
+14   : load   ( blk -- )     ?dup 0=exit  0 (load ;                
+15                                                                 
+Screen 81 not modified     
+ 0 \ +load thru +thru --> rdepth depth               ks 26 jul 87  
+ 1                                                                 
+ 2   : +load    ( offset -- )       blk @ + load ;                 
+ 3                                                                 
+ 4   : thru     ( from to -- )      1+ swap DO I  load LOOP ;      
+ 5                                                                 
+ 6   : +thru    ( off0 off1 -- )    1+ swap DO I +load LOOP ;      
+ 7                                                                 
+ 8   : -->        1 blk +! >in off .status ; immediate             
+ 9                                                                 
+10   : rdepth   ( -- +n )           r0 @ rp@ 2+   - 2/ ;           
+11                                                                 
+12   : depth    ( -- +n )           sp@ s0 @ swap - 2/ ;           
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 82 not modified     
+ 0 \  prompt  quit                                   ks 16 sep 88  
+ 1                                                                 
+ 2   : (prompt   .status  state @ IF  cr ." ] " exit  THEN         
+ 3      aborted @ 0= IF  ."  ok"  THEN  cr ;                       
+ 4                                                                 
+ 5   Defer prompt    ' (prompt Is prompt                           
+ 6                                                                 
+ 7   : (quit  BEGIN  prompt query interpret  REPEAT ;              
+ 8                                                                 
+ 9   Defer 'quit     ' (quit Is 'quit                              
+10                                                                 
+11   : quit     r0 @ rp!   [compile] [   blk off   'quit ;         
+12                                                                 
+13 \ : classical   cr .status  state @                             
+14 \    IF  ." C> " exit  THEN  ." I> " ;                          
+15                                                                 
+Screen 83 not modified     
+ 0 \ end-trace abort                                 ks 26 jul 87  
+ 1                                                                 
+ 2   : standardi/o     [ output ] Literal output 4 cmove ;         
+ 3                                                                 
+ 4   Code end-trace    next-link # W mov   $AD # A- mov            
+ 5      $FF97 # C mov   [[  W ) W mov   W W or  0= not             
+ 6                      ?[[  A- -4 W D) mov   C -3 W D) mov        
+ 7                      ]]?  lods   A W xchg   W ) jmp   end-code  
+ 8                                                                 
+ 9   Defer 'abort     ' noop Is 'abort                             
+10                                                                 
+11   : abort    end-trace clearstack 'abort standardi/o quit ;     
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 84 not modified     
+ 0 \ (error Abort" Error"                            ks 16 sep 88  
+ 1   Variable scr      1 scr !                                     
+ 2   Variable r#       r# off                                      
+ 3                                                                 
+ 4   : (error ( string -- )   rdrop r> aborted !  standardi/o      
+ 5      space here .name   count type space ?cr                    
+ 6      blk @ ?dup IF  scr ! >in @ r# !  THEN  quit ;              
+ 7   ' (error errorhandler !                                       
+ 8                                                                 
+ 9   : (abort"    "lit swap IF  >r clearstack r>                   
+10      errorhandler perform exit THEN drop ; restrict             
+11                                                                 
+12 | : (error"    "lit swap IF  errorhandler perform exit  THEN    
+13                drop ; restrict                                  
+14                                                                 
+15                                                                 
+Screen 85 not modified     
+ 0 \ -trailing space spaces                          ks 16 sep 88  
+ 1                                                                 
+ 2   : Abort"     compile (abort" ," align ; immediate restrict    
+ 3   : Error"     compile (error" ," align ; immediate restrict    
+ 4                                                                 
+ 5   $20 Constant bl                                               
+ 6                                                                 
+ 7   : -trailing ( addr n1 -- addr n2)                             
+ 8      dup 0 ?DO  2dup + 1- c@ bl - IF LEAVE THEN  1-  LOOP ;     
+ 9                                                                 
+10   : space                bl emit ;                              
+11   : spaces   ( u -- )    0 ?DO  space  LOOP ;                   
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 86 not modified     
+ 0 \ hold <# #> sign # #s                            ks 29 dez 87  
+ 1                                                                 
+ 2 | : hld   ( -- addr)              pad 2- ;                      
+ 3                                                                 
+ 4   : hold    ( char -- )           -1 hld +!   hld @ c! ;        
+ 5                                                                 
+ 6   : <#                            hld hld ! ;                   
+ 7                                                                 
+ 8   : #>      ( 32b -- addr +n )    2drop   hld @   hld over - ;  
+ 9                                                                 
+10   : sign    ( n -- )              0< not ?exit  Ascii - hold ;  
+11                                                                 
+12   : #       ( +d1 -- +d2)                                       
+13      base @ ud/mod   rot dup 9 >  7 and +  Ascii 0 +  hold ;    
+14                                                                 
+15   : #s      ( +d -- 0 0 )         BEGIN # 2dup d0= UNTIL ;      
+Screen 87 not modified     
+ 0 \ print numbers .s                                ks 07 feb 89  
+ 1                                                                 
+ 2   : d.r   ( d +n -- )   -rot under dabs <# #s rot sign #>       
+ 3                         rot over max over - spaces type ;       
+ 4   : d.    ( d -- )      0 d.r space ;                           
+ 5                                                                 
+ 6   : .r    ( n +n -- )   swap extend rot d.r ;                   
+ 7   : .     ( n -- )      extend d. ;                             
+ 8                                                                 
+ 9   : u.r   ( u +n -- )   0 swap d.r ;                            
+10   : u.    ( u -- )      0 d. ;                                  
+11                                                                 
+12   : .s    sp@ s0 @ over - $20 umin bounds ?DO I @ u. 2 +LOOP ;  
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 88 not modified     
+ 0 \ list c/l l/s                                    ks 19 mÑr 88  
+ 1                                                                 
+ 2   &64 Constant c/l        \ Screen line length                  
+ 3   &16 Constant l/s        \ lines per screen                    
+ 4                                                                 
+ 5   : list ( scr -- )  dup capacity u<                            
+ 6      IF  scr !  ."  Scr " scr @ .                               
+ 7          ." Dr " drv .  isfile@ .file                           
+ 8          l/s 0 DO  cr I 2 .r space   scr @ block                
+ 9                    I c/l * +   c/l -trailing type               
+10                LOOP  cr exit                                    
+11      THEN  9 ?diskerror ;                                       
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 89 not modified     
+ 0 \ multitasker primitives                          ks 29 oct 86  
+ 1                                                                 
+ 2   Code pause    D push   I push   R push                        
+ 3      S 6 U D) mov   2 U D) U add   4 # U add   U jmp            
+ 4   end-code                                                      
+ 5                                                                 
+ 6   : lock ( addr -- )                                            
+ 7      dup @  up@  = IF  drop exit  THEN                          
+ 8      BEGIN  dup @ WHILE  pause  REPEAT  up@ swap ! ;            
+ 9                                                                 
+10   : unlock   ( addr -- )        dup lock off ;                  
+11                                                                 
+12   Label wake   Assembler   U pop   2 # U sub   A pop            
+13      popf   6 U D) S mov   R pop   I pop   D pop   Next         
+14   end-code                                                      
+15   $E9 4 * >label >taskINT                                       
+Screen 90 not modified     
+ 0 \\ Struktur der Blockpuffer                       ks 04 jul 87  
+ 1                                                                 
+ 2    0 : link zum naechsten Puffer                                
+ 3    2 : file     0 = direct access                               
+ 4                -1 = leer,                                       
+ 5                sonst adresse eines file control blocks          
+ 6    4 : blocknummer                                              
+ 7    6 : statusflags   Vorzeichenbit kennzeichnet update          
+ 8    8 : Data ... 1 Kb ...                                        
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 91 not modified     
+ 0 \ buffer mechanism                                ks 04 okt 87  
+ 1                                                                 
+ 2   Variable isfile      isfile off   \ addr of file control block
+ 3   Variable fromfile    fromfile off \ fcb in kopieroperationen  
+ 4                                                                 
+ 5   Variable prev        prev off     \ Listhead                  
+ 6 | Variable buffers     buffers off  \ Semaphor                  
+ 7                                                                 
+ 8   $408 Constant b/buf               \ physikalische Groesse     
+ 9   $400 Constant b/blk               \ bytes/block               
+10                                                                 
+11   Defer r/w                         \ physikalischer Diskzugriff
+12   Variable error#      error# off   \ Nummer des letzten Fehlers
+13   Defer ?diskerror                  \ Fehlerbehandlung          
+14                                                                 
+15                                                                 
+Screen 92 not modified     
+ 0 \ (core?                                          ks 28 mai 87  
+ 1                                                                 
+ 2   Code (core? ( blk file -- dataaddr / blk file )               
+ 3      A pop   A push   D D or  0= ?[  u' offset U D) A add  ]?   
+ 4      prev #) W mov   2 W D) D cmp  0=                           
+ 5      ?[  4 W D) A cmp  0=                                       
+ 6          ?[  8 W D) D lea   A pop   ' exit @ # jmp  ]? ]?       
+ 7      [[ [[  W ) C mov   C C or  0= ?[  Next  ]?                 
+ 8             C W xchg   4 W D) A cmp  0= ?]  2 W D) D cmp  0= ?] 
+ 9      W ) A mov   prev #) D mov   D W ) mov   W prev #) mov      
+10      8 W D) D lea   C W mov   A W ) mov   A pop                 
+11      ' exit @ # jmp                                             
+12   end-code                                                      
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 93 not modified     
+ 0 \\ (core?                                          ks 31 oct 86 
+ 1                                                                 
+ 2 | : this? ( blk file bufadr -- flag )                           
+ 3      dup 4+ @  swap 2+ @  d= ;                                  
+ 4                                                                 
+ 5   .( (core?:  offset is handled differently in code! )          
+ 6                                                                 
+ 7 | : (core? ( blk file -- dataaddr / blk file )                  
+ 8      BEGIN  over offset @ + over prev @ this?                   
+ 9         IF  rdrop 2drop prev @ 8 + exit  THEN                   
+10         2dup >r offset @ + >r prev @                            
+11         BEGIN dup @ ?dup 0= IF  rdrop rdrop drop exit  THEN     
+12               dup r> r> 2dup >r >r rot this?  0=                
+13         WHILE nip REPEAT                                        
+14         dup @ rot ! prev @ over ! prev ! rdrop rdrop            
+15      REPEAT ;                                                   
+Screen 94 not modified     
+ 0 \ backup emptybuf readblk                         ks 23 jul 87  
+ 1                                                                 
+ 2 | : backup ( bufaddr -- )       dup 6+ @ 0<                     
+ 3      IF  2+ dup @ 1+         \ buffer empty if file = -1        
+ 4          IF  BEGIN  dup 6+ over 2+ @ 2 pick @ 0 r/w             
+ 5              WHILE  1 ?diskerror  REPEAT                        
+ 6          THEN  4+ dup @ $7FFF and over !  THEN                  
+ 7      drop ;                                                     
+ 8                                                                 
+ 9   : emptybuf ( bufaddr -- )      2+ dup on 4+ off ;             
+10                                                                 
+11 | : readblk ( blk file addr -- blk file addr )                  
+12      dup emptybuf  >r                                           
+13      BEGIN  2dup   0= offset @ and  +                           
+14             over   r@ 8 + -rot 1 r/w                            
+15      WHILE  2 ?diskerror  REPEAT r>  ;                          
+Screen 95 not modified     
+ 0 \ take mark updates? full? core?                  ks 04 jul 87  
+ 1                                                                 
+ 2 | : take ( -- bufaddr)    prev                                  
+ 3      BEGIN  dup @ WHILE  @ dup 2+ @ -1 = UNTIL                  
+ 4      buffers lock   dup backup ;                                
+ 5                                                                 
+ 6 | : mark ( blk file bufaddr -- blk file )   2+ >r               
+ 7      2dup r@ !  over 0= offset @ and +   r@ 2+ !                
+ 8      r> 4+ off   buffers unlock ;                               
+ 9                                                                 
+10 | : updates? ( -- bufaddr / flag)                               
+11      prev  BEGIN  @ dup  WHILE  dup 6+ @ 0< UNTIL ;             
+12                                                                 
+13   : core? ( blk file -- addr /false )   (core? 2drop false ;    
+14                                                                 
+15                                                                 
+Screen 96 not modified     
+ 0 \ block & buffer manipulation                     ks 01 okt 87  
+ 1                                                                 
+ 2   : (buffer ( blk file -- addr )                                
+ 3       BEGIN  (core? take mark  REPEAT ;                         
+ 4                                                                 
+ 5   : (block ( blk file -- addr )                                 
+ 6       BEGIN  (core? take readblk mark  REPEAT ;                 
+ 7                                                                 
+ 8   Code isfile@  ( -- addr )                                     
+ 9      D push   isfile #) D mov   Next   end-code                 
+10 \ : isfile@ ( -- addr )    isfile @ ;                           
+11                                                                 
+12   : buffer  ( blk -- addr )   isfile@ (buffer ;                 
+13                                                                 
+14   : block   ( blk -- addr )   isfile@ (block ;                  
+15                                                                 
+Screen 97 not modified     
+ 0 \ block & buffer manipulation                     ks 02 okt 87  
+ 1                                                                 
+ 2   : update          $80 prev @ 6+ 1+ ( Byte-Order! )  c! ;      
+ 3                                                                 
+ 4   : save-buffers    buffers lock                                
+ 5      BEGIN  updates? ?dup WHILE  backup REPEAT  buffers unlock ;
+ 6                                                                 
+ 7   : empty-buffers   buffers lock prev                           
+ 8      BEGIN  @ ?dup WHILE  dup emptybuf  REPEAT  buffers unlock ;
+ 9                                                                 
+10   : flush   file-link                                           
+11      BEGIN  @ ?dup WHILE  dup fclose  REPEAT                    
+12      save-buffers empty-buffers ;                               
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 98 not modified     
+ 0 \ Allocating buffers                              ks 31 oct 86  
+ 1   $10000 Constant limit     Variable first                      
+ 2                                                                 
+ 3   : allotbuffer ( -- )                                          
+ 4      first @  r0 @  -  b/buf 2+  u< ?exit                       
+ 5      b/buf negate first +!  first @ dup emptybuf                
+ 6      prev @ over !  prev ! ;                                    
+ 7                                                                 
+ 8   : freebuffer ( -- )   first @ limit b/buf - u<                
+ 9      IF first @  backup  prev                                   
+10        BEGIN dup @  first @ -  WHILE  @  REPEAT                 
+11      first @  @ swap !  b/buf first +!  THEN ;                  
+12                                                                 
+13   : all-buffers  BEGIN  first @ allotbuffer first @ =  UNTIL ;  
+14                                                                 
+15 | : init-buffers    prev off  limit first !  all-buffers ;      
+Screen 99 not modified     
+ 0 \ endpoints of forget                             uh 27 apr 88  
+ 1                                                                 
+ 2 | : |? ( nfa -- flag )   c@ $20 and ;                           
+ 3                                                                 
+ 4 | : forget? ( adr nfa -- flag )   \ code in heap or above adr ? 
+ 5      name>  under  1+ u<  swap  heap?  or ;                     
+ 6                                                                 
+ 7 | : endpoint ( addr sym thread -- addr sym' )                   
+ 8      BEGIN  BEGIN  @  2 pick  over  u> IF  drop exit  THEN      
+ 9                    dup heap? UNTIL  dup >r 2+ dup |?            
+10         IF  >r over r@ forget? IF  r@ (name> >body  umax  THEN  
+11             rdrop  THEN  r>                                     
+12      REPEAT ;                                                   
+13                                                                 
+14 | : endpoints ( addr -- addr symb )   heap  voc-link @          
+15      BEGIN  @ ?dup WHILE  dup >r 4- endpoint r> REPEAT ;        
+Screen 100 not modified     
+ 0 \ remove, -words, -tasks                          ks 30 apr 88  
+ 1   : remove ( dic sym thread -- dic sym )                        
+ 2      BEGIN dup @ ?dup      \ unlink forg. words                 
+ 3      WHILE dup heap?                                            
+ 4        IF  2 pick over u>  ELSE  3 pick over 1+ u<  THEN        
+ 5        IF  @ over ! ( unlink word)  ELSE nip THEN  REPEAT drop ;
+ 6                                                                 
+ 7 | : remove-words ( dic sym -- dic sym )   voc-link              
+ 8      BEGIN  @ ?dup WHILE  dup >r  4- remove  r> REPEAT ;        
+ 9                                                                 
+10 | : >up   2+ dup @ 2+ + ;                                       
+11                                                                 
+12 | : remove-tasks  ( dic -- )  up@                               
+13      BEGIN  dup >up up@ - WHILE  2dup >up swap here uwithin     
+14         IF dup >up >up over - 2- 2- over 2+ !  ELSE  >up  THEN  
+15      REPEAT  2drop ;                                            
+Screen 101 not modified     
+ 0 \ remove-vocs trim                                ks 31 oct 86  
+ 1                                                                 
+ 2 | : remove-vocs ( dic symb -- dic symb )                        
+ 3      voc-link remove     thru.vocstack                          
+ 4      DO  2dup I @ -rot uwithin                                  
+ 5          IF  [ ' Forth 2+ ] Literal I !  THEN  -2 +LOOP         
+ 6      2dup  current @  -rot  uwithin 0=exit                      
+ 7      [ ' Forth 2+ ] Literal current ! ;                         
+ 8                                                                 
+ 9   Defer custom-remove     ' noop Is custom-remove               
+10                                                                 
+11   : trim   ( dic symb -- )  next-link remove                    
+12      over  remove-tasks remove-vocs remove-words remove-files   
+13      custom-remove  heap swap - hallot dp !  last off ;         
+14                                                                 
+15                                                                 
+Screen 102 not modified     
+ 0 \ deleting words from dict.                       ks 02 okt 87  
+ 1                                                                 
+ 2   : clear        here  dup up@  trim  dp ! ;                    
+ 3                                                                 
+ 4   : (forget ( adr -- )                                          
+ 5      dup heap? Abort" is symbol"  endpoints  trim ;             
+ 6                                                                 
+ 7   : forget   ' dup [ dp ] Literal @  u< Abort" protected"       
+ 8      >name  dup  heap? IF  name>  ELSE  4-  THEN  (forget ;     
+ 9                                                                 
+10   : empty   [ dp ] Literal @ up@ trim                           
+11             [ udp ] Literal @ udp ! ;                           
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 103 not modified     
+ 0 \ save bye stop? ?cr                              ks 1UH 26sep88
+ 1                                                                 
+ 2   : save    here  up@ trim   up@ origin $100 cmove              
+ 3      voc-link @ BEGIN  dup 4- @ over 2- ! @ ?dup  0= UNTIL ;    
+ 4                                                                 
+ 5   $1B Constant #esc                                             
+ 6                                                                 
+ 7 | : end?   key #esc case? 0=                                    
+ 8      IF  #cr case? 0= IF 3 ( Ctrl-C ) - ?exit THEN  THEN        
+ 9      true rdrop ;                                               
+10                                                                 
+11   : stop? ( -- flag )   key? IF  end? end?  THEN  false ;       
+12                                                                 
+13   : ?cr       col c/l u> 0=exit  cr ;                           
+14                                                                 
+15                                                                 
+Screen 104 not modified     
+ 0 \ in/output structure                             ks 31 oct 86  
+ 1                                                                 
+ 2 | : Out:   Create dup c, 2+ Does> c@ output @ + perform ;       
+ 3                                                                 
+ 4   : Output:  Create: Does> output ! ;                           
+ 5 0   Out: emit   Out: cr   Out: type   Out: del                  
+ 6     Out: page   Out: at   Out: at?    drop                      
+ 7                                                                 
+ 8   : row ( -- row )     at? drop ;                               
+ 9   : col ( -- col )     at? nip ;                                
+10                                                                 
+11 | : In:    Create dup c, 2+ Does> c@ input @ + perform ;        
+12                                                                 
+13   : Input:   Create:  Does> input ! ;                           
+14 0   In: key   In: key?   In: decode   In: expect  drop          
+15                                                                 
+Screen 105 not modified     
+ 0 \ Alias  only definitionen                        ks 31 oct 86  
+ 1                                                                 
+ 2   Root definitions                                              
+ 3                                                                 
+ 4   : seal  [ ' Root >body ] Literal off ; \ "erases" Root Vocab. 
+ 5                                                                 
+ 6   ' Only        Alias Only                                      
+ 7   ' Forth       Alias Forth                                     
+ 8   ' words       Alias words                                     
+ 9   ' also        Alias also                                      
+10   ' definitions Alias definitions                               
+11                                                                 
+12   Forth definitions                                             
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 106 not modified     
+ 0 \ 'restart  'cold                                 ks 01 sep 88  
+ 1                                                                 
+ 2   Defer 'restart  ' noop Is 'restart                            
+ 3                                                                 
+ 4 | : (restart   ['] (quit Is 'quit  'restart                     
+ 5      [ errorhandler ] Literal @ errorhandler !                  
+ 6      ['] noop Is 'abort  end-trace clearstack                   
+ 7      standardi/o interpret quit ;                               
+ 8                                                                 
+ 9   Defer 'cold    ' noop Is 'cold                                
+10                                                                 
+11 | : (cold      origin up@ $100 cmove   $80 count                
+12      $50 umin >r tib r@ move  r> #tib !  >in off  blk off       
+13      init-vocabularys init-buffers flush 'cold                  
+14      Onlyforth page &24 spaces logo count type cr (restart ;    
+15                                                                 
+Screen 107 not modified     
+ 0 \ (boot                                           ks 11 mÑr 89  
+ 1                                                                 
+ 2   Label #segs  ( -- R: seg )   Assembler                        
+ 3      C: seg ' limit >body #) R mov   R R or  0= not             
+ 4      ?[  4 # C- mov   R C* shr   R inc   ret  ]?                
+ 5      $1000 # R mov   ret                                        
+ 6   end-code                                                      
+ 7                                                                 
+ 8   Label (boot   Assembler   cli   cld   A A xor   A D: mov      
+ 9      #segs # call   C: D mov   D R add   R E: mov               
+10      $200 # C mov   0 # I mov   I W mov   rep movs              
+11        wake # >taskINT #) mov   C: >taskINT 2+ #) mov           
+12      divovl #  >divINT #) mov   C:  >divINT 2+ #) mov   ret     
+13   end-code                                                      
+14                                                                 
+15                                                                 
+Screen 108 not modified     
+ 0 \ restart                                         ks 09 mÑr 89  
+ 1                                                                 
+ 2   Label warmboot   here >restart 2+ -  >restart ! Assembler     
+ 3          (boot # call                                           
+ 4   here   ' (restart >body # I mov                               
+ 5   Label bootsystem                                              
+ 6      C: A mov   A E: mov   A D: mov   A S: mov                  
+ 7      s0 #) U mov   6 # U add   u' s0 U D) S mov                 
+ 8      D pop   u' r0 U D) R mov   sti   Next                      
+ 9   end-code                                                      
+10                                                                 
+11   Code restart   here 2- !   end-code                           
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 109 not modified     
+ 0 \  bye                                            ks 11 mÑr 89  
+ 1                                                                 
+ 2   Variable return_code    return_code off                       
+ 3                                                                 
+ 4 | Code (bye   cli   A A xor   A E: mov   #segs # call           
+ 5      C: D mov   D R add   R D: mov   0 # I mov   I W mov        
+ 6      $200 # C mov   rep movs   sti      \ restore interrupts    
+ 7      $4C # A+ mov   C: seg return_code #) A- mov                
+ 8      $21 int   warmboot # call                                  
+ 9   end-code                                                      
+10                                                                 
+11   : bye       flush empty page (bye ;                           
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 110 not modified     
+ 0 \ cold                                            ks 09 mÑr 89  
+ 1                                                                 
+ 2   here  >cold 2+  -   >cold !  Assembler                        
+ 3      (boot # call   C: A mov   A D: mov  A E: mov               
+ 4      #segs # call   $41 # R add  \ another k for the ints       
+ 5      $4A # A+ mov   $21 int        \ alloc memory               
+ 6      CS ?[  $10 # return_code #) byte mov   ' (bye @ # jmp  ]?  
+ 7   here   s0 #) W mov   6 # W add   origin # I mov   $20 # C mov 
+ 8      rep movs   ' (cold >body # I mov   bootsystem # jmp        
+ 9   end-code                                                      
+10                                                                 
+11   Code cold   here 2- !   end-code                              
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 111 not modified     
+ 0 \ System patchup                                  ks 16 sep 88  
+ 1                                                                 
+ 2   1 &35 +thru      \ MS-DOS interface                           
+ 3                                                                 
+ 4   : forth-83 ;     \ last word in Dictionary                    
+ 5                                                                 
+ 6   0 ' limit >body !   $DFF6 s0 !    $E77C r0 !                  
+ 7   s0 @ s0 2- !   here dp !                                      
+ 8                                                                 
+ 9   Host  tudp @       Target   udp !                             
+10   Host  tvoc-link @  Target   voc-link !                        
+11   Host  tnext-link @ Target   next-link !                       
+12   Host  tfile-link @ Target Forth  file-link !                  
+13   Host  T move-threads H                                        
+14   save-buffers cr .( unresolved: )  .unresolved                 
+15                                                                 
+Screen 112 not modified     
+ 0 \ lc@ lc!  l@ l!  special 8088 operators          ks 27 oct 86  
+ 1                                                                 
+ 2   Code lc@  ( seg:addr -- 8b )   D: pop   D W mov               
+ 3      W ) D- mov   0 # D+ mov   C: A mov   A D: mov   Next       
+ 4   end-code                                                      
+ 5                                                                 
+ 6   Code lc!  ( 8b seg:addr -- )   D: pop   A pop   D W mov       
+ 7      A- W ) mov   C: A mov   A D: mov   D pop   Next   end-code 
+ 8                                                                 
+ 9   Code l@  ( seg:addr -- 16b )   D: pop   D W mov               
+10      W ) D mov   C: A mov   A D: mov   Next   end-code          
+11                                                                 
+12   Code l!  ( 16b seg:addr -- )   D: pop   A pop   D W mov       
+13      A W ) mov   C: A mov   A D: mov   D pop   Next   end-code  
+14                                                                 
+15                                                                 
+Screen 113 not modified     
+ 0 \ ltype  lmove    special 8088 operators          ks 11 dez 87  
+ 1                                                                 
+ 2   : ltype   ( seg:addr len -- )                                 
+ 3      0 ?DO  2dup I + lc@ emit  LOOP  2drop ;                    
+ 4                                                                 
+ 5   Code lmove  ( from.seg:addr to.seg:addr quan -- )             
+ 6      A I xchg   D C mov   W pop   E: pop                        
+ 7      I pop   D: pop   I W cmp  CS                               
+ 8      ?[  rep byte movs                                          
+ 9      ][  C dec   C W add   C I add   C inc                      
+10          std   rep byte movs   cld                              
+11      ]?  A I xchg   C: A mov   A E: mov                         
+12      A D: mov   D pop   Next   end-code                         
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 114 not modified     
+ 0 \  BDOS  keyboard input                           ks 16 sep 88  
+ 1 \ es muss wirklich so kompliziert sein, da sonst kein ^C und ^P 
+ 2                                                                 
+ 3 | Variable newkey   newkey off                                  
+ 4                                                                 
+ 5   Code (key@  ( -- 8b )    D push   newkey #) D mov   D+ D+ or  
+ 6      0= ?[  $7 # A+ mov   $21 int   A- D- mov  ]?               
+ 7      0 # D+ mov   D+ newkey 1+ #) mov   Next                    
+ 8   end-code                                                      
+ 9                                                                 
+10   Code (key?  ( -- f )    D push   newkey #) D mov   D+ D+ or   
+11      0= ?[  -1 # D- mov   6 # A+ mov   $21 int  0=              
+12             ?[  0 # D+ mov                                      
+13             ][  -1 # A+ mov   A newkey #) mov   -1 # D+ mov     
+14         ]?  ]?  D+ D- mov   Next                                
+15   end-code                                                      
+Screen 115 not modified     
+ 0 \ empty-keys  (key                                ks 16 sep 88  
+ 1                                                                 
+ 2   Code empty-keys   $C00 # A mov   $21 int                      
+ 3      0 # newkey 1+ #) byte mov   Next   end-code                
+ 4                                                                 
+ 5   : (key   ( -- 16b )   BEGIN  pause (key?  UNTIL               
+ 6      (key@ ?dup ?exit  (key? IF  (key@ negate exit  THEN  0 ;   
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 116 not modified     
+ 0 \\ BIOS  keyboard input                           ks 16 sep 88  
+ 1                                                                 
+ 2   Code (key@  ( -- 8b )  D push   A+ A+ xor   $16 int           
+ 3      A- D- xchg   0 # D+ mov   Next   end-code                  
+ 4                                                                 
+ 5   Code (key?  ( -- f )   D push   1 # A+ mov   D D xor          
+ 6      $16 int   0= not ?[  D dec  ]?   Next   end-code           
+ 7                                                                 
+ 8   Code empty-keys   $C00 # A mov   $21 int   Next   end-code    
+ 9                                                                 
+10   : (key  ( -- 8b )   BEGIN  pause (key? UNTIL  (key@ ;         
+11                                                                 
+12 \ mit diesen Keytreibern sind die Funktionstasten nicht         
+13 \ mehr durch ANSI.SYS Sequenzen vorbelegt.                      
+14                                                                 
+15                                                                 
+Screen 117 not modified     
+ 0 \ (decode expect                                  ks 16 sep 88  
+ 1                                                                 
+ 2    7 Constant #bel            8 Constant #bs                    
+ 3    9 Constant #tab           $A Constant #lf                    
+ 4   $D Constant #cr                                               
+ 5                                                                 
+ 6   : (decode  ( addr pos1 key -- addr pos2 )                     
+ 7      #bs case? IF  dup 0=exit del 1- exit  THEN                 
+ 8      #cr case? IF  dup span ! space   exit  THEN                
+ 9      >r  2dup +  r@ swap c!  r> emit  1+ ;                      
+10                                                                 
+11   : (expect ( addr len1 -- )  span !   0                        
+12      BEGIN   dup span @ u< WHILE  key decode  REPEAT  2drop ;   
+13                                                                 
+14   Input: keyboard [ here input ! ]                              
+15           (key (key? (decode (expect [ drop                     
+Screen 118 not modified     
+ 0 \ MSDOS character output                          ks 29 jun 87  
+ 1                                                                 
+ 2   Code charout  ( char -- )   $FF # D- cmp  0= ?[  D- dec  ]?   
+ 3      6 # A+ mov   $21 int   D pop   ' pause # W mov   W ) jmp   
+ 4   end-code                                                      
+ 5                                                                 
+ 6   &80 Constant c/row            &25 Constant c/col              
+ 7                                                                 
+ 8   : (emit   ( char -- )  dup bl u< IF  $80 or  THEN  charout ;  
+ 9   : (cr                  #cr charout #lf charout ;              
+10   : (del                 #bs charout bl charout #bs charout ;   
+11   : (at                  2drop ;                                
+12   : (at?                 0 0 ;                                  
+13   : (page                c/col 0 DO  cr  LOOP ;                 
+14                                                                 
+15                                                                 
+Screen 119 not modified     
+ 0 \ MSDOS character output                          ks  7 may 85  
+ 1                                                                 
+ 2   : bell   #bel charout ;                                       
+ 3                                                                 
+ 4   : tipp   ( addr len -- )  bounds ?DO  I c@ emit  LOOP ;       
+ 5                                                                 
+ 6   Output: display [ here output ! ]                             
+ 7            (emit (cr  tipp (del (page (at (at? [ drop           
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 120 not modified     
+ 0 \ MSDOS printer   I/O Port access                 ks 09 aug 87  
+ 1                                                                 
+ 2   Code lst! ( 8b -- )  $5 # A+ mov   $21 int   D pop   Next     
+ 3   end-code                                                      
+ 4                                                                 
+ 5   Code pc@    ( port -- 8b )                                    
+ 6      D byte in   A- D- mov   D+ D+ xor   Next                   
+ 7   end-code                                                      
+ 8                                                                 
+ 9   Code pc!    ( 8b port -- )                                    
+10      A pop   D byte out   D pop   Next                          
+11   end-code                                                      
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 121 not modified     
+ 0 \ zero terminated strings                         ks 09 aug 87  
+ 1                                                                 
+ 2   : counted   ( asciz -- addr len )                             
+ 3      dup -1 0 scan drop over - ;                                
+ 4                                                                 
+ 5   : >asciz   ( string addr -- asciz )   2dup >r  -              
+ 6      IF  count r@ place  r@  THEN  0 r> count + c!  1+ ;        
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10   : asciz    ( -- asciz )   name here >asciz ;                  
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 122 not modified     
+ 0 \ Disk capacities                                 ks 08 aug 88  
+ 1   Vocabulary Dos   Dos also definitions                         
+ 2                                                                 
+ 3   6 Constant #drives                                            
+ 4                                                                 
+ 5   Create capacities   $4B0 , $4B0 , $1B31 , $1B31 , $1B0F , 0 , 
+ 6                                                                 
+ 7 | Code ?capacity ( +n -- cap )  D shl   capacities # W mov      
+ 8      D W add   W ) D mov   Next   end-code                      
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 123 not modified     
+ 0 \ MS-dos disk handlers direct access              ks 31 jul 87  
+ 1                                                                 
+ 2 | Code block@  ( addr blk drv -- ff )                           
+ 3      D- A- mov   D pop   C pop   R push   U push                
+ 4      I push   C R mov   2 # C mov   D shl   $25 int             
+ 5   Label end-r/w    I pop   I pop   U pop   R pop   0 # D mov    
+ 6      CS ?[  D+ A+ mov   A error# #) mov   D dec  ]?  Next       
+ 7   end-code                                                      
+ 8                                                                 
+ 9 | Code block!  ( addr blk drv -- ff )  D- A- mov   D pop        
+10      C pop   R push   U push   I push   C R mov   2 # C mov     
+11      D shl   $26 int   end-r/w # jmp                            
+12   end-code                                                      
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 124 not modified     
+ 0 \ MS-dos disk handlers direct access              ks 09 aug 87  
+ 1                                                                 
+ 2 | : ?drive  ( +n -- +n )   dup #drives u< ?exit                 
+ 3      Error" jenseits der Platte" ;                              
+ 4                                                                 
+ 5   : /drive ( blk1 -- blk2 drive )  0 swap  #drives 0            
+ 6      DO  dup I ?capacity under u< IF drop LEAVE THEN            
+ 7          - swap 1+ swap  LOOP  swap ;                           
+ 8                                                                 
+ 9   : blk/drv  ( -- capacity )  drv ?capacity ;                   
+10                                                                 
+11   Forth definitions                                             
+12                                                                 
+13   : >drive    ( blk1 +n -- blk2 )   ?drive                      
+14      0 swap  drv  2dup u> dup >r  0= IF  swap  THEN             
+15      ?DO  I ?capacity + LOOP  r> IF  negate  THEN - ;           
+Screen 125 not modified     
+ 0 \ MS-DOS   file access                            ks 18 mÑr 88  
+ 1   Dos definitions                                               
+ 2                                                                 
+ 3 | Variable fcb         fcb off      \ last fcb accessed         
+ 4 | Variable prevfile                 \ previous active file      
+ 5                                                                 
+ 6   &30 Constant fnamelen             \ default length in FCB     
+ 7                                                                 
+ 8   Create filename   &62 allot       \ max 60 + count + null     
+ 9                                                                 
+10   Variable attribut   7 attribut !  \ read-only, hidden, system 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 126 not modified     
+ 0 \ MS-DOS   disk errors                            ks 18 mÑr 88  
+ 1                                                                 
+ 2 | : .error#   ." fehler # " base push decimal error# @ . ;      
+ 3                                                                 
+ 4 | : .ferrors   error# @ &18 case? IF  2  THEN                   
+ 5        1 case? Abort" file exists"                              
+ 6        2 case? Abort" file not found"                           
+ 7        3 case? Abort" path not found"                           
+ 8        4 case? Abort" too many open files"                      
+ 9        5 case? Abort" no access"                                
+10        9 case? Abort" beyond end of file"                       
+11      &15 case? Abort" illegal drive"                            
+12      &16 case? Abort" current directory"                        
+13      &17 case? Abort" wrong drive"                              
+14      drop ." Disk" .error# abort ;                              
+15                                                                 
+Screen 127 not modified     
+ 0 \ MS-DOS   disk errors                            ks 04 okt 87  
+ 1                                                                 
+ 2   : (diskerror   ( *f -- )   ?dup 0=exit                        
+ 3      fcb @ IF  error# !  .ferrors exit  THEN                    
+ 4      input push   output push   standardi/o   1-                
+ 5      IF  ." Lese"  ELSE  ." Schreib"  THEN                      
+ 6      .error# ."  wiederholen? (j/n)"                            
+ 7      key cr capital Ascii J = not Abort" aborted" ;             
+ 8                                                                 
+ 9   ' (diskerror Is ?diskerror                                    
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 128 not modified     
+ 0 \ ~open  ~creat  ~close                           ks 04 aug 87  
+ 1                                                                 
+ 2   Code ~open  ( asciz mode -- handle ff / err# )                
+ 3      A D xchg   $3D # A+ mov                                    
+ 4   Label >open   D pop   $21 int   A D xchg                      
+ 5      CS not ?[  D push   0 # D mov  ]?  Next                    
+ 6   end-code                                                      
+ 7                                                                 
+ 8   Code ~creat  ( asciz attribut -- handle ff / err# )           
+ 9      D C mov   $3C # A+ mov   >open ]]   end-code               
+10                                                                 
+11   Code ~close   ( handle -- )   D R xchg                        
+12      $3E # A+ mov   $21 int   R D xchg   D pop   Next           
+13   end-code                                                      
+14                                                                 
+15                                                                 
+Screen 129 not modified     
+ 0 \ ~first  ~unlink  ~select  ~disk?                ks 04 aug 87  
+ 1                                                                 
+ 2   Code ~first  ( asciz attr -- err# )                           
+ 3      D C mov   D pop   $4E # A+ mov                             
+ 4  [[  $21 int   0 # D mov   CS ?[  A D xchg  ]?   Next           
+ 5   end-code                                                      
+ 6                                                                 
+ 7   Code ~unlink  ( asciz -- err# )    $41 # A+ mov  ]]  end-code 
+ 8                                                                 
+ 9   Code ~select  ( n -- )                                        
+10      $E # A+ mov   $21 int   D pop   Next   end-code            
+11                                                                 
+12   Code ~disk?  ( -- n )   D push   $19 # A+ mov                 
+13      $21 int   A- D- mov   0 # D+ mov   Next                    
+14   end-code                                                      
+15                                                                 
+Screen 130 not modified     
+ 0 \ ~next  ~dir                                     ks 04 aug 87  
+ 1                                                                 
+ 2   Code ~next    ( -- err# )   D push   $4F # A+ mov             
+ 3      $21 int   0 # D mov   CS ?[  A D xchg  ]?   Next           
+ 4   end-code                                                      
+ 5                                                                 
+ 6   Code ~dir    ( addr drive -- err# )   I W mov                 
+ 7      I pop   $47 # A+ mov   $21 int   W I mov                   
+ 8      0 # D mov   CS ?[  A D xchg  ]?   Next                     
+ 9   end-code                                                      
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 131 not modified     
+ 0 MS-DOS file control block                       ks cacas 10sep11
+ 1                                                                 
+ 2 | : Fcbytes  ( n1 len -- n2 )  Create over c, +                 
+ 3   Does>      ( fcbaddr -- fcbfield )  c@ + ;                    
+ 4                                                                 
+ 5 \ first field for file-link                                     
+ 6 2        1 Fcbytes f.no       \ must be first field             
+ 7          2 Fcbytes f.handle                                     
+ 8          2 Fcbytes f.date                                       
+ 9          2 Fcbytes f.time                                       
+10          4 Fcbytes f.size                                       
+11   fnamelen Fcbytes f.name     Constant b/fcb                    
+12                                                                 
+13 b/fcb  Host   ' tb/fcb >body !                                  
+14        Target Forth also Dos also definitions                   
+15                                                                 
+Screen 132 not modified     
+ 0 \ (.file fname  fname!                            ks 10 okt 87  
+ 1                                                                 
+ 2   : fname!   ( string fcb -- )   f.name >r   count              
+ 3      dup fnamelen < not Abort" file name too long"  r> place ;  
+ 4                                                                 
+ 5 | : filebuffer?   ( fcb -- fcb bufaddr / fcb ff )               
+ 6      prev  BEGIN  @ dup WHILE  2dup 2+ @  = UNTIL ;             
+ 7                                                                 
+ 8 | : flushfile     ( fcb -- )                                    
+ 9      BEGIN  filebuffer? ?dup                                    
+10      WHILE  dup backup emptybuf  REPEAT  drop ;                 
+11                                                                 
+12   : fclose   ( fcb  -- )   ?dup 0=exit                          
+13      dup f.handle @ ?dup 0= IF  drop exit  THEN                 
+14      over flushfile  ~close  f.handle off ;                     
+15                                                                 
+Screen 133 not modified     
+ 0 \ (.file fname  fname!                            ks 18 mÑr 88  
+ 1                                                                 
+ 2 | : getsize   ( -- d )     [ $80 &26 + ] Literal 2@ swap ;      
+ 3                                                                 
+ 4   : (fsearch  ( string -- asciz *f )                            
+ 5      filename >asciz dup attribut @ ~first ;                    
+ 6                                                                 
+ 7   Defer fsearch   ( string -- asciz *f )                        
+ 8                                                                 
+ 9   ' (fsearch Is fsearch                                         
+10                                                                 
+11 \ graceful behaviour if file does not exist                     
+12 | : ?notfound  ( f* -- )  ?dup 0=exit  last' @  [fcb] =         
+13      IF  hide   file-link @ @ file-link !  prevfile @ setfiles  
+14          last @ 4 - dp !  last off   filename count here place  
+15      THEN  ?diskerror ;                                         
+Screen 134 not modified     
+ 0 \ freset fseek                                    ks 19 mÑr 88  
+ 1                                                                 
+ 2   : freset  ( fcb -- )   ?dup 0=exit                            
+ 3      dup f.handle @ ?dup IF  ~close  THEN   dup >r              
+ 4      f.name fsearch ?notfound   getsize r@ f.size 2!            
+ 5      [ $80 &22 + ] Literal @ r@ f.time !                        
+ 6      [ $80 &24 + ] Literal @ r@ f.date !                        
+ 7      2 ~open ?diskerror  r> f.handle ! ;                        
+ 8                                                                 
+ 9                                                                 
+10   Code fseek ( dfaddr fcb -- )                                  
+11      D W mov   u' f.handle W D) W mov   W W or  0=              
+12      ?[  ;c: dup freset fseek ; Assembler ]?  R W xchg          
+13      C pop   D pop   $4200 # A mov  $21 int   W R mov           
+14      CS not ?[  D pop   Next  ]?  A D xchg  ;c: ?diskerror ;    
+15                                                                 
+Screen 135 not modified     
+ 0 \ lfgets  fgetc  file@                            ks 07 jul 88  
+ 1                                                                 
+ 2 \ Code ~read   ( seg:addr quan handle -- #read )  D W mov       
+ 3 Assembler  [[   W R xchg   C pop   D pop                        
+ 4      D: pop   $3F # A+ mov   $21 int   C: C mov   C D: mov      
+ 5      W R mov  A D xchg  CS not ?[  Next  ]?  ;c: ?diskerror ;   
+ 6                                                                 
+ 7   Code lfgets  ( seg:addr quan fcb -- #read )                   
+ 8      D W mov   u' f.handle W D) W mov   ]]  end-code            
+ 9                                                                 
+10   true Constant eof                                             
+11                                                                 
+12   : fgetc  ( fcb -- 8b / eof )                                  
+13      >r 0 sp@ ds@ swap 1 r> lfgets ?exit 0= ;                   
+14                                                                 
+15   : file@  ( dfaddr fcb -- 8b / eof )  dup >r fseek r> fgetc ;  
+Screen 136 not modified     
+ 0 \ lfputs  fputc  file!                            ks 24 jul 87  
+ 1                                                                 
+ 2 | Code ~write  ( seg:addr quan handle -- )   D W mov            
+ 3 [[   W R xchg   C pop   D pop                                   
+ 4      D: pop   $40 # A+ mov   $21 int   W R mov  A D xchg        
+ 5      C: W mov   W D: mov  CS ?[  ;c: ?diskerror ; Assembler  ]? 
+ 6      C D sub  0= ?[  D pop   Next  ]?  ;c: Abort" Disk voll" ;  
+ 7                                                                 
+ 8   Code lfputs  ( seg:addr quan fcb -- )                         
+ 9      D W mov   u' f.handle W D) W mov  ]]  end-code             
+10                                                                 
+11   : fputc  ( 8b fcb -- )  >r sp@ ds@ swap 1 r> lfputs drop ;    
+12                                                                 
+13   : file!  ( 8b dfaddr fcb -- )  dup >r fseek r> fputc ;        
+14                                                                 
+15                                                                 
+Screen 137 not modified     
+ 0 \ /block  *block                                  ks 02 okt 87  
+ 1                                                                 
+ 2   Code /block  ( d -- rest blk )   A D xchg   C pop             
+ 3      C D mov   A shr   D rcr   A shr   D rcr   D+ D- mov        
+ 4      A- D+ xchg   $3FF # C and   C push   Next                  
+ 5   end-code                                                      
+ 6 \ : /block  ( d -- rest blk )   b/blk um/mod ;                  
+ 7                                                                 
+ 8   Code *block  ( blk -- d )  A A xor   D+ D- xchg   D+ A+ xchg  
+ 9      A+ sal   D rcl   A+ sal   D rcl   A push   Next            
+10   end-code                                                      
+11 \ : *block  ( blk -- d )   b/blk um* ;                          
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 138 not modified     
+ 0 \ fblock@  fblock!                                ks 19 mÑr 88  
+ 1   Dos definitions                                               
+ 2                                                                 
+ 3 | : ?beyond   ( blk -- blk )  dup 0< 0=exit  9 ?diskerror ;     
+ 4                                                                 
+ 5 | : fblock   ( addr blk fcb -- seg:addr quan fcb )              
+ 6      fcb !  ?beyond dup *block  fcb @  fseek   ds@ -rot         
+ 7      fcb @ f.size 2@ /block rot -  ?beyond                      
+ 8      IF  drop b/blk  THEN  fcb @ ;                              
+ 9                                                                 
+10   : fblock@  ( addr blk fcb -- )    fblock lfgets drop ;        
+11                                                                 
+12   : fblock!  ( addr blk fcb -- )    fblock lfputs ;             
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 139 not modified     
+ 0 \ (r/w  flush                                     ks 18 mÑr 88  
+ 1   Forth definitions                                             
+ 2                                                                 
+ 3   : (r/w   ( addr blk fcb r/wf -- *f )  over fcb !  over        
+ 4      IF  IF  fblock@ false exit  THEN  fblock! false exit       
+ 5      THEN  >r drop  /drive ?drive                               
+ 6      r> IF  block@ exit  THEN  block! ;                         
+ 7                                                                 
+ 8   ' (r/w Is r/w                                                 
+ 9                                                                 
+10 | : setfiles  ( fcb -- )   isfile@ prevfile !                   
+11      dup isfile !   fromfile ! ;                                
+12                                                                 
+13   : direct   0 setfiles ;                                       
+14                                                                 
+15                                                                 
+Screen 140 not modified     
+ 0 \ File  >file                                     ks 23 mÑr 88  
+ 1                                                                 
+ 2   : File    Create   file-link @   here file-link !  ,          
+ 3      here [ b/fcb 2 - ] Literal   dup allot   erase             
+ 4      file-link @   dup @ f.no c@ 1+   over f.no c!              
+ 5      last @ count $1F and   rot f.name place                    
+ 6   Does> setfiles ;                                              
+ 7                                                                 
+ 8   File kernel.scr    ' kernel.scr @  Constant [fcb]             
+ 9                                                                 
+10   Dos definitions                                               
+11                                                                 
+12   : .file   ( fcb -- )                                          
+13      ?dup IF  body> >name .name exit  THEN  ." direct" ;        
+14                                                                 
+15                                                                 
+Screen 141 not modified     
+ 0 \ .file  pushfile  close  open                    ks 12 mai 88  
+ 1   Forth  definitions                                            
+ 2                                                                 
+ 3   : file?    isfile@ .file ;                                    
+ 4                                                                 
+ 5   : pushfile    r>  isfile push  fromfile push  >r ; restrict   
+ 6                                                                 
+ 7   : close    isfile@ fclose ;                                   
+ 8                                                                 
+ 9   : open     isfile@ freset ;                                   
+10                                                                 
+11   : assign   isfile@ dup fclose   name swap fname!   open ;     
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 142 not modified     
+ 0 \      use from loadfrom include                  ks 18 mÑr 88  
+ 1                                                                 
+ 2   : use      >in @   name find                                  
+ 3      0= IF  swap >in !   File   last'  THEN  nip                
+ 4      dup @ [fcb] =  over ['] direct = or                        
+ 5      0= Abort" not a file"   execute open ;                     
+ 6                                                                 
+ 7   : from         isfile push   use ;                            
+ 8                                                                 
+ 9   : loadfrom     ( n -- )   pushfile  use load close ;          
+10                                                                 
+11   : include      1 loadfrom ;                                   
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 143 not modified     
+ 0 \ drive  drv  capacity   drivenames               ks 18 mÑr 88  
+ 1                                                                 
+ 2   : drive ( n -- )   isfile@ IF  ~select exit  THEN             
+ 3      ?drive   offset off 0 ?DO  I ?capacity offset +!  LOOP ;   
+ 4                                                                 
+ 5   : drv   ( -- n )                                              
+ 6      isfile@ IF  ~disk? exit  THEN  offset @ /drive nip ;       
+ 7                                                                 
+ 8   : capacity   ( -- n )   isfile@ ?dup                          
+ 9      IF  dup f.handle @ 0= IF  dup freset  THEN                 
+10          f.size 2@ /block swap 0<> - exit  THEN  blk/drv ;      
+11                                                                 
+12 | : Drv:   Create c,  Does> c@ drive ;                          
+13                                                                 
+14   0 Drv: A:     1 Drv: B:     2 Drv: C:     3 Drv: D:           
+15   4 Drv: E:     5 Drv: F:     6 Drv: G:     7 Drv: H:           
+Screen 144 not modified     
+ 0 \ lfsave  savefile  savesystem                    ks 10 okt 87  
+ 1                                                                 
+ 2   : lfsave   ( seg:addr quan string -- )                        
+ 3      filename >asciz 0 ~creat ?diskerror                        
+ 4      dup >r  ~write  r> ~close ;                                
+ 5                                                                 
+ 6   : savefile ( addr len -- )  ds@ -rot                          
+ 7      name nullstring? Abort" needs name" lfsave ;               
+ 8                                                                 
+ 9   : savesystem   save flush   $100 here savefile ;              
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 145 not modified     
+ 0 \ viewing                                         ks 19 mÑr 88  
+ 1   Dos definitions                                               
+ 2 | $400 Constant viewoffset                                      
+ 3                                                                 
+ 4   : (makeview   ( -- n )                                        
+ 5      blk @ dup 0=exit   loadfile @ ?dup 0=exit   f.no c@ ?dup   
+ 6      IF  viewoffset * + $8000 or exit  THEN  0= ;               
+ 7   ' (makeview Is makeview                                       
+ 8                                                                 
+ 9   : @view  ( acf -- blk fno )   >name 4 - @   dup 0<            
+10      IF  $7FFF and viewoffset u/mod  exit  THEN                 
+11      ?dup 0= Error" eingetippt"  0 ;                            
+12                                                                 
+13   : >file   ( fno -- fcb )   dup 0=exit    file-link            
+14      BEGIN  @  dup WHILE  2dup f.no c@ = UNTIL  nip ;           
+15                                                                 
+Screen 146 not modified     
+ 0 \ forget FCB's                                    ks 23 okt 88  
+ 1   Forth definitions                                             
+ 2 | : 'file  ( -- scr )  r>   scr push   isfile push   >r         
+ 3      [ Dos ] ' @view >file isfile ! ;                           
+ 4                                                                 
+ 5   : view   'file list ;                                         
+ 6   : help   'file capacity 2/ + list ;                           
+ 7                                                                 
+ 8 | : remove?   ( dic symb addr -- dic symb addr f )              
+ 9      2 pick over 1+ u< ;                                        
+10                                                                 
+11 | : remove-files  ( dic symb -- dic symb )  file-link           
+12      BEGIN  @ ?dup WHILE  remove? IF  dup fclose  THEN  REPEAT  
+13      file-link remove                                           
+14      isfile@    remove? nip IF  file-link @ isfile !  THEN      
+15      fromfile @ remove? nip 0=exit isfile@ fromfile ! ;         
+Screen 147 not modified     
+ 0 \ BIOS  keyboard input                            ks 16 sep 88  
+ 1                                                                 
+ 2   Code (key@  ( -- 8b )  D push   A+ A+ xor   $16 int           
+ 3      0 # D+ mov   A- D- mov   A- A- or                          
+ 4      0= ?[  A+ D- mov   D+ com  ]?   Next   end-code            
+ 5                                                                 
+ 6   : test  BEGIN  (key@ #esc case? ?exit                         
+ 7                  cr dup emit 5 .r  key 5 .r  REPEAT ;           
+ 8 \\                                                              
+ 9   Code (key?  ( -- f )   D push   1 # A+ mov   D D xor          
+10      $16 int   0= not ?[  D dec  ]?   Next   end-code           
+11                                                                 
+12   Code empty-keys   $C00 # A mov   $21 int   Next   end-code    
+13                                                                 
+14   : (key  ( -- 8b )   BEGIN  pause (key? UNTIL  (key@ ;         
+15                                                                 
+Screen 148 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 149 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 150 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 151 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 152 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 153 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 154 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 155 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 156 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 157 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 158 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 159 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

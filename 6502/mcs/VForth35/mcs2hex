@@ -1,0 +1,2 @@
+#!/bin/bash
+srec_cat mcsvf.com -Raw --offset=0x2800 -o mcsvf.hex -Motorola --address-length=3 

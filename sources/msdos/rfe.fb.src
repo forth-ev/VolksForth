@@ -1,0 +1,51 @@
+Screen 0 not modified     
+ 0 \ Retro Forth Editor                                            
+ 1                                                                 
+ 2 a simple forth-style editor                                     
+ 3                                                                 
+ 4 use filename.fb                       :: open forth block file  
+ 5 block# list                           :: list block             
+ 6 v                                     :: view current block     
+ 7 x                                     :: clear/zero block       
+ 8 line# i text                          :: insert text at line    
+ 9 line# d                               :: delete line            
+10 n                                    :: load next block         
+11 p                                    :: load previous block     
+12 block# s                             :: load block              
+13 e                                    :: evaluate/load block     
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ RetroForth Editor for VolksForth 1/2                          
+ 1                                                                 
+ 2 16 constant l/b                                                 
+ 3                                                                 
+ 4 : (block) scr @ block ;  : (line) c/l * (block) + ;             
+ 5 : row dup c/l -trailing type c/l + cr ;                         
+ 6 : .rows l/s 0 do i . row loop ;                                 
+ 7 : .block ." BLOCK: " scr @ . space ;                            
+ 8 : +--- ." +---" ;  : :--- ." :---" ;                            
+ 9 : x--- +--- :--- +--- :--- ;                                    
+10 : --- space space x--- x--- x--- x--- cr ;                      
+11 : vb --- scr @ block .rows drop --- ;                           
+12 : .stack ." Stack: " .s ;                                       
+13 : status .block .stack ;                                        
+14 : v cr vb status ;                                              
+15 -->                                                             
+Screen 2 not modified     
+ 0 \ RetroForth Editor for VolksForth 2/2                          
+ 1                                                                 
+ 2 : v* update v ;                                                 
+ 3 : s dup scr ! block drop v ;                                    
+ 4 : ia (line) + >r 10 parse r> swap move v* ;                     
+ 5 : i 0 swap ia v* ;                                              
+ 6 : d (line) c/l bl fill v* ;                                     
+ 7 : x (block) l/b c/l * bl fill v* ;                              
+ 8 : p -1 scr +! v ;                                               
+ 9 : n 1 scr +! v ;                                                
+10 : e scr @ load ;                                                
+11                                                                 
+12                                                                 
+13                                                                 
+14 .( Retro Forth Editor loaded )                                  
+15                                                                 

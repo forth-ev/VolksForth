@@ -1,0 +1,136 @@
+Screen 0 not modified     
+ 0 \ Commandline EDitor for volksFORTH rev. 3.80        cas 10nov05
+ 1 This File contains definitions to create an editable Forth      
+ 2 command line with history.                                      
+ 3 The commandline histroy allows older commands to be recalled.   
+ 4 These older commands will be stored in Screen 0 in a file called
+ 5 "history" and will be preserved even when calling SAVE-SYSTEM.  
+ 6                                                                 
+ 7                                                                 
+ 8 Keys:                                                           
+ 9   Cursor left/right                                           
+10   Delete Char                             <del> und <-          
+11   Delete Line                             <esc>                 
+12   toggle Insert                           <ins>                 
+13   finish line                             <enter>               
+14   Jump to Beginning/End of Line           <pos1> <end>          
+15   recall older commands                                       
+Screen 1 not modified     
+ 0 \ Commandline EDitor LOAD-Screen                     cas 10nov05
+ 1                                                                 
+ 2                                                                 
+ 3 : curleft ( -- )  at? 1- at ;                                   
+ 4 : currite ( -- )  at? 1+ at ;                                   
+ 5                                                                 
+ 6 1 5 +thru  \ enhanced Input                                     
+ 7                                                                 
+ 8 .( Commandline Editor loaded ) cr                               
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ History -- Commandhistory                          cas 10nov05
+ 1 makefile history  1 more                                        
+ 2                                                                 
+ 3 | Variable line#       line# off                                
+ 4 | Variable lastline#   lastline# off                            
+ 5                                                                 
+ 6 | : 'history ( n -- addr )  isfile push  history                
+ 7     c/l *   b/blk /mod  block + ;                               
+ 8                                                                 
+ 9 | : @line ( n -- addr len )  'history c/l -trailing ;           
+10 | : !history ( addr line# -- )                                  
+11       'history dup c/l blank  span @ c/l min cmove update ;     
+12 | : @history ( addr line# -- )                                  
+13       @line rot swap dup span ! cmove ;                         
+14                                                                 
+15 | : +line ( n addr -- )  dup @  rot + l/s  mod  swap ! ;        
+Screen 3 not modified     
+ 0 \ End of input                                       cas 10nov05
+ 1                                                                 
+ 2 | Variable maxchars               | Variable insert insert on   
+ 3                                                                 
+ 4 | : -text ( a1 a2 l -- 0=equal )  bounds                        
+ 5       ?DO count I c@ - ?dup IF nip ENDLOOP exit THEN LOOP 0= ;  
+ 6                                                                 
+ 7 | : done ( a p1 -- a p2 )  2dup                                 
+ 8       at?  rot -  span @ dup maxchars !  + at space blankline   
+ 9       line# @ @line  span @ = IF span @ -text 0=exit 2dup THEN  
+10       drop  lastline# @ !history  1 lastline# +line ;           
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 4 not modified     
+ 0 \ enhanced input                                     cas 10nov05
+ 1 | : redisplay ( addr pos -- )                                   
+ 2      at?  2swap  span @ swap /string type blankline at ;        
+ 3                                                                 
+ 4 | : del   ( addr pos -- )  span @ 0=exit  dup >r   + dup 1+ swap
+ 5       span @ r> - cmove   -1 span +! ;                          
+ 6 | : ins   ( addr pos1 -- )  dup >r   + dup  dup 1+              
+ 7       span @ r> - cmove>   bl swap c!  1 span +! ;              
+ 8                                                                 
+ 9 | : delete  ( a p1 -- a p2 )  2dup del  2dup redisplay ;        
+10 | : back ( a p1 -- a p2 )  1- curleft delete ;                  
+11                                                                 
+12 | : recall ( a p1 -- a p2 ) at? rot - at  dup line# @ @history  
+13      dup 0 redisplay  at? span @ + at  span @ ;                 
+14                                                                 
+15 | : <start ( a1 p1 -- a2  p2 )  at?  rot - at  0 ;              
+Screen 5 not modified     
+ 0 \ Keyassignment for Commandline-Editor MS-DOS        cas 10nov05
+ 1                                                                 
+ 2 : (decode ( addr pos1 key -- addr pos2 )                        
+ 3   -&77  case? IF dup  span @ < 0=exit  currite 1+   exit THEN   
+ 4   -&75  case? IF dup           0=exit  curleft 1-   exit THEN   
+ 5   -&82  case? IF insert @ 0=   insert !             exit THEN   
+ 6    #bs  case? IF dup           0=exit  back         exit THEN   
+ 7   -&83  case? IF span @ 2dup < and 0=exit delete    exit THEN   
+ 8   -&72  case? IF -1 line# +line recall              exit THEN   
+ 9   -&80  case? IF  1 line# +line recall              exit THEN   
+10    #cr  case? IF done                               exit THEN   
+11    #esc case? IF <start span off  2dup redisplay    exit THEN   
+12   -&71  case? IF <start                             exit THEN   
+13   -&79  case? IF at? rot -  span @ +  at  span @    exit THEN   
+14    dup emit >r  insert @ IF 2dup ins THEN   2dup +              
+15    r>  swap c!  1+  dup span @ max span ! 2dup redisplay ;      
+Screen 6 not modified     
+ 0 \ Patch                                              cas 10nov05
+ 1                                                                 
+ 2 : showcur ( -- )                                                
+ 3    insert @ IF &11 ELSE &6 THEN &12 curshape ;                  
+ 4                                                                 
+ 5 : (expect ( addr len -- )  maxchars !   span off                
+ 6     lastline# @ line# !  0                                      
+ 7     BEGIN span @ maxchars @ u<                                  
+ 8     WHILE key decode showcur REPEAT 2drop ;                     
+ 9                                                                 
+10 ' (decode ' keyboard 6 + !                                      
+11 ' (expect ' keyboard 8 + !                                      
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 7 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

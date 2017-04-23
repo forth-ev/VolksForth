@@ -1,0 +1,111 @@
+Changes in CP/M-volksFORTH between Version 3.80 and Version 3.80a 
+UH 04March88
+=============================================================================
+
+The original CP/M-VolksForth was incompatible with CP/M+. Because of the
+many version necessary to support the different CP/M Versions, a rework of
+CP/M-volksForth was neccessary. We have fixed some issues on the way.
+
+1. Changes in the Kernel (SOURCE.FB)
+
+* The Terminal-I/O has been reduced to a minimal set, so that the kernal
+  is usable right away. The line editor has been moved out the kernal
+  together with all "Terminal:" functions into the file XINOUT.FB
+
+* The kernel does not contain a fileinterface anymore, it uses the file
+  that has been specified on the commandline (default-file). Usually this
+  file contains the fileinterface which is loaded on the next step.
+
+* direct Disk-I/O is not supported by the kernel anymore, because it is 
+  not compatible with CP/M+. Diskaccess is only done via BDOS.
+
+* many functions of the kernel has been newly implemented in assembler,
+  a new word "search" has been added that allows quick string searches
+  with capitalization
+
+* the word CAPITALIZE has been replaced with the word UPPER. The word "exit"
+  in NAME has been moved because of this.
+
+* the kernel prints its size in 256 byte pages when leaving. This can be used
+  to dump the kernel to disk using the CP/M "SAVE" command (don't forget to
+  make your changes in the Forth kernel with the forth word "save" first).
+
+* SAVE-BUFFERS has been extended by a deferred wird SAVE-DOS-BUFFERS to
+  solve an issue with CP/M+
+
+* the deferred word POSTLUDE has been added. It is responsible for the
+  last action before the CP/M warmstart (enable cursor, clear screen,
+  print size of the kernel ...)
+
+* the command line from CP/M is now copied into the TIB (terminal input
+  buffer) and can be interpreted from there. Using the "default-file" will
+  however clear the TIB, so that this function can only be used after the
+  fileinterface is loaded (DRVINIT does not open the "default-file" then)
+
+* the Interpret-Loop has been reworked and has been extended by the 
+  word PROMPT. The special word ">INTERPRET" has been removed. Its 
+  function is now done by the (normal) deferred word PARSER.
+
+* the Control-Structur words (IF, WHILE, ...) are now available 
+  outside word definitions (interactivly)
+
+* misc small changes
+
+
+2. Changes in the editor (EDITOR.FB, STRING.FB)
+
+* the tagging od screens has been fixed and it now works correctly
+  with search/replace and with SHOWLOAD
+
+* VIEW has been changed, it no searched inside the word enclosed by blanks
+
+* the associative file is now displayed
+
+* when using search/replace, the screennumber is incremented on the
+  screen to give a visual feedback of the search function
+
+* the string search is now implemented in the kernal, the other string
+  functions has been moved into EDITOR.FB. STRING.FB has been removed.
+
+3. Changes in the Multitasker  (TASKER.FB)
+
+* the word TASK has been changed: the constant is now defined before 
+  the task, it is now possible to forget a task with FORGET <taskname>
+
+* the PAUSE/WAKE/STOP flow has been changed, however there is no change
+  in the usage
+
+4. Changes in the Fileinterface (FILEINT.FB)
+
+* The fileinterface has been reworked. Some errors have been removed and
+  the names of many words have been changed to be more systematic. The
+  usage however is the same.
+
+
+5. Terminal-Installation (adapt CP/M-volksForth to your CP/M system)
+   
+* because the kernel does not contain a fileinterface anymore, the file-
+  interface must be loaded before the simple-editor:
+
+           A> kernel fileint.fb 
+              1 load
+              use primed.fb  1 load
+              use terminal.fb
+      
+     
+6. How to create a standard CP/M-volksForth system:
+
+* use the follwing command sequence to create the VOLKS4TH.COM from
+  a KERNEL.COM file:
+
+	     A> kernel fileint.fb
+                1 load
+                include startup.fb
+
+7. new and removed files 
+      
+      - XINOUT.FB	terminalfunctions and line editor
+      - COPY.FB         the functions COPY and CONVEY 
+      - STRING.FB	(removed)
+
+

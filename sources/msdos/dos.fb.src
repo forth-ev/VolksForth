@@ -1,0 +1,306 @@
+Screen 0 not modified     
+ 0 \                                                    28 jun 88  
+ 1                                                                 
+ 2 DOS loads higher level file functions which go beyond           
+ 3 including a screen file. Calls to MS-DOS are implemented        
+ 4 and used for directory manipulation. These functions may        
+ 5 not work for versions before MS-DOS 3.0.                        
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ MS-DOS file handli                                 28 jun 88  
+ 1   Onlyforth   \needs Assembler   2 loadfrom asm.scr             
+ 2                                                                 
+ 3   : fswap      isfile@  fromfile @   isfile !  fromfile ! ;     
+ 4                                                                 
+ 5   $80 Constant dta                                              
+ 6                                                                 
+ 7 | : COMSPEC  ( -- string )   [ dos ]                            
+ 8      $2C @ ( DOS-environment:seg) 8   ds@ filename   &60 lmove  
+ 9      filename counted &60 min filename place  filename ;        
+10                                                                 
+11   1 &12 +thru   .( MS-DOS functions loaed ) cr                  
+12                                                                 
+13   Onlyforth                                                     
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ moving blocks                                   ks 04 okt 87  
+ 1                                                                 
+ 2 | : full? ( -- flag )  prev  BEGIN @ dup @ 0= UNTIL  6 + @ 0< ; 
+ 3                                                                 
+ 4   : used?  ( blk -- f )                                         
+ 5      block count b/blk 1- swap skip nip 0<> ;                   
+ 6                                                                 
+ 7 | : (copy   ( from to -- )                                      
+ 8      full? IF  save-buffers  THEN   isfile@ fromfile @ -        
+ 9      IF  dup used? Abort" target block not empty"  THEN         
+10      dup isfile@ core? IF  prev @ emptybuf  THEN                
+11      isfile@ 0= IF  offset @ +  THEN                            
+12      isfile@ rot   fromfile @ (block 6 -   2! update ;          
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0 \ moving blocks                                   ks 04 okt 87  
+ 1                                                                 
+ 2 | : blkmove ( from to quan -- ) 3 arguments save-buffers        
+ 3      >r over r@ + over u> >r 2dup u< r> and                     
+ 4      IF    r@ r@ d+ r> 0 ?DO  -1 -2 d+   2dup (copy  LOOP       
+ 5      ELSE           r> 0 ?DO  2dup (copy     1 1 d+  LOOP       
+ 6      THEN  save-buffers 2drop ;                                 
+ 7                                                                 
+ 8   : copy    ( from to -- )         1 blkmove ;                  
+ 9                                                                 
+10   : convey  ( blk1 blk2 to.blk -- )                             
+11      3 arguments   >r   2dup swap - >r                          
+12      fswap dup capacity 1- > isfile@ 0<> and                    
+13      fswap r> r@ + capacity 1- > isfile@ 0<> and or >r          
+14      1+ over - dup 0> not r> or Abort" nein" r> swap blkmove ;  
+15                                                                 
+Screen 4 not modified     
+ 0 \ MORE  extending forth files                     ks 10 okt 87  
+ 1   Dos also definitions                                          
+ 2                                                                 
+ 3 | : addblock   ( blk -- )   dup buffer  dup b/blk blank         
+ 4      isfile@ f.size dup  2@ b/blk 0 d+  rot 2!                  
+ 5      swap isfile@ fblock! ;                                     
+ 6                                                                 
+ 7   Forth definitions                                             
+ 8                                                                 
+ 9   : more   ( n -- )  1 arguments  isfile@                       
+10      IF  capacity swap bounds ?DO  I addblock  LOOP  close exit 
+11      THEN  drop ;                                               
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 5 not modified     
+ 0 \ file  eof? create   dta-addressing              ks 03 apr 88  
+ 1   Dos definitions                                               
+ 2                                                                 
+ 3   : ftime  ( -- mm hh )                                         
+ 4      isfile@ f.time @ $20 u/mod nip $40 u/mod ;                 
+ 5                                                                 
+ 6   : fdate  ( -- dd mm yy )                                      
+ 7      isfile@ f.date @ $20 u/mod $10 u/mod &80 + ;               
+ 8                                                                 
+ 9   : .when  base push decimal                                    
+10      fdate rot 3 .r ." ." swap 2 .r ." ." 2 .r                  
+11      ftime 3 .r ." :" 2 .r ;                                    
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 6 not modified     
+ 0 \ ks 20mar88                                                    
+ 1                                                                 
+ 2   : (.fcb     ( fcb -- )                                        
+ 3      dup .file ?dup 0=exit  pushfile                            
+ 4      isfile !  &13 tab ." is"                                   
+ 5      isfile@ f.handle @ 2 .r                                    
+ 6      isfile@ f.size 2@ 7 d.r  .when                             
+ 7      space isfile@ f.name count type ;                          
+ 8                                                                 
+ 9   Forth definitions                                             
+10                                                                 
+11   : files   file-link                                           
+12      BEGIN  @ dup WHILE  cr dup (.fcb  stop? UNTIL  drop ;      
+13                                                                 
+14   : ?file    isfile@ (.fcb ;                                    
+15                                                                 
+Screen 7 not modified     
+ 0 \ dir make makefile                               ks 25 okt 87  
+ 1   Forth definitions                                             
+ 2                                                                 
+ 3   : killfile   close                                            
+ 4      isfile@ f.name filename >asciz ~unlink drop ;              
+ 5                                                                 
+ 6   : emptyfile      isfile@ 0=exit                               
+ 7      isfile@ f.name filename >asciz  0 ~creat ?diskerror        
+ 8      isfile@ f.handle !    isfile@ f.size 4 erase ;             
+ 9                                                                 
+10   : make      close   name isfile@ fname!   emptyfile ;         
+11                                                                 
+12   : makefile  File   last @ name> execute   emptyfile ;         
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 8 not modified     
+ 0 \ getpath                                         ks 10 okt 87  
+ 1   Dos definitions                                               
+ 2                                                                 
+ 3 | &40 Constant pathlen                                          
+ 4 | Create pathes  0 c, pathlen allot                             
+ 5                                                                 
+ 6 | : (setpath   ( string -- )   count                            
+ 7      dup pathlen u> Abort" path too long"  pathes place ;       
+ 8                                                                 
+ 9 | : getpath  ( +n -- string / ff )                              
+10      >r  0   pathes count   r> 0                                
+11      DO  rot drop Ascii ; skip  stash  Ascii ; scan  LOOP       
+12      drop over - ?dup                                           
+13      IF  here place   here   dup count + 1- c@                  
+14          ?" :\" ?exit  Ascii \ here append exit                 
+15      THEN  0= ;                                                 
+Screen 9 not modified     
+ 0 \ pathsearch   .path  path                        ks 09 okt 87  
+ 1                                                                 
+ 2   : pathsearch  ( string -- asciz *f )   dup >r                 
+ 3      (fsearch dup 0= IF  rdrop exit  THEN  2drop  0 0           
+ 4      BEGIN  drop 1+  dup getpath ?dup 0=                        
+ 5             IF  drop r> filename >asciz 2 exit  THEN            
+ 6             r@ count 2 pick attach (fsearch                     
+ 7      0= UNTIL nip rdrop false ;                                 
+ 8                                                                 
+ 9   ' pathsearch Is fsearch                                       
+10                                                                 
+11   Forth  definitions                                            
+12                                                                 
+13   : .path    pathes count type ;                                
+14                                                                 
+15   : path     name nullstring? IF  .path exit  THEN  (setpath ;  
+Screen 10 not modified     
+ 0 \ call another executable file                    ks 04 aug 87  
+ 1   Dos definitions                                               
+ 2                                                                 
+ 3 | Create cpb   0 , \ inherit parent environment                 
+ 4    dta , ds@ , $5C , ds@ , $6C , ds@ ,  Label ssave  0 ,        
+ 5                                                                 
+ 6 | Code ~exec  ( asciz -- *f )                                   
+ 7      I push   R push   U push   S ssave #) mov   cpb # R mov    
+ 8      $4B00 # A mov   $21 int   C: D mov   D D: mov   D S: mov   
+ 9      D E: mov   ssave #) S mov  CS not                          
+10      ?[  A A xor   A push   $2F # A+ mov   $21 int   E: A mov   
+11          A D: mov   C: A mov   A E: mov   R I mov   dta # W mov 
+12          $40 # C mov   rep movs   A D: mov   A pop              
+13      ]?  A W xchg   dta # D mov   $1A # A+ mov   $21 int        
+14      W D mov   U pop   R pop   I pop   Next                     
+15   end-code                                                      
+Screen 11 not modified     
+ 0 \ calling MS-DOS thru forth interpreter           ks 19 mr 88   
+ 1                                                                 
+ 2 | : execute?  ( extension -- *f )                               
+ 3      count   filename count Ascii . scan drop swap              
+ 4      2dup 1+ erase  move   filename 1+ ~exec ;                  
+ 5                                                                 
+ 6   : fcall   ( string -- )  count filename place   ds@ cpb 4+ !  
+ 7      " .EXE" execute? dup IF  drop " .COM" execute?  THEN       
+ 8      ?diskerror ;                                               
+ 9                                                                 
+10   : fdos  ( string -- )                                         
+11      dta $80 erase   " /c " count dta place   count dta attach  
+12      status push  status off .status COMSPEC fcall  curat? at ; 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 12 not modified     
+ 0 \ einige MS-DOS Funktionen  msdos  call           ks 10 okt 87  
+ 1                                                                 
+ 2   : dos:  Create ,"  Does> count here place                     
+ 3      Ascii " parse here attach  here fdos ;                     
+ 4                                                                 
+ 5   Forth definitions                                             
+ 6                                                                 
+ 7   dos: dir dir "                                                
+ 8   dos: ren ren "                                                
+ 9   dos: md md "                                                  
+10   dos: cd cd "                                                  
+11   dos: rd rd "                                                  
+12   dos: fcopy copy "                                             
+13   dos: delete del "                                             
+14   dos: ftype type "                                             
+15                                                                 
+Screen 13 not modified     
+ 0 \ msdos  call                                     ks 23 okt 88  
+ 1                                                                 
+ 2   : msdos  savevideo   status push  status off .status          
+ 3      flush dta off COMSPEC fcall restorevideo ;                 
+ 4                                                                 
+ 5   : call    name   source >in @ /string c/l umin                
+ 6      dta place   dta dta >asciz drop   [compile] \              
+ 7      status push  status off .status fcall   curat? at ;        
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 14 not modified     
+ 0 \ time date                                       ks 19 mr 88   
+ 1   Dos definitions                                               
+ 2                                                                 
+ 3   : ftime  ( -- mm hh )                                         
+ 4      open isfile@ f.time @ $20 u/mod nip $40 u/mod ;            
+ 5                                                                 
+ 6   : fdate  ( -- dd mm yy )                                      
+ 7      open isfile@ f.date @ $20 u/mod $10 u/mod &80 + ;          
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 15 not modified     
+ 0 \ ~lseek  position?                               ks 10 okt 87  
+ 1   Dos definitions                                               
+ 2                                                                 
+ 3   Code ~lseek    ( d handle method -- d' )                      
+ 4      R W mov   D A mov   R pop   C pop   D pop                  
+ 5      $42 # A+ mov   $21 int   W R mov   CS not                  
+ 6      ?[  A push   Next  ]?  A D xchg  ;c: ?diskerror ;          
+ 7                                                                 
+ 8   Forth definitions                                             
+ 9                                                                 
+10   : position?   ( -- dfaddr )                                   
+11      isfile@ f.handle @ 0= Abort" file not open"                
+12      0 0  isfile@ f.handle @  1  ~lseek ;                       
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 16 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 17 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

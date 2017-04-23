@@ -1,0 +1,187 @@
+Screen 0 not modified     
+ 0 \                                                    cas 11nov05
+ 1 The word STREAM>BLK convert a sequiential file with CR lineend  
+ 2 into a screenfile with 64 Chars per line.                       
+ 3                                                                 
+ 4 Example:                                                        
+ 5 FORTH.TXT is a Forth-Sourceode in a sequiential file            
+ 6                                                                 
+ 7 MAKEFILE FORTH.FB  will create an empty screenfile              
+ 8 FROM FORTH.TXT     will define the inputfile                    
+ 9 STREAM>BLK         will convert FORTH.TXT into FORTH.FB         
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \                                                 ks 06 jul 88  
+ 1   Onlyforth Dos also                                            
+ 2                                                                 
+ 3 | : in   ( -- fcb )  fromfile @ ;                               
+ 4 | : out  ( -- fcb )    isfile @ ;                               
+ 5                                                                 
+ 6 | : padd ( cnt -- )  dup IF  c/l mod ?dup 0=exit  THEN          
+ 7      c/l swap ?DO  BL out fputc  LOOP ;                         
+ 8                                                                 
+ 9 | : skipctrl  ( -- char )                                       
+10      BEGIN  in fgetc dup #cr = ?exit                            
+11             dup 0 BL uwithin 0=exit  drop  REPEAT ;             
+12                                                                 
+13   2 3 thru                                                      
+14                                                                 
+15   Onlyforth                                                     
+Screen 2 not modified     
+ 0 \                                                 ks 06 jul 88  
+ 1                                                                 
+ 2 | : lastline?  ( -- f )   false  0  skipctrl                    
+ 3      BEGIN  -1 case? IF  ?dup IF  padd   THEN  0= exit  THEN    
+ 4             #cr case? 0= WHILE  out fputc  1+  in fgetc  REPEAT 
+ 5      padd ;                                                     
+ 6                                                                 
+ 7   : stream>blk   open  out freset                               
+ 8      out f.size 2@ out fseek \ append to end of file            
+ 9      BEGIN  lastline? stop? or UNTIL  close  out fclose ;       
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0 \ absolute blocks in file eintragen               ks 11 aug 87  
+ 1                                                                 
+ 2 | : >stream   ( blk -- )                                        
+ 3      fromfile @ (block b/blk bounds                             
+ 4      DO  ds@ I C/L -trailing out lfputs                         
+ 5          #cr out fputc  #lf out fputc   C/L +LOOP ;             
+ 6                                                                 
+ 7   : blk>stream  ( from.blk to.blk -- )  emptyfile               
+ 8      1+ swap DO  I >stream  LOOP  close ;                       
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 4 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 5 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 6 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 7 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 8 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 9 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 10 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

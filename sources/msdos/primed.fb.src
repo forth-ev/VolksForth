@@ -1,0 +1,119 @@
+Screen 0 not modified     
+ 0 \\ Simple Editor for Installation                    cas 10nov05
+ 1                                                                 
+ 2 If the Full-Screen Editor cannot be used during installation    
+ 3 (incompatible display hardware), the screens must be altered    
+ 4 with this Simple Editor "PRIMED", which contains only one word  
+ 5 definition::                                                    
+ 6                                                                 
+ 7 Usage: Select Screen nn with command "nn LIST",                 
+ 8   and edit a screen with "ll NEW". It is only possible to       
+ 9   rewrite whole lines. ll is the first line where the editing   
+10   should start. The editing can be terminated by entering an    
+11   empty line (just RETURN). Each RETURN will store the editied  
+12   line and the whole screen will be reprinted.                  
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ primitivst Editor PRIMED                           cas 10nov05
+ 1  Vocabulary Editor                                              
+ 2                                                                 
+ 3 | : !line ( adr count line# -- )                                
+ 4       scr @ block  swap c/l * +  dup c/l bl fill                
+ 5       swap cmove update ;                                       
+ 6                                                                 
+ 7 : new ( n -- )                                                  
+ 8    l/s 1+ swap                                                  
+ 9    ?DO cr  I .                                                  
+10       pad c/l expect   span @ 0= IF leave THEN                  
+11       pad  span @  I !line   cr  scr @ list  LOOP ;             
+12                                                                 
+13  ' scr | Alias scr'                                             
+14                                                                 
+15  .( Simple Editor loaded ) cr                                   
+Screen 2 not modified     
+ 0 \ PRIMED Demo-Screen                                 cas 10nov05
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4 This text was created by: "2 LIST  4 NEW" and then entering     
+ 5 this text                                                       
+ 6 The headerline (Line 0) was added later after leaving "NEW"     
+ 7 with an empty line (just RETURN) and a new editing command      
+ 8 "0 NEW".                                                        
+ 9                   Ulrich Hoffmann                               
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 4 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 5 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 6 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

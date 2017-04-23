@@ -1,0 +1,53 @@
+
+Claus Vogt, BÅlowstr.67, D-1000 Berlin 30   030/216 89 38  5.1.90  
+
+Vierte Dimension / D.Luda Soft
+Staudinger Str.65
+
+D-8000 MÅnchen 83
+
+
+
+Liebe Redaktion,
+
+anbei:
+
+- ErgÑnzung zum Artikel Datentransfers Commodore-PC in VD....
+- dazu ein Ein-Screen-Quellchen: CBM_ST.SCR
+
+Mit forthigen GrÅûen,
+
+
+- Claus Vogt -
+   
+
+
+
+
+
+
+Artikel fÅr die Vierte Dimension:
+
+TITEL:::::  
+
+ErgÑnzung zu ........... in VD .............
+
+FÅr jene, die Ihre volksFORTH-Quellen auf C16 oder C64
+im 41x25-Format geschrieben haben und sie gerne auf
+Atari-ST weiterverwenden mîchten, gibt es - Ñhnlich
+zur PC-Variante - auch eine Mîglichkeit. Diesmal
+ist es nur ein einziger Screen. Es werden wieder
+die Konstanten C/L und L/S gepatched, wieder
+werden die Editor-Variablen, die die linke
+obere Ecke des Bildschirms angeben, verÑndert.
+Wieder gibt es HÑûlichkeiten, die wir 
+geflissentlich Åbersehen (Zufallszeichen rechts
+unten in der letzten Zeile, leicht zerschroteter
+Bildschirmaufbau im Editor). Etwas neues gibt
+es auch: Die Umstellung des Zeilenabstands
+im Editor erfolgt durch Patchen in NORMAL.
+
+
+
+
+

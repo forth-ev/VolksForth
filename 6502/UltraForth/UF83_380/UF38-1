@@ -1,0 +1,1248 @@
+\\ Directory 1of4 26oct87re                                                       .                     0                  ..                    0                  Inhalt                1                  Editor-Telegramm      2                  Erstes-Info           3                  Lade-System           4                  Lade-Demo             5                  loadfrom              6                  einfache-Datei        8                  help                &10                  FORTH-Gruppe        &11                  Zahlenspiel         &12                  buffers             &13                  dump                &14                  Disassembler        &16                  TEST.DIR            &23                  savesystem          &26                  formatdisk          &27                  copydisk            &28                  copy2disk           &29                                                                                                                                            \\ Inhalt ultraFORTH 1of4      26oct87re                                          Directory             0                  Inhalt                1                  Editor Telegramm      2                  Erstes Info           3                  Lade System           4                  einfache Datei        8                  help                &10                  lokale FORTH-Gruppe &11                  Zahlenspiel         &12                  relocate the system &13                  dump                &14 -  &15           6502-Disassembler   &16 -  &22            Test-Ordner        &23 -  &25           savesystem          &26                  bamallot formatdisk &27                  copydisk            &28                  2disk copy2disk     &29 -  &30             frei              &31 -  &36             prg-files         &37 -  &84           Shadows             &85 - &121             prg-files        &122 - &169                                                    FORTH-GESELLSCHAFT  (c) bp/ks/re/we/clv   *** ultraFORTH  EDITOR KOMMANDOS ***    besondere Funktionen:                       Ctrl o  Overwrite   Ctrl i  Insmode      Ctrl $  .stamp      Ctrl #  .scr#        Ctrl '  search                        Cursor Kontrolle:                           normale Funktion, andere:                F7      +tab        F8      -tab         CLR     >text-end   RETURN  CR        Zeichen-Behandlung:                         F5      buf>char    F6      char>buf     DEL     backspace   INST    insert       Ctrl d  Delete      Ctrl @  copychar  Zeilen-Behandlung:                          F1      newline     F2      killine      F3      buf>line    F4      line>buf     Ctrl e  Eraseline   Ctrl r  clrRight     Ctrl ^  copyline                      Blaettern:                                  Ctrl n  >Next       Ctrl b  >Back        Ctrl a  >Alternate  Ctrl w  >shadoW   Ausstieg aus Editor:                        Ctrl c  Canceled    Ctrl x  updated      Ctrl f  Flushed     Ctrl l  Loading  FORTH-GESELLSCHAFT   (c) bp/ks/re/we/clv  Du bist im Editormodus  Screen # 3         Zurueck ins FORTH mit RUN/STOP                                                                                                 *** ultraFORTH-83 ***                                                           Einstieg in den Editor mit            "l ( n -- )" oder mit "r ( -- )"                                                   ACHTUNG! Ohne Erfahrung nur mit          Schreibschutz auf den Disketten                    arbeiten!                                                              Einige FORTH-Worte zum Probieren              ausserhalb des Editors:                      WORDS   ORDER                              VIEW HELP                            und die C= -Taste                                                              Seite zurueck mit "Ctrl b"                                                     Zum Weitergeben bitte die ganze          Diskette kopieren (Back-Up) !!!                                               FORTH-GESELLSCHAFT   (c) bp/ks/re/we/clv\ Lade ein Arbeitssystem       05nov87re                                          Onlyforth                                                                              2 +load       \ loadfrom            &46 c: loadfrom    \ .blk                  4 c: loadfrom    \ Transient Assemb    &19 c: loadfrom    \ Editor              &26 a: loadfrom    \ savesystem          oldsave                                       2 +load       \ loadfrom              5 c: loadfrom    \ Assembler           &47 c: loadfrom    \ Tracer + Tools      &13 a: loadfrom    \ Buffers                                                                                                                                                                                                                                                                                                                                                     oldsave   \\                                                                      FORTH-GESELLSCHAFT  (c) bp/ks/re/we/clv \ Lade die C64 Demo            21oct87re                                          (16 .( Nicht fuer C16!) \\ C)                                                     Onlyforth                                                                         1 +load   \ loadfrom                                                              limit first @ -   b/buf 8 * -            ?\ 8 buffers                                                                      \needs demostart : demostart ; 90 allot  \needs tasks        $39 C: loadfrom      \needs help         $A  A: loadfrom      \needs slide        &6  D: loadfrom                                               1 scr !  0 r# !                                                                   Onlyforth                                                                         oldsave                                                                           \\                                                                                FORTH-GESELLSCHAFT  (c) bp/ks/re/we/clv \ getdisk loadfrom             20oct87re                                          here   $200 hallot  heap dp !                                                     : getdisk  ( drv -- )                     cr  ." Bitte Diskette "                  1+ .  ." einlegen! "                     key drop  .status  cr ;                                                          : loadfrom  ( blk drv -- )                ?dup 0= IF  load exit  THEN              flush  getdisk  load                     flush  0 getdisk ;                                                               0 Constant A:       1 Constant B:        2 Constant C:       3 Constant D:                                                 : ?\  ( f -- )   ?exit  [compile] \ ;                                                                           -->                                                                                                                                                                            FORTH-GESELLSCHAFT  (c) bp/ks/re/we/clv \ Neues save empty clear       20oct87re                                          ' save  Alias oldsave                    ' clear Alias oldclear                   ' empty Alias oldempty                                                            : save  state @ IF  compile save  THEN ;   immediate                                                                       : clear state @ IF  compile clear THEN ;   immediate                                                                       : empty state @ IF  compile empty THEN ;   immediate                                                                       dp !                                                                                                                                                                                                                                                                                           \\                                                                                FORTH-GESELLSCHAFT  (c) bp/ks/re/we/clv \ einfaches Dateisystem        20oct87re                                          \needs (search  .( (search fehlt! ) \\                                            ' word >body 2+ @ Alias (word                                                     0 Constant ordner                                                                 ' ordner >body | Constant >ordner                                                 : wurzel   >ordner off ; wurzel                                                     : katalog  ( -- addr len )              ordner block  b/blk ;                                                              : (suche  ( adr len -- n )              katalog (search                          0= abort" nicht gefunden"                ordner block -  >in push  >in !          BEGIN  bl katalog (word capitalize              dup c@ 0= abort" exhausted"              number? ?dup not                  WHILE  drop  REPEAT  0< ?exit  drop ;                                            -->                                     \ einfaches Dateisystem        20oct87re                                          : split                                   ( adr len char -- adr2 len2 adr1 len1 )  >r 2dup r@ scan  r>                      over >r  skip  2swap  r> - ;                                                     : lies  ( -- n ) \ /path/file             bl word count dup 0= abort" Was denn?"   pad place  pad count                     BEGIN  Ascii / split                      dup IF    (suche                             ELSE  nip wurzel  THEN  over        WHILE  >ordner +!  REPEAT                -rot 2drop ordner + ;                                                            : ld  lies load ;      \ LoaD            : sh  lies list ;      \ SHow            : ed  lies l ;         \ EDit            : cd  lies >ordner ! ; \ Change Dir      : ls  ordner list ;    \ LiSt Dir                                                                                                                                   FORTH-GESELLSCHAFT  (c) bp/ks/re/we/clv \ help                        14oct85re)                                          Onlyforth                                                                         : help  ( --)                             3 l                \ list Scr # 3                                                 cr ." Probier' ruhig weiter!" cr         cr ." Aber ohne Handbuch"                cr ." und die Hilfe der"                 cr ." FORTH-Gesellschaft"                cr ." bleibt FORTH ein ADVENTURE!" cr ;                                                 \ print silly text                                                                                                                                                                                                                                                                                                                                                        \\                                                                                FORTH-GESELLSCHAFT  (c) bp/ks/re/we/clv \\ Hier ist  ...                      \\ \      ... Deine lokale ...            \ \           ... FORTH-Gruppe :         \ \                                      \ \                                      \ \                                      \ \           Kontaktadresse :           \ \                                      \ \           bernd  pennemann           \ \           Treitschkestr 20           \ \                                      \ \           1000  Berlin  41           \ \                                      \ \                                      \ \           Claus     Vogt             \ \           Buelowstr.  67             \ \                                      \ \           1000 Berlin 30             \ \                                      \ \                                      \ \                                      \ \                                      \ \                                      \ \                                      \ \\ \\ \\ \\ \\ \\  \\  \\ \\ \\ \\ \\ \\\ numbers                     05jul85re)                                          decimal             \ sorry, but this                        \ is for YOU !                                                : alphabetic  ( --)  &36 base ! ;                                                 hex                 \ Ah, much better                                                                                      \ Look at this:                                                                                                            31067E6.  alphabetic d.       hex        19211D5.  alphabetic d.       hex           -123.  alphabetic d.       hex                                                                                          \ Try to explain !                                                                                                                                                  \\                                                                                FORTH-GESELLSCHAFT  (c) bp/ks/re/we/clv \ relocating the system        20oct87re                                          | : relocate-tasks  ( newUP -- )          up@ dup                                  BEGIN  1+ under @ 2dup -                 WHILE  rot drop  REPEAT  2drop ! ;                                               : relocate  ( stacklen rstacklen -- )     swap  origin +                           2dup + b/buf + 2+  limit u>               abort" buffers?"                        dup   pad  $100 +  u< abort" stack?"     over  udp @ $40 +  u< abort" rstack?"    flush empty                              under  +   origin $A + !        \ r0     dup relocate-tasks                       up@ 1+ @   origin   1+ !        \ task         6 -  origin  8 + ! cold ; \ s0                                             : bytes.more  ( n -- )                    up@ origin -  +  r0 @ up@ - relocate ;                                           : buffers  ( +n -- )                      b/buf * 2+  limit r0 @ -                 swap - bytes.more ;                    \ dump utility                30nov85re  \ adapted from F83 Laxen/Perry                                                    | : .2  ( n --)                           0 <# # # #> type space ;                                                         | : D.2  ( adr len --)                    bounds ?DO  I c@ .2  LOOP ;                                                      : dln  ( adr --)  \ DumpLiNe              cr  dup 4 u.r  space  dup 8 D.2          ." z "  8 bounds DO  I c@ emit  LOOP ;                                           | : ?.n  ( n0 n1 -- n0)                   2dup = IF  rvson  THEN                   2 .r  rvsoff  space ;                                                            | : ?.a  ( n0 n1 -- n0)                   2dup = IF  rvson  THEN  1 .r rvsoff ;                                            -->                                                                                                                                                                 FORTH-GESELLSCHAFT  (c) bp/ks/re/we/clv \ dump utility                30nov85re  \ adapted from F83 Laxen/Perry                                                    | : .head  ( adr len -- adr' len')        swap  dup $FFF0 and  swap $F and         2 0 DO  cr 5 spaces                       I 8 * 8 bounds DO I ?.n LOOP 2 spaces    I 8 * 8 bounds DO I ?.a LOOP            LOOP  rot + ;                                                                    : dump  ( adr len --)                     base push  hex  .head                    bounds ?DO  I dln  stop? IF LEAVE THEN               8 +LOOP cr ;                                                         : z  ( adr n0 ... n7 --)                  row 2- >r  unlink                        8 pick 7 + -7 bounds                     DO  I c!  -1 +LOOP r> 0 at dln  quit ;                                                                                    clear                                                                                                                                                              \ disassembler 6502 loadscr    06mar86re                                          Onlyforth                                                                         \needs Tools Vocabulary Tools                                                     Tools also definitions hex                                                        | : tabelle  ( +n -- )                    Create     0 DO                          bl word number drop , LOOP               Does> ( 8b1 -- 8b2 +n )                  + count swap c@ ;                                                                -->                                                                                                                                                                                                                                                                                                                                                                                                                                                               \ dis shortcode0               20oct87re                                          base @  hex                                                                       $80 | tabelle shortcode0                 0B10 0000 0000 0341 2510 0320 0000 0332  0AC1 0000 0000 03A1 0E10 0000 0000 0362  1D32 0000 0741 2841 2710 2820 0732 2832  08C1 0000 0000 28A1 2D10 0000 0000 2862  2A10 0000 0000 2141 2410 2120 1C32 2132  0CC1 0000 0000 21A1 1010 0000 0000 2162  2B10 0000 0000 2941 2610 2920 1CD2 2932  0DC1 0000 0000 29A1 2F10 0000 0000 2962  0000 0000 3241 3141 1710 3610 3232 3132  04C1 0000 32A1 31B1 3810 3710 0000 0000  2051 1F51 2041 1F41 3410 3310 2032 1F32  05C1 0000 20A1 1FB1 1110 3510 2062 1F72  1451 0000 1441 1541 1B10 1610 1432 1532  09C1 0000 0000 15A1 0F10 0000 0000 1562  1351 0000 1341 1941 1A10 2210 1332 1932  06C1 0000 0000 19A1 2E10 0000 0000 1962                                           base !                                                                            -->                                     \ dis scode adrmode            20oct87re                                          | Create scode                            $23 c, $02 c, $18 c, $01 c,              $30 c, $1e c, $12 c, $2c c,                                                      | Create adrmode                          $81 c, $41 c, $51 c, $32 c,              $91 c, $a1 c, $72 c, $62 c,                                                      | : shortcode1 ( 8b1 - 8b2 +n)            2/ dup 1 and                             IF  0= 0  exit  THEN                     2/ dup $7 and adrmode + c@               swap 2/ 2/ 2/ $7 and scode + c@ ;                                                | Variable mode                                                                   | Variable length                                                                 -->                                                                                                                                                                                                         \ dis shortcode texttab        06mar86re                                          | : shortcode ( 8b1 -- +n )               dup 1 and         ( ungerade codes)      IF  dup $89 =                             IF  drop 2  THEN  shortcode1            ELSE  shortcode0  ( gerade codes)        THEN                                     swap dup 3 and length !                  2/ 2/ 2/ 2/ mode ! ;                                                             | : texttab   ( char +n 8b -- )           Create                                   dup c, swap 0 DO >r dup word             1+ here r@ cmove r@ allot r>             LOOP 2drop                               Does>  ( +n -- )                         count >r swap r@ * + r> type ;                                                   -->                                                                                                                                                                                                                                                  \ dis text-tabellen            06mar86re                                          bl $39 3 | texttab .mnemonic             *by adc and asl bcc bcs beq bit bmi bne  bpl brk bvc bvs clc cld cli clv cmp cpx  cpy dec dex dey eor inc inx iny jmp jsr  lda ldx ldy lsr nop ora pha php pla plp  rol ror rti rts sbc sec sed sei sta stx  sty tax tay tsx txa txs tya              ( +n -- )                                                                         Ascii / $E 1 | texttab .vor                 / /a/ /z/#/ / /(/(/z/z/ /(/                                                                                             Ascii / $E 3 | texttab .nach                  /   /   /   /   /   /,x              /,y /,x)/),y/,x /,y /   /)  /                                                    -->                                                                                                                                                                                                                                                  \ dis 2u.r 4u.r                06mar86re                                          : 4u.r ( u -)                              0 <# # # # # #> type ;                                                          : 2u.r ( u -)                              0 <# # # #> type ;                                                              -->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     \ dis                          20oct87re                                          Forth definitions                                                                 : dis   ( adr -- ) base push hex         BEGIN                                     cr dup 4u.r space dup c@ dup 2u.r space  shortcode >r length @ dup                IF over 1+ c@ 2u.r space THEN dup 2 =    IF over 2+ c@ 2u.r space THEN            2 swap - 3 * spaces                      r> .mnemonic space 1+                    mode @ dup .vor $C =                     IF dup c@ dup $80 and IF $100 - THEN      over + 1+ 4u.r                          ELSE length @ dup 2 swap - 2* spaces      ?dup                                     IF 2 =                                    IF   dup  @ 4u.r                         ELSE dup c@ 2u.r                       THEN THEN THEN mode @ .nach length @ +   stop?  UNTIL drop ;                                                                                                       Onlyforth clear                         \\ Subdirectory test.dir       26oct87re                                          .                    0                   ..                -&23                   all-words            1                   free                 2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             \ pretty words                 26oct87re                                          : .type  ( cfa -- )   dup @ swap 2+                   case? IF ." Code" exit THEN  ['] :     @ case? IF ."    :" exit THEN  ['] base  @ case? IF ." User" exit THEN  ['] first @ case? IF ."  Var" exit THEN  ['] limit @ case? IF ."  Con" exit THEN  ['] Forth @ case? IF ."  Voc" exit THEN  ['] r/w   @ case? IF ."  Def" exit THEN  drop ." ????" ;                                                                  : (words  ( link -- )                     BEGIN  stop? abort" stopped"  @ dup      WHILE  cr dup 2- @ 3 .r space                   dup 2+  dup name> .type space            .name  REPEAT drop ;                                                      : all-words ( -- )                        voc-link                                 BEGIN  @ ?dup                            WHILE  dup 6 - >name                            cr cr .name ."  words:" cr               ." Blk Type Name "                       dup 4 - (words  REPEAT ;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        \ savesystem                   23oct87re                                          | : (savsys ( adr len -- )                [ Assembler ] Next  [ Forth ]            ['] pause  dup push  !  \ singletask     i/o push  i/o off  bustype ;                                                     : savesystem   \ name muss folgen            \ Forth-Kernal vorbereiten:           scr push  1 scr !  r# push  r# off          \ Editor vorbereiten:                 [ Editor ]                               stamp$ dup push off                      (pad   dup push off                         \ nun geht's los:                     save                                     8 2 busopen  0 parse bustype             " ,p,w" count bustype  busoff            8 2 busout  origin $17 -                 dup  $100 u/mod  swap bus! bus!          here over - (savsys  busoff              8 2 busclose                             0 (drv ! derror? abort" save-error" ;                                            Onlyforth                               \ bamallocate, formatdisk      20oct87re                                          : bamallocate ( --)                       diskopen ?exit                           pad &18 0 readsector 0=                   IF pad 4 + $8C erase                        pad &18 0 writesector drop            THEN  diskclose                         8 &15 busout " i0" count bustype         busoff ;                                                                         : formatdisk ( --)  \ Name muss folgen    8 &15 busout " n0:" count bustype        0 parse bustype busoff                   derror? ?exit                            bamallocate ;                                                                    \ z.B.: formatdisk ultraFORTH,id                                                                                                                                                                                                                                                               FORTH-GESELLSCHAFT  (c) bp/ks/re/we/clv \ copydisk                    06jun85we)                                          | Variable distance                                                               limit first @ - b/buf /  | Constant bufs                                          | : backupbufs  ( from count --)          cr ." Insert Source-Disk" key drop cr    bounds 2dup DO  I block drop  LOOP       cr ." Insert Destination-Disk"           key drop cr                              distance @ ?dup                          IF    >r  swap 1- over  r> +  convey     ELSE  DO  I block drop update  LOOP            save-buffers THEN ;                                                        : copydisk  ( blk1 blk2] [to.blk --)      2 pick - distance !  1+ over -           dup 0> not Abort" RANGE ERROR!"          bufs /mod ?dup                           IF swap >r 0                                DO dup bufs backupbufs bufs +  LOOP      r> THEN                               ?dup IF backupbufs ELSE drop THEN ;                                             \ 2disk copy2disk..           clv14jul87                                                                                   $165 | Constant 1.t                      $1EA | Constant 2.t                      $256 | Constant 3.t                                                                                                        | : (s#>s+t ( sector# -- sect track)           dup 1.t u< IF $15 /mod exit THEN   ( 3+) dup 2.t u< IF 1.t - $13 /mod $11 +                             exit THEN          dup 3.t u< IF 2.t - $12 /mod $18 +                             exit THEN                        3.t - $11 /mod $1E +  ;                                                                                                                         | : s#>t+s  ( sector# -- track sect )     (s#>s+t  1+ swap ;                                                                                                                                                                                          -->                                     \ ..2disk copy2disk           clv04aug87                                                                                   | : ?e ( flag--)                           ?dup IF ." Drv " (drv @ . diskclose              abort" " THEN ;                                                         | : op ( drv#--) (drv ! diskopen ?e ;                                             : copysector \ adr sec# --                 2dup                                     0 op s#>t+s readsector  ?e diskclose     1 op s#>t+s writesector ?e diskclose ;                                          : copy2disk \ -- \ fuer 2 Floppys         pad dup $110 + sp@ u> abort" no room"    cr ." Source=0, Dest=1" key drop cr      base push decimal      0 &682            DO I . I s#>t+s . . cr $91 con!             dup I copysector   -1 +LOOP drop ;                                            : 2disk1551 \ -- stellt eine 1551 auf #9  flush 8 &15 busopen " %9" count bustype  busoff derror? drop ;                                                           es kommt nichts mehr es kommt nichts meh r es kommt nichts mehr es kommt nichts m ehr es kommt nichts mehr es kommt nichts  mehr es kommt nichts mehr es kommt nich ts mehr es kommt nichts mehr es kommt ni chts mehr es kommt nichts mehr es kommt  nichts mehr es kommt nichts mehr es komm t nichts mehr es kommt nichts mehr es ko mmt nichts mehr es kommt nichts mehr es  kommt nichts mehr es kommt nichts mehr e s kommt nichts mehr es kommt nichts mehr  es kommt nichts mehr es kommt nichts me hr es kommt nichts mehr es kommt nichts  mehr es kommt nichts mehr es kommt nicht s mehr es kommt nichts mehr es kommt nic hts mehr es kommt nichts mehr es kommt n ichts mehr es kommt nichts mehr es kommt  nichts mehr es kommt nichts mehr es kom mt nichts mehr es kommt nichts mehr es k ommt nichts mehr es kommt nichts mehr es  kommt nichts mehr es kommt nichts mehr  es kommt nichts mehr es kommt nichts meh r es kommt nichts mehr es kommt nichts m ehr es kommt nichts mehr es kommt nichts  mehr es kommt nichts mehr es kommt nich                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                F ±H± ‘l	 o ¬#VARIABLEÒ#A!Fý\p |#UALLOTÒ#¸0
+"÷
+ÿ[à+Userarea full0
+"‹0
+[\p ó#USERÒ#A!Fü#ë ¥8é…°F ±ÅŠHÅ ‘l	 p )$ALIASÒ#A!~"¸J
+ 1„ /þÿýÂ 
+ ZS";\q ]$VP." Ü%Ë%Ë%ÆË%    q ‘$CURRENT."Ë%q ª$CONTEXTÒ"´$;\Ò#"…©"#\s ±%ORDERÒ#R$É %K%/þÿû¹F¤,´$K%\s Y%WORDSÒ#D$""¸¡6™1„ ¹6¸a#‘,Âæÿ€\t &(FIND;& ±™$ ˆø¡&)…(  ±$ªH±$…%†$$P ¢ lŒH±$)E(Pà©Å$…)© Å%…*¤(±&Q)PKˆP÷ ¥*‘ˆ¥)‘ˆ¢ l‰–&¡…$±…%¡$…&)8Å$…$æ%¥&) P	¥$¥%lB&¡$±´$""J¸¼
+ ¯‰à+invalid nameX~;#ýˆ!^!"„ ¼^![¸!ž 
+ Z!L	;Â &!€´¡ë lß 3"¡…(±…)¥É…æ¡…&±…'&PlŒ±&‘…%¡&…$%Pl	 ¥$É…$æ%¡$h8)Å$…$æ%È) ð
+±$h¡$…$È…%¥$E(P°¥%E)Pªlcn ¸!>NAMEÒ#%
+"¸„ éZÉ‹1"Ý„ zÞ'NOTFOUNDI(ß'x ¾'NO.EXTENSIONSÒ#ú+Haeh?\x O'	INTERPRETÒ#¸'\ Ò#ž)õ&Ý„ ¼1„ —¸'à+compile onlyƒ'Óp™„ I'¸'\Ò#ž)õ&Ý„ <„ —¸'¸'ƒ'ÓpÝ„ <„ ‹^^Â I'¸'\y í'a[Ò#/ (ã(º'1÷\y {(]Ò#/;(ã(º'1å\Ò#“à+Crash\z ‘(DEFERRSIVEÒ#´\Ò#‚„ ÜJôä€\h H	IMMEDIATEÒ#
+@Z\h òRESTRICTÒ#
+€Z\i 	 
+CLEARSTACK.  ±…H±… l	 i  HALLOTÒ#¸	"ôÉ‹;
+a¸É¸¸	;FôÉ,, ¸	;\i @ HEAPÒ#¸	"z\i Ù HEAP?Ò#€ }
+¯\Ò#¸XôÉ¸i € ‹D€ ôÉ~[´\¥8é…°F¥±EH±å l	  †	“à+stack empty\\ •).STATUSI(Nb."ï
+ï
+;\\ ã)„PUSHÒ#ï
+‹¸P
+"P
+ñ)P
+P
+\\ ý)LOADÒ#Ý™ÓD*D;¸*¸÷í)ù'\] *+LOADÒ#D"÷#*\] c*THRUÒ##‹É
+ %#*J¹\] y*+THRUÒ##‹É
+ %k*J¹\] Ö*c-->Ò#¼D[¸÷í)\] ”*RDEPTHÒ#B	VERTÒ##ÌÊ„ ­ÂôÿÇ\Ò#¼"™\Ò#Ì“¼[\Ò#ÇÌ\f MDPL."ÿÿÒ#„ 9Þ€9¡\Ò#„  9€ï
+„ µ€"#ÝÓ€“\Ò#
+&@„	 
+
+“d
+$@„	 
+“d
+H@„	 
+“d
+%@„ F“d¡\Ò#
+,ôÉ‹
+.É\Ò#"“ÉÓ¼[\."  g NUMBER?Ò#æ	,¹6D"Ý„ Ž+;¸"™+;3+\_ Ÿ+‡(ABORT"Ò#Ø‹„ P
+, ï
+
+»d€\Ò#Ø‹„ 
+»d€\_ V+FABORT"Ò#6à+\\_ ,FERROR"Ò#6ú+\\` %,BL¿#  ` :,	-TRAILINGs,˜ S¡…&±Å%…'¤$ˆ±&I ðHPæ%˜h¥%l˜PêF'F%ä˜lÁ e,SPACEÒ#?,7\Á ‰,SPACESÒ#¡Ü ‘,J¹\ÒÃ ¤-.Ò#©-\Ã µ-U.Ò#¡©-\Ä C-.SÒ#;
+¸	"ôÉ
+ £Ü %"H-Fû¹\Ä R-C/L¿#) Ä þ-L/S¿# Ä 
+.LISTÒ#Ž+;¯Scr Ž+"¸ <xH-¯Dr x<¹-.¡É. ¡6„ „7%F„-‘,Ž+"·1%.$÷.Çq,#7J¹7\Å .PAUSE	 Å Ú.LOCKÒ#¸"}
+É„ €d¸"„ ‚.Âôÿ}
+‹/‘(¥(/¥)/lÃ/Ê /(DISKERRÒ#¯error !  r to retry ¯7¸
+rÉ‹
+RÉ‰à+aborted\Ê A/DISKERRI(L/Ê 0R/WI(¶?Ò#¸z"ƒ„j a¸"#„3 
+*ô	*q+¸zôa"F"¡0„ ¯write 0ÂÛÿ
+€ôt#€\Ò#a¸åt÷\Ò#¸{0
+*ô	*q+P
+ôZ	"÷ô
+÷z#–$¸"÷a\Ò#–$aD$\q º$ALSOÒ#–$"
+
+-ú+Vocabulary stack fullD$"F–$[D$;\q Þ$TOSSÒ#/þÿ–$[\r ÿ%
+VOCABULARYÒ#A!¡¡X%
+"%
+;ë lÀ D$;\r /%FORTHv%v{v{  r Á%ONLY„%!8!8Ï%ë lÀ ¡–$;D$;å$\r Ó%	ONLYFORTHÒ#Ú%É%å$¿%\s —%DEFINITIONSÒ#D$$‘¥8é…°F¥&H
+0˜iÿ¨H˜©ÿ$Š ‘l	 v 1&FINDÒ#D$¸"ô…"É„ …Ü"9&„ Ê”&dô–$a[„
+ ‹…ÂÞÿÊ¡\v î&'Ò#õ&™à+Haeh?\v 7'I[COMPILE]Ò#;'\v o'C[']Ò#;'^\v Å'NULLSTRING?Ò#¸J™¸„ Ê\H±É…H±É … l	 w Õ'
+>INTERPRET•' (x «dÂàÿÊ\Ò#Ì
+1÷\n ¡"NAME>Ò#¸S"‹J
+ 1„ "\n â">BODYÒ#a\n #.NAMEÒ#Ý„ ¸” „ ¯|Ì
+1#7Â ¯???‘,\o #CREATE:Ò#A!•´$"D$;•(¡\o h#:Ò#r#ë ¥8é…°F¥¥‘¥É…ŠÅ…l	 o È#A;Ò#¡ý6\(´\o –#CONSTANTÒ#A!ë ¥8é…°Ò#A!/¥(ë  ±hH±…È… l z µ((ISÒ#ï
+¸aP
+";\Ò#"/I'"ôÉ‹/¸'"É‰à+not deferred\z Ý(bISÒ#;'¸ó(#1"„
+ 6ã(d;\." Ò#O*
+ -à+tight stacke)J™„ “e)ä“à+dictionary full¯still full \[ ")?STACK ) 8¥ñH¥ñP	  †	h)\Žg) ‘¥¡É…ŠÑ…©ÅhŠÅlÒ#ï
+~"ê";\j Œ EDOES>Ò#6ë 
+l6À \Ò#¸
+ÿ1
+ÿÉÉ\Ò#X
+ÿ1
+ÿÉ„ ¸¸#XôÉ#ò¼~[¼ý\k û ?HEAD."  k v!|Ò#^!"Ó“^!;\l Ä!WARNING."  Ò#„!"Ó~"´$"9&Ê„ ‘,~"#¯exists ¹6\l Ú!CREATEÒ#XD""³
+aÉ\] ¬*DEPTHÒ#;
+¸	"‹É\Ò#1"„ ¯
+ compilingd¯ ok\^ G*(QUITÒ#í)7ïù'ß*Âôÿ\^ +'QUITI(
++^ +QUITÒ#B	"B
+(&+\^ ,+STANDARDI/OÒ#/*ô	ZD\^ c+'ABORTI( 	^ Á+ABORTÒ#, Ã	Ê+q+3+\_ Ð+SCR." _ ˆ+R#."  _ ”+(ERRORÒ#q+‘,X#Ì#7‘*¸Ì¼;å¡P
+¡¡í÷
+-@„ 9“P
+í÷o„ æ	;í÷Ê™­¨í)÷Ê™„ðÿ”™÷í)÷ÂTÿ\g B'NUMBER?I(Lg eNUMBERÒ#pÝ™à+?ƒ„ \h vLAST."  Ò#~"Ý\h ×HIDEÒ#‚„ …"´$";\h ŽREVEALÒ#‚„
+ …´$";\h «IRECU	#è…\Â ›,HOLDÒ#“´,[´,"ä\Â ¾,<#Ò#´,´,;\Â W,#>Ò#Þ´,"´,ôÉ\Â è,SIGNÒ#ƒ„ 
+-E,\Â ÿ,#Ò#æ	"¤
+	ôU„ 
+‡÷
+0÷E,\Â -#SÒ#-éÙ„øÿ\Ã @-D.RÒ#zÜ)|,e--í,ôÝôÉ¤,#7\Ã u-.RÒ#‹[-\Ã -U.RÒ#¡‹[-\Ã ’-D.Ò#¡[-‘,\
+;\Å †.UNLOCKÒ#¸.÷\È8é…Èé …©l ±…H±… ¡…±…¥É…æ¢l
+Æ ·.FILE<$Æ  /PREV."P§."  Æ /B/BUF¿# ±(Y" PHÀPô`:/ ±™$ ˆø ±Å&…&H±Å'…'­/…(­/…) )/P¥É…æ ©Å(¥)É ‘lf¥(…*¥)…+¡*…( ±*…)(Pl	  )/Pâ¡(* ±(‘*­/(­
+¼0„ ¯read 0ÂYÿï
+\Ò#/¸"„ "¸a"“É„êÿ/.¸!0\Ò#aP
+é;Z	"÷a;ï
+t÷/À.\Ò#/"¸„ ¸z"ƒ„îÿ\Ò#/"¸"™„öÿz"ƒ\Ì 0CORE?Ò#8/Þ¡\Í f1(BUFFERÒ#8/H0î0Âøÿ\Í z1(BLOCKÒ#8/H0‰0î0Âöÿ\1 ±hH±lÍ Ô1BUFFERÒ#1Ä1	
+0•¡E$±å%l‡' QU<¡…$±…%¥É…æ¡E$±å%°l‰lŒ( ý>Ò#‹U\( )0>Ò#¤ƒ\( 70<>Ò#™‰\( fU>Ò#‹\( v=Ò#É™\( ÅD0=Ò#™\( ÓD=Ò#µõÙ\( ƒD<Ò#éÉ„ -ÊÊÂ Þ\Ò#9„ ‹€\) ”MINÒ#é-µ\) EMAXÒ#éUµ\) W	D+÷© SH±Å&‘H±Å'‘¡Å$ ±Å%‘l	 # ð1+%©Á°l ±É ‘l	 # 2+c©Pà# <3+p©PSv©PM\©PG# i1-É8¡él ±é ‘l	 # Â2-‡à$ €TRUE¿#ÿÿ$ ŒFALSE¿#  $ ™"-1“$ §!0¡$ °1¿# $ ¸2¿# $ B3¿# $ L4¿# $ VONÒ#“‹;\	IBÒ#\"\; WQUERYÒ#Ý
+pW7Q"o;¸÷D÷\< çSCANÒ#P
+¸„ÿ ôJÉ„ Ç‹#‹Âäÿ9\< ÿSKIPÒ#P
+¸„ÿ ôJÉ„ Ç‹#‹Âäÿ9\< ;ÿ/STRINGÒ#ôô÷zÉ\IaI{°IÂ)ßI[°	€`= ÊÿCAPITAL©ÿ¡ †ÿl	 > ÿ
+CAPITALIZEDÿ¡…$±…%¡$…&ˆD&P l		¥8é…°F ±H± ‘l	  íROT ±…% ± ‘ ±…$¥%‘ ¥$‘H±…%¡‘ ±¥%‘ l	  -ROTÒ#\ sNIPÒ#‹€\ ÄUNDERÒ#‹ô\ ÔPICKÒ##3;
+÷"\ †ROLLÒ#¸P
+;
+¸aï
+#3ò€\ 2SWAPÒ#P
+ï
+\ À2DROPô V2DUPÒ#ôô\  	ìæ)æ'lL7 ¼CMOVE>ô© S¥%Å'…'¥%Å)…)æ%¤$ˆ±(‘&˜PøF'F)F%Pð l	 7 éMOVEÒ#P
+é„ ï
+òdï
+D\8 %PLACEÒ#ôP
+ô#ï
+,ä\8 fCOUNTÎ¡…$É±…%É ‘¥8é…°FlT8 ÄERASEÒ#¡¨\9 FILLª© Sˆ¥$¦'ð
+‘(HPûæ)JPö¦&ð‘(HJPú l	 : ¡HEREÒ#L	"	F¡±‘©Å…æl	  ê
+R@¥8é…°F±‘¡l  …RDROP 1EXITf¡…±…l =UNNEST^¡…±…l s?EXITÕ¡¥É…æ(P¾l	  ËEXECUTE™¡…±…¥É…æl  PERFORMÒ#"—\ ±C@L¡…$±…%© ‘¡$l  EC!æ¡…$±…%H±$ˆ¥	%l	 3 ˜M*Ò#¸ƒ¸P
+„ ¤‹¸ƒ„
+ ¤ï
+‰P
+žï
+„ µ\3 ë*Ò#ž€\3  2*5¡
+±*‘l	 Ò#“à+division overflow\4 .UM/MODÉ¡…)±…(¥É…æ¡…%±…$H±…'H±…&¢Æ*8¥%å)¨¥$å(°&*…$„%&'&&&%&$JPß Æ$Æ% †	b\¥&‘H¥%‘H¥$‘ ¥'l 5 ^M/MODÒ	                                 ."ultraFORTH-83 3.80-C64  ÿÿ±…­ÿÿ…¥É…°Ìÿÿæ°ù   	END-TRACEÅ	©¥…©…©É…©…l	  w	RECOVER."È…È…¥PFFlÒ# Ú	NOOP	  ™	ORIGIN¿# ¤	S0<$ ³	R0<$
+ ½	DP<$ G	OFFSET<$ Q	BASE<$ ß	OUTPUT<$ ë		EÒ#XÉ\. Ý?PAIRSÒ#Éà+unstructured\I h©ÿlh© ª¥8é…°FŠ ‘È¢ l / ôCASE?b© S¥$AP	¥%QPl‰Šl0 8BIFÒ#6„¦¼\0 \DTHENÒ#=¼ý½\0 ÏDELSEÒ#¼ý6Â¦‹½“\0 „EBEGINÒ#UF\0 ¡EWHILEÒ#FýF6„¦/þÿH\Ò#è¸/þÿÉ„
+ €½	DÒ#µåÿ\b QPARSEÒ#P
+µ¸"Ôÿô‹ï
+ÿP
+ôÉ¸ï
+lÉ¸[\b âNAMEÒ#?,XBÿd\c STATE."  c )eASCIIÒ#?,X#J1"„ ^\c 7,"Ò#
+"êXô#ýn\c w„"LITÒ#ï
+ï
+ÜÌ÷P
+P
+\c Ñ‚("Ò#Ø\c ŒA"Ò#6‘\\d ™ƒ(."Ò#ØÌ#7\d ©B."Ò#6¯\\d »a(Ò#
+)	UMAXÒ#éµ\) éUMINÒ#é[µ\) üEXTENDÒ#¸ƒ\) DABSÒ#„ µ\) "ABSÒ#„ ¤\Ò#9ï
+a¸P
+P
+‹P
+P
+\* 7ƒ(DOÒ#ôÉi\* Ã„(?DOÒ#ôÉÝ„ iï
+¸"÷P
+€\* ÕBOUNDSÒ#ô÷‹\* š‡ENDLOOP»©l+ ¯…(LOOPL©Á±É ‘l	  ±…ˆ±	 $ àOFFÒ#¡‹;\% ñ„CLIT¥8é…°F¡Š‘æPæl	 % ƒLIT1¥8é…°F±‘¡¥É…æl	 % )GLITERALÒ#¸/ ÿ1„
+ 6/d6
+\& t0<…±©ÿ$Š‘l & ~0=›¡ðèPé& ”UWITHIN±© S ¡E$±å%°
+¡E&±å'°½lŒ' ¥<W¡…$±…%¥É…æ¥%q		 H±$ †ÿ‘$lQÿçÿ†* ±™$ ˆø ­ºÅ&…&­»Å'…'8¥$íº…$¥%í»…%°¡º±»lÙ ¥$%ð=¡&QPæ&Pæ'¥$PF%F$l$¥&…(¥'…)¡&Qæ&Pæ'¥$PF%F$(ðæ*¥$%Pâ8 ¥&ñºH¥'ñ»©Å…æ ±…$H± ‘…%ˆ¥*‘$±(HF*÷© ‘$ l	 b µÿSOURCEÒ#D"Ý„ ·1ï;dÝo"\b ¬WOR	â+ùH¡Ñ‘ˆ± Ñ‘l™
+  óORH¡‘ˆ± ‘l™
+  AND3H¡1‘ˆ± 1‘l™
+  +XORpH¡q‘ˆ± q‘l™
+! h-ËH±8á‘H± ñ ‘l™
+! ÅNOT‹ŠáŠñ‘l	 ! ƒNEGATE¦8°ã" ›DNEGATE·H8Šñ‘HŠñ‘Šá Šñ‘l	 
+ª¨ˆ±™$ ˆøŠÅ…æ¢  `" «	\: QPADÒ#X
+b÷\: âALLOTÒ#L	[\: õ,Ò#X;Fý\: C,Ò#Xä¼ý\: ‡COMPILEÒ#ï
+¸aP
+"\; ,#TIB." ; h>TIB."`savesystem @:c64demo                                                            ; u>IN." ; ²BLK."  ; ¾SPAN." ; JT	É…æl	  ßCTOGGLEÒ#ÜJn‹ä\ÿ @$¡…$±…%±$‘¡$l ÿ !=¡…$±…%H±$H± ‘$lôÿ 7+!]¡…$±…%H±Á$$H± Ñ$lo vDROP
+ ÙSWAP±ª ±…$Š‘¥$ ‘H¢ ±…$¡‘ˆ¥$l  „DUPº¥8é…°F ± ‘H±ˆl  ²?DUPß¡Pl	 lº VOVERö	#¸P
+=ôƒ„ Ü÷‹Çƒ„ ¤ô„ ‹÷‹Ç9\5 X2/±
+±Ê‘¡Êl 6 /MODÒ#P
+ï
+à\6 //Ò#6Ê\6 dMODÒ#6€\6 r*/MODÒ#P
+ðï
+à\6 Â*/Ò#ÊÊ\6 ØU/MODÒ#¡‹Ç\6 ‡UD/MODÒ#P
+¡Çï
+‹P
+Çï
+\7 ›CMOVEF© SˆD$P	F% l	 ±(‘&HP	INPUT<$ ù	ERRORHANDLER<$ 
+VOC-LINK<$ ÿ
+UDP<$ÿ *
+SP@=
+¥…$¥…%¢$¥8é…°Fµ‘µ ¢ l  5
+SP!Ç
+¡ª±…†¢ l	  _
+UP@
+¢lg
+ ×
+ƒUP!Ž
+¢±•ˆ±• ¢  ¥É…æl	  †
+RP@µ
+¢lg
+ ­
+ƒRP!D
+¢l
+ ¼
+‚>RR
+¥8é…°F¡±‘l
+ K
+‚R>ñ
+¥8é…°	Âîÿ\0 ³FREPEATÒ#Fý6ÂQ\0 íEUNTILÒ#Fý6„Q\1 BDOÒ#6É¦P\1 C?DOÒ#6Ü¦P\1 1DLOOPÒ#Pý6J6¹½\1 eE+LOOPÒ#Pý6û6¹½\1 `…LEAVEÒ#¹ï
+…¸"÷P
+\2 ÜUM* ±…$¡…%H†&†'¢'&&&%&$±Å'…'H±ˆÅ&…&æ%Pæ$JP|¥'‘H¥&‘ ¥$‘¥êÞ\d Lb.(Ò#
+)ê#7\d Ýa\Ò#¸".h#.$¸;\d ïb\\Ò#ï;¸;\d \NEEDSÒ#õ&Ê„ ó\d HEXÒ#
+æ	;\d 7DECIMALÒ#
+
+æ	;\e jDIGIT?Ò#
+0É¸
+	[„ 
+‡É¸
+	[„ æ	"ô[ÝÓ€¡\e Á
+ACCUMULATEÒ#‹P
+‹æ	"ž€æ	"žõï
+\e  CON	… l	 + B†(+LOOPý¡Á±Ñ‘Êq¥É…æ(Dl	 , òI'  ¥8é…°F±HHÑˆ±HHÑ ‘l	 , !Js PR- m†BRANCHÄ¥Á…$¥Ñ…¥$…l	 - y‡?BRANCH†¡¥É…æ(ðKld. Ú>MARKÒ#X¡\. ž>RESOLVEÒ#XôÉ‹;\. ²<MARKÒ#X\. M<RESOLV                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+À 
+;\Ö 7KEY~7 Ö ©7KEY?~7Ö ´7DECODE~7Ö À7EXPECT~7×   SEALÒ#¡/Ú%#;\× |7$ONLYÚ%× ó7%FORTHÉ%× þ7%WORDS	&× 
+8$ALSOå$× 8+DEFINITIONS¿%Ò#%
+"¸…"ôZÉ;"Ý™„êÿ\Ò#¡/;3#3;H3\Ø N7'COLDI( 	Ò#18q8£%Í8:7	Ì#77š8\Ø Å8'RESTARTI( 	Ò#/CLEARÒ#X¸}
+5L	;\Ô ¡5(FORGETÒ#¸” à+	is symbolù35\Ô »5FORGETÒ#;'¸/$"à+	protected©"¸” „ ê"Â ……E5\Ô ß5EMPTYÒ#/$"}
+5/2"0
+;\Õ 6SAVEÒ#X}
+5%
+"¸……"ô…;"Ý™„êÿ}
+­	/ D\Õ >6BYEÒ#ì1ã;\Ò#¯7PÉ„ “9\Õ ×6STOP?‹É1 7%F„-è¸%33¦>Þ>P
+#
+%#7ï
+¡6„ „J¹?\ ×@INK-POT."     h­â@…È@Øá@©@h©ãh­á@hŠh˜h¥â@©6…©Ý¬ÝlÒþ êÿ áÿPõl<9‘ I@INIT-SYSTEMÒ#/@ÿ¸
+ÀD/ë@¸/úÿ;/;\ØX „ÿ ÿ Šÿ©6…­U@ P­V@!P­W@†©€Š©P© ÿP©P©ˆx3""‹;%/#3[\Ð Ë3ALL-BUFFERSÒ##3"73#3"É„òÿ\Ò#J
+ 1\Ò#ê"Ü#‹” \Ò#€ %
+"P
+ï
+"Ý„^ ¸P
+ZÉP
+ï
+"P
+ôÇ¸‹aê"1„. ” „Zÿa|3„ ôaç3„ aS"aðÂ¶ÿ9Âœÿ\Í4 ±™$ ˆø ±É…*H±É …+ ¡$…,±$…-,ð5¥,E*¥-å+¥,E&¥-÷dg>É
+6
+÷\Ò#k>#‹\Ò#æ	*t¡|,e-€
+,E,e-í,\¿#  >
+READSECTORÒ#<
+,=‘u1:13,0,Ì»=°>»=<‚.>Ó<
+’=K>ï=<¡\ Q>WRITESECTORÒ#<
+,=‘b-p:13,0Ì»=<<
+,=K>»=<<
+,=‘u2:13,0,Ì»=°>»=<‚.>\Ž ?DISKOPENÒ#<
+b=
+#¥=<>\\Í œ1BLOCKÒ#1}1\Î ¯1UPDATEÒ#
+€/"z#ä\Î A1SAVE-BUFFERSÒ#/.1Ý„ !0Âôÿ/À.\Î Ý1EMPTY-BUFFERSÒ#/./"Ý„
+ ¸{0Âòÿ/À.\Î 2FLUSHÒ#ì12\Ò#¸1n1„ /"{0,1„ ì1Z	"÷‹·1……;J1\Ò#ì1P
+ô÷ô[P
+éï
+1„$ õï
+¡Ü “/þÿõ¢  †	€<À.\¢   †	</À.“à+	no device\† ±ÿ©` “ÿ ®ÿ¥ðÈÈl¡<`W<¡ ¾<¥É…æl”<‰ †<?DEVICEÒ#€<.U<\=†© S¥& ¾<¥& ±ÿ¥$	` “ÿ¦&†šln9Š ì<BUSOUTÒ#€<. =\Š #=BUSOPENÒ#
+ð,=\Š 8=BUSCLOSEÒ#
+à,=<\É=†© S¥& ¾<¥& ´ÿ¥$	` –ÿ¦&†™ln9Š o=BUSINÒ/‘(¥(/¥)/lÃ/Ê /(DISKERRÒ#¯error !  r to retry ¯7¸
+rÉ‹
+RÉ‰à+aborted\Ê A/DISKERRI(L/Ê 0R/WI(¶?Ò#¸z"ƒ„j a¸"#„3 
+*ô	*q+¸zôa"F"¡0„ ¯write 0ÂÛÿ
+€ôt#€\Ò#a¸åt÷\Ò#¸{0
+*ô	*q+P
+ôZ	"÷ô
+÷z:CON!¡:¡ ç¥É…æ†T†X  †	‚.\I€°I `Ià°IÀ``„ ˜:
+PRINTABLE?ß:¡ ¾:JŠl… P:C64EMITù:¡ ¾:°©.l£:… í:C64CRÒ#:Ÿ:\… ;C64DELÒ#
+Ÿ:‘,
+Ÿ:\… ;C64PAGEÒ#
+“Ÿ:\… 4;C64ATs;© S¦&¤$ ðÿ¤S±Q…Nln9… i;C64AT?Ö;¥8é…°FŠ‘8 ðÿÀ(˜é(hŠ¢ Èl =P¿#SÜ ‚bNEXT¿#	 Ü bXYNEXT¿#n9Ü bPOPTWO¿#ôÜ ¬bPOP¿#
+×@INK-POT."     h­â@…È@Øá@©@h©ãh­á@hŠh˜h¥â@©6…©Ý¬ÝlÒþ êÿ áÿPõl<9‘ I@INIT-SYSTEMÒ#/@ÿ¸
+ÀD/ë@¸/úÿ;/;\ØX „ÿ ÿ Šÿ©6…­U@ P­V@!P­W@†©€Š©P© ÿP©P©ˆx
++ã((+Ò<–8/."
+;/ 	ã(Ì+Ø+\ ¹9	™ ˆ÷­ É…­!É … ±…H±… 
+±…H±…¢  Š‘`Ú ‹8COLD9¢ÿš pa­ É…$­!É …%  ¹‘$HPø ¾8 †	/aÑ8\Ú ú8RESTART<9¢ÿš pa ¾8 †	/aš8\¢  l	  09C64KEY?Ã9¥Fð©ÿhl w9GETKEYÚ9¥FðØ¬×½Ø×èäFPõFF˜xI P© l‚ Ò#»7„ …6…6¡\Õ ™6?CRÒ#Ê7.
+
+É[„ 7\Ò#A!¸aë lÀ Jô	"÷»\Ö ³6OUTPUT:Ò#r#ë lÀ ô	;\Ö ë6EMITZ6 Ö 7CRZ6Ö 7TYPEZ6Ö 7DELZ6Ö (7PAGEZ6Ö 37ATZ6
+Ö ?7AT?Z6Ö i7ROWÒ#o7€\Ö t7COLÒ#o7Ê\Ò#A!¸aë lÀ J
+"÷»\Ö Ä7INPUT:Ò#r#ë l	`‘ !aC64INITša paln9{ Žac(16Ò#Ì™à+
+C) missing"/C)É„ãÿ\{ ¢abC)Ò#\{ Mac(64Ò#\{ XaFORTH-83Ò#\Ü äa	ASSEMBLERv%  »b€%Ü   PUSHA¿#Ü bPUSH0A¿#Ü bPUSH¿#Ü (bRP¿# Ü 5bUP¿# Ü @bSP¿# Ü kbIP¿# Ü vbN¿#$ Ü ÁbPUTA¿# Ü ËbW¿# Ü ØbSETUå'l²4¥(E,¥)å-°¡,$±,‘$lG4¥,…$¥-…%l‰4l
+Ò#%
+"Ý„ ¸P
+ZÉË4ï
+Âêÿ\Ò#}
+#¸"}
+É„( é"‹X¯„ ¸"#"ô;ÇÂ "ÂNÿÞ\Ò#%
+Ë4R$É  é%"z¯„
+ /Ë%%;/þÿû¹é´$"z¯„
+ /Ë%´$;\Ó º3CUSTOM-REMOVEI( 	Ò#ôë4'5M4{5€ ‹Éi L	;¡~;\Ô Ë5Ž Ð?	DISKCLOSEÒ#<
+z=<\Ž ‘?1541R/WÒ#‹à+no filez <6¸<;P[„ÿ ¹-¯beyond capacityÊd{?„ €Êd¡‹33Z£É. €é%„
+ ¦>Þ>Â ¦>#?P
+K>÷ï
+¸„ „J¹zÞ?\ ¬?INDEXÒ##‹É! 7%F„-%·1#
+%#7¡6„ „J¹\ b@FINDEXÒ#{?„ Þd#éh2J¹Â ï
+¡Ü éh2¼¼õJ¹ì1Þ\Ï 82COPYÒ#¼Ö2\Ï T2CONVEYÒ#‹#FÉ¸<‰à+neinÖ2\Ð å2LIMIT¿# ÀÐ 3FIRST."  Ð 3ALLOTBUFFERÒ##3"B	"É%/aÓ%/¤#3[#3"¸{0/"ô;/;\Ð )3
+FREEBUFFERÒ##3"3%/É„. #3"!0/¸"#3"É„ "Âîÿ##€<.Ç=\‹ Š=BUS!§=¡ ¨ÿl™
+‹ ž=BUSTYPEÒ#£Ü %J¥=J¹‚.\‹ ±=BUS@|= ¥ÿl‹ S=BUSINPUTÒ#£Ü Z=%äJ¹‚.\‹ ä=DERROR?Ò#<
+’=Z=¸
+0É„ 7Z=¸:É„ôÿ™7™<\¿#Å¿#ê¿#vÒ#¸?>„	 
+6dP÷¸c>„ ?>É
+6
+÷d¸g>„ c>É
+6
+¼0„ ¯read 0ÂYÿï
+\Ò#/¸"„ "¸a"“É„êÿ/.¸!0\Ò#aP
+é;Z	"÷a;ï
+t÷/À.\Ò#/"¸„ ¸z"ƒ„îÿ\Ò#/"¸"™„öÿz"ƒ\Ì 0CORE?Ò#8/Þ¡\Í f1(BUFFERÒ#8/H0î0Âøÿ\Í z1(BLOCKÒ#8/H0‰0î0Âöÿ\1 ±hH±lÍ Ô1BUFFERÒ#1Ä1† Ë;C64TYPE§;© S  D$ð±& ¾:°©. çHl®;l±:† ›;DISPLAYû6÷:;¥;";>;q;Ô;\âü‡ G;B/BLK¿#  ‡ ç;BLK/DRV¿#ª ‡ ö;(DRV."  Ò#<"
+÷\‡ <DRIVEÒ# <$Z	;\‡  <>DRIVEÒ# <$÷Z	"É\‡ 6<DRV?Ò#Z	"÷ <h\‡ q<DRVINITÒ# 	\ˆ È<I/O."  ˆ Ú<BUSOFF‘< Lÿ 	
+ ž(2064)    êl9êl<9l4Ù J. {¾›¾ŸE{  
+ S;!r¨+	Æ                                                                                                                                                                                                           Ï9CURON¦9¤S±Q…N†Lln9‚ œ9CUROFF¾9H„L„M†O¥N¤S‘Q l	 ƒ ³9C64KEYÒ#¤9‚.Á9„úÿ¼9Ø9\ƒ R9#BS¿# ƒ ï9#CR¿# ƒ û9	C64DECODEÒ#õ9@„ ¸„ .7Çd:@„
+ ¸Q;dP
+é÷‹äï
+7#\ƒ :	C64EXPECTÒ#Q;¡¸Q"„
+ ¯7I7ÂîÿÞ‘,\ƒ o:KEYBOARDž7Û9Á9:[:\„ 
+dÂàÿÊ\Ò#Ì
+1÷\n ¡"NAME>Ò#¸S"‹J
+ 1„ "\n â">BODYÒ#a\n #.NAMEÒ#Ý„ ¸” „ ¯|Ì
+1#7Â ¯???‘,\o #CREATE:Ò#A!•´$"D$;•(¡\o h#:Ò#r#ë ¥8é…°F¥¥‘¥É…ŠÅ…l	 o È#A;Ò#¡ý6\(´\o –#CONSTANTÒ#A!ë ¥8é…°‘¥¡É…ŠÑ…©ÅhŠÅlÒ#ï
+~"ê";\j Œ EDOES>Ò#6ë 
+l6À \Ò#¸
+ÿ1
+ÿÉÉ\Ò#X
+ÿ1
+ÿÉ„ ¸¸#XôÉ#ò¼~[¼ý\k û ?HEAD."  k v!|Ò#^!"Ó“^!;\l Ä!WARNING."  Ò#„!"Ó~"´$"9&Ê„ ‘,~"#¯exists ¹6\l Ú!CREATEÒ#XD",¹6D"Ý„ Ž+;¸"™+;3+\_ Ÿ+‡(ABORT"Ò#Ø‹„ P
+, ï
+
+»d€\Ò#Ø‹„ 
+»d€\_ V+FABORT"Ò#6à+\\_ ,FERROR"Ò#6ú+\\` %,BL¿#  ` :,	-TRAILINGs,˜ S¡…&±Å%…'¤$ˆ±&I ðHPæ%˜h¥%l˜PêF'F%ä˜lÁ e,SPACEÒ#?,7\Á ‰,SPACESÒ#¡Ü ‘,J¹\Ò*¸Ì¼;å¡P
+¡¡í÷
+-@„ 9“P
+í÷o„ æ	;í÷Ê™­¨í)÷Ê™„ðÿ”™÷í)÷ÂTÿ\g B'NUMBER?I(Lg eNUMBERÒ#pÝ™à+?ƒ„ \h vLAST."  Ò#~"Ý\h ×HIDEÒ#‚„ …"´$";\h ŽREVEALÒ#‚„
+ …´$";\h «IRECU±EH±å l	  †	“à+stack empty\\ •).STATUSI( 	."ï
+ï
+;\\ ã)„PUSHÒ#ï
+‹¸P
+"P
+ñ)P
+P
+\\ ý)LOADÒ#Ý™ÓD*D;¸*¸÷í)ù'\] *+LOADÒ#D"÷#*\] c*THRUÒ##‹É
+ %#*J¹\] y*+THRUÒ##‹É
+ %k*J¹\] Ö*c-->Ò#¼D[¸÷í)\] ”*RDEPTHÒ#B	êÞ\d Lb.(Ò#
+)ê#7\d Ýa\Ò#¸".h#.$¸;\d ïb\\Ò#ï;¸;\d \NEEDSÒ#õ&Ê„ ó\d HEXÒ#
+æ	;\d 7DECIMALÒ#
+
+æ	;\e jDIGIT?Ò#
+0É¸
+	[„ 
+‡É¸
+	[„ æ	"ô[ÝÓ€¡\e Á
+ACCUMULATEÒ#‹P
+‹æ	"ž€æ	"žõï
+\e  CON'NOTFOUNDI(ß'x ¾'NO.EXTENSIONSÒ#ú+Haeh?\x O'	INTERPRETÒ#¸'\ Ò#ž)õ&Ý„ ¼1„ —¸'à+compile onlyƒ'Óp™„ I'¸'\Ò#ž)õ&Ý„ <„ —¸'¸'ƒ'ÓpÝ„ <„ ‹^^Â I'¸'\y í'a[Ò#/ (ã(º'1÷\y {(]Ò#/;(ã(º'1å\Ò#“à+Crash\z ‘(DEFER H±$ †ÿ‘$lQÿçÿ†* ±™$ ˆø ­ºÅ&…&­»Å'…'8¥$íº…$¥%í»…%°¡º±»lÙ ¥$%ð=¡&QPæ&Pæ'¥$PF%F$l$¥&…(¥'…)¡&Qæ&Pæ'¥$PF%F$(ðæ*¥$%Pâ8 ¥&ñºH¥'ñ»©Å…æ ±…$H± ‘…%ˆ¥*‘$±(HF*÷© ‘$ l	 b µÿSOURCEÒ#D"Ý„ ·1ï;dÝo"\b ¬WOR"´$;\Ò#"…©"#\s ±%ORDERÒ#R$É %K%/þÿû¹F¤,´$K%\s Y%WORDSÒ#D$""¸¡6™1„ ¹6¸a#‘,Âæÿ€\t &(FIND;& ±™$ ˆø¡&)…(  ±$ªH±$…%†$$P ¢ lŒH±$)E(Pà©Å$…)© Å%…*¤(±&Q)PKˆP÷ ¥*‘ˆ¥)‘ˆ¢ l‰–&¡…$±…%¡$…&)8Å$…$æ%¥&) P	¥$¥%lB&¡$±Ã ¤-.Ò#©-\Ã µ-U.Ò#¡©-\Ä C-.SÒ#;
+¸	"ôÉ
+ £Ü %"H-Fû¹\Ä R-C/L¿#) Ä þ-L/S¿# Ä 
+.LISTÒ#Ž+;¯Scr Ž+"¸ <xH-¯Dr x<¹-.¡É. ¡6„ „7%F„-‘,Ž+"·1%.$÷.Çq,#7J¹7\Å .PAUSE	 Å Ú.LOCKÒ#¸"}
+É„ €d¸"„ ‚.Âôÿ}
+‹F ±H± ‘l	 o ¬#VARIABLEÒ#A!Fý\p |#UALLOTÒ#¸0
+"÷
+ÿ[à+Userarea full0
+"‹0
+[\p ó#USERÒ#A!Fü#ë ¥8é…°F ±ÅŠHÅ ‘l	 p )$ALIASÒ#A!~"¸J
+ 1„ /þÿýÂ 
+ ZS";\q ]$VP."                q ‘$CURRENT."  q ª$CONTEXTÒ ´$""J¸¼
+ ¯‰à+invalid nameX~;#ýˆ!^!"„ ¼^![¸!ž 
+ Z!L	;Â &!€´¡ë lß 3"¡…(±…)¥É…æ¡…&±…'&PlŒ±&‘…%¡&…$%Pl	 ¥$É…$æ%¡$h8)Å$…$æ%È) ð
+±$h¡$…$È…%¥$E(P°¥%E)Pªlcn ¸!>NAMEÒ#%
+"¸„ éZÉ‹1"Ý„ zÞ	#è…\Â ›,HOLDÒ#“´,[´,"ä\Â ¾,<#Ò#´,´,;\Â W,#>Ò#Þ´,"´,ôÉ\Â è,SIGNÒ#ƒ„ 
+-E,\Â ÿ,#Ò#æ	"¤
+	ôU„ 
+‡÷
+0÷E,\Â -#SÒ#-éÙ„øÿ\Ã @-D.RÒ#zÜ)|,e--í,ôÝôÉ¤,#7\Ã u-.RÒ#‹[-\Ã -U.RÒ#¡‹[-\Ã ’-D.Ò#¡[-‘,\RSIVEÒ#´\Ò#‚„ ÜJôä€\h H	IMMEDIATEÒ#
+@Z\h òRESTRICTÒ#
+€Z\i 	 
+CLEARSTACK.  ±…H±… l	 i  HALLOTÒ#¸	"ôÉ‹;
+a¸É¸¸	;FôÉ,, ¸	;\i @ HEAPÒ#¸	"z\i Ù HEAP?Ò#€ }
+¯\Ò#¸XôÉ¸i € ‹D€ ôÉ~[´\¥8é…°F¥"³
+aÉ\] ¬*DEPTHÒ#;
+¸	"‹É\Ò#1"„ ¯
+ compilingd¯ ok\^ G*(QUITÒ#í)7ïù'ß*Âôÿ\^ +'QUITI(
++^ +QUITÒ#B	"B
+(&+\^ ,+STANDARDI/OÒ#/*ô	ZD\^ c+'ABORTI( 	^ Á+ABORTÒ#, Ã	Ê+q+3+\_ Ð+SCR." _ ˆ+R#."  _ ”+(ERRORÒ#q+‘,X#Ì#7‘VERTÒ##ÌÊ„ ­ÂôÿÇ\Ò#¼"™\Ò#Ì“¼[\Ò#ÇÌ\f MDPL."ÿÿÒ#„ 9Þ€9¡\Ò#„  9€ï
+„ µ€"#ÝÓ€“\Ò#
+&@„	 
+
+“d
+$@„	 
+“d
+H@„	 
+“d
+%@„ F“d¡\Ò#
+,ôÉ‹
+.É\Ò#"“ÉÓ¼[\."  g NUMBER?Ò#æ	Ò#A!/¥(ë  ±hH±…È… l z µ((ISÒ#ï
+¸aP
+";\Ò#"/I'"ôÉ‹/¸'"É‰à+not deferred\z Ý(bISÒ#;'¸ó(#1"„
+ 6ã(d;\." Ò#O*
+ -à+tight stacke)J™„ “e)ä“à+dictionary full¯still full \[ ")?STACK ) 8¥ñH¥ñP	  †	h)\Žg) DÒ#µåÿ\b QPARSEÒ#P
+µ¸"Ôÿô‹ï
+ÿP
+ôÉ¸ï
+lÉ¸[\b âNAMEÒ#?,XBÿd\c STATE."  c )eASCIIÒ#?,X#J1"„ ^\c 7,"Ò#
+"êXô#ýn\c w„"LITÒ#ï
+ï
+ÜÌ÷P
+P
+\c Ñ‚("Ò#Ø\c ŒA"Ò#6‘\\d ™ƒ(."Ò#ØÌ#7\d ©B."Ò#6¯\\d »a(Ò#
+)$‘¥8é…°F¥&H
+0˜iÿ¨H˜©ÿ$Š ‘l	 v 1&FINDÒ#D$¸"ô…"É„ …Ü"9&„ Ê”&dô–$a[„
+ ‹…ÂÞÿÊ¡\v î&'Ò#õ&™à+Haeh?\v 7'I[COMPILE]Ò#;'\v o'C[']Ò#;'^\v Å'NULLSTRING?Ò#¸J™¸„ Ê\H±É…H±É … l	 w Õ'
+>INTERPRET•' (x «;\Å †.UNLOCKÒ#¸.÷\È8é…Èé …©l ±…H±… ¡…±…¥É…æ¢l
+Æ ·.FILE<$Æ  /PREV."  ."  Æ /B/BUF¿# ±(Y" PHÀPô`:/ ±™$ ˆø ±Å&…&H±Å'…'­/…(­/…) )/P¥É…æ ©Å(¥)É ‘lf¥(…*¥)…+¡*…( ±*…)(Pl	  )/Pâ¡(* ±(‘*­/(­#–$¸"÷a\Ò#–$aD$\q º$ALSOÒ#–$"
+
+-ú+Vocabulary stack fullD$"F–$[D$;\q Þ$TOSSÒ#/þÿ–$[\r ÿ%
+VOCABULARYÒ#A!¡¡X%
+"%
+;ë lÀ D$;\r /%FORTHv%  õa  r Á%ONLY„%  !8Ï%ë lÀ ¡–$;D$;å$\r Ó%	ONLYFORTHÒ#Ú%É%å$¿%\s —%DEFINITIONSÒ#D$
+
+ ž(2064)    êl9êl<9l{ J. { { Eb  
+ S;Œ:¨+b                                                                                                                                                                                                          … l	 + B†(+LOOPý¡Á±Ñ‘Êq¥É…æ(Dl	 , òI'  ¥8é…°F±HHÑˆ±HHÑ ‘l	 , !Js PR- m†BRANCHÄ¥Á…$¥Ñ…¥$…l	 - y‡?BRANCH†¡¥É…æ(ðKld. Ú>MARKÒ#X¡\. ž>RESOLVEÒ#XôÉ‹;\. ²<MARKÒ#X\. M<RESOLVÂîÿ\0 ³FREPEATÒ#Fý6ÂQ\0 íEUNTILÒ#Fý6„Q\1 BDOÒ#6É¦P\1 C?DOÒ#6Ü¦P\1 1DLOOPÒ#Pý6J6¹½\1 eE+LOOPÒ#Pý6û6¹½\1 `…LEAVEÒ#¹ï
+…¸"÷P
+\2 ÜUM* ±…$¡…%H†&†'¢'&&&%&$±Å'…'H±ˆÅ&…&æ%Pæ$JP|¥'‘H¥&‘ ¥$‘¥0•¡E$±å%l‡' QU<¡…$±…%¥É…æ¡E$±å%°l‰lŒ( ý>Ò#‹U\( )0>Ò#¤ƒ\( 70<>Ò#™‰\( fU>Ò#‹\( v=Ò#É™\( ÅD0=Ò#™\( ÓD=Ò#µõÙ\( ƒD<Ò#éÉ„ -ÊÊÂ Þ\Ò#9„ ‹€\) ”MINÒ#é-µ\) EMAXÒ#éUµ\) W#¸P
+=ôƒ„ Ü÷‹Çƒ„ ¤ô„ ‹÷‹Ç9\5 X2/±
+±Ê‘¡Êl 6 /MODÒ#P
+ï
+à\6 //Ò#6Ê\6 dMODÒ#6€\6 r*/MODÒ#P
+ðï
+à\6 Â*/Ò#ÊÊ\6 ØU/MODÒ#¡‹Ç\6 ‡UD/MODÒ#P
+¡Çï
+‹P
+Çï
+\7 ›CMOVEF© SˆD$P	F% l	 ±(‘&HPD+÷© SH±Å&‘H±Å'‘¡Å$ ±Å%‘l	 # ð1+%©Á°l ±É ‘l	 # 2+c©Pà# <3+p©PSv©PM\©PG# i1-É8¡él ±é ‘l	 # Â2-‡à$ €TRUE¿#ÿÿ$ ŒFALSE¿#  $ ™"-1“$ §!0¡$ °1¿# $ ¸2¿# $ B3¿# $ L4¿# $ VONÒ#“‹;\ Ü~jSP¿+ Ü ‰jIP¿+ Ü ”jN¿+$ Ü ŸjPUTA¿+ Ü ©jW¿+ Ü ¶jSETUP¿+SÜ ÀjNEXT¿+	 Ü NjXYNEXT¿+haÜ ÛjPOPTWO¿+ô Ü êjPOP¿+ÿ¹ÿåg\ ¿hINK-POT.*öö îö öö ’ iINIT-SYSTEM;i¢÷šlha>ÿviŽxi©ih©\hº½h© ¢ l³ü?ÿ@Ø>ÿ©iÿÿ©aþÿ „ÿ Šÿ­iÿ­iÿ­i@©€@¥8é…°F ±H± ‘l	  íROT ±…% ± ‘ ±…$¥%‘ ¥$‘H±…%¡‘ ±¥%‘ l	  -ROTÒ#\ sNIPÒ#‹€\ ÄUNDERÒ#‹ô\ ÔPICKÒ##3;
+÷"\ †ROLLÒ#¸P
+;
+¸aï
+#3ò€\ 2SWAPÒ#P
+ï
+\ À2DROPô V2DUPÒ#ôô\  F¡±‘©Å…æl	  ê
+R@¥8é…°F±‘¡l  …RDROP 1EXITf¡…±…l =UNNEST^¡…±…l s?EXITÕ¡¥É…æ(P¾l	  ËEXECUTE™¡…±…¥É…æl  PERFORMÒ#"—\ ±C@L¡…$±…%© ‘¡$l  EC!æ¡…$±…%H±$ˆ¥\: QPADÒ#X
+b÷\: âALLOTÒ#L	[\: õ,Ò#X;Fý\: C,Ò#Xä¼ý\: ‡COMPILEÒ#ï
+¸aP
+"\; ,#TIB."  ; h>TIB."`                                                                                ; u>IN."  ; ²BLK."  ; ¾SPAN."  ; JT                                 ."ultraFORTH-83 3.80-C64  ÿÿ±…­ÿÿ…¥É…°Ìÿÿæ°ù   	END-TRACEÅ	©¥…©…©É…©…l	  w	RECOVER."È…È…¥PFFlÒ# Ú	NOOP	  ™	ORIGIN¿# ¤	S0<$ ³	R0<$
+ ½	DP<$ G	OFFSET<$ Q	BASE<$ ß	OUTPUT<$ ë	­ÿ	ÿ?ÿx`“ +iC64INIT¦i `ilha  …†‡‰Š‹Œˆ” šiC64FKEYSMi¢J0	½¬i]lOilha{ Àic(64Ò+$Ì ™à3
+C) missing"/C)É„ãÿ\{ àibC)Ò+\{ jc(16Ò+\{ jFORTH-83Ò+\Ü "j	ASSEMBLERv-  új€-Ü   PUSHA¿+Ü ijPUSH0A¿+Ü wjPUSH¿+Ü ÆjRP¿+ Ü ÓjUP¿+ Ü EÒ#XÉ\. Ý?PAIRSÒ#Éà+unstructured\I h©ÿlh© ª¥8é…°FŠ ‘È¢ l / ôCASE?b© S¥$AP	¥%QPl‰Šl0 8BIFÒ#6„¦¼\0 \DTHENÒ#=¼ý½\0 ÏDELSEÒ#¼ý6Â¦‹½“\0 „EBEGINÒ#UF\0 ¡EWHILEÒ#FýF6„¦/þÿH\Ò#è¸/þÿÉ„
+ €½UMAXÒ#éµ\) éUMINÒ#é[µ\) üEXTENDÒ#¸ƒ\) DABSÒ#„ µ\) "ABSÒ#„ ¤\Ò#9ï
+a¸P
+P
+‹P
+P
+\* 7ƒ(DOÒ#ôÉi\* Ã„(?DOÒ#ôÉÝ„ iï
+¸"÷P
+€\* ÕBOUNDSÒ#ô÷‹\* š‡ENDLOOP»©l+ ¯…(LOOPL©Á±É ‘l	  ±…ˆ±%l	 3 ˜M*Ò#¸ƒ¸P
+„ ¤‹¸ƒ„
+ ¤ï
+‰P
+žï
+„ µ\3 ë*Ò#ž€\3  2*5¡
+±*‘l	 Ò#“à+division overflow\4 .UM/MODÉ¡…)±…(¥É…æ¡…%±…$H±…'H±…&¢Æ*8¥%å)¨¥$å(°&*…$„%&'&&&%&$JPß Æ$Æ% †	b\¥&‘H¥%‘H¥$‘ ¥'l 5 ^M/MODÒ$ àOFFÒ#¡‹;\% ñ„CLIT¥8é…°F¡Š‘æPæl	 % ƒLIT1¥8é…°F±‘¡¥É…æl	 % )GLITERALÒ#¸/ ÿ1„
+ 6/d6
+\& t0<…±©ÿ$Š‘l & ~0=›¡ðèPé& ”UWITHIN±© S ¡E$±å%°
+¡E&±å'°½lŒ' ¥<W¡…$±…%¥É…æ¥%q	ìæ)æ'lL7 ¼CMOVE>ô© S¥%Å'…'¥%Å)…)æ%¤$ˆ±(‘&˜PøF'F)F%Pð l	 7 éMOVEÒ#P
+é„ ï
+òdï
+D\8 %PLACEÒ#ôP
+ô#ï
+,ä\8 fCOUNTÎ¡…$É±…%É ‘¥8é…°FlT8 ÄERASEÒ#¡¨\9 FILLª© Sˆ¥$¦'ð
+‘(HPûæ)JPö¦&ð‘(HJPú l	 : ¡HEREÒ#L	"â+ùH¡Ñ‘ˆ± Ñ‘l™
+  óORH¡‘ˆ± ‘l™
+  AND3H¡1‘ˆ± 1‘l™
+  +XORpH¡q‘ˆ± q‘l™
+! h-ËH±8á‘H± ñ ‘l™
+! ÅNOT‹ŠáŠñ‘l	 ! ƒNEGATE¦8°ã" ›DNEGATE·H8Šñ‘HŠñ‘Šá Šñ‘l	 
+ª¨ˆ±™$ ˆøŠÅ…æ¢  `" «É…æl	  ßCTOGGLEÒ#ÜJn‹ä\ÿ @$¡…$±…%±$‘¡$l ÿ !=¡…$±…%H±$H± ‘$lôÿ 7+!]¡…$±…%H±Á$$H± Ñ$lo vDROP
+ ÙSWAP±ª ±…$Š‘¥$ ‘H¢ ±…$¡‘ˆ¥$l  „DUPº¥8é…°F ± ‘H±ˆl  ²?DUPß¡Pl	 lº VOVERöIBÒ#\"\; WQUERYÒ#Ý
+pW7Q"o;¸÷D÷\< çSCANÒ#P
+¸„ÿ ôJÉ„ Ç‹#‹Âäÿ9\< ÿSKIPÒ#P
+¸„ÿ ôJÉ„ Ç‹#‹Âäÿ9\< ;ÿ/STRINGÒ#ôô÷zÉ\IaI{°IÂ)ßI[°	€`= ÊÿCAPITAL©ÿ¡ †ÿl	 > ÿ
+CAPITALIZEDÿ¡…$±…%¡$…&ˆD&P l	INPUT<$ ù	ERRORHANDLER<$ 
+VOC-LINK<$ ÿ
+UDP<$ÿ *
+SP@=
+¥…$¥…%¢$¥8é…°Fµ‘µ ¢ l  5
+SP!Ç
+¡ª±…†¢ l	  _
+UP@
+¢lg
+ ×
+ƒUP!Ž
+¢±•ˆ±• ¢  ¥É…æl	  †
+RP@µ
+¢lg
+ ­
+ƒRP!D
+¢l
+ ¼
+‚>RR
+¥8é…°F¡±‘l
+ K
+‚R>ñ
+¥8é…°CLEARÒ+X ¸}=L;\Ô ¡=(FORGETÒ+¸”(à3	is symbolù;=\Ô »=FORGETÒ+;/¸/$"à3	protected©*¸”(„ ê*Â ……E=\Ô ß=EMPTYÒ+/$"}=/2"0;\Õ >SAVEÒ+X }=%"¸……"ô…;"Ý™„êÿ}­/ D\Õ >>BYEÒ+ì9æc\Ò+¯?PÉ„ “9\Õ ×>STOP?+è …\Â ›4HOLDÒ+“´4[´4"ä\Â ¾4<#Ò+´4´4;\Â W4#>Ò+Þ´4"´4ôÉ\Â è4SIGNÒ+ƒ„ 
+-E4\Â ÿ4#Ò+æ"¤
+	ôU„ 
+‡÷
+0÷E4\Â 5#SÒ+5éÙ„øÿ\Ã @5D.RÒ+zÜ)ÿ|4e55í4ôÝôÉ¤4#?\Ã u5.RÒ+‹ÿ[5\Ã 5U.RÒ+¡‹[5\Ã ’5D.Ò+¡[5‘4\ÿ¥IÉ éÿl	 ‚ ‹aCUROFF¶a©ÿÿÿl	 ƒ «aC64KEYÒ+“a‚6[a„úÿ´aÕa\ƒ Ca#BS¿+ ƒ àa#CR¿+ ƒ ìa	C64DECODEÒ+æa@„ ¸„ .?Çdòa@„
+ ¸Q!;dPé÷‹äï?#\ƒ øa	C64EXPECTÒ+Q!;¡¸Q!"„
+ ¯?I?ÂîÿÞ‘4\ƒ @bKEYBOARDž?La[ablb\„ ÐbCON!’b¡>ÿ l¼8„ ¯$read 8ÂYÿï\Ò+7¸"„ "¸a"“É„êÿ76¸!8\Ò+aPé;Z"÷a;ït÷7À6\Ò+7"¸„ ¸z"ƒ„îÿ\Ò+7"¸"™„öÿz"ƒ\Ì 8CORE?Ò+87Þ¡\Í f9(BUFFERÒ+87H8î8Âøÿ\Í z9(BLOCKÒ+87H8‰8î8Âöÿ\9 ±hH±lÍ Ô9BUFFERÒ+9Ä9\—e†š© S¥& Ld¥&>ÿ ´ÿ?ÿ¥$	`…­>ÿ –ÿ?ÿ¦&†˜lhaŠ }eBUSINÒ+ˆd6•e\‹ FeBUS!ãe¡>ÿ ¨ÿ?ÿl™‹ ZeBUSTYPEÒ+£ÿÜÿ %JáeJÿ¹ÿ‚6\‹ óeBUS@f>ÿ ¥ÿ?ÿl‹ fBUSINPUTÒ+£ÿÜÿ f%äJÿ¹ÿ‚6\‹ ,fDERROR?Ò+d
+Nef¸
+0É„ ?f¸òaÉ„ôÿ™?™—d\¿+Å¿+ê¿+ å'l²<¥(E,¥)å-°¡,$±,‘$lG<¥,…$¥-…%l‰<lÒ+%"Ý„ ¸PZÉË<ïÂêÿ\Ò+}#¸"}É„( é"‹X ¯„ ¸"#"ô;ÇÂ "ÂNÿÞ\Ò+%Ë<R,Éÿ  é%"z¯„
+ /Ë-%;/þÿûÿ¹ÿé´,"z¯„
+ /Ë-´,;\Ó º;CUSTOM-REMOVEI0 Ò+ôë<'=M<{=€(‹Éi(L;¡~';\Ô Ë=vÒ+¸‡f„	 
+6dP÷¸‹f„ ‡fÉ
+6
+÷d¸f„ ‹fÉ
+6
+÷dfÉ
+6
+÷\Ò+“f#‹\Ò+æ2t%¡|4e5€
+,E4e5í4\¿+  of
+READSECTORÒ+d
+ze‘$u1:13,0,Ì ýeøfýe—d‚6yfÓd
+Neg7f—d¡\ gWRITESECTORÒ+d
+ze‘$b-p:13,0Ì ýe—dd
+ze
+3ã0(3Úd–@/.";/ ã0Ì3Ø3\ ¹9™ ˆ÷­ É…­!É … ±…H±… 
+±…H±…¢  Š‘`Ú ‹@COLDa `i­ É…$­!É …%  ¹‘$HPø ¾@ †9iÑ@\Ú ú@RESTART9a `i ¾@ †9iš@\¢  l	  -aC64KEY?]a¥ï]ð©ÿhl qaGETKEY×a>ÿ Ýë?ÿI P© l‚ ÌaCURON•a¥JÅH7‘(¥(7¥)7lÃ7Ê 7(DISKERRÒ+¯$error !  r to retry ¯?¸
+rÉ‹
+RÉ‰à3aborted\Ê A7DISKERRI0L7Ê 8R/WI0þgÒ+¸z"ƒ„j a¸"#„3 2ô2q3¸zôa"F"¡8„ ¯$write 8ÂÛÿ
+€ôt#€\Ò+a¸åt÷\Ò+¸{82ô2q3PôZ"÷ô
+÷zFF™d>ÿ Lÿ?ÿ ¢  †ˆdÀ6\¢   †—d7À6“à3	no device\†…®>ÿ ±ÿ?ÿ©`>ÿ “ÿ?ÿ>ÿ ®ÿ?ÿ¥ðÈÈl¯d`ùd¡ Ld¥É…æl¢d‰ Žd?DEVICEÒ+ˆd6÷d\$e†š© S¥& Ld¥&>ÿ ±ÿ?ÿ¥$	`>ÿ “ÿ?ÿ¦&†™lhaŠ eBUSOUTÒ+ˆd6"e\Š qeBUSOPENÒ+
+ðze\Š ÆeBUSCLOSEÒ+
+àze—d;""‹;%7#;[\Ð Ë;ALL-BUFFERSÒ+#;"7;#;"É„òÿ\Ò+J
+ 1\Ò+ê*Ü#‹”(\Ò+€(%"Pï"Ý„^ ¸PZÉPï"PôÇ¸‹aê*1„. ”(„Zÿa|;„ ôaç;„ aS*aðÂ¶ÿ9Âœÿ\Í< ±™$ ˆø ±É…*H±É …+ ¡$…,±$…-,ð5¥,E*¥-å+¥,E&¥-gýe—dd
+ze‘$u2:13,0,Ì ýeøfýe—d‚6yf\Ž ]gDISKOPENÒ+d
+Ðe
+#áe—dyf\Ž ¸g	DISKCLOSEÒ+d
+ˆe—d\Ž Yg1541R/WÒ+‹à3no filezd6¸d;P[„ÿ ¹5¯$beyond capacityÊdCg„ €Êd¡‹33Z£ÿÉÿ. €é%„
+ îf&gÂ îfËgPg÷ï¸„ „Jÿ¹ÿzÞåg\ ôgÀ(;\Ö ?KEY~? Ö ©?KEY?~?Ö ´?DECODE~?Ö À?EXPECT~?×   SEALÒ+¡/Ú-+;\× |?$ONLYÚ-× ó?%FORTHÉ-× þ?%WORDS	.× 
+@$ALSOå,× @+DEFINITIONS¿-Ò+%"¸…"ôZÉ;"Ý™„êÿ\Ò+¡7;;#;;H;\Ø N?'COLDI0 Ò+1@q@£-Í@:?Ì #??š@\Ø Å@'RESTARTI0 Ò+/;\Å †6UNLOCKÒ+¸6÷\È8é…Èé …©l ±…H±… ¡…±…¥É…æ¢lÆ ·6FILE<,Æ  7PREV.*  .*  Æ 7B/BUF¿+ ±(Y" PHÀPô`:7 ±™$ ˆø ±Å&…&H±Å'…'­7…(­7…) )7P¥É…æ ©Å(¥)É ‘lf¥(…*¥)…+¡*…( ±*…)(Pl	  )7Pâ¡(* ±(‘*­7(­	 ÂcC64TYPE¤c© S  D$ð±& µb°©.>ÿ lÿ?ÿHl«cl¨b† ˜cDISPLAYû>îbc¢cc5chcËc\èc>ÿlrÿ‡ JcB/BLK¿+ ‡ ðcBLK/DRV¿+ª ‡ þc(DRV.*  Ò+d"
+÷\‡ dDRIVEÒ+d$Z;\‡ (d>DRIVEÒ+d$÷Z"É\‡ >dDRV?Ò+Z"÷dh\‡ ydDRVINITÒ+ \ˆ ÐdI/O.*  ˆ ‚dBUSO
+éh:Jÿ¹ÿÂ ï¡Üÿ éh:¼¼õJÿ¹ÿì9Þ\Ï 8:COPYÒ+¼Ö:\Ï T:CONVEYÒ+‹#FÉ¸<‰à3neinÖ:\Ð å:LIMIT¿+ €Ð ;FIRST.*  Ð ;ALLOTBUFFERÒ+#;"B"É%7aÓ%7¤#;[#;"¸{87"ô;7;\Ð );
+FREEBUFFERÒ+#;";%7É„. #;"!87¸"#;"É„ "Âîÿ#INDEXÒ+#‹Éÿ! ?%F„5%·9#
+%#?¡>„ „Jÿ¹ÿ\ ŠhFINDEXÒ+Cg„ Þd#‹Éÿ1 ?%F„5è ¸%33îf&gP#
+%#?ï¡>„ „Jÿ¹ÿåg\ ¿hINK-POT.*öö îö öö ’ iINIT-SYSTEM;i¢÷šlha>ÿviŽxi©ih©\hº½h© ¢ l³ü?ÿ@Ø>ÿ©iÿÿ©aþÿ „ÿ Šÿ­iÿ­iÿ­i@©€@Ò+»?„ …>…>¡\Õ ™>?CRÒ+Ê?6
+
+É[„ ?\Ò+A)¸!aë(lÀ(Jô"÷»\Ö ³>OUTPUT:Ò+r+ë(lÀ(ô;\Ö ë>EMITZ> Ö ?CRZ>Ö ?TYPEZ>Ö ?DELZ>Ö (?PAGEZ>Ö 3?ATZ>
+Ö ??AT?Z>Ö i?ROWÒ+o?€\Ö t?COLÒ+o?Ê\Ò+A)¸!aë(lÀ(J"÷»\Ö Ä?INPUT:Ò+r+ë(lÃ ¤5.Ò+ÿ©5\Ã µ5U.Ò+¡©5\Ä C5.SÒ+;¸"ôÉ
+ ÿ£ÿÜÿ %"H5Fûÿ¹ÿ\Ä R5C/L¿+) Ä þ5L/S¿+ Ä 
+6LISTÒ+Ž3;¯$Scr Ž3"¸dxH5¯$Dr `d¹56¡Éÿ. ¡>„ „?%F„5‘4Ž3"·9%6$÷6Çq4#?Jÿ¹ÿ?\Å 6PAUSE	 Å Ú6LOCKÒ+¸"}É„ €d¸"„ ‚6Âôÿ}‹ÿ?ÿ¥É…æ†K†O  †‚6\I€°I `Ià°IÀ``„ ‰b
+PRINTABLE?Vb¡ µbJŠl… GbC64EMITðb¡ µb°©.l”b… äbC64CRÒ+òab\… þbC64DELÒ+
+b‘4
+b\… cC64PAGEÒ+
+“b\… +cC64ATjc© S¦&¤$>ÿ ðÿ?ÿlha… @cC64AT?Íc¥8é…°FŠ‘8>ÿ ðÿ?ÿÀ(˜é(hŠ¢ Èl†\Í œ9BLOCKÒ+9}9\Î ¯9UPDATEÒ+
+€7"z#ä\Î A9SAVE-BUFFERSÒ+769Ý„ !8Âôÿ7À6\Î Ý9EMPTY-BUFFERSÒ+767"Ý„
+ ¸{8Âòÿ7À6\Î :FLUSHÒ+ì9:\Ò+¸9n9„ 7"{8,9„ ì9Z"÷‹·9……;J9\Ò+ì9Pô÷ô[Péï1„$ õï¡Üÿ “/þÿõ2¸Ì ¼&;&å¡P¡¡í%&÷%
+-@„ 9“Pí%&÷%o&„ æ;í%&÷%Ê%™&­%¨&í%)&÷%Ê%™„ðÿ&”&™&&÷í%)&÷%ÂTÿ\g B&'NUMBER?I0L&g e'NUMBERÒ+p'Ý™à3?ƒ„ ÿ\h v'LAST.*  Ò+~'"Ý\h ×'HIDEÒ+‚'„ …"´,";\h Ž'REVEALÒ+‚'„
+ …´,";\h «'IRECU/NOTFOUNDI0ß/x ¾/NO.EXTENSIONSÒ+ú3Haeh?\x O/	INTERPRETÒ+¸/\ Ò+ž1$õ.Ý„ ¼1„ —¸/à3compile onlyƒ/Óp'™„ I/¸/\Ò+ž1$õ.Ý„ <„ —¸/!¸/ƒ/Óp'Ý„ <„ ‹^^Â I/¸/\y í/a[Ò+/ 0ã0º/1$÷\y {0]Ò+/;0ã0º/1$å\Ò+“à3Crash\z ‘0DEFERIBÒ+\!"\; W!QUERYÒ+Ý!
+pW?Q!"o!;¸!÷D!÷\< ç!SCANÒ+P¸„ÿ ôJÉ„ Ç‹#‹Âäÿ9\< "SKIPÒ+P¸„ÿ ôJÉ„ Ç‹#‹Âäÿ9\< ;"/STRINGÒ+ôÿô÷zÉ\IaI{°IÂ)ßI[°	€`= Ê"CAPITAL©"¡ †"l	 > "
+CAPITALIZED"¡…$±…%¡$…&ˆD&P l	dÂàÿÊ\Ò+Ì 
+1÷\n ¡*NAME>Ò+¸S*‹J
+ 1„ "\n â*>BODYÒ+a\n +.NAMEÒ+Ý„ ¸”(„ ¯$|Ì 
+1#?Â ¯$???‘4\o +CREATE:Ò+A)•'´,"D,;•0¡\o h+:Ò+r+ë(¥8é…°F¥¥‘¥É…ŠÅ…l	 o È+A;Ò+¡ý6!\0´'\o –+CONSTANTÒ+A)!ë(¥8é…° VERTÒ+#Ì Ê%„ ­%ÂôÿÇ\Ò+¼&"™\Ò+Ì “¼&[\Ò+ÇÌ \f M%DPL.*ÿÿÒ+„ 9Þ€9¡\Ò+„  9€ï„ µ€&"#ÝÓ€“\Ò+
+&@„	 
+
+“d
+$@„	 
+“d
+H@„	 
+“d
+%@„ F“d¡\Ò+
+,ôÉ‹
+.É\Ò+&"“ÉÓ¼&[\.*  g &NUMBER?Ò+æ$‘¥8é…°F¥&H
+0˜iÿ¨H˜©ÿ$Š ‘l	 v 1.FINDÒ+D,¸"ô…"É„ …Ü"9.„ Ê”.dô–,a[„
+ ‹…ÂÞÿÊ¡\v î.'Ò+$õ.™à3Haeh?\v 7/I[COMPILE]Ò+;/!\v o/C[']Ò+;/^\v Å/NULLSTRING?Ò+¸J™¸„ Ê\H±É…H±É … l	 w Õ/
+>INTERPRET•/ 0x «4¹>D!"Ý„ Ž3;¸!"™3;33\_ Ÿ3‡(ABORT"Ò+Ø$‹„ P,(ï»d€\Ò+Ø$‹„ »d€\_ V3FABORT"Ò+6!à3\$\_ 4FERROR"Ò+6!ú3\$\` %4BL¿+  ` :4	-TRAILINGs4˜ S¡…&±Å%…'¤$ˆ±&I ðHPæ%˜h¥%l˜PêF'F%ä˜lÁ e4SPACEÒ+?4?\Á ‰4SPACESÒ+¡Üÿ ‘4Jÿ¹ÿ\Ò\: Q PADÒ+X 
+b÷\: â ALLOTÒ+L[\: õ ,Ò+X ;Fý \: !C,Ò+X ä¼ý \: !‡COMPILEÒ+ï¸aP"!\; ,!#TIB.*  ; h!>TIB.*`!                                                                                ; u!>IN.*  ; ²!BLK.*  ; ¾!SPAN.*  ; J!T´,""!$J¸¼
+ ¯‰à3invalid nameX ~';#ý ˆ)^)"„ ¼^)[¸)!ž(
+ Z')L;Â &)€´'¡!ë(lß(3*¡…(±…)¥É…æ¡…&±…'&PlŒ±&‘…%¡&…$%Pl	 ¥$É…$æ%¡$h8)Å$…$æ%È) ð
+±$h¡$…$È…%¥$E(P°¥%E)Pªlcn ¸)>NAMEÒ+%"¸„ éZÉ‹1*Ý„ zÞê#Þ\d L$b.(Ò+
+)ê##?\d Ý$a\Ò+¸!"6h#6$¸!;\d ï$b\\Ò+øc¸!;\d %\NEEDSÒ+$õ.Ê„ ó$\d %HEXÒ+
+æ;\d 7%DECIMALÒ+
+
+æ;\e j%DIGIT?Ò+
+0É¸
+	[„ 
+‡É¸
+	[„ æ"ô[ÝÓ€¡\e Á%
+ACCUMULATEÒ+‹P‹æ"ž€æ"žõï\e  %CON"´,;\Ò+"…©*+\s ±-ORDERÒ+R,Éÿ %K-/þÿûÿ¹ÿF¤4´,K-\s Y-WORDSÒ+D,""¸¡>™1„ ¹>¸a+‘4Âæÿ€\t .(FIND;. ±™$ ˆø¡&)…(  ±$ªH±$…%†$$P ¢ lŒH±$)E(Pà©Å$…)© Å%…*¤(±&Q)PKˆP÷ ¥*‘ˆ¥)‘ˆ¢ l‰–.¡…$±…%¡$…&)8Å$…$æ%¥&) P	¥$¥%lB.¡$±"³aÉ\] ¬2DEPTHÒ+;¸"‹É\Ò+1$"„ ¯$
+ compilingd¯$ ok\^ G2(QUITÒ+í1?ï!ù/ß2Âôÿ\^ 3'QUITI0
+3^ 3QUITÒ+B"B0&3\^ ,3STANDARDI/OÒ+/*ôZD\^ c3'ABORTI0 ^ Á3ABORTÒ+,(ÃÊ3q333\_ Ð3SCR.* _ ˆ3R#.*  _ ”3(ERRORÒ+q3‘4X +Ì #?‘ìæ)æ'lL7 ¼CMOVE>ô© S¥%Å'…'¥%Å)…)æ%¤$ˆ±(‘&˜PøF'F)F%Pð l	 7 éMOVEÒ+Pé„ ïòdïD\8 % PLACEÒ+ôPô#ï, ä\8 f COUNTÎ ¡…$É±…%É ‘¥8é…°FlT8 Ä ERASEÒ+¡¨ \9  FILLª © Sˆ¥$¦'ð
+‘(HPûæ)JPö¦&ð‘(HJPú l	 : ¡ HEREÒ+L"‘¥¡É…ŠÑ…©ÅhŠÅlÒ+ï~'"ê*;\j Œ(EDOES>Ò+6!ë(
+l!6!À(\Ò+¸
+ÿ1
+ÿÉÉ\Ò+X 
+ÿ1
+ÿÉ„ ¸¸#X ôÉ#ò¼~'[¼ý \k û(?HEAD.*  k v)|Ò+^)"Ó“^);\l Ä)WARNING.*  Ò+„)"Ó~'"´,"9.Ê„ ‘4~'"+¯$exists ¹>\l Ú)CREATEÒ+X D!"!	DÒ+µ#å"\b Q#PARSEÒ+Pµ#¸!"Ô"ô‹ï"PôÉ¸ïlÉ¸![\b â#NAMEÒ+?4X#B"d\c $STATE.*  c )$eASCIIÒ+?4X##J1$"„ ^\c 7$,"Ò+
+"ê#X ô#ý n \c w$„"LITÒ+ïïÜÌ ÷PP\c Ñ$‚("Ò+Ø$\c Œ$A"Ò+6!‘$\$\d ™$ƒ(."Ò+Ø$Ì #?\d ©$B."Ò+6!¯$\$\d »$a(Ò+
+)
++–,¸"÷a\Ò+–,aD,\q º,ALSOÒ+–,"
+
+-ú3Vocabulary stack fullD,"F–,[D,;\q Þ,TOSSÒ+/þÿ–,[\r ÿ-
+VOCABULARYÒ+A)¡!¡!X %"!%;ë(lÀ(D,;\r /-FORTHv-  3j  r Á-ONLY„-  !@Ï-ë(lÀ(¡–,;D,;å,\r Ó-	ONLYFORTHÒ+Ú-É-å,¿-\s —-DEFINITIONSÒ+D,±EH±å l	  †“à3stack empty\\ •1.STATUSI0 .*ïï;\\ ã1„PUSHÒ+ï‹¸P"Pñ1PP\\ ý1LOADÒ+Ý™ÓD!2D!;¸!2¸!÷í1ù/\] 2+LOADÒ+D!"÷#2\] c2THRUÒ+#‹Éÿ
+ %#2Jÿ¹ÿ\] y2+THRUÒ+#‹Éÿ
+ %k2Jÿ¹ÿ\] Ö2c-->Ò+¼D![¸!÷í1\] ”2RDEPTHÒ+BRSIVEÒ+´'\Ò+‚'„ ÜJôä€\h H'	IMMEDIATEÒ+
+@Z'\h ò'RESTRICTÒ+
+€Z'\i 	(
+CLEARSTACK.( ±…H±… l	 i (HALLOTÒ+¸"ôÉ‹;a¸É¸¸;FôÉ, ,(¸;\i @(HEAPÒ+¸"z\i Ù(HEAP?Ò+€(}¯\Ò+¸X ôÉ¸i(€(‹D€(ôÉ~'[´'\¥8é…°F¥Ò+A)/¥0!ë( ±hH±…È… l z µ0(ISÒ+ï¸aP";\Ò+"/I/"ôÉ‹/¸/"É‰à3not deferred\z Ý0bISÒ+;/¸ó0+1$"„
+ 6!ã0!d;\.* Ò+O2
+ -à3tight stacke1J™„ “e1ä“à3dictionary full¯$still full \[ "1?STACK 1 8¥ñH¥ñP	  †h1\Žg1  H±$ †"‘$lQ"ç"†* ±™$ ˆø ­º!Å&…&­»!Å'…'8¥$íº!…$¥%í»!…%°¡º!±»!lÙ# ¥$%ð=¡&QPæ&Pæ'¥$PF%F$l$#¥&…(¥'…)¡&Qæ&Pæ'¥$PF%F$(ðæ*¥$%Pâ8 ¥&ñº!H¥'ñ»!©Å…æ ±…$H± ‘…%ˆ¥*‘$±(HF*÷© ‘$ l	 b µ"SOURCEÒ+D!"Ý„ ·9øcdÝ!o!"\b ¬#WORF ±H± ‘l	 o ¬+VARIABLEÒ+A)Fý \p |+UALLOTÒ+¸0"÷
+ÿ[à3Userarea full0"‹0[\p ó+USERÒ+A)Fü+!ë(¥8é…°F ±ÅŠHÅ ‘l	 p ),ALIASÒ+A)~'"¸J
+ 1„ /þÿý Â 
+ Z'S*;\q ],VP.*                q ‘,CURRENT.*  q ª,CONTEXTÒ ìtieg 6a,D-2000 Hamburg 54 * 9Z™">>>>bitte eine beliebige Taste<<******* pä¡ e$: ‹ e$²"" ‰740 Çî **************** ~ø anfang der seite • **************** › ¤™"“" J ™"        ultraFORTH 83 - rev 3.8 R*™:™ X4Ž   RTH83 /clv12oct87 ö
+ ž(4112)    êlaêl9al× J6 × × {k  
+ Vc}b¨3ej                                                                                                                                                                                                          ¥8é…°F ±H± ‘l	  íROT ±…% ± ‘ ±…$¥%‘ ¥$‘H±…%¡‘ ±¥%‘ l	  -ROTÒ+\ sNIPÒ+‹€\ ÄUNDERÒ+‹ô\ ÔPICKÒ+#3;÷"\ †ROLLÒ+¸P;¸aï#3ò€\ 2SWAPÒ+Pï\ À2DROPô V2DUPÒ+ôô\  É…æl	  ßCTOGGLEÒ+ÜJn‹ä\ÿ @$¡…$±…%±$‘¡$l ÿ !=¡…$±…%H±$H± ‘$lôÿ 7+!]¡…$±…%H±Á$$H± Ñ$lo vDROP ÙSWAP±ª ±…$Š‘¥$ ‘H¢ ±…$¡‘ˆ¥$l  „DUPº¥8é…°F ± ‘H±ˆl  ²?DUPß¡Pl	 lº VOVERö0•¡E$±å%l‡' QU<¡…$±…%¥É…æ¡E$±å%°l‰lŒ( ý>Ò+‹U\( )0>Ò+¤ƒ\( 70<>Ò+™‰\( fU>Ò+‹\( v=Ò+É™\( ÅD0=Ò+™\( ÓD=Ò+µõÙ\( ƒD<Ò+éÉ„ -ÊÊÂ Þ\Ò+9„ ‹€\) ”MINÒ+é-µ\) EMAXÒ+éUµ\) W Ö€ € **************** "Š ende der seite 9” **************** ?ž Ê¨™"": positionieren ˜²™"**** (C) 1985,1987 bp/ks/re/we/clv **** ¯·™"*Mitglieder der: Ý¼™"*FORTH-Gesellschaft e.V. c/o R. Mertins F™"* AntilopensUMAXÒ+éµ\) éUMINÒ+é[µ\) üEXTENDÒ+¸ƒ\) ÿDABSÒ+ÿ„ µ\) "ÿABSÒ+ÿ„ ¤\Ò+9ïa¸PP‹PP\* 7ÿƒ(DOÒ+ôÉiÿ\* Ãÿ„(?DOÒ+ôÉÝ„ iÿï¸"÷P€\* ÕÿBOUNDSÒ+ô÷‹\* šÿ‡ENDLOOP»ÿ©l+ ¯ÿ…(LOOPLÿ©Á±É ‘l	  ±…ˆ±… l	 + Bÿ†(+LOOPýÿ¡Á±Ñ‘Êq¥É…æ(Dl	 , òÿI'  ¥8é…°F±HHÑˆ±HHÑ ‘l	 , !Js PR- m†BRANCHÄ¥Á…$¥Ñ…¥$…l	 - y‡?BRANCH†¡¥É…æ(ðKld. Ú>MARKÒ+X ¡!\. ž>RESOLVEÒ+X ôÉ‹;\. ²<MARKÒ+X \. M<RESOLVF¡±‘©Å…æl	  êR@¥8é…°F±‘¡l  …RDROP 1EXITf¡…±…l =UNNEST^¡…±…l s?EXITÕ¡¥É…æ(P¾l	  ËEXECUTE™¡…±…¥É…æl  PERFORMÒ+"—\ ±C@L¡…$±…%© ‘¡$l  EC!æ¡…$±…%H±$ˆ¥$ àOFFÒ+¡‹;\% ñ„CLIT¥8é…°F¡Š‘æPæl	 % ƒLIT1¥8é…°F±‘¡¥É…æl	 % )GLITERALÒ+¸/ ÿ1„
+ 6!/!d6!
+!\& t0<…±©ÿ$Š‘l & ~0=›¡ðèPé& ”UWITHIN±© S ¡E$±å%°
+¡E&±å'°½lŒ' ¥<W¡…$±…%¥É…æ¥%qmin. 32kB RAM +0™"             mit  Diskettenlaufwerk ?:™:™"    oder":™ Äd™" C16/C116/Plus4   mit 64kB RAM Žn™"             mit  Diskettenlaufwerk ¹x™"             oder Kassetttenrekorder AÂ™:™ ðÌ™" Viel Spass mit ultraFORTH83 /clv12oct87 öEÒ+X É!\. Ý?PAIRSÒ+Éà3unstructured\I h©ÿlh© ª¥8é…°FŠ ‘È¢ l / ôCASE?b© S¥$AP	¥%QPl‰Šl0 8BIFÒ+6!„¦¼\0 \DTHENÒ+=ÿ¼ý½\0 ÏDELSEÒ+¼ý6!Â¦‹½“\0 „EBEGINÒ+UF\0 ¡EWHILEÒ+FýF6!„¦/þÿH\Ò+è¸/þÿÉ„
+ €½Âîÿ\0 ³FREPEATÒ+Fý6!ÂQ\0 íEUNTILÒ+Fý6!„Q\1 BDOÒ+6!Éÿ¦P\1 C?DOÒ+6!Üÿ¦P\1 1DLOOPÒ+Pý6!Jÿ6!¹ÿ½\1 eE+LOOPÒ+Pý6!ûÿ6!¹ÿ½\1 `…LEAVEÒ+¹ÿï…¸"÷P\2 ÜUM* ±…$¡…%H†&†'¢'&&&%&$±Å'…'H±ˆÅ&…&æ%Pæ$JP|¥'‘H¥&‘ ¥$‘¥INPUT<, ùERRORHANDLER<, VOC-LINK<, ÿUDP<,ÿ *SP@=¥…$¥…%¢$¥8é…°Fµ‘µ ¢ l  5SP!Ç¡ª±…†¢ l	  _UP@¢lg ×ƒUP!Ž¢±•ˆ±• ¢  ¥É…æl	  †RP@µ¢lg ­ƒRP!D¢l ¼‚>RR¥8é…°F¡±‘l K‚R>ñ¥8é…°	D+÷© SH±Å&‘H±Å'‘¡Å$ ±Å%‘l	 # ð1+%©Á°l ±É ‘l	 # 2+c©Pà# <3+p©PSv©PM\©PG# i1-É8¡él ±é ‘l	 # Â2-‡à$ €TRUE¿+ÿÿ$ ŒFALSE¿+  $ ™"-1“$ §!0¡$ °1¿+ $ ¸2¿+ $ B3¿+ $ L4¿+ $ VONÒ+“‹;\
+   (nur fuer C64) !V™" - Kassettenversion fà™" - Supertape (nur fuer C16/+4) oê640 Íô™" Hardwareanforderungen: Óþ™ ™" C64/SX64    mit  Diskettenlaufwerk H™"             oder Kassetttenrekorder |™:™"    oder":™ &™" C16/C116    mit %l	 3 ˜M*Ò+¸ƒ¸P„ ¤‹¸ƒ„
+ ¤ï‰Pžï„ µ\3 ë*Ò+ž€\3  2*5¡
+±*‘l	 Ò+“à3division overflow\4 .UM/MODÉ¡…)±…(¥É…æ¡…%±…$H±…'H±…&¢Æ*8¥%å)¨¥$å(°&*…$„%&'&&&%&$JPß Æ$Æ% †b\¥&‘H¥%‘H¥$‘ ¥'l 5 ^M/MODÒ+¸P=ÿôƒ„ Ü÷‹Çƒ„ ¤ô„ ‹÷‹Ç9\5 X2/±
+±Ê‘¡Êl 6 /MODÒ+Pÿïà\6 //Ò+6Ê\6 dMODÒ+6€\6 r*/MODÒ+Pðïà\6 Â*/Ò+ÊÊ\6 ØU/MODÒ+¡‹Ç\6 ‡UD/MODÒ+P¡Çï‹PÇï\7 ›CMOVEF© SˆD$P	F% l	 ±(‘&HP                                 .*ultraFORTH-83 3.80-C16+ ÿÿ±…­ÿÿ…¥É…°Ìÿÿæ°ù   	END-TRACEÅ©¥…©…©É…©…l	  wRECOVER.*È…È…¥PFFlÒ+ ÚNOOP	  ™ORIGIN¿+ ¤S0<, ³R0<,
+ ½DP<, GOFFSET<, QBASE<, ßOUTPUT<, ëâ+ùH¡Ñ‘ˆ± Ñ‘l™  óORH¡‘ˆ± ‘l™  AND3H¡1‘ˆ± 1‘l™  +XORpH¡q‘ˆ± q‘l™! h-ËH±8á‘H± ñ ‘l™! ÅNOT‹ŠáŠñ‘l	 ! ƒNEGATE¦8°ã" ›DNEGATE·H8Šñ‘HŠñ‘Šá Šñ‘l	 
+ª¨ˆ±™$ ˆøŠÅ…æ¢  `" «e 2 --  Quelltext des Systems È640 aÜ™" Seite 3 --  Forth-Quellexte y†™" - 6502-Assembler Õ™" - Full-Screen-Editor Žš™" - Debugging Tools £¤™" - Multitasker ¼®™" - Drucker-Treiber F¸™:™:™ åB™" Seite 4 --  Grafik/Tape L™" - Grafik # ™G(14): switch to lower case ;
+ 750: Seitenanfang x ™" ultraFORTH 83 ist ein × ™" Public-Domain-Programm. }( ™ £2 ™" Es darf (und soll) zu privaten H< ™" Zwecken weitergegeben werden. Pf ™:™ òp ™" Die komerzielle Verwertung z ™" Behalten wir uns aber vor!!! Ä ™ 7Î  640: seitenvorschub xØ ™" Zum Lieferumfang gehoeren Ü‚ ™" zwei beidseitig beschriebene ¢Œ ™" Disketten und ein 200-seitiges ³– ™" Handbuch. ¹  ™ âª ™" Beides zusammen kostet ca. 50.-DM è´ ™ 
+¾ ™" Forth besitzt sein eigenes 3H ™" Diskettenverwaltungssystem, daher [R ™" bitte immer die ganzen Disketten †| ™" kopieren und nicht nur die Files!!! Œæ ™ §ð  640: seitenvorschub Gú ™" Die Disketten enthalten: M™ ð™" Seite 1 --  System-Diskette ™" - File c16ultraforth83 - Systemkern f"™" - File c64ultraforth83 - Systemkern Õ,™" - File c16demo - Arbeitssystem mit Tape ¤6™" - File c64demo -      ''         Grafik J@™" - Hilfstexte & Kontaktadressen æj™" - Diskettenutilities ìt™ ^™" Seit\\   Dies ist der Shadow-Screen                    zum Screen # 0                                                           Der Screen # 0 laesst sich nicht laden    (ist der Inhalt von BLK gleich 0, so      wird der Quelltext von der Tastatur     geholt, ist BLK von 0 verschieden, so     wird der entsprechende BLOCK von der        Diskette geladen), der Editor        unterstuetzt deshalb auch nicht das      Shadow-Konzept fuer den Screen # 0.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         FORTH-GESELLSCHAFT  (c) bp/ks/re/we/clv Shadow zu Scr# 1                                                                  Im Screen # 1 sollte IMMER ein           Inhaltsverzeichnis gefuehrt werden,      eine gute Regel ist:                                                               ERST den Eintrag im Directory                                                     DANN den Quelltext tippen                                                        Bei Bedarf koennen die Screens 2 - 4     ebenfalls fuer Inhaltsangaben benutzt    werden.                                                                                                                                                                                                                                                                                                                                               Nebenbei,                                                               hast Du schon Back-Up's gemacht?                                              FORTH-GESELLSCHAFT  (c) bp/ks/re/we/clv Shadow zu Scr# 2                                                                  Da Eintippen muehsam ist,                beugt der Editor dem versehentlichen     Loeschen von Quelltext vor:              weder am Ende einer Zeile,               noch am Ende des Screens geht Text       verloren, wenn man Einfuegt.             Will man einen ganzen Screen loeschen,   so gehe man mit HOME in die 0te Zeile    und druecke SHIFT F1 (=F2) bis alle      Zeilen nach oben geloescht und der       Screen von unten mit Leerzeilen          aufgefuellt ist.                                                                  Wem das zu muehsam ist, der definiere:                                            : wipe  ( -- )   \  fuellt den            scr @ block     \  bearbeiteten Screen   b/blk bl fill ; \\ mit Leerzeichen.                                              und benutze WIPE, nachdem der zu         loeschende Screen gelistet wurde.                                                 FORTH-GESELLSCHAFT  (c) bp/ks/re/we/clv FORTH-GESELLSCHAFT  (c) bp/ks/re/we/clv                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         \\ einfaches Datei-System      20oct87re                                          Ein ORDNER ist ein zusammenhaengender    Screen-Bereich, der einen Directory-     Screen mit Datei- bzw ORDNER-Namen und   deren relativen Screen-Nummern enthaelt:                                          ..     -&150        .            0       DATEINAME $D        ORDNERNAME &13                                                Der WURZEL-ORDNER ist die ganze Diskette mit Directory in Screen 0, seine Screen- Nummern sind deshalb auch absolut.                                                Alle Screen-Nummern muessen manuell      gepflegt werden.                                                                  Bei Verschieben eines kompletten         Ordners muessen nur der Screen-Offset im Mutter-Directory und der Offset fuer ..  geaendert werden.                                                                 .. und . sind nicht unbedingt noetig,    dann kann nicht aufs Mutter-Directory    zurueckpositioniert werden.             \\ einfaches Dateisystem       20oct87re                                          SPLIT teilt einen String bei CHAR ohne    CHAR zu enthalten. Der erste Teil$       liegt oben auf, der Rest$ darunter.      Der Rest$ kann weitere CHAR enthalten.                                           LIESt Pfad und Filenamen. Syntax:                                                  cd /                                         Aktuelles DIR wird Wurzel-Directory  cd /Sub1/                                           DIR wird Sub1 von Wurzel aus  cd Sub2/                                        DIR wird Sub2 vom bisherigen aus  cd ../                                                       DIR wird Mutter-DIR  ld /Datei1                                             Lade Date1 von Wurzel aus  ld Datei2                                                Lade Datei2 von DIR aus  ld /Sub3/Datei3                              Lade Datei3 aus Sub3 von Wurzel aus  ld Sub4/Datei4                                  Lade Datei4 aus Sub4 von DIR aus                                                                                                                                                                      HILFE !!!                                                                                                                                                                                                                                                                                                                                                                                                                                                               Hummel, Hummel - Forth, Forth                                                                                                                                                                                                                                                                                                                                                                                     \\ Hier ist  ...                      \\ \      ... Deine lokale ...            \ \           ... FORTH-Gruppe :         \ \                                      \ \                                      \ \                                      \ \           Kontaktadresse :           \ \                                      \ \                                      \ \                                      \ \                                      \ \           georg    rehfeld           \ \           reinbeker weg 32           \ \                                      \ \           2050  hamburg 80           \ \                                      \ \                                      \ \                                      \ \                                      \ \                                      \ \                                      \ \                                      \ \                                      \ \                                      \ \\ \\ \\ \\ \\ \\  \\  \\ \\ \\ \\ \\ \\\ Kommentar zu numbers        14oct85re)                                                                                                                                                                     alphabetic - nicht hex oder decimal        nach 08 folgt 09, nach 09 folgt 0A,      dann 0B usw. bis 0Z, nach 0Z folgt 10    danach 11  ...  19, 1A, 1B, 1C, ...                                                                                                                                                                        hex-Zahl  alphabetisch dargestellt       hex-Zahl  alphabetisch dargestellt       hex-Zahl  alphabetisch dargestellt                                                                                         Es geht auch andersherum                  (damit sind die hex-numbers von           "numbers" entstanden)                                                           Brauchst Du BINARY oder OCTAL ?           : binary  ( --)   2 base ! ;             : octal  ( --)   8 base ! ;            \\ relocating the system    bp 19 9 84 )                                          up@ origin -   is stacklen               r0 @ up@ -     is rstacklen                                                       symbolic map of system                                                            FUNKTION     TOP          BOTTOM                                                  disk-buffer  limit        first @         unused area                             rstack       r0 @         rp@                                                      free area                                                                        user, warm   up@ udp @ +  up@            (heap)       up@          heap           stack        s0 @         sp@                                                      free area                                                                        system       here         origin 0FE +   user, cold   origin 100 + origin         screen       0800         0400           page 0-3     0400         0000                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          \\ disassembler 6502 loadscr                                                                                                                                                                                                                                                                                                            +n Werte werden in einem Array           abgelegt.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      \\ dis shortcode0                                                                 Tabelle fuer die schwierigen geraden     Opcodes                                                                           Da Schema nicht erkannt,                 Tabellen-Loesung.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         \\ dis scode adrmode                                                              Hilfstabelle fuer ungerade Opcodes                                                                                                                                  Hilfstabelle fuer ungerade Opcodes        Adressierungsarten                                                                                                        ermittelt aus dem Opcode 8b1             die Adressierungsart 8b2                 und die Befehlslaenge +n                 fuer ungerade Opcodes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      \\ dis shortcode texttab                                                          ermittelt Befehlslaenge (length)         und Adressierungsart (mode)              aus dem Opcode (8b1)                                                                                                                                                                                                                                                                           ein defining word fuer Text-Tabellen                                              Datenstruktur:                                                                    count text1 text2 ... text+n-1 text+n                                                                                                                                                                                                                                                                                                                                                                                    \\ text-tabellen                                                                  die Mnemonic-Tabelle                                                                                                                                                                                                                                                                                                                                                             die VORoperanden-Tabelle                                                                                                                                            die NACHoperanden-Tabelle                                                                                                                                                                                                                                                                                                                                                                                                \\ dis 4u.r 2u.r                                                                  4u.r schreibt eine Adresse                mit fuehrenden Nullen                                                            2u.r schreibt ein Byte                    mit fuehrender Null                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      \\ dis shadow                                                                     "dis" ist ein so haessliches Wort,       dass ich jedem danke, der es besser      macht! (Und mir den Quelltext schickt!)                                           georg rehfeld                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             \\ savesystem shadow          clv04aug87                                                                                   Aufruf: SAVESYSTEM name                    z.B.: SAVESYSTEM MEIN-FORTH                    --erzeugt ein Ladbares File              --mit Namen MEIN-FORTH.                                                     Zur Arbeitsweise: normalerweise          wird so alle ein bis zwei Wochen         ein System gesichert, wo dann            die wichtigsten (fertigen) Sachen        mit drin sind. Die Sachen, wo noch       dran getestet wird, werden dann          als Quellen geladen. Aber wer            will schon jedesmal den Editor etc.      als Quelle laden. Das nutzt nur          die Diskette und die eigenen Nerven      sinnlos ab.                                                                       Jedes groessere Programm setzt           i.a. sein eigenes SAVESYSTEM oben        drauf, um seine eigenen Variablen        fuer's spaetere Booten vorzubereiten.                                          Kommentar zu bamallocate, formatdisk                                              erzeugt den Spruch "0 blocks free"        Diskette auf                             lies die BAM                              IF loesche sie (fast) ganz                  schreib sie zurueck                   THEN  Diskette zu                       nochmal initialisieren                   und Schluss!                                                                     LOESCHT (formatiert) Diskette             gib den Loesch-Befehl                    schieb den Namen nach                     hat's geklappt?                         dann lasse sie voll erscheinen                                                                                                                                                                                                                                                                                                                                                                                          ???                                                                                 This page unintentionaly left blank.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        koopiert nicht! die Directory mit.       Ist also nicht fuer Files geeignet,      sondern nur fuer FORTH-QuellScreens.                                                                                                                                                                                                                                                          \\ zu:2disk copy2disk..       clv04aug87                                                                                   Diese wueste Berechnung hat nur          einen Zweck: aus einer laufenden         Nummer [0..&682] Track und Sector        zu ermitteln. Habe sie einfach           aus dem ultraFORTH-Quelltext entnommen   (wird von R/W benutzt) und das ' 3+ '    wegkommentiert, damit auch die           Directory-Sektoren kopiert werden        koennen.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     \\ zu:..2disk copy2disk       clv04aug87                                                                                   Macht ggf. einen Fehler-Abbruch                                                                                                                                     Abkuerzung fuer OPen. 40 Zeichen sind en                                          Kopiert einen Sektor (ueber adr)                                                                                                                                                                                                                       Prueft, ob bei PAD Platz ist.            Labert den/die Benutzer/in voll                                                   Schleife ueber die Sektoren              bei jedem gibt's paar Zahlen, damit      obengenannte(r) sich nicht langweilt.                                             Schaltet nur(!!) 1551-Floppys um.        Fuer 1541 isses bisschen complicated.                                           es kommt nichts mehr es kommt nichts meh r es kommt nichts mehr es kommt nichts m ehr es kommt nichts mehr es kommt nichts  mehr es kommt nichts mehr es kommt nich ts mehr es kommt nichts mehr es kommt ni chts mehr es kommt nichts mehr es kommt  nichts mehr es kommt nichts mehr es komm t nichts mehr es kommt nichts mehr es ko mmt nichts mehr es kommt nichts mehr es  kommt nichts mehr es kommt nichts mehr e s kommt nichts mehr es kommt nichts mehr  es kommt nichts mehr es kommt nichts me hr es kommt nichts mehr es kommt nichts  mehr es kommt nichts mehr es kommt nicht s mehr es kommt nichts mehr es kommt nic hts mehr es kommt nichts mehr es kommt n ichts mehr es kommt nichts mehr es kommt  nichts mehr es kommt nichts mehr es kom mt nichts mehr es kommt nichts mehr es k ommt nichts mehr es kommt nichts mehr es  kommt nichts mehr es kommt nichts mehr  es kommt nichts mehr es kommt nichts meh r es kommt nichts mehr es kommt nichts m ehr es kommt nichts mehr es kommt nichts  mehr es kommt nichts mehr es kommt nich                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                éh2J¹Â ï
+¡Ü éh2¼¼õJ¹ì1Þ\Ï 82COPYÒ#¼Ö2\Ï T2CONVEYÒ#‹#FÉ¸<‰à+neinÖ2\Ð å2LIMIT¿# ÀÐ 3FIRST."ÀŸÐ 3ALLOTBUFFERÒ##3"B	"É%/aÓ%/¤#3[#3"¸{0/"ô;/;\Ð )3
+FREEBUFFERÒ##3"3%/É„. #3"!0/¸"#3"É„ "Âîÿ#å'l²4¥(E,¥)å-°¡,$±,‘$lG4¥,…$¥-…%l‰4l
+Ò#%
+"Ý„ ¸P
+ZÉË4ï
+Âêÿ\Ò#}
+#¸"}
+É„( é"‹X¯„ ¸"#"ô;ÇÂ "ÂNÿÞ\Ò#%
+Ë4R$É  é%"z¯„
+ /Ë%%;/þÿû¹é´$"z¯„
+ /Ë%´$;\Ó º3CUSTOM-REMOVEI( 	Ò#ôë4'5M4{5€ ‹Éi L	;¡~;\Ô Ë5Ò#»7„ …6…6¡\Õ ™6?CRÒ#Ê7.
+
+É[„ 7\Ò#A!¸aë lÀ Jô	"÷»\Ö ³6OUTPUT:Ò#r#ë lÀ ô	;\Ö ë6EMITZ6 Ö 7CRZ6Ö 7TYPEZ6Ö 7DELZ6Ö (7PAGEZ6Ö 37ATZ6
+Ö ?7AT?Z6Ö i7ROWÒ#o7€\Ö t7COLÒ#o7Ê\Ò#A!¸aë lÀ J
+"÷»\Ö Ä7INPUT:Ò#r#ë l
++ã((+Ò<–8/."
+;/ 	ã(Ì+Ø+\ ¹9	™ ˆ÷­ É…­!É … ±…H±… 
+±…H±…¢  Š‘`Ú ‹8COLD9¢ÿš pa­ É…$­!É …%  ¹‘$HPø ¾8 †	/aÑ8\Ú ú8RESTART<9¢ÿš pa ¾8 †	/aš8\¢  l	  09C64KEY?Ã9¥Fð©ÿhl w9GETKEYÚ9¥FðØ¬×½Ø×èäFPõFF˜xI P© l‚:CON!¡:¡ ç¥É…æ†T†X  †	‚.\I€°I `Ià°IÀ``„ ˜:
+PRINTABLE?ß:¡ ¾:JŠl… P:C64EMITù:¡ ¾:°©.l£:… í:C64CRÒ#:Ÿ:\… ;C64DELÒ#
+Ÿ:‘,
+Ÿ:\… ;C64PAGEÒ#
+“Ÿ:\… 4;C64ATs;© S¦&¤$ ðÿ¤S±Q…Nln9… i;C64AT?Ö;¥8é…°FŠ‘8 ðÿÀ(˜é(hŠ¢ Èl¢  †	€<À.\¢   †	</À.“à+	no device\† ±ÿ©` “ÿ ®ÿ¥ðÈÈl¡<`W<¡ ¾<¥É…æl”<‰ †<?DEVICEÒ#€<.U<\=†© S¥& ¾<¥& ±ÿ¥$	` “ÿ¦&†šln9Š ì<BUSOUTÒ#€<. =\Š #=BUSOPENÒ#
+ð,=\Š 8=BUSCLOSEÒ#
+à,=<\É=†© S¥& ¾<¥& ´ÿ¥$	` –ÿ¦&†™ln9Š o=BUSINÒ÷dg>É
+6
+÷\Ò#k>#‹\Ò#æ	*t¡|,e-€
+,E,e-í,\¿#  >
+READSECTORÒ#<
+,=‘u1:13,0,Ì»=°>»=<‚.>Ó<
+’=K>ï=<¡\ Q>WRITESECTORÒ#<
+,=‘b-p:13,0Ì»=<<
+,=K>»=<<
+,=‘u2:13,0,Ì»=°>»=<‚.>\Ž ?DISKOPENÒ#<
+b=
+#¥=<>\	‹É1 7%F„-è¸%33¦>Þ>P
+#
+%#7ï
+¡6„ „J¹?\ ×@INK-POT."     h­â@…È@Øá@©@h©ãh­á@hŠh˜h¥â@©6…©Ý¬ÝlÒþ êÿ áÿPõl<9‘ I@INIT-SYSTEMÒ#/@ÿ¸
+ÀD/ë@¸/úÿ;/;\ØX „ÿ ÿ Šÿ©6…­U@ P­V@!P­W@†©€Š©P© ÿP©P©ˆxÿ `‘ !aC64INITša paln9{ Žac(16Ò#Ì™à+
+C) missing"/C)É„ãÿ\{ ¢abC)Ò#\{ Mac(64Ò#\{ XaFORTH-83Ò#\Ü äa	ASSEMBLERv%zz€%Ü   PUSHA¿#Ü bPUSH0A¿#Ü bPUSH¿#Ü (bRP¿# Ü 5bUP¿# Ü @bSP¿# Ü kbIP¿# Ü vbN¿#$ Ü ÁbPUTA¿# Ü ËbW¿# Ü ØbSETU\Í œ1BLOCKÒ#1}1\Î ¯1UPDATEÒ#
+€/"z#ä\Î A1SAVE-BUFFERSÒ#/.1Ý„ !0Âôÿ/À.\Î Ý1EMPTY-BUFFERSÒ#/./"Ý„
+ ¸{0Âòÿ/À.\Î 2FLUSHÒ#ì12\Ò#¸1n1„ /"{0,1„ ì1Z	"÷‹·1……;J1\Ò#ì1P
+ô÷ô[P
+éï
+1„$ õï
+¡Ü “/þÿõ3""‹;%/#3[\Ð Ë3ALL-BUFFERSÒ##3"73#3"É„òÿ\Ò#J
+ 1\Ò#ê"Ü#‹” \Ò#€ %
+"P
+ï
+"Ý„^ ¸P
+ZÉP
+ï
+"P
+ôÇ¸‹aê"1„. ” „Zÿa|3„ ôaç3„ aS"aðÂ¶ÿ9Âœÿ\Í4 ±™$ ˆø ±É…*H±É …+ ¡$…,±$…-,ð5¥,E*¥-å+¥,E&¥-CLEARÒ#X¸}
+5L	;\Ô ¡5(FORGETÒ#¸” à+	is symbolù35\Ô »5FORGETÒ#;'¸/$"à+	protected©"¸” „ ê"Â ……E5\Ô ß5EMPTYÒ#/$"}
+5/2"0
+;\Õ 6SAVEÒ#X}
+5%
+"¸……"ô…;"Ý™„êÿ}
+­	/ D\Õ >6BYEÒ#ì1ã;\Ò#¯7PÉ„ “9\Õ ×6STOP?À 
+;\Ö 7KEY~7 Ö ©7KEY?~7Ö ´7DECODE~7Ö À7EXPECT~7×   SEALÒ#¡/Ú%#;\× |7$ONLYÚ%× ó7%FORTHÉ%× þ7%WORDS	&× 
+8$ALSOå$× 8+DEFINITIONS¿%Ò#%
+"¸…"ôZÉ;"Ý™„êÿ\Ò#¡/;3#3;H3\Ø N7'COLDI(Æ{Ò#18q8£%Í8:7	Ì#77š8\Ø Å8'RESTARTI(‡ÚÒ#/ Ï9CURON¦9¤S±Q…N†Lln9‚ œ9CUROFF¾9H„L„M†O¥N¤S‘Q l	 ƒ ³9C64KEYÒ#¤9‚.Á9„úÿ¼9Ø9\ƒ R9#BS¿# ƒ ï9#CR¿# ƒ û9	C64DECODEÒ#õ9@„ ¸„ .7Çd:@„
+ ¸Q;dP
+é÷‹äï
+7#\ƒ :	C64EXPECTÒ#Q;¡¸Q"„
+ ¯7I7ÂîÿÞ‘,\ƒ o:KEYBOARDž7Û9Á9:[:\„ † Ë;C64TYPE§;© S  D$ð±& ¾:°©. çHl®;l±:† ›;DISPLAYû6÷:;¥;";>;q;Ô;\âü‡ G;B/BLK¿#  ‡ ç;BLK/DRV¿#ª ‡ ö;(DRV."  Ò#<"
+÷\‡ <DRIVEÒ# <$Z	;\‡  <>DRIVEÒ# <$÷Z	"É\‡ 6<DRV?Ò#Z	"÷ <h\‡ q<DRVINITÒ# 	\ˆ È<I/O."  ˆ Ú<BUSOFF‘< Lÿ #€<.Ç=\‹ Š=BUS!§=¡ ¨ÿl™
+‹ ž=BUSTYPEÒ#£Ü %J¥=J¹‚.\‹ ±=BUS@|= ¥ÿl‹ S=BUSINPUTÒ#£Ü Z=%äJ¹‚.\‹ ä=DERROR?Ò#<
+’=Z=¸
+0É„ 7Z=¸:É„ôÿ™7™<\¿#Å¿#ê¿#vÒ#¸?>„	 
+6dP÷¸c>„ ?>É
+6
+÷d¸g>„ c>É
+6
+Ž Ð?	DISKCLOSEÒ#<
+z=<\Ž ‘?1541R/WÒ#‹à+no filez <6¸<;P[„ÿ ¹-¯beyond capacityÊd{?„ €Êd¡‹33Z£É. €é%„
+ ¦>Þ>Â ¦>#?P
+K>÷ï
+¸„ „J¹zÞ?\ ¬?INDEXÒ##‹É! 7%F„-%·1#
+%#7¡6„ „J¹\ b@FINDEXÒ#{?„ Þd#ÿ
+P¿#SÜ ‚bNEXT¿#	 Ü bXYNEXT¿#n9Ü bPOPTWO¿#ôÜ ¬bPOP¿#
+. õa.BLKÒ#D"Ý„ ¯ Blk H-¹6\ Gb(SEARCHöb ±™$ ˆø¥()ðÉ¥$%ðÃ¡&A*ð¥$PF%F$æ&Pæ'lc ¹$ ‘ˆøæ&Pæ'æ*Pæ+¥$PF%F$¥(PF)F(¥()Pÿ¥É…æ ¥'‘¥&ˆ‘ˆl‰¥$%P¥É…æ lŒ¡&A*ð¨ ÿ $dCBM>SCR“d¡ Ídl	  ‡dSCR>CBM«d¡ \dl	  ŸdEDITORv%rrb¿#( ¿# ¿#è   SHADOW."u ." ."  ."o ."ÿÿ." ."§Ü  ."÷Ü  ." wÜ." Ü¿#Q ¿#S ¿# P¿#†¿#!P¥$É)…$æ%¥&É(…&æ'`<e˜ S†&­ˆ…'¢ '±$ Íd‘&ˆö #eJPî­† X Y Z ÛèPñludÒe˜ S†&­ˆ…'¢  ±&ÿ1)f‰1¸Ó
+”Ÿ:\Ò#cfÝÓçd"„ ÇfÝÓ[f\Ò#ïd"™z7Ld…[1¸Ó
+Ÿ:\Ò#cf¸Ó
+Ÿ:\Ò#îePdq,ÊPdÇKHd6‹ c¡\Ò#¡
+
+¡É €Kf¸„ „J¹\Ò#
+¡É 
+Ÿ:J¹¡\Ò#z7¡ c-dçd÷®f\Ò#øeHd?,¨¡\Ò#fHdÊ7É?,¨¡\Ò#øe¸Hd÷‹îe/À÷¸P
+ôÉDï
+ÿdD\Ò#ýda"™ÝÓ‰g¸ÓÈh\Ò#çdå¡\Ò#çd÷¡\ ·dRVSONÒ#
+Ÿ:\ °hRVSOFFÒ#
+’Ÿ:\ Ch***ULTRAFORTH83***	  WhrFORTH-GESELLSCHAFTÒ#\ VdSTAMP$."    06nov87re     Ò#i#ÌîeHd÷ôÉ‹e¡\ iGETSTAMPÒ#
+*Š:iå7¯your stamp: ¸h
+¤,z7
+ ÿ¸Hd#xHdÉÉï;ÇKHd#6‹ c\Ò#-d
+`j\Ò#šjŽ+"·1¶e„ *i€Ž+"·1ÐeJ1
+\Ò#¥j
+\Ò#Jj
+\Ò#Ž+"·1:eçd÷-dÔj¡\Ò#¥j€¼Ž+[àj\Ò#¥j€“Ž+[àj\Ò#¥j€ßd"¸àiÊ[‰„ ¤Ž+[àj\Ò#¥j€ãd"Ž+"ãd;Ž+;àj\" ðh	DIGDECODEÒ#õ9@„ ¸„ .7ÇdÿPµkW7Q"Ý„ XÜä_€ód; cód"P˜-Š:é cea"Hd…Ê7ÉW7Q"Ý„ e; ceJcýké c	ea"Hd…Ê7ÉW7Q"Ý„ 	e; c	eJcýkLh¸i c\Ò#àj€eJc™+"Ž+"·1÷ï;™+"Éôb™„ ¡Â
+ Ž+"·1É™+;Ôj\Ò#¥j€lül™+"„' ¯7¸
+rÉ„ AkÝ„ ÊdPÉÝÓÂSÿàiÊÿ¸“É„ wn™\( fi(PAD."  Ò#è¸Šn;Hd3÷¸ea;Hd÷¸	ea;Hd÷¸÷d;Hd3÷ýd;÷da÷ýda÷/YhÌP
+ea"Dï
+e;/òhÌ
+1P
+	ea"Dï
+	e;\Ò#èŠn"ÉÓŽn\¿##o¤S±Q…Ni€‘Qln9.o¥N¤S‘Qln9Ò#/do;Lh,o\Ò#D"Ý™„ 7od¸"Ç™+;Lh,o¸hŽ+"ôÿF1™„	 ¯not ¯changed¸Z1„ ì1¸
+1
+É„ ¯, saved
+1„ÿ ¯	, loading7Ž+"™+"Ào\, =pLÒ#™+÷dp\, SpRÒ#Ž+"dp\, ãp+LÒ#Ž+"÷Wp\, ópVÒ#;'©"Ý„ ZÉ"\, qVIEWÒ#
+qÝ„ WpÂ ¯from keyboard\, ƒnCURLINÒ#e"
+UJq,¸
+Sä\-ÿ	i¸*÷Šn¸*÷e6
+Fb=¡ê»=‘,p,wÌ»=<
+F,=­	
+É¸/ ‹¥=¥=XôÉ+r<
+Fz=¡<;>à+
+save-error\ »bEND-CODEÒ#D$…"D$;\ ZrINDEX."		€	€€€€€ €€€€€€€,."  õrMODE:Ò#A!ë lÀ Js;\ %s.A5s  bs#5s5s ls,X5s xs,Y 5s ÂsX)5s Ìs)Y5s Ös)5sÒ#„ s"
+s;¼s"
+1Ý„ ¡É
+ ¸÷J¹ô#"1™\ €sCPUÒ#A!ë lÀ Jss\ GsBRKUs  âsCLCUs ísCLDUsX øsCLIUsx tCLVUs¸ tDEXUsJ tDEYUsˆ $tINXUsè /tINYUsH :tNOPUsê etPHAUsh ptPHPUsÿ±™$ ˆø¥$PF%F$æ&Pæ'l cÒ#d7¼9\ êb2!±c˜ S ±‘$ˆù lô ªc2@Lc¡…$±…%¥8é…°F ±$‘ˆùln9 Ec	2VARIABLEÒ#A!Zý\ íc	2CONSTANTÒ#A!ë lÀ Jc\ dUNLINK/d­ˆ	€¨Š”YÉ(HèàÿPó¥SI(é(…S¤S¦V ðÿ¢  l	 …*)?*$*	€Ð	@`…*)I I@)$*	@`©.`ÿ \d‘$HÀ(ôJð
+© ‘$ #eleludŸe© SˆD$Plud±( Íd‘&HPï¸e˜ S†&­ˆ…'¢ '±$ ÍdQ&ð©ÿlˆï #eJPçŠlÒ#;
+Hd3É\ðeŠh­ˆlúe¥SI(Š©'ÅQh¥RÉ lf¥SÅQh¥RÉ lf¥UI(°JŠlÒ#îe/À÷Hdq,Ê™ïd"\Ò#fîePd÷ÇÉïd"™1\Ò#ëdJŸ:¡\Ò#cfÝÓføeHd÷ÇJ?,É‰ÿHd?,¨¡\Ò#)f‰ÝÓøe¸Hd÷îePd÷ôÉò?g\Ò#Kf¸Ó
+Ÿ:\Ò#÷dJc÷#ýd"âeK[¸ÓfJ÷dJc÷ä¼÷da[\Ò#ºgÝÓKf\Ò#ºgÝÓ«g\Ò#÷da"™ÝÓÇf¸Ó“÷da[÷dJc÷Jfä\Ò#ýdJc÷âe[¸ÓøeýdJc÷HdDHdýda[\Ò#*hÝÓ®f\Ò#*hÝÓ_g\Ò#Hd¤ýda[ýdJc÷øeHÿcia
+W7LhQ"i#ä\Ò#iJÓqi\Ò#îeèHd3DîeHd3
+ ¨\Ò#èîeHd3D\Ò#·1…"\Ò#¤9‚.»7„úÿ¼9\Ò#Ž+"Z	"÷ <‹\Ò#o7Ÿi¸h¡¡ cài¯Scr # ¹-¯Drv ¹-Ž+"Fi™„	 ¯not ¯updated¼¼ c/YhÌ#7F¤,/òhÌ
+1#7Lh cPi¸i¡\Ò#o7‹Hd#$÷™+;\Ò#™+"ÿ:@„
+ ¸Q;d§ÿ¸Ê„ €P
+é÷‹äï
+7#d€\" tkDIGITSž7Û9Á9`k[:\Ò#e"¡É
+ õ9Ÿ:J¹¡	e"¡É
+ ÇfJ¹¸Ó	eJcf‹e¥j€\Ò##7
+<7HdÇÊ7É¤,\Ò#
+*-dŸio7¸h¼¡ c¯replace with: o7	eJcýk¡¡ c¯>     search: o7eJcýk¡Fé cód"P˜-é cX#ÿód"É¡6™1Ý„ ƒ„
+ öj€Â k€Â§ÿ“\Ò#?
+@É\."…‰†ŠŸ ‹‡ˆŒ‘“”	ÿ."öjkk8k8mph-g-gšj¥jJjUj‰g_g‚h\h*iôiègôg höfgKf®f[f[f[fZfÇf[f«g?gmgšh¤h”fn© S¤$ˆH¹¬mIÿðE&Pô˜
+¨¹Smh¹TmlÒ#eä‚.
+€¡É J¹\Ò#e*¡@n¼@n¡@n¼@n\Ò#ÿÉ„ Ž+;àj¼¡ cí)Ôjo€\* ¬k(LOADÒ#¸*¸;Ý™ÓD*D;í)ù'\* oSHOWLOADÒ#Ž+*Ž+÷™+*/goo;•o7o\Ò#S@÷¸Jeä¸#JeäaJeä\Ò#Z|o
+“Ÿ:àj€ïd÷¯7¸ëdä¡n—ÏnÝ„ìÿ¡¡ c_g€ïdå¡|o\+ µoEDITÒ#Ž+;“i	oþo
+¡ cài¯Scr ¹-¯Drv ¹-¸ÿ kq	EDIDECODEÒ#
+@„
+ çd÷7d:@„< çd÷tq¸Q"[„ €Q"£Ü é÷%J©d‹ä#J¹¸Q;d¸ëdä
+n—Ïn€\- Ìq	EDIEXPECTÒ#	oQ;¡¸Q"„
+ ¯7I7ÂîÿÞ‘,\- âqEDIBOARDž7Û9Á9Øqîq\Ò#—b/‚.¸*;€<*€<÷»=\ÿ  q
+SAVESYSTEMÒ#Ž+*¼Ž+;™+*™+÷
+ [tPLAUsÈ ÆtPLPUs( ÑtRTIUs@ ÜtRTSUs` ‡tSECUs8 ’tSEDUsø tSEIUsØ ¨tTAXUsª ³tTAYUs¨ ¾tTSXUsº ItTXAUsŠ TtTXSUsš ßtTYAUs˜ êtM/CPUÒ#A!ë lÀ ¸#"
+€1„	 
+s[ô/ ÿ1‡s‡s„ ss“à+invalidJs"ýr÷J÷s"
+1„ s"
+1– xvLDYu Ž ÅvSTYu€Œ ÒvJSRu€ vJMPu@€„ ŒvBITu „Ò#¸=
+[à+out of range \	 ™v[[Ò#X\	 Cv?]Ò#X#É¤v\	 Pv?[Ò#X¡\	 çv?[[Ò#ìv‹\	 úv]?Ò#XôJ„
+ ‹;Â ô#É¤v‹ä\	 
+w][Ò#X#¼’v‹Xô#É¤v‹ä\	 3w]]Ò#’v nx2INCÒ#¸µuósFpsu¸|uØwìv‹#vw\ ^x2DECÒ#¸µu˜tFpsOu¸|uƒwìv‹#öuw\ ‡xWINCÒ#¸vŽwìv‹#vw\ °xWDECÒ#¸µuŽwìvô#öuwöu\ Mx;C:Ò#„	…vår•(¡~;¡\ gr	ASSEMBLERÒ#bss\ ye;CODEÒ#!/ýÿýš#/þÿýy\ yCODEÒ#A!X¸…;y\ >y>Ìé÷B
+ï
+‹D\1   CPUSHÒ#ï
+zôP
+³
+ô#É¸B
+nuzP
+P
+\Ò#
+rýŠ:Q;í)‘,ïù'/®ÿý9\1 ËzRANGEÒ#az÷¸=z;#¸"/\É„òÿnaz;\àz©ÿkzlz¡…±…¥É…æ­;z…­<z…l ."Þz\¥É…æ­kzðç­gzP¥M?z¥í@zV¥Mcz¥ídz°Jla[ŽgzŽkzŽlz¥;z¥<z †	ez"d/0"@„
+ #"	\d"/lÀÉ„
+ "P÷d©"#¯can't be DEBUGged3+\5 ²zNESTÒ#mz""	\€ezå\5 \UNNESTÒ#=zåaz÷\5 ¸\ENDLOOPÒ#mz"Z÷=z;\5 O\%UNBUGÃ	5 ë\(DEBUGÒ#	\ºzez÷izåqz÷zø[\5 
+zDEBUGÒ#;' ]\5 ÿ]TRACE'Ò#;'¸ ]—Ã	\Ò#¹6¸Z˜-¯:\]RELOCATEÒ#‹­	÷é÷%/÷a3[à+buffers?¸è/ ÷à+stack?ô0
+"
+@÷à+rstack?@2$6Ü÷­	
+
+÷;¸,^}
+#"­	#;
+É­	
+÷;9\ p^
+BYTES.MOREÒ#}
+­	É÷B	"}
+É[^\ Ý^BUFFERSÒ#%/$a3B	"É‹Éê^\ _	DEMOSTARTÒ#\ALLOT MPTY ìÿ\TEST T ¸ï
+…;‹£Ü %;Fû¹\; `ˆACTIVATEÒ#¡Â©ÿ; Ì`SLEEPÒ#
+l‹ä\; `WAKEÒ#
+,‹ä\Ò#q+ô_¯Task error : Ì#7`™_\< –`TASKÒ#ýX
+ÿ1
+þÉ„ ¼ý}
+X/ DX
+l}
+#"¸}
+#;Pý¸
+É¸é÷Ü÷XÉaý/¨`ô
+÷;·#\= J`
+RENDEZVOaft7¯bleibt FORTH ein ADVENTURE!7\a ÞÁ>BYTEÜÂ±hŠ‘¥8é…°FŠ‘Èl a ÒÂHBYTEÒ#ÚÂÊ\a –ÂLBYTEÒ#ÚÂ€\Ò#A!¡É J¹ë ¡É
+¨±H± ‘l	 JÂ  ¯ ]ºÈCÐHÔJÓ	
+D
+Ì¸\ ¢cã‚ ¼wðˆ³fXÈö‚•¡#ÿ¤ÿ#Ÿ’{ì	é…°F¥'‘¥&¥8é…°F¥%‘¥$l	 ] -ÄDU<Ò#/ €÷/ €÷™\Ò#¡É. P
+3Ä3ÄÉ¸ƒ„ ÷ï
+3ÇÂ
+ ï
+3P÷J¹\Ò#P
+3Ä¸ƒ„ 3ÄÉï
+#Â 3Äé„ €ï
+ÇÂ Éï
+#\Ò#P
+¸ƒ„ Þï
+#Â 3Ä/ €ÓÄ™¤ï
+÷\^ ÍÄSQRTÒ#¡¼
+‹Ä€
+‹ÄA ÄûÄ\_ 'Å100*sÅ¡…$±…%$&%$&%¥$…&¥%…'&&'&&'&&'¥$Å&…$¥%Å'…%&&'¥$Å&¥%Å'‘l	 f+Æ*Æ)Æ(f+Æ*Æ)Æ(¥$Å(…$¥%Å)…%¡Å*±Å+‘`` jÅ100U/NÅ†$†(¡
+…%…)±*…*Š*‘…+ ˜Åf+Æ*Æ)Æ( ˜Ål	 @ DÅGRAPHICv%2Ñ2Ñz¿#ˆ¿# à¿# X¿# D¿# À¿#  ¿# ¿# ¿#1ÆØ©2…ˆ¢„$„&©X…%
+U„ Â ss\ õtADCu`Î {uANDu Î ˆuCMPuÀÎ •uEORu@Î ¢uLDAu Î ¯uORAu Î ¼uSBCuàÎ IuSTAu€Ì VuASLu ãuDECuA ðuINCuá ýuLSRua 
+vROLu! vRORuÁ $vSTXu 1vCPXuà† >vCPYuÀ† kvLDXu¢\	 vw]]?Ò#’vw\
+ ÃwCS¿# 
+ ÓwCC¿#° 
+ ~w0=¿#P 
+ ‰w0<>¿#ð 
+ ”w0<¿# 
+  w0>=¿#0 
+ «wVS¿#p 
+ ·wVC¿#Ð 
+ BwNOTÒ#
+ n\
+ MwBEQÒ#šwUv\
+ ÞwBMIÒ#±wUv\
+ îwBNEÒ#ŽwUv\
+ þwBPLÒ#¥wUv\
+ xBCCÒ#ØwUv\
+ xBVCÒ#¼wUv\
+ .xBCSÒ#ƒwUv\
+ >xBVSÒ#GwUv\LABELÒ#XÈ!A!þ‹Zi € ¼1i XZÉ€ ZD€ ~"Ì
+1÷;L	;ë lÀ "1"„ ^\ wyLABELÒ#X`yy\ ìxROMÒ#X
+	÷/  [à+not here
+7psµu¼|u\ DyRAMÒ#
+6psµu¼|u\/ °yTOOLSv%^^Fd0 óyWCMPÒ#ôµu¸›u‹#µu#Ou\."  ."PØ."FØ."¼Ø."°Ø."¤Ø."˜Ø."³
+„" ez÷ï
+az*=z*¸…ºzqz*¼qz[P
+[P
+
+*ô	*…¸mz;7qz"¤,¸Z˜-"¸
+˜-‘,©"#
+Ê7É¡Ý¤,W-1*D*¸*/(+*/º'*o*Ýo"ÓzB	*³
+B	;/“zã((+3+\ú[©[…©…©l…l	 Ò#¸"/Ì#"@„ #d/¯7"@„ #J
+"÷"	\d/#7"@„ #Jô	"÷"	\Ò#¸"
+˜-\Ò#¸JP„-\Ò#
+$Ê7É¡Ý¤,\6 ÷\SÒ#c]‘,`]Z¤,¸Ì#7¸J÷#Ì]\6 ]NÒ#c]s]F¤,¸"©"#aÌ]\6 £]KÒ#c]s]aÌ]\7 A]DÒ#é‹c]P¤,‹¡É
+ `]#J¹Z¤,z#7Ì]\7 S]CÒ#¼W]\7 ^BÒ#c]s]¸"ô÷
+˜-aÌ]\Ò#}
+¸#Ü"éÉ„
+ €ÂìÿÞ;\ ,Ú
+ º$"x ª$"312,6Á_¸J¼
+¯‰-11053Õ_.Gname¼113…_J#óN: &_STOP›_¥8é…°F¥¥‘¥8é…°F¥¥‘ ¥‘H¥‘ ˜Å…ŠÅ…l ."©,l›_: ’_
+SINGLETASKÒ#
+	/‚.;\: ç_	MULTITASKÒ#|_/‚.;\; `„PASSÒ#‹
+,ôäï
+z
+÷P
+a"‹a3"ôÉUSÒ#¸À.‚..\Ò#1"„ ^\= @Áb'SÒ#;'#J÷yÁ\= ÉÁTASKSÒ#¯MAIN 7}
+¸#"éÉ„8 ¸
+
+÷"
+÷ê"©"#¸J
+lÉ„ ¯sleeping7#"ÂDÿÞ\
+ ~ÁHELPÒ#PWp7¯Probier' ruhig weiter!77¯Aber ohne Handbuch7¯und die Hilfe der7¯FORTH-Gesellsch[H2š  Â C  !Ü!T!*"}"N"#Ç#¯#õ#8$Ø$µ$ï$'%[%%»%ç%&5&x&Ø&•&¯&E&Y&ê&ø&'
+'''Ò#¸
+z-„	 
+´‹ÉßÂ\\ ¨ÂSINÒ#/Èx¸ƒ„ /È÷¸
+´-„ 
+´É—Ã¤Â —Ã\\ ±ÃCOSÒ#/Èx
+z÷·Ã\\ ëÃTANÒ#¸·Ã‹ñÃÝ„ 
+Ä‹}Â P$\] ÄD2*5Ä© S&&'&$&%¥8
+©X…'±$‘&HPùæ%æ'JPò©6…xHl	 c   	CLRSCREENÒ#Æ/@—\."TÇ."˜."ö˜."(˜."P."˜©P©P­€Æ P`©;P©P­„Æ P`­ˆÆ8é0jjj8éEV°`ªè „L„M¥N¤S‘Q  „O ðÿ  ±Q…N„L`­)Pl1ê Ÿÿ­PøÌØÆ­PP¢JPý¥$­ŒÆiŒÆªP ŸÆlÇ ŽÆ½ˆÆP °Æ­|)PºlêØ©Æ©à©ðÿP©|x
+ ž(4112)    êlaêl9alÚ J6 × Úð{ÇÕ  
+ VcõÃ¨3YÈ                                                                                                                                                                                                          J~Æä/P†Æ;Ç\h È	NOGRAPHICÒ#£%@Ç
+/Pä
+/PäZÆä~ÆJ/ Pä/ ÝJP/ Ýä\i ·ÇBLK¿#  i ™ÈWHT¿# i ¥ÈRED¿# i ±ÈCYN¿# i ½ÈPUR¿# i IÈGRN¿# i UÈBLU¿# i áÈYEL¿# ii íÈORA¿# i úÈBRN¿#	 i ÉLRE¿#
+ i ÉGR1¿# i ÉGR2¿# i *ÉLG                                 .*ultraFORTH-83 3.80-C16+ ÿÿ±…­ÿÿ…¥É…°Ìÿÿæ°ù   	END-TRACEÅ©¥…©…©É…©…l	  wRECOVER.*È…È…¥PFFlÒ+ ÚNOOP	  ™ORIGIN¿+ ¤S0<, ³R0<,
+ ½DP<, GOFFSET<, QBASE<, ßOUTPUT<, ë© …98&98&9ÈÅ8…8æ98&98&98&9¥$)8…8¥&)øÅ8…8¥'Å9…9©à9…9¥&)ª½êÉ  `l ÊPLOTÊ ÿÊ¦9àà8‘8æxln9l †ÊFLIP­Ê ÿÊ¦9ààq8‘8lœÊl ¤ÊUNPLOTJÊ ÿÊ¦9ààiÿ18‘8lœÊm ¿ÊLINEçÊ© S¢µ$•`Jù©G8å(…(©G8å$…$„5„4„2ˆ„7„6„3ˆ¥*E&¥+å'°8¥&å*…0¥'å+…1„5l9Ë¥*å&…0¥+å'INPUT<, ùERRORHANDLER<, VOC-LINK<, ÿUDP<,ÿ *SP@=¥…$¥…%¢$¥8é…°Fµ‘µ ¢ l  5SP!Ç¡ª±…†¢ l	  _UP@¢lg ×ƒUP!Ž¢±•ˆ±• ¢  ¥É…æl	  †RP@µ¢lg ­ƒRP!D¢l ¼‚>RR¥8é…°F¡±‘l K‚R>ñ¥8é…°/æËä\p ÌSPRBUF¿# H¿# P¿#Pp aÌSPRITE¿#P¿#Pp xÌ3COLORED¿#P¿#P¿#%P¿#'P." @€’Ì© Sˆ¦(½ˆÌ¦$Piÿ1&lªÌ&‘&ln9q ËÌSETÒ#“Ì\q ±ÌRESETÒ#¡Ì\q AÌGETFORMÒ#
+@$jÌ÷
+@D\Ò#/ø÷÷ä\q SÌ
+FORMSPRITEÒ#P
+jÌ/ ?1
+@h÷¸ÆïÌï
+ÆïÌ\r ÿÌ	F¡±‘©Å…æl	  êR@¥8é…°F±‘¡l  …RDROP 1EXITf¡…±…l =UNNEST^¡…±…l s?EXITÕ¡¥É…æ(P¾l	  ËEXECUTE™¡…±…¥É…æl  PERFORMÒ+"—\ ±C@L¡…$±…%© ‘¡$l  EC!æ¡…$±…%H±$ˆ¥" XMOVEÒ#é3nÌ÷ärÌ
+ÿ-Ì\r 1ÍYMOVEÒ#3#nÌ÷ä\r tÍMOVEÒ#Ü9Í\Í\r ÌÍSPRPOSÒ#¸P
+3#nÌ÷J3nÌ÷Jï
+†Ì÷JrÌJ1„ / ÷\s ÍHIGHÒ#ÅÌ·Ì\s ¾ÍLOWÒ#ÅÌIÌ\s OÍWIDEÒ#ÚÌ·Ì\s ßÍSLIMÒ#ÚÌIÌ\s ðÍBIGÒ#¸EÍæÍ\s ÎSMALLÒ#¸UÍ÷Í\s ÎBEHINDÒÉ…æl	  ßCTOGGLEÒ+ÜJn‹ä\ÿ @$¡…$±…%±$‘¡$l ÿ !=¡…$±…%H±$H± ‘$lôÿ 7+!]¡…$±…%H±Á$$H± Ñ$lo vDROP ÙSWAP±ª ±…$Š‘¥$ ‘H¢ ±…$¡‘ˆ¥$l  „DUPº¥8é…°F ± ‘H±ˆl  ²?DUPß¡Pl	 lº VOVERö`bÇØ©ê©1©ðÿP©|xl	 ©Æ©õ©|©ñÿPŽÜÆŽŒÆl°Æg ^ÆTEXTƒÇ©ÜÆ )Ç ŽÆl	 g ÚÇHIRESÇ©ÜÆ )Ç ŸÆl	 ­ÇØ [Çxln9g “ÇWINDOWÒ#
+$
+0÷†Æä«Ç\®ÜÆPèŽÜÆ )Ç ŽÆl1êàPèŽÜÆ )Ç ŸÆl1ê¢ ŽÜÆ [Çl1êh ùÅGRAPHICÒ#Æ/Æ/ ÝJ
+ü1Æ/ ÝäÆžÂÆäÆJ‚Æä/ P¥8é…°F ±H± ‘l	  íROT ±…% ± ‘ ±…$¥%‘ ¥$‘H±…%¡‘ ±¥%‘ l	  -ROTÒ+\ sNIPÒ+‹€\ ÄUNDERÒ+‹ô\ ÔPICKÒ+#3;÷"\ †ROLLÒ+¸P;¸aï#3ò€\ 2SWAPÒ+Pï\ À2DROPô V2DUPÒ+ôô\  R¿# i 6ÉLBL¿# i bÉGR3¿# i nÉBORDERÒ#¸~Æä/ Pä\i zÉSCREENÒ#/!Pä\i ÕÉCOLORSÒ#ô‚Æä
+$Æ/ø¨\i ŠÉ
+BACKGROUNDÒ#ÆJ
+h“É\i °ÉPENCOLORÒ#ÆJ
+1‹“É\€@ Ò#ô`y÷\j NÉPOINTY¿#` j þÉPOINTX¿#Â © S¢µ$•`Jù©G8å$…$ØF¥$)øh…8â+ùH¡Ñ‘ˆ± Ñ‘l™  óORH¡‘ˆ± ‘l™  AND3H¡1‘ˆ± 1‘l™  +XORpH¡q‘ˆ± q‘l™! h-ËH±8á‘H± ñ ‘l™! ÅNOT‹ŠáŠñ‘l	 ! ƒNEGATE¦8°ã" ›DNEGATE·H8Šñ‘HŠñ‘Šá Šñ‘l	 
+ª¨ˆ±™$ ˆøŠÅ…æ¢  `" «…1¥(E$°8¥$å(….„4loËå$….¥1P¥0E.°¦.….†0¥5…6¥4…7H„5„4¥1j…-¥0Ê…,8°Ä¥5ð0	æ&Pæ'lË¥&PF'F&¥$Å7…$¥,Å.…,æ-æ2Pæ3¥0E,¥1å-°+8¥,å0…,¥-å1…-¥6ð0	æ&Pæ'lVË¥&PF'F&¥$Å4…$ /Ê¦9àà8‘8æx¥0E2¥1å3°‚ln9o ÞÊDRAWTOÌ ¹` ™( ˆ÷© SlìÊo üËFLIPLINEÒ#
+q/æËäåÊ
+D+÷© SH±Å&‘H±Å'‘¡Å$ ±Å%‘l	 # ð1+%©Á°l ±É ‘l	 # 2+c©Pà# <3+p©PSv©PM\©PG# i1-É8¡él ±é ‘l	 # Â2-‡à$ €TRUE¿+ÿÿ$ ŒFALSE¿+  $ ™"-1“$ §!0¡$ °1¿+ $ ¸2¿+ $ B3¿+ $ L4¿+ $ VONÒ+“‹;\$ àOFFÒ+¡‹;\% ñ„CLIT¥8é…°F¡Š‘æPæl	 % ƒLIT1¥8é…°F±‘¡¥É…æl	 % )GLITERALÒ+¸/ ÿ1„
+ 6!/!d6!
+!\& t0<…±©ÿ$Š‘l & ~0=›¡ðèPé& ”UWITHIN±© S ¡E$±å%°
+¡E&±å'°½lŒ' ¥<W¡…$±…%¥É…æ¥%q0•¡E$±å%l‡' QU<¡…$±…%¥É…æ¡E$±å%°l‰lŒ( ý>Ò+‹U\( )0>Ò+¤ƒ\( 70<>Ò+™‰\( fU>Ò+‹\( v=Ò+É™\( ÅD0=Ò+™\( ÓD=Ò+µõÙ\( ƒD<Ò+éÉ„ -ÊÊÂ Þ\Ò+9„ ‹€\) ”MINÒ+é-µ\) EMAXÒ+éUµ\) WIBÒ+\!"\; W!QUERYÒ+Ý!
+pW?Q!"o!;¸!÷D!÷\< ç!SCANÒ+P¸„ÿ ôJÉ„ Ç‹#‹Âäÿ9\< "SKIPÒ+P¸„ÿ ôJÉ„ Ç‹#‹Âäÿ9\< ;"/STRINGÒ+ôÿô÷zÉ\IaI{°IÂ)ßI[°	€`= Ê"CAPITAL©"¡ †"l	 > "
+CAPITALIZED"¡…$±…%¡$…&ˆD&P l	 \: Q PADÒ+X 
+b÷\: â ALLOTÒ+L[\: õ ,Ò+X ;Fý \: !C,Ò+X ä¼ý \: !‡COMPILEÒ+ï¸aP"!\; ,!#TIB.* ; h!>TIB.*`!savesystem c16neu                                                               ; u!>IN.* ; ²!BLK.*  ; ¾!SPAN.* ; J!T dÂàÿÊ\Ò+Ì 
+1÷\n ¡*NAME>Ò+¸S*‹J
+ 1„ "\n â*>BODYÒ+a\n +.NAMEÒ+Ý„ ¸”(„ ¯$|Ì 
+1#?Â ¯$???‘4\o +CREATE:Ò+A)•'´,"D,;•0¡\o h+:Ò+r+ë(¥8é…°F¥¥‘¥É…ŠÅ…l	 o È+A;Ò+¡ý6!\0´'\o –+CONSTANTÒ+A)!ë(¥8é…°ìæ)æ'lL7 ¼CMOVE>ô© S¥%Å'…'¥%Å)…)æ%¤$ˆ±(‘&˜PøF'F)F%Pð l	 7 éMOVEÒ+Pé„ ïòdïD\8 % PLACEÒ+ôPô#ï, ä\8 f COUNTÎ ¡…$É±…%É ‘¥8é…°FlT8 Ä ERASEÒ+¡¨ \9  FILLª © Sˆ¥$¦'ð
+‘(HPûæ)JPö¦&ð‘(HJPú l	 : ¡ HEREÒ+L"´,""!$J¸¼
+ ¯‰à3invalid nameX ~';#ý ˆ)^)"„ ¼^)[¸)!ž(
+ Z')L;Â &)€´'¡!ë(lß(3*¡…(±…)¥É…æ¡…&±…'&PlŒ±&‘…%¡&…$%Pl	 ¥$É…$æ%¡$h8)Å$…$æ%È) ð
+±$h¡$…$È…%¥$E(P°¥%E)Pªlcn ¸)>NAMEÒ+%"¸„ éZÉ‹1*Ý„ zÞ+¸P=ÿôƒ„ Ü÷‹Çƒ„ ¤ô„ ‹÷‹Ç9\5 X2/±
+±Ê‘¡Êl 6 /MODÒ+Pÿïà\6 //Ò+6Ê\6 dMODÒ+6€\6 r*/MODÒ+Pðïà\6 Â*/Ò+ÊÊ\6 ØU/MODÒ+¡‹Ç\6 ‡UD/MODÒ+P¡Çï‹PÇï\7 ›CMOVEF© SˆD$P	F% l	 ±(‘&HP‘¥¡É…ŠÑ…©ÅhŠÅlÒ+ï~'"ê*;\j Œ(EDOES>Ò+6!ë(
+l!6!À(\Ò+¸
+ÿ1
+ÿÉÉ\Ò+X 
+ÿ1
+ÿÉ„ ¸¸#X ôÉ#ò¼~'[¼ý \k û(?HEAD.*  k v)|Ò+^)"Ó“^);\l Ä)WARNING.*  Ò+„)"Ó~'"´,"9.Ê„ ‘4~'"+¯$exists ¹>\l Ú)CREATEÒ+X D!"!%l	 3 ˜M*Ò+¸ƒ¸P„ ¤‹¸ƒ„
+ ¤ï‰Pžï„ µ\3 ë*Ò+ž€\3  2*5¡
+±*‘l	 Ò+“à3division overflow\4 .UM/MODÉ¡…)±…(¥É…æ¡…%±…$H±…'H±…&¢Æ*8¥%å)¨¥$å(°&*…$„%&'&&&%&$JPß Æ$Æ% †b\¥&‘H¥%‘H¥$‘ ¥'l 5 ^M/MODÒRSIVEÒ+´'\Ò+‚'„ ÜJôä€\h H'	IMMEDIATEÒ+
+@Z'\h ò'RESTRICTÒ+
+€Z'\i 	(
+CLEARSTACK.( ±…H±… l	 i (HALLOTÒ+¸"ôÉ‹;a¸É¸¸;FôÉ, ,(¸;\i @(HEAPÒ+¸"z\i Ù(HEAP?Ò+€(}¯\Ò+¸X ôÉ¸i(€(‹D€(ôÉ~'[´'\¥8é…°F¥Âîÿ\0 ³FREPEATÒ+Fý6!ÂQ\0 íEUNTILÒ+Fý6!„Q\1 BDOÒ+6!Éÿ¦P\1 C?DOÒ+6!Üÿ¦P\1 1DLOOPÒ+Pý6!Jÿ6!¹ÿ½\1 eE+LOOPÒ+Pý6!ûÿ6!¹ÿ½\1 `…LEAVEÒ+¹ÿï…¸"÷P\2 ÜUM* ±…$¡…%H†&†'¢'&&&%&$±Å'…'H±ˆÅ&…&æ%Pæ$JP|¥'‘H¥&‘ ¥$‘¥2¸Ì ¼&;&å¡P¡¡í%&÷%
+-@„ 9“Pí%&÷%o&„ æ;í%&÷%Ê%™&­%¨&í%)&÷%Ê%™„ðÿ&”&™&&÷í%)&÷%ÂTÿ\g B&'NUMBER?I0L&g e'NUMBERÒ+p'Ý™à3?ƒ„ ÿ\h v'LAST.*  Ò+~'"Ý\h ×'HIDEÒ+‚'„ …"´,";\h Ž'REVEALÒ+‚'„
+ …´,";\h «'IRECU	EÒ+X É!\. Ý?PAIRSÒ+Éà3unstructured\I h©ÿlh© ª¥8é…°FŠ ‘È¢ l / ôCASE?b© S¥$AP	¥%QPl‰Šl0 8BIFÒ+6!„¦¼\0 \DTHENÒ+=ÿ¼ý½\0 ÏDELSEÒ+¼ý6!Â¦‹½“\0 „EBEGINÒ+UF\0 ¡EWHILEÒ+FýF6!„¦/þÿH\Ò+è¸/þÿÉ„
+ €½
+VERTÒ+#Ì Ê%„ ­%ÂôÿÇ\Ò+¼&"™\Ò+Ì “¼&[\Ò+ÇÌ \f M%DPL.*ÿÿÒ+„ 9Þ€9¡\Ò+„  9€ï„ µ€&"#ÝÓ€“\Ò+
+&@„	 
+
+“d
+$@„	 
+“d
+H@„	 
+“d
+%@„ F“d¡\Ò+
+,ôÉ‹
+.É\Ò+&"“ÉÓ¼&[\.*  g &NUMBER?Ò+æ… l	 + Bÿ†(+LOOPýÿ¡Á±Ñ‘Êq¥É…æ(Dl	 , òÿI'  ¥8é…°F±HHÑˆ±HHÑ ‘l	 , !Js PR- m†BRANCHÄ¥Á…$¥Ñ…¥$…l	 - y‡?BRANCH†¡¥É…æ(ðKld. Ú>MARKÒ+X ¡!\. ž>RESOLVEÒ+X ôÉ‹;\. ²<MARKÒ+X \. M<RESOLVê#Þ\d L$b.(Ò+
+)ê##?\d Ý$a\Ò+¸!"6h#6$¸!;\d ï$b\\Ò+øc¸!;\d %\NEEDSÒ+$õ.Ê„ ó$\d %HEXÒ+
+æ;\d 7%DECIMALÒ+
+
+æ;\e j%DIGIT?Ò+
+0É¸
+	[„ 
+‡É¸
+	[„ æ"ô[ÝÓ€¡\e Á%
+ACCUMULATEÒ+‹P‹æ"ž€æ"žõï\e  %CONUMAXÒ+éµ\) éUMINÒ+é[µ\) üEXTENDÒ+¸ƒ\) ÿDABSÒ+ÿ„ µ\) "ÿABSÒ+ÿ„ ¤\Ò+9ïa¸PP‹PP\* 7ÿƒ(DOÒ+ôÉiÿ\* Ãÿ„(?DOÒ+ôÉÝ„ iÿï¸"÷P€\* ÕÿBOUNDSÒ+ô÷‹\* šÿ‡ENDLOOP»ÿ©l+ ¯ÿ…(LOOPLÿ©Á±É ‘l	  ±…ˆ±DÒ+µ#å"\b Q#PARSEÒ+Pµ#¸!"Ô"ô‹ï"PôÉ¸ïlÉ¸![\b â#NAMEÒ+?4X#B"d\c $STATE.*  c )$eASCIIÒ+?4X##J1$"„ ^\c 7$,"Ò+
+"ê#X ô#ý n \c w$„"LITÒ+ïïÜÌ ÷PP\c Ñ$‚("Ò+Ø$\c Œ$A"Ò+6!‘$\$\d ™$ƒ(."Ò+Ø$Ì #?\d ©$B."Ò+6!¯$\$\d »$a(Ò+
+) H±$ †"‘$lQ"ç"†* ±™$ ˆø ­º!Å&…&­»!Å'…'8¥$íº!…$¥%í»!…%°¡º!±»!lÙ# ¥$%ð=¡&QPæ&Pæ'¥$PF%F$l$#¥&…(¥'…)¡&Qæ&Pæ'¥$PF%F$(ðæ*¥$%Pâ8 ¥&ñº!H¥'ñ»!©Å…æ ±…$H± ‘…%ˆ¥*‘$±(HF*÷© ‘$ l	 b µ"SOURCEÒ+D!"Ý„ ·9øcdÝ!o!"\b ¬#WORF ±H± ‘l	 o ¬+VARIABLEÒ+A)Fý \p |+UALLOTÒ+¸0"÷
+ÿ[à3Userarea full0"‹0[\p ó+USERÒ+A)Fü+!ë(¥8é…°F ±ÅŠHÅ ‘l	 p ),ALIASÒ+A)~'"¸J
+ 1„ /þÿý Â 
+ Z'S*;\q ],VP.* Ü-Ë-Ë-ajaj    q ‘,CURRENT.*Ë-q ª,CONTEXTÒ+è …\Â ›4HOLDÒ+“´4[´4"ä\Â ¾4<#Ò+´4´4;\Â W4#>Ò+Þ´4"´4ôÉ\Â è4SIGNÒ+ƒ„ 
+-E4\Â ÿ4#Ò+æ"¤
+	ôU„ 
+‡÷
+0÷E4\Â 5#SÒ+5éÙ„øÿ\Ã @5D.RÒ+zÜ)ÿ|4e55í4ôÝôÉ¤4#?\Ã u5.RÒ+‹ÿ[5\Ã 5U.RÒ+¡‹[5\Ã ’5D.Ò+¡[5‘4\Ã ¤5.Ò+ÿ©5\Ã µ5U.Ò+¡©5\Ä C5.SÒ+;¸"ôÉ
+ ÿ£ÿÜÿ %"H5Fûÿ¹ÿ\Ä R5C/L¿+) Ä þ5L/S¿+ Ä 
+6LISTÒ+Ž3;¯$Scr Ž3"¸dxH5¯$Dr `d¹56¡Éÿ. ¡>„ „?%F„5‘4Ž3"·9%6$÷6Çq4#?Jÿ¹ÿ?\Å 6PAUSE	 Å Ú6LOCKÒ+¸"}É„ €d¸"„ ‚6Âôÿ}‹4¹>D!"Ý„ Ž3;¸!"™3;33\_ Ÿ3‡(ABORT"Ò+Ø$‹„ P,(ï»d€\Ò+Ø$‹„ »d€\_ V3FABORT"Ò+6!à3\$\_ 4FERROR"Ò+6!ú3\$\` %4BL¿+  ` :4	-TRAILINGs4˜ S¡…&±Å%…'¤$ˆ±&I ðHPæ%˜h¥%l˜PêF'F%ä˜lÁ e4SPACEÒ+?4?\Á ‰4SPACESÒ+¡Üÿ ‘4Jÿ¹ÿ\Ò;\Å †6UNLOCKÒ+¸6÷\È8é…Èé …©l ±…H±… ¡…±…¥É…æ¢lÆ ·6FILE<,Æ  7PREV.*ø{.*  Æ 7B/BUF¿+ ±(Y" PHÀPô`:7 ±™$ ˆø ±Å&…&H±Å'…'­7…(­7…) )7P¥É…æ ©Å(¥)É ‘lf¥(…*¥)…+¡*…( ±*…)(Pl	  )7Pâ¡(* ±(‘*­7(­"³aÉ\] ¬2DEPTHÒ+;¸"‹É\Ò+1$"„ ¯$
+ compilingd¯$ ok\^ G2(QUITÒ+í1?ï!ù/ß2Âôÿ\^ 3'QUITI0
+3^ 3QUITÒ+B"B0&3\^ ,3STANDARDI/OÒ+/*ôZD\^ c3'ABORTI0 ^ Á3ABORTÒ+,(ÃÊ3q333\_ Ð3SCR.* _ ˆ3R#.*  _ ”3(ERRORÒ+q3‘4X +Ì #?‘7‘(¥(7¥)7lÃ7Ê 7(DISKERRÒ+¯$error !  r to retry ¯?¸
+rÉ‹
+RÉ‰à3aborted\Ê A7DISKERRI0L7Ê 8R/WI00ÌÒ+¸z"ƒ„j a¸"#„3 2ô2q3¸zôa"F"¡8„ ¯$write 8ÂÛÿ
+€ôt#€\Ò+a¸åt÷\Ò+¸{82ô2q3PôZ"÷ô
+÷z±EH±å l	  †“à3stack empty\\ •1.STATUSI0Ct.*ïï;\\ ã1„PUSHÒ+ï‹¸P"Pñ1PP\\ ý1LOADÒ+Ý™ÓD!2D!;¸!2¸!÷í1ù/\] 2+LOADÒ+D!"÷#2\] c2THRUÒ+#‹Éÿ
+ %#2Jÿ¹ÿ\] y2+THRUÒ+#‹Éÿ
+ %k2Jÿ¹ÿ\] Ö2c-->Ò+¼D![¸!÷í1\] ”2RDEPTHÒ+B
+¼8„ ¯$read 8ÂYÿï\Ò+7¸"„ "¸a"“É„êÿ76¸!8\Ò+aPé;Z"÷a;ït÷7À6\Ò+7"¸„ ¸z"ƒ„îÿ\Ò+7"¸"™„öÿz"ƒ\Ì 8CORE?Ò+87Þ¡\Í f9(BUFFERÒ+87H8î8Âøÿ\Í z9(BLOCKÒ+87H8‰8î8Âöÿ\9 ±hH±lÍ Ô9BUFFERÒ+9Ä9Ò+A)/¥0!ë( ±hH±…È… l z µ0(ISÒ+ï¸aP";\Ò+"/I/"ôÉ‹/¸/"É‰à3not deferred\z Ý0bISÒ+;/¸ó0+1$"„
+ 6!ã0!d;\.* Ò+O2
+ -à3tight stacke1J™„ “e1ä“à3dictionary full¯$still full \[ "1?STACK 1 8¥ñH¥ñP	  †h1\Žg1 \Í œ9BLOCKÒ+9}9\Î ¯9UPDATEÒ+
+€7"z#ä\Î A9SAVE-BUFFERSÒ+769Ý„ !8Âôÿ7À6\Î Ý9EMPTY-BUFFERSÒ+767"Ý„
+ ¸{8Âòÿ7À6\Î :FLUSHÒ+ì9:\Ò+¸9n9„ 7"{8,9„ ì9Z"÷‹·9……;J9\Ò+ì9Pô÷ô[Péï1„$ õï¡Üÿ “/þÿõ	/NOTFOUNDI0ß/x ¾/NO.EXTENSIONSÒ+ú3Haeh?\x O/	INTERPRETÒ+¸/\ Ò+ž1$õ.Ý„ ¼1„ —¸/à3compile onlyƒ/Óp'™„ I/¸/\Ò+ž1$õ.Ý„ <„ —¸/!¸/ƒ/Óp'Ý„ <„ ‹^^Â I/¸/\y í/a[Ò+/ 0ã0º/1$÷\y {0]Ò+/;0ã0º/1$å\Ò+“à3Crash\z ‘0DEFERéh:Jÿ¹ÿÂ ï¡Üÿ éh:¼¼õJÿ¹ÿì9Þ\Ï 8:COPYÒ+¼Ö:\Ï T:CONVEYÒ+‹#FÉ¸<‰à3neinÖ:\Ð å:LIMIT¿+ €Ð ;FIRST.*ø{Ð ;ALLOTBUFFERÒ+#;"B"É%7aÓ%7¤#;[#;"¸{87"ô;7;\Ð );
+FREEBUFFERÒ+#;";%7É„. #;"!87¸"#;"É„ "Âîÿ#$‘¥8é…°F¥&H
+0˜iÿ¨H˜©ÿ$Š ‘l	 v 1.FINDÒ+D,¸"ô…"É„ …Ü"9.„ Ê”.dô–,a[„
+ ‹…ÂÞÿÊ¡\v î.'Ò+$õ.™à3Haeh?\v 7/I[COMPILE]Ò+;/!\v o/C[']Ò+;/^\v Å/NULLSTRING?Ò+¸J™¸„ Ê\H±É…H±É … l	 w Õ/
+>INTERPRET•/ 0x «;""‹;%7#;[\Ð Ë;ALL-BUFFERSÒ+#;"7;#;"É„òÿ\Ò+J
+ 1\Ò+ê*Ü#‹”(\Ò+€(%"Pï"Ý„^ ¸PZÉPï"PôÇ¸‹aê*1„. ”(„Zÿa|;„ ôaç;„ aS*aðÂ¶ÿ9Âœÿ\Í< ±™$ ˆø ±É…*H±É …+ ¡$…,±$…-,ð5¥,E*¥-å+¥,E&¥-"´,;\Ò+"…©*+\s ±-ORDERÒ+R,Éÿ %K-/þÿûÿ¹ÿF¤4´,K-\s Y-WORDSÒ+D,""¸¡>™1„ ¹>¸a+‘4Âæÿ€\t .(FIND;. ±™$ ˆø¡&)…(  ±$ªH±$…%†$$P ¢ lŒH±$)E(Pà©Å$…)© Å%…*¤(±&Q)PKˆP÷ ¥*‘ˆ¥)‘ˆ¢ l‰–.¡…$±…%¡$…&)8Å$…$æ%¥&) P	¥$¥%lB.¡$±å'l²<¥(E,¥)å-°¡,$±,‘$lG<¥,…$¥-…%l‰<lÒ+%"Ý„ ¸PZÉË<ïÂêÿ\Ò+}#¸"}É„( é"‹X ¯„ ¸"#"ô;ÇÂ "ÂNÿÞ\Ò+%Ë<R,Éÿ  é%"z¯„
+ /Ë-%;/þÿûÿ¹ÿé´,"z¯„
+ /Ë-´,;\Ó º;CUSTOM-REMOVEI0 Ò+ôë<'=M<{=€(‹Éi(L;¡~';\Ô Ë=+–,¸"÷a\Ò+–,aD,\q º,ALSOÒ+–,"
+
+-ú3Vocabulary stack fullD,"F–,[D,;\q Þ,TOSSÒ+/þÿ–,[\r ÿ-
+VOCABULARYÒ+A)¡!¡!X %"!%;ë(lÀ(D,;\r /-FORTHv-,Õ,Õ  r Á-ONLY„-!@!@Ï-ë(lÀ(¡–,;D,;å,\r Ó-	ONLYFORTHÒ+Ú-É-å,¿-\s —-DEFINITIONSÒ+D,moîkTAPEINIT¡0dîkFLOPPY?¯$Type 'help' to get help?¯$Type '64kb' to use 64kb\Ò+/ / ”/ ÀkÉ-‘$CODE
+P3kÉ-‘$EDITOR
+P3kÉ-‘$DEBUG
+/P3kÉ-‘$HELP
+
+¼3kÉ-‘$TAPEINIT
+Z3k/ ã0Ï@/Ølã0˜@îkEDITORîkEDIBOARD¼Ž3;¡™3;e>/ Ú/ð{/ €k\ ???\Ò+¸;ÉF­
+
+÷"É1P­
+÷"É1„
+ €€€d/;+;­
+
+÷;¸
+÷­#;­
+÷;a\Ò+Ø$B"õ.„ —Â Ì #?¯$ unsatisfied33\Ò+6!îk\$\ 3j64KBÒ+/3"/ ýÉÝ„ ?H5¯$	too smalld;/ ýÉ„ / €/ „/ ýk\ #lC16DEMOÒ+?¯$c16-De~jSP¿+ Ü ‰jIP¿+ Ü ”jN¿+$ Ü ŸjPUTA¿+ Ü ©jW¿+ Ü ¶jSETUP¿+SÜ ÀjNEXT¿+	 Ü NjXYNEXT¿+haÜ ÛjPOPTWO¿+ô Ü êjPOP¿+Ò+?B"¸õ.ÊÜ™„	 ¯$not ¯$found: Ì #?\.* Ò+Fk„
+ €€€d¸/k"É„ @:¯$	 Insert #¸¹5¯?€¸/k;€¯$ scr#¸¹5?#2k™ú3­ÿ	ÿ?ÿx`“ +iC64INIT¦i `ilha  …†‡‰Š‹Œˆ” šiC64FKEYSMi¢J0	½¬i]lOilha{ Àic(64Ò+$Ì ™à3
+C) missing"/C)É„ãÿ\{ àibC)Ò+\{ jc(16Ò+\{ jFORTH-83Ò+\Ü "j	ASSEMBLERv-ÄÄ€-Ü   PUSHA¿+Ü ijPUSH0A¿+Ü wjPUSH¿+Ü ÆjRP¿+ Ü ÓjUP¿+ Ü INDEXÒ+#‹Éÿ! ?%F„5%·9#
+%#?¡>„ „Jÿ¹ÿ\ ŠhFINDEXÒ+Cg„ Þd#‹Éÿ1 ?%F„5è ¸%33îf&gP#
+%#?ï¡>„ „Jÿ¹ÿåg\ ¿hINK-POT.*öö îö öö ’ iINIT-SYSTEM;i¢÷šlha>ÿviŽxi©ih©\hº½h© ¢ l³ü?ÿ@Ø>ÿ©iÿÿ©aþÿ „ÿ Šÿ­iÿ­iÿ­i@©€@gýe—dd
+ze‘$u2:13,0,Ì ýeøfýe—d‚6yf\Ž ]gDISKOPENÒ+d
+Ðe
+#áe—dyf\Ž ¸g	DISKCLOSEÒ+d
+ˆe—d\Ž Yg1541R/WÒ+‹à3no filezd6¸d;P[„ÿ ¹5¯$beyond capacityÊdCg„ €Êd¡‹33Z£ÿÉÿ. €é%„
+ îf&gÂ îfËgPg÷ï¸„ „Jÿ¹ÿzÞåg\ ôgvÒ+¸‡f„	 
+6dP÷¸‹f„ ‡fÉ
+6
+÷d¸f„ ‹fÉ
+6
+÷dfÉ
+6
+÷\Ò+“f#‹\Ò+æ2t%¡|4e5€
+,E4e5í4\¿+  of
+READSECTORÒ+d
+ze‘$u1:13,0,Ì ýeøfýe—d‚6yfÓd
+Neg7f—d¡\ gWRITESECTORÒ+d
+ze‘$b-p:13,0Ì ýe—dd
+ze\—e†š© S¥& Ld¥&>ÿ ´ÿ?ÿ¥$	`…­>ÿ –ÿ?ÿ¦&†˜lhaŠ }eBUSINÒ+ˆd6•e\‹ FeBUS!ãe¡>ÿ ¨ÿ?ÿl™‹ ZeBUSTYPEÒ+£ÿÜÿ %JáeJÿ¹ÿ‚6\‹ óeBUS@f>ÿ ¥ÿ?ÿl‹ fBUSINPUTÒ+£ÿÜÿ f%äJÿ¹ÿ‚6\‹ ,fDERROR?Ò+d
+Nef¸
+0É„ ?f¸òaÉ„ôÿ™?™—d\¿+Å¿+ê¿+FF™d>ÿ Lÿ?ÿ ¢  †ˆdÀ6\¢   †—d7À6“à3	no device\†…®>ÿ ±ÿ?ÿ©`>ÿ “ÿ?ÿ>ÿ ®ÿ?ÿ¥ðÈÈl¯d`ùd¡ Ld¥É…æl¢d‰ Žd?DEVICEÒ+ˆd6÷d\$e†š© S¥& Ld¥&>ÿ ±ÿ?ÿ¥$	`>ÿ “ÿ?ÿ¦&†™lhaŠ eBUSOUTÒ+ˆd6"e\Š qeBUSOPENÒ+
+ðze\Š ÆeBUSCLOSEÒ+
+àze—d ÂcC64TYPE¤c© S  D$ð±& µb°©.>ÿ lÿ?ÿHl«cl¨b† ˜cDISPLAYû>îbc¢cc5chcËc\èc>ÿlrÿ‡ JcB/BLK¿+ ‡ ðcBLK/DRV¿+ª ‡ þc(DRV.*  Ò+d"
+÷\‡ dDRIVEÒ+d$Z;\‡ (d>DRIVEÒ+d$÷Z"É\‡ >dDRV?Ò+Z"÷dh\‡ ydDRVINITÒ+ \ˆ ÐdI/O.*  ˆ ‚dBUSO	ÿ?ÿ¥É…æ†K†O  †‚6\I€°I `Ià°IÀ``„ ‰b
+PRINTABLE?Vb¡ µbJŠl… GbC64EMITðb¡ µb°©.l”b… äbC64CRÒ+òab\… þbC64DELÒ+
+b‘4
+b\… cC64PAGEÒ+
+“b\… +cC64ATjc© S¦&¤$>ÿ ðÿ?ÿlha… @cC64AT?Íc¥8é…°FŠ‘8>ÿ ðÿ?ÿÀ(˜é(hŠ¢ Èl†
+ÿ¥IÉ éÿl	 ‚ ‹aCUROFF¶a©ÿÿÿl	 ƒ «aC64KEYÒ+“a‚6[a„úÿ´aÕa\ƒ Ca#BS¿+ ƒ àa#CR¿+ ƒ ìa	C64DECODEÒ+æa@„ ¸„ .?Çdòa@„
+ ¸Q!;dPé÷‹äï?#\ƒ øa	C64EXPECTÒ+Q!;¡¸Q!"„
+ ¯?I?ÂîÿÞ‘4\ƒ @bKEYBOARDž?La[ablb\„ ÐbCON!’b¡>ÿ l
+3ã0(3Úd–@/.";/ ã0Ì3Ø3\ ¹9™ ˆ÷­ É…­!É … ±…H±… 
+±…H±…¢  Š‘`Ú ‹@COLDa `i­ É…$­!É …%  ¹‘$HPø ¾@ †9iÑ@\Ú ú@RESTART9a `i ¾@ †9iš@\¢  l	  -aC64KEY?]a¥ï]ð©ÿhl qaGETKEY×a>ÿ Ýë?ÿI P© l‚ ÌaCURON•a¥JÅHÀ(;\Ö ?KEY~? Ö ©?KEY?~?Ö ´?DECODE~?Ö À?EXPECT~?×   SEALÒ+¡/Ú-+;\× |?$ONLYÚ-× ó?%FORTHÉ-× þ?%WORDS	.× 
+@$ALSOå,× @+DEFINITIONS¿-Ò+%"¸…"ôZÉ;"Ý™„êÿ\Ò+¡7;;#;;H;\Ø N?'COLDI0 Ò+1@q@£-Í@:?Ì #??š@\Ø Å@'RESTARTI0ØlÒ+/Ò+»?„ …>…>¡\Õ ™>?CRÒ+Ê?6
+
+É[„ ?\Ò+A)¸!aë(lÀ(Jô"÷»\Ö ³>OUTPUT:Ò+r+ë(lÀ(ô;\Ö ë>EMITZ> Ö ?CRZ>Ö ?TYPEZ>Ö ?DELZ>Ö (?PAGEZ>Ö 3?ATZ>
+Ö ??AT?Z>Ö i?ROWÒ+o?€\Ö t?COLÒ+o?Ê\Ò+A)¸!aë(lÀ(J"÷»\Ö Ä?INPUT:Ò+r+ë(lCLEARÒ+X ¸}=L;\Ô ¡=(FORGETÒ+¸”(à3	is symbolù;=\Ô »=FORGETÒ+;/¸/$"à3	protected©*¸”(„ ê*Â ……E=\Ô ß=EMPTYÒ+/$"}=/2"0;\Õ >SAVEÒ+X }=%"¸……"ô…;"Ý™„êÿ}­/ D\Õ >>BYEÒ+ì9æc\Ò+¯?PÉ„ “9\Õ ×>STOP?  újEND-CODEÒ+D,…"D,;\ „mINDEX.*		€	€€€€€ €€€€€€€,.*  ŸmMODE:Ò+A)!ë(lÀ(JIm;\ Om.Aßm  ìm#ßmßm öm,Xßm n,Yßm nX)ßm n)Yßm  n)ßmÒ+„ Im"
+Im;¼Im"
+1Ý„ ¡Éÿ
+ ¸÷Jÿ¹ÿô#"1™\ *nCPUÒ+A)!ë(lÀ ï?#d€\" ÿ]DIGITSž?La[a&]lb\Ò+Vv"¡Éÿ
+ æabJÿ¹ÿ¡|v"¡Éÿ
+ -xJÿ¹ÿ¸Ó|v·uàw‹ÐwË\€\Ò+#?
+<?›vÇÊ?É¤4\Ò+2ÿvÅ[o?~z¼¡d?¯$replace with: o?|v·uC]¡¡d?¯$>     search: o?Vv·uC]¡Féd?Fv"P˜5éd?X #P{]W?Q!"Ý„ X Üä_'€Fv;d?Fv"P  &\\Ò+`\Ž3"·9‰w„ ðz€Ž3"·9cwJ9
+\Ò+Ë\
+\Ò+\
+\Ò+Ž3"·9wºv÷ÿv:\¡\Ò+Ë\€¼Ž3[¦\\Ò+Ë\€“Ž3[¦\\Ò+Ë\€²v"¸¦[Ê[‰„ ¤Ž3[¦\\Ò+Ë\€¶v"Ž3"¶v;Ž3;¦\\" ¶z	DIGDECODEÒ+æa@„ ¸„ .?Çdòa@„
+ ¸Q!;d§"¸Ê%„ €Pé÷‹ä Awè ›v3DAw›v3
+ ¨ \Ò+è Aw›v3D\Ò+·9…"\Ò+“a‚6»?„úÿ´a\Ò+Ž3"Z"÷d‹\Ò+o?Å[~z¡¡d?¦[¯$Scr # ¹5¯$Drv ¹5Ž3"Œ[™„	 ¯$not ¯$updated¼¼d?/ŸzÌ #?F¤4/¸zÌ 
+1#?’zd?–[~[¡\Ò+o?‹›v#$÷™3;\Ò+™3"¸›v#x›vÉÉøcÇK›v#6‹d?\Ò+ÿv
+ Ò+ºv÷¡\ ŠvRVSONÒ+
+b\ ÖzRVSOFFÒ+
+’b\ ‰z***ULTRAFORTH83***	  zrFORTH-GESELLSCHAFTÒ+%\ ©vSTAMP$.*                  Ò+|z#Ì Aw›v÷ôÉ‹Ðw¡\ SzGETSTAMPÒ+2{b|zå?¯$your stamp: ~z
+¤4z?
+d?|za
+W?’zQ!"|z#ä\Ò+|zJÓ[\Ò+ òy\Ò+‘x¸Ó
+b\Ò+Jv·u÷#Pv"µwK[¸ÓàwJJv·u÷ä¼Jva[\Ò+€yÝÓ‘x\Ò+€yÝÓÑy\Ò+Jva"™ÝÓ-x¸Ó“Jva[Jv·u÷Jàwä\Ò+Pv·u÷µw[¸ÓKwPv·u÷›vD›vPva[\Ò+ðyÝÓÔx\Ò+ðyÝÓ%y\Ò+›v¤Pva[Pv·u÷Kw›vD\Ò+Pva"™ÝÓoy¸Ó.z\Ò+ºvå¡\ Ó!x\Ò+Bv"™z?Ÿv…[1¸Ó
+b\Ò+	x¸Ó
+b\Ò+Aw£vq4Ê£vÇK›v6‹d?¡\Ò+¡
+
+¡Éÿ €‘x¸„ „Jÿ¹ÿ\Ò+
+¡Éÿ 
+bJÿ¹ÿ¡\Ò+z?¡d?ÿvºv÷Ôx\Ò+Kw›v?4¨ ¡\Ò+àw›vÊ?É?4¨ ¡\Ò+Kw¸›v÷‹Aw/À÷¸PôÉDï›v?4¨ ¡\Ò+ïw‰ÝÓKw¸›v÷Aw£v÷ôÉ vÒw© SˆD$Pl(v±( @v‘&HPï‹w˜ S†&­>…'¢ '±$ @vQ&ð©ÿlˆï övJPçŠlÒ+;›v3É\CwŠh­>lMw¥JI(Š©'ÅHh¥IÉ lâw¥JÅHh¥IÉ lÒ+Aw/À÷›vq4Ê™Bv"\Ò+àwAw£v÷ÇÉBv"™1\Ò+¾vJb¡\Ò+	xÝÓ“Kw›v÷ÇJ?4É‰1ïw‰1¸Ó
+”b\Ò+	xÝÓºv"„ -xÝ  zvSCR>CBM~v¡ /vl	  ÒvEDITORv-èÃèÃej¿+( ¿+ ¿+è   SHADOW.*u .* .*  .*u .*ÿÿ.* .*iÖ  .*™Ö  .* ùÕ.* !Ö¿+H ¿+J ¿+ÿ¿+;¿+ÿ¥$É)…$æ%¥&É(…&æ'`w˜ S†&­>…'¢ '±$ @v‘&ˆö övJPî­;  	 
+ èPñl(vew˜ S†&­>…'¢  ±& /v‘$HÀ(ôJð
+© ‘$ övlrwl( ¡&A*ð¨ ±™$ ˆø¥$PF%F$æ&Pæ'lõt ßt2!žu˜ S ±‘$ˆù lô —u2@¹u¡…$±…%¥8é…°F ±$‘ˆùlha ²u	2VARIABLEÒ+A)Zý \ Zu	2CONSTANTÒ+A)!!ë(lÀ(·u\ òuUNLINKÒ+¡¡/îœu\¢  l	 …*)?*$*	€Ð	@`…*)I I@)$*	@`©.` vCBM>SCRÆv¡ @vl	  +X 
+	÷/ €[à3not here/>ÿ†p\ ÎtRAMÒ+/?ÿ†p\ ˜tSYSÒ+Ôt/qžt\. zt.BLKÒ+D!"Ý„ ¯$ Blk H5¹>\ ¼t(SEARCHët ±™$ ˆø¥()ðÉ¥$%ðÃ¡&A*ð¥$PF%F$æ&Pæ'lût ¹$ ‘ˆøæ&Pæ'æ*Pæ+¥$PF%F$¥(PF)F(¥()Pÿ¥É…æ ¥'‘¥&ˆ‘ˆl‰¥$%P¥É…æ lŒ 	zsWDECÒ+¸_p8r–qô# p¹q p\ ×s;C:Ò+„/qm•0¡~';¡\ Îl	ASSEMBLERÒ+?jým\ ²se;CODEÒ+)/ýÿý š+/þÿý ¾s\ HsCODEÒ+A)X ¸…;¾s\ ès>LABELÒ+X È)A)þ'‹!Zi(€(¼1i(X ZÉ€(ZD€(~'"Ì 
+1÷;L;ë(lÀ("1$"„ ^\ tLABELÒ+X 
+t¾s\ –sROMÒ 
+NOTÒ+
+ n\
+ ×rBEQÒ+drq\
+ ˆrBMIÒ+[rq\
+ ˜rBNEÒ+8rq\
+ ¨rBPLÒ+orq\
+ ¸rBCCÒ+"rq\
+ HrBVCÒ+Ærq\
+ XrBCSÒ+-rq\
+ èrBVSÒ+Ñrq\ ør2INCÒ+¸_pnFúm+p¸†p"r–q‹#­p¹q\ s2DECÒ+¸_pboFúmÙp¸†p-r–q‹# p¹q\ 1sWINCÒ+¸­p8r–q‹#­p¹q\  q?]Ò+!X #Énq!\	 Úq?[Ò+!X ¡!\	 ‘q?[[Ò+–q‹\	 ¤q]?Ò+X ôJ„
+ ‹;Â ô#Énq‹ä\	 ´q][Ò+X #¼<q‹X ô#Énq‹ä\	 Ýq]]Ò+<q\	  r]]?Ò+<q¹q\
+ rCS¿+ 
+ rCC¿+° 
+ (r0=¿+P 
+ 3r0<>¿+ð 
+ >r0<¿+ 
+ jr0>=¿+0 
+ urVS¿+p 
+ ÁrVC¿+Ð 
+ Ìr  ÓpSTA±o€Ì €pASL±o pDEC±oA špINC±oá §pLSR±oa ´pROL±o! ApROR±oÁ NpSTX±o ÛpCPX±oà† èpCPY±oÀ† õpLDX±o¢– qLDY±o Ž qSTY±o€Œ qJSR±o€ )qJMP±o@€„ 6qBIT±o „Ò+¸=ÿ
+[à3out of range \	 cq[[Ò+X \	 Í oTXAnŠ ~oTXSnš ‰oTYAn˜ ”oM/CPUÒ+A)!!ë(lÀ(¸#"
+€1„	 
+Im[ô/ ÿ11n1n„ ým“à3invalidJIm"§m÷J÷!Im"
+1„ Im"
+1
+U„ !Â !ým\ ŸoADC±o`Î %pAND±o Î 2pCMP±oÀÎ ?pEOR±o@Î lpLDA±o Î ypORA±o Î ÆpSBC±oàÎ (J!ým\ ÑnBRKn  ŒnCLCn —nCLDnX ¢nCLInx ­nCLVn¸ ¸nDEXnJ CnDEYnˆ NnINXnè YnINYnH änNOPnê ïnPHAnh únPHPn oPLAnÈ oPLPn( oRTIn@ &oRTSn` 1oSECn8 <oSEDnø goSEInØ roTAXnª ]oTAYn¨ ÈoTSXnº Ó!˜5{béd?Vva"›v…Ê?ÉW?Q!"Ý„ Vv;d?Vv·uC]éd?|va"›v…Ê?ÉW?Q!"Ý„ |v;d?|v·uC]’z~[d?\Ò+¦\€Vv·u™3"Ž3"·9÷øc™3"Éét™„ ¡Â
+ Ž3"·9É™3;:\\Ò+Ë\€X]B^™3"„' ¯?¸
+rÉ„ ‡]Ý„ ÊdPÉÝÓÂSÿ¦[ÊFv"É¡>™1Ý„ ƒ„
+ ¼\€Â L\€Â! ½ÿ¦*¤+`°© h¥)¿?ÿl §ÍCSAVEÄÎ© Î©, XÿliÎ zÎCLOAD}Î© Î©  Uÿh˜hŠh  ¥8é…°FÈ‘HÈ‘È(liÎ ÓÎ.ERR±Î¡0ªJ>ÿ t†ˆH±$) Rÿ(ô?ÿlha ¨ÎDERR?Ò+¸„ ?¸H5¯Î¯$error¸
+ÿ1
+É‰d"“-1„ yfd"¡Ýd;\.*ïï;\ RÎ…STOREÒ+ï‹¸P"! +;ðCÈÿ\  ÍRDNEWÒ+bÍ‹bÍ‹é/ É[à3range!ôðÈô;Í‹É
+É;(Í¡¡IÌ\Ò+„ ¯$error \ pÍRDCHECKÒ+¢ÌpÉ¸"¸¡øc
+÷¯‰”Í÷¸?H5¸"¸P˜5‘4„+ ¸a"d¼˜5¯$:F˜5¸Z÷
+ÿ#?¡>ÓÂ¬ÿ”ÉÉ”Í\ S>ÿ©€ ÿ© …¥$8éd°JŽd¦$¤%© ºÿ¦(¤)¥&!3no file‹ÓÊ/ÊøcÉ„ÿ ™„ ŠÉÂ ŠÉ‹øcDÂ$ ™„ lÊÊŠÉøc“ËêËÂ ¸ŠÉ‹/ÊhËÌ¡\ 'Ì.RDÒ+ãÈ"H5pÉ€”ÉH5
+#ÉH5TÉÌ #?\ œÌID!Ò+
+ TÉäTÉÌ ?4¨ 
+ÿÿTÉP÷n ‘$RD.Ì TÉ#‹D\ CÌID"Ò+
+"ê#IÌ\ ûÌRDUSEÒ+ãÈ;\ ÍRDDELÒ+pÉ"¸FÉ;ZÉ;”É÷\Ò!DjË Ë±()¨ª© ‘&ˆûH8ŠÅ&…&æ'lÕË ßÊ‘&æ&Pæ'æ(Pæ)F$PNF%PJl0Ë ?ËCOMPRESS•Ë Ë±(I PèPJŠ‘&æ&Pæ'¢€lLËà€0hŠ‘&æ&Pæ'¢È LÊ‘&æ&Pæ'æ(Pæ)F$PBF%P¾à€0	Š‘&æ&Pæ'l0ËÒ+ŠÉÜ÷Ç¸J
+[„
+ é[„ëÿ#‹ÉÊ\Ò+Ü÷øcÉ?4¨ \ ˆËRAMR/WÒ+F™Ê„ þgÂx ‹à!ETEÒ+ÙÉ¸"Ü÷ÙÉ§ÉôÉD¤±É\ cÊSEARCHÒ+pÉ¸"÷¸"„ éa"É„èÿÅÉDÉ;\Ò+d\ IÈBINARYÒ+¸Z"÷™ÊÓ¸·9€J9lÊÊøcÊ\I€`IÀIà°É `)`I`°`é ` £ÊC>7ñÊ¡ LÊl  éÊ7>CË¡ ßÊl © S¥&…*¥'…+ˆ¢¥$P¥%PÈÈ© ll/Ëæ%`8¥&å*h¥'å+l ûÊEXPAN!/ÉRDÒ+5É™à3
+no Ramdisk\Ò+ýÈFÉ;\ kÉADRÒ+F#É\ ÓÉDATAÒ+ÙÉZ÷\Ò+Z#É\ ƒÉBEHINDÒ+”ÉZ÷\Ò+ZÉ[\ žÉBLK#Ò+
+É\ ½ÉIDÒ+
+É\Ò+”É
+#ÉøcÉZÉ[à3Ramdisk full\Ò+”ÉÅÉÝÉ\Ò+Ý™ÓDÉ"”Éa;Z÷¸”É;±É”É÷\Ò+ÙÉ"¸™ÓZÉ\ OÉDEL!!??¯$Aber ohne Handbuch?¯$und die Hilfe der?¯$FORTH-Gesellschaft?¯$bleibt FORTH ein ADVENTURE!?\ &ÈMEMTOP¿+ ý ºÈRAMDISKv-ÊÊÊÊÄ   (RD.*   ÝÈPLEN¿+1  éÈADR>Ò+ãÈ"É\ öÈ>ADRÒ+ãÈ"÷\ 	ÉADR@Ò+É"É\ ÉRD?Ò+ãÈ"¸¸"ðÈÉ1\ !"
+˜5\Ò+¸JP„5\Ò+
+$Ê?É¡Ý¤4\6 ïÆSÒ+;Ç‘4xÇZ¤4¸Ì #?¸J÷#ÄÇ\6 ×ÇNÒ+;ÇkÇF¤4¸"©*+aÄÇ\6 ›ÇKÒ+;ÇkÇaÄÇ\7 ¹ÇDÒ+é‹;ÇP¤4‹¡Éÿ
+ xÇ#Jÿ¹ÿZ¤4z#?ÄÇ\7 KÇCÒ+¼OÇ\7 ùÇBÒ+;ÇkÇ¸"ô÷
+˜5aÄÇ\
+ $ÇHELPÒ+PÂ?¯$Probier' ruhig weiter!8"@„
+ +"Æd"/lÀÉ„
+ "P÷d©*+¯$can't be DEBUGged33\5 ©ÄNESTÒ+dÄ""Æ€<Äå\5 •ÆUNNESTÒ+4Äå8Ä÷\5 °ÆENDLOOPÒ+dÄ"Z÷4Ä;\5 GÆ%UNBUGÃ5 ãÆ(DEBUGÒ+Æ±Ä<Ä÷@ÄåhÄ÷	ÄðÅ\5 ÄDEBUGÒ+;/øÆ\5 ÇTRACE'Ò+;/¸øÆ—Ã\Ò+¹>¸Z˜5¯$:\Ò+¸! <Ä÷ï8Ä24Ä2¸…±ÄhÄ2¼hÄ[P ÅP2ô2…¸dÄ;?hÄ"¤4¸Z˜5"¸
+˜5‘4©*+
+Ê?É¡Ý¤4W51$2D!2¸!2/(32/º/2o!2Ý!o!"ÊÄB2³B;/ŠÄã0(333\òÅ©Å…©…©l…l	 Ò+¸"/Ì+"@„ +d/¯?"@„ +J"÷"Æd/#?"@„ +Jô"÷"Æd/!	Bï‹D\1   CPUSHÒ+ïzôP³ô#É¸Bn lÄPP\Ò+
+rý {bTcí1‘4ï!ù//®ÿý 9\1 ÂÄRANGEÒ+8Ä÷¸4Ä;#¸"/\É„òÿn8Ä;\WÄ©ÿbÄcÄ¡…±…¥É…æ­2Ä…­3Ä…l 2.*UÄ\¥É…æ­bÄðæ­>ÄP¥M6Ä¥í7ÄU¥M:Ä¥í;Ä°Il9ÅŽ>ÄŽbÄŽcÄ¥2Ä¥3Ä †<Ä"„"!
+ºv÷?dòa@„< ºv÷Ã¸Q!"[„ €Q!"£ÿÜÿ é÷%JÜv‹ä#Jÿ¹ÿ¸Q!;d¸¾vä
+ã_—5`€\- @Ã	EDIEXPECTÒ+O`Q!;¡¸Q!"„
+ ¯?I?ÂîÿÞ‘4\- ¶ÃEDIBOARDž?La[alÃBÃ\/ VÂTOOLSv-ÈÈ™v0 ªtWCMPÒ+ô_p¸ep‹#_p#Ùp\.*  .*ÿ.*õ.*ë.*ß.*S.*G.*³Ì é÷! ¯$, saved
+1„ÿ ¯$	, loading?Ž3"™3"ÌÁ\, ñÁLÒ+™3÷øÁ\, ‰ÂRÒ+Ž3"øÁ\, ™Â+LÒ+Ž3"÷Â\, ©ÂVÒ+;/©*Ý„ ZÉ"\, ¼ÂVIEWÒ+ÀÂÝ„ ÂÂ ¯$from keyboard\,Ò+âv"ævJ÷\, i`CURLINÒ+
+b
+jb Ã
+b
+kb
+b ÃôÉ\- Ã	EDIDECODEÒ+
+@„
+ !ù/\* 9ÁSHOWLOADÒ+Ž32Ž3÷™32/ó`ß`;aÁã`\Ò+i÷¸Jêvä¸#JòväaJîvä\Ò+ZˆÁ
+“b¦\€Bv÷¯?¸¾vä¡ã_—5`Ý„ìÿ¡¡d?%y€Bvå¡ˆÁ¡/êä\+ ÁÁEDITÒ+KiŽ3;y[O`ªÁ
+¡d?¦[¯$Scr ¹5¯$Drv ¹5¸F1™„	 ¯$not ¯$changed¸Z1„ ì9¸
+1
+É„!›v3÷¸Vva;›v÷¸|va;›v÷¸Jv;›v3÷Pv;Jva÷Pva÷/ŸzÌ PVva"DïVv;/¸zÌ 
+1P|va"Dï|v;\Ò+è p`"ÉÓt`\¿+#$Ò+/dß`;’z´a\Ò+D!"Ý™„ ã`d¸!"Ç™3;’z´a~zŽ3"ôÉ„ Ž3;¦\¼¡d?í1:\“a€\* Ò](LOADÒ+¸!2¸!;Ý™ÓD!2D!;í1!§ÿ“\Ò+?$
+@É\.*’…‰†ŠŸ‹‡ˆŒ‘“”	ÿ.*¼\L\|\þ\þ^zóxóx`\Ë\\›\oy%yhz"zðzº[®yºyFy¼xÛx‘xÔx!x!x!x x-x!xÑyyy`zÊzzxå_© S¤$ˆH¹Ò_IÿðE&Pô˜
+¨¹™_h¹š_lÒ+êvä‚6
+€¡Éÿ Jÿ¹ÿ\Ò+êv2¡`¼`¡`¼`\Ò+¸“É„ `™\( [(PAD.*  Ò+è ¸p`;"P ÏPP\Ò+ïµ2„ ï ÏÉ„ ïï;ÂèÿP\ ,Ï‰(RESTORE"Ò+Ø$‹„ P,(ïjÏ»d€\ ÎÏHRESTORE"Ò+6!ÚÏ\$\ ˜ÏDEVICE.*  ¯Ï	COMMODOREÒ+¼¸Ï;\ ¾ÏFLOPPYÒ+
+¸Ï;\ VÏBLOADÒ+¸Ï"{ÎZÎÚÏload\ ìÏBSAVEÒ+¸Ï"ÂÎZÎÚÏsave\ 	ÐN"Ò+
+"ê#\ &ÐSAVE"#/P·Ì\s 'ÎINFRONTÒ#/PIÌ\s <ÎCOLOREDÒ#‹‚Ì÷ä\t rÎ	SPRCOLORSÒ#~Ì#ä~Ìä\t ÊÎ	SETSPRITEÒ#ÜP
+\ÎÓÍÜÍÎÖÌIÌï
+ÁÌ·Ì\."†Î."–•."‹•."•Ò#
+Ä}\u †ÎHEADINGÒ#¼Î"\u OÎ
+SETHEADINGÒ#¼Î;\u ãÎRIGHTÒ#¼Î"‹É/Èx¼Î;\u úÎLEFTÒ#¼Î"÷/Èx""BKìÐw )Ñ"TSÑÒ#ØÌ.ôÉ¤,#77\Ò#69Ñ\\Ò#9ÑForth Gesellschaft e.V.\Ò#9Ñ*** ultraFORTH-83 ***\Ò#9Ñ(c) 1985/86/879Ñ!Bernd Pennemann  Klaus Schleisiek9ÑGeorg Rehfeld  Dietrich Weineck9Ñ
+Claus Vogt\Ò#9Ñrainer mertins9Ñantilopenstieg 679Ñ200"0  hamburg 54\Ò#¯7PÉ„øÿ\ qÈ	.MESSAGE1Ò#ô_:7×Ñ7“Ñ79ÑDas Kopieren und Verschenken9Ñ"dieses Programms ist ausdruecklich79Ñ* erlaubt ! *79ÑJeglichen Missbrauch zum9ÑZwecke der Bereicherung9Ñwerden wir nach besten Kraeften9Ñverfolgen und verhi"ndern.79ÑDie Mitglieder deryÑ`8Ò\ hÒ	.MESSAGE2Ò#:79ÑDu hast jetzt ein9Ñÿarbeitsfaehiges System mit9ÑEditor, Debugger und Assembler!9Ñ Nach Einlegen einer formatierten9ÑDiskette kannst Du es mit9ÑSAVESYSTEM <name> (z.B. FORTH)9Ñals Programmfile "abspeichern.7×Ñ79ÑBezug und Mitgliedschaft in deryÑ9Ñueber:7ûÑ8Ò\ nÓLINIENÒ#ÊÆóÈçÈ“É›Ç/@¡É% /@¡É %
+Fq¡åÊ
+#û¹
+#û¹\ ÎÔMOIREÒ#ÊÆ É·È“É›Ç/@¡É %
+F/?%É¡åÊPû¹
+G¡É /?
+F%É¡%åÊFû¹\¡ ´ÔSHAPES."ªªª•uv•uv•ª"ª•€ •€ •ª •u`•u`•ª •€ •€ •€ •€ •€ •€ •€ ª€          ªª€	u`%ux•Év•‚v•‚v•‚v•‚v•‚v•‚v•‚v•‚v•‚v•‚v•Év%ux	u`ª€         ªªª€•u`•ux•©v•‚v•‚v•©v•ux•u`•¥`•¥`•‰x•‰x•‚v•‚v•‚v•‚vª‚ª         ªªªª•uv•uvªvªv v v v v v v v v v v v v ª          ªª‚ª•‚v•‚v"•‚v•‚v•‚v•ªv•uv•uv•ªv•‚v•‚v•‚v•‚v•‚v•‚v•‚vª‚ª         ª¡ ÕINITÒ#È:7çÈÃÉçÈ½É
+¡É Õ%
+@$÷%ÝÌJ¹ÛÈ«ÈÖÎ
+¡É %¡¡«È%’ÎJ¹
+¡É %Î%EÍ%ÖÌ·Ì%0ÎJ¹\¢ zÖYPOSÒ#ˆÍ€\¢ MÖXPOSÒ#ˆÍÊ\¢ ÞÖDISTANCE¿#ÿ ¢ ïÖ1+0-1Ò#¸™‰‹ƒ3#1\¢  "	×FOLLOW-SPRITEÒ#P
+åÖÇåÖúÖ÷ôÉ×÷/xK9Í‚.TÖÇTÖôÉ×÷ï
+\Í‚.\£ ×FOLLOW-CURSORÒ#P
+åÖÊ7
+$
+!÷ôÉ×÷9Í‚.TÖz7
+$
+;÷ôÉ×÷ï
+\Í‚.\£ Ð×FOLLOWÒ#‚.¸„ .×Â €×\£ D×KILLSPRITESÒ#¡ÁÌä\£ ã×SLIDE-SPRITESÒ#
+¡É %M×%"NODRAWÒ#Ç:7\v +Ð"LT!Ïv >Ð"RTÏv gÐ$SETHðÎv pÐ"PDÝÏv [Ð"PUïÏw ÄÐTLINEÒ#P
+P
+P
+LÅï
+LÅï
+LÅï
+LÅåÊ\w ÍÐFORWARDÒ#P
+´Î"¸Î"ô¼Î"ñÃDÎ÷¸´Î;ô¼Î"·Ãï
+DÎ÷¸¸Î;ÀÎ"„ ÕÐÂ ÞÞ\w ‘ÐBACKÒ#¤›Ð\w åÐTURTLESTATEÒ#ÀÎJÆJ¸
+1‹
+h\w öÐ"FD›Ðw  Ñ##¡É
+ %M×J¹J¹\TASK   ØÅTNEXT4Ø2 [Ø(NEXTSTEP[y[[2 ÅØÃW1-tØ2 ²z$STEPÞz134,13ÏØLINE“z1 ŠØ%CPULLuz0 ˜Ø'#SPACESqz0 ¤Ø%LAST'mz0 °Ø%TRAP?iz0 ¼Ø%NEST?ez0 FØ#IP>az0 PØ#<IP=z0   "(W9z	 ™v&RANGE?¤vb b {‚<{ÿÿøÚ øÚøØ {$_D›úMODEs _GETDISKÒ#7¯Bi 5INITÒ+??¯$	Tape2.00 òÓ/0Ìã08¼0d&Õ"„ &Õ÷ÂÐ\¥³d8¥å²e¥žå³f© ghijÿ©…`…Â©2…_©k…Á©ÿ…Y©Ø…Xÿ©	ÿ©* XÒ ¢Ð$­©Ø…Y©4…Xÿ¥²…_¥³…`¥…Á¥ž…Â?ÿ©E XÒ ¢Ðl­Ð2 Ò	SUPERTAPEÒ+
+¸Ï;/°Ñ/.;/=Ó/0;¯$ST2.20 \Ò+¸!4Ï+Ð\2 æÓBTLÒ+/‚Ð/"
+}Ò\Ò+è 
+?4¨ Ô
+ÿè ‹D‡ÒÌ è 
+
+÷‹Dè 
+\2 'ÔSTSAVSYSÒ+¸Ï4Ï¼¸Ï;-Ô9ÔÐ
+¸Ï;­
+É-Ô€ÔÐ-ÔÊX +ÐÐ\ ÉÔc\IFÒ+$õ.™„ ó$€\ ªÔ
+SAVESYSTEMÒ+Ž34Ï¼Ž3;™34Ï¡™3;|z4Ï|z÷p`4Ïp`÷e>¸Ï"
+É„ ÔÔd­
+ÉX +ÐÐ\ DÔAUTOLOAD.*   ÕTAPE".Ó>ÿ`¥®Ið	8)Pl¤ñº†Z Ó ã°äØ Äã ã ¢Ð¥­b¥²c¥³d8¥å²e¥žå³f© ghijÿ©…`…Â©2…_©k…Á©ÿ…Y©Ø…Xÿ©	ÿ©* XÒ ¢Ð$­©Ø…Y©4…Xÿ¥²…_¥³…`¥…Á¥ž…Â?ÿ©E XÒ ¢Ðl­Ð2 Ò	SUPERTAPEÒ+
+¸Ï;/°Ñ/.;/=Ó/0;¯$ST2.20 \Ò+¸!4Ï+Ð\2 æÓBTLÒ+/‚Ð/"ð
+­c…_­d…`­eÅ_…Á­fÅ`…Â©oH­b0©µH?ÿ©E ÿÐl­Ð ¿Ñ  ¿Ñ l, tÐG----.*g726e “Ò fw¥YH©,	ÿðû ‘Ð¥i…°©,	ÿðû ‘Ð¥i…lTÒ¥]É …]¥^É …^¥XHˆP¾`h¢@©…w ÒJPöÈ…w Ò  „]„^±_…w “Òæ_Pæ` “Ò¥_EÁPê¥`EÂPä¥]¦^…w ÒŠ…w ÒlÒ©  ™2ˆPú¤«?ÿˆ0±¯™2l"^  QÐˆPú…ÿ¥]…Ã¥^…Ä QÐ QÐ¥“P¥ÿ‘_ QÐ QÐ¥ÿQ_ðè QÐ QÐæ_Pæ` QÐ QÐ…ÿ¥`EÂPC¥_EÁP½¥ÿEÃð	¥	`…l°Ð  QÐˆPúEÄPëà ð©…l¶Ð`…“© …¥®Iðlpðº†Z ã°èØ¥“h© …“ `ñ ã ¢Ð Äã ‚Ð©µH©* ÿÐ Ã Jë  ¹2 RÿHÀPõ ÿHD«ð(?ÿ±¯>ÿY2ðîI?ðê­b)ð©€…l³Ð ØãlRÑlüÑÈ…“ ‰ñ¥´…_¥µ…`¥­"RAMDISKÒ+pÉ§ÉTÉÌ Ð\ 6ÐLOADRAMDISKÒ+5É™„
+ bÍCÈxÍpÉ‘$RD.Ì ôÏ€\©…`…Â©2…_©k…Á`­Hÿ© ÿ©	ÿ`¢   JPýˆPú`© ,©,©,©,©>ÿh °ã Øã¦ZÈš¦_¤`Ix`©,	ÿðû¥)Exð…xÆw¥wæ]Pæ^¥)Exðø…x ‘Ð¥w`…y¢  QÐIPù¢  QÐˆPúIPëJPñ  QÐˆPúIðôEyðIEðT©…l°Ð© …]…"¼Î;\u ÿÏ"CSÊÆu 7Ï"PCYÉu @Ï"BG½Éu iÏ*FULLSCREEN›Çu rÏ+SPLITSCREENÀÇv ÃÏXCORÒ#´Î"LÅ\v ÕÏYCORÒ#¸Î"LÅ\v ˆÏSETXÒ#qÅ´Î;\v ›ÏSETYÒ#qÅ¸Î;\v ®ÏSETXYÒ#µÏ¢Ï\v AÏPENDOWNÒ#ÀÎå\v SÏPENUPÒ#ÀÎ÷\v çÏHOMEÒ#
+ 
+`IÏ
+zðÎÝÏ\v ùÏDRAWÒ#ÊÆ Ð
+ÀÇ\v Ð#
+
+ ž(2064)    êl9êl99l{ J. { { £b  
+ M;†:¨+åa                                                                                                                                                                                                          #tte Diskette #¹-¯
+einlelD› J..Ù.Ù4Ú4Ù  
+ S;!r¨`	Æ                                                                                                                                                                                                          #INPUT<$ ù	ERRORHANDLER<$ 
+VOC-LINK<$ ÿ
+UDP<$ÿ *
+SP@=
+¥…$¥…%¢$¥8é…°Fµ‘µ ¢ l  5
+SP!Ç
+¡ª±…†¢ l	  _
+UP@
+¢lg
+ ×
+ƒUP!Ž
+¢±•ˆ±• ¢  ¥É…æl	  †
+RP@µ
+¢lg
+ ­
+ƒRP!D
+¢l
+ ¼
+‚>RR
+¥8é…°F¡±‘l
+ K
+‚R>ñ
+¥8é…° ¯„3 €7¯Kill the Demo? n/y ¯7§ÿ
+YÉ¸‰„ .7.7.7„˜ÿ‡Ú\ ÜÚDEMONSTRATIONÒ#£%È/BÚã(0/‡Úã(Ï8mÚ`‚.ZÖÚ;/äÚã((+/¨+
+;/ 	ã(Ì+tÒ×ÔÇ¯7€¼ÔÇ¯7€¯helpz7Ç¡d7Ø+\                                                                                #É…æl	  ßCTOGGLEÒ#ÜJn‹ä\ÿ @$¡…$±…%±$‘¡$l ÿ !=¡…$±…%H±$H± ‘$lôÿ 7+!]¡…$±…%H±Á$$H± Ñ$lo vDROP
+ ÙSWAP±ª ±…$Š‘¥$ ‘H¢ ±…$¡‘ˆ¥$l  „DUPº¥8é…°F ± ‘H±ˆl  ²?DUPß¡Pl	 lº VOVERö#0•¡E$±å%l‡' QU<¡…$±…%¥É…æ¡E$±å%°l‰lŒ( ý>Ò#‹U\( )0>Ò#¤ƒ\( 70<>Ò#™‰\( fU>Ò#‹\( v=Ò#É™\( ÅD0=Ò#™\( ÓD=Ò#µõÙ\( ƒD<Ò#éÉ„ -ÊÊÂ Þ\Ò#9„ ‹€\) ”MINÒ#é-µ\) EMAXÒ#éUµ\) W#â+ùH¡Ñ‘ˆ± Ñ‘l™
+  óORH¡‘ˆ± ‘l™
+  AND3H¡1‘ˆ± 1‘l™
+  +XORpH¡q‘ˆ± q‘l™
+! h-ËH±8á‘H± ñ ‘l™
+! ÅNOT‹ŠáŠñ‘l	 ! ƒNEGATE¦8°ã" ›DNEGATE·H8Šñ‘HŠñ‘Šá Šñ‘l	 
+ª¨ˆ±™$ ˆøŠÅ…æ¢  `" «#	… l	 + B†(+LOOPý¡Á±Ñ‘Êq¥É…æ(Dl	 , òI'  ¥8é…°F±HHÑˆ±HHÑ ‘l	 , !Js PR- m†BRANCHÄ¥Á…$¥Ñ…¥$…l	 - y‡?BRANCH†¡¥É…æ(ðKld. Ú>MARKÒ#X¡\. ž>RESOLVEÒ#XôÉ‹;\. ²<MARKÒ#X\. M<RESOLV#$ àOFFÒ#¡‹;\% ñ„CLIT¥8é…°F¡Š‘æPæl	 % ƒLIT1¥8é…°F±‘¡¥É…æl	 % )GLITERALÒ#¸/ ÿ1„
+ 6/d6
+\& t0<…±©ÿ$Š‘l & ~0=›¡ðèPé& ”UWITHIN±© S ¡E$±å%°
+¡E&±å'°½lŒ' ¥<W¡…$±…%¥É…æ¥%q#EÒ#XÉ\. Ý?PAIRSÒ#Éà+unstructured\I h©ÿlh© ª¥8é…°FŠ ‘È¢ l / ôCASE?b© S¥$AP	¥%QPl‰Šl0 8BIFÒ#6„¦¼\0 \DTHENÒ#=¼ý½\0 ÏDELSEÒ#¼ý6Â¦‹½“\0 „EBEGINÒ#UF\0 ¡EWHILEÒ#FýF6„¦/þÿH\Ò#è¸/þÿÉ„
+ €½#                                 ."ultraFORTH-83 3.80-C64  ÿÿ±…­ÿÿ…¥É…°Ìÿÿæ°ù   	END-TRACEÅ	©¥…©…©É…©…l	  w	RECOVER."È…È…¥PFFlÒ# Ú	NOOP	  ™	ORIGIN¿# ¤	S0<$ ³	R0<$
+ ½	DP<$ G	OFFSET<$ Q	BASE<$ ß	OUTPUT<$ ë	#                           Í‚¤ ý×DEMO¿#4Ù¤ 8ÚSLIDEÒ#?Ú×`ÁÖØÂüÿ\¤ eÚENDSLIDEÒ#ñ×?Ú×`™_\."_Ú	 _ÚKILLDEMOÒ#ñ×ÊÚô_zÓ/¶?ã(0/ 	ã(Ï8/ 	ã(˜8/
++ã((+]È/$_E5e6
+_\Ò#ÖÚ"¡Ý¸Î·È\Î“ÖÚ[ÁÌ*ñ×¶?\Ò#í)7ïù'1"„ ¯
+ compilingÂ
+ ¯ uF83ÖÚ"ƒ¸#F¡±‘©Å…æl	  ê
+R@¥8é…°F±‘¡l  …RDROP 1EXITf¡…±…l =UNNEST^¡…±…l s?EXITÕ¡¥É…æ(P¾l	  ËEXECUTE™¡…±…¥É…æl  PERFORMÒ#"—\ ±C@L¡…$±…%© ‘¡$l  EC!æ¡…$±…%H±$ˆ¥#gýe—dd
+ze‘$u2:13,0,Ì ýeøfýe—d‚6yf\Ž ]gDISKOPENÒ+d
+Ðe
+#áe—dyf\Ž ¸g	DISKCLOSEÒ+d
+ˆe—d\Ž Yg1541R/WÒ+‹à3no filezd6¸d;P[„ÿ ¹5¯$beyond capacityÊdCg„ €Êd¡‹33Z£ÿÉÿ. €é%„
+ îf&gÂ îfËgPg÷ï¸„ „Jÿ¹ÿzÞåg\ ôg#¥8é…°F ±H± ‘l	  íROT ±…% ± ‘ ±…$¥%‘ ¥$‘H±…%¡‘ ±¥%‘ l	  -ROTÒ#\ sNIPÒ#‹€\ ÄUNDERÒ#‹ô\ ÔPICKÒ##3;
+÷"\ †ROLLÒ#¸P
+;
+¸aï
+#3ò€\ 2SWAPÒ#P
+ï
+\ À2DROPô V2DUPÒ#ôô\  #UMAXÒ#éµ\) éUMINÒ#é[µ\) üEXTENDÒ#¸ƒ\) DABSÒ#„ µ\) "ABSÒ#„ ¤\Ò#9ï
+a¸P
+P
+‹P
+P
+\* 7ƒ(DOÒ#ôÉi\* Ã„(?DOÒ#ôÉÝ„ iï
+¸"÷P
+€\* ÕBOUNDSÒ#ô÷‹\* š‡ENDLOOP»©l+ ¯…(LOOPL©Á±É ‘l	  ±…ˆ±#D+÷© SH±Å&‘H±Å'‘¡Å$ ±Å%‘l	 # ð1+%©Á°l ±É ‘l	 # 2+c©Pà# <3+p©PSv©PM\©PG# i1-É8¡él ±é ‘l	 # Â2-‡à$ €TRUE¿#ÿÿ$ ŒFALSE¿#  $ ™"-1“$ §!0¡$ °1¿# $ ¸2¿# $ B3¿# $ L4¿# $ VONÒ#“‹;\

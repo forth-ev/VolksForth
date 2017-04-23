@@ -1,0 +1,786 @@
+VolksForth Readme
+
+Version 1.0
+10. August 2005 (cas)
+
+VolksForth ist ein 16bit Forthsystem der Forth Gesellschaft e.V. Die
+Hauptentwicklung am VolksForth fand von 1985 bis 1989 statt. Das
+VolksForth Projekt wurde 2005 wiederbelebt, um ein ueberschaubares
+Forth-System fuer Systeme mit begrenzten Systemresourcen zur Verfuegung
+zu stellen.
+
+Einige moderne Forth Systeme sind von VolksForth beeinflusst worden oder
+von VolksForth abgeleitet worden (GNU-Forth, bigForth).
+
+Die aktuelle VolksForth Version ist 3.81. Die Arbeit an der Version 3.90
+hat begonnen.
+
+Derzeit stehen VolksForth Versionen fuer folgende
+Rechner/Betriebssysteme zur Verfuegung:
+
+VolksForth MS-DOS (Intel x86 Architektur i8086-ia64)
+VolksForth 6502 (Commodore 64, Commodore Plus 4)
+VolksForth Z80 (CP/M, Schneider CPC)
+VolksForth 68000 (Atari ST)
+
+Hinweis zum Copyright
+
+Die VolksForth Quelldateien unterliegen der
+BSD Lizenz - http://www.opensource.org/licenses/bsd-license.php
+
+Das Handbuch unterliegt dem Copyright (c) 1985 - 2005 Forth Gesellschaft
+e.V. ( Klaus Schleisiek, Ulrich Hoffmann, Bernd Pennemann, Georg Rehfeld
+und Dietrich Weineck).
+
+Handbuecher, Programmdateien und Quellcode zum VolksFORTH sowie
+Informationen zur Forth Gesellschaft finden Sie auf dem Webserver der
+Forth Gesellschaft
+
+http://www.forth-ev.de/
+
+Informationen und Hilfestellung zur Programmiersprache Forth finden Sie
+im Internet, ausgehend von der Webseite der Forthgesellschaft, oder im
+Usenet im Forum de.comp.lang.forth (ueber Google Groups:
+http://groups.google.de/group/de.comp.lang.forth )
+
+Hinweise zum VolksForth MS-DOS
+
+* Voraussetzungen
+  PC kompatibler MS-DOS/PC-DOS Rechner mit min. 64KB Speicher
+  MS-DOS/PC-DOS ab 2.11 
+
+* Installation
+  Kopieren Sie die Dateien im Verzeichnis "Files" in ein beliebiges Verzeichnis auf
+  dem PC.
+
+  In der Distribution finden sich folgende Files:
+
+  KERNEL   COM       Der volksFORTH Kern, der von KERNEL.SCR erzeugt wurde
+  MINIMAL  COM       Minimalsystem fuer die Anpassung an "Fastkompatible"
+  VOLKS4TH COM       Normale Softwareentwicklungsumgebung, mit VOLKS4TH.SYS erzeugt
+
+  ANSI     VID       Videodisplaytreiber auf der Basis des ANSI.SYS MS-DOS Treibers
+  BIOS     VID       Videodisplaytreiber durch BIOS-call $10
+  MULTI    VID       Multitasking Videodisplaytreiber durch BIOS-call $10
+
+  MINIMAL  SYS       Loadfile, um aus KERNEL.COM MINIMAL.COM zu erzeugen
+  VOLKS4TH SYS       Loadfile, um aus KERNEL.COM VOLKS4TH.COM zu erzeugen
+
+  GRAPHIC  PRN       Druckerinterface fuer den IBM-Graphic Printer
+  M130I    PRN       Druckerinterface fuer den M130i
+  NEC8023  PRN       Druckerinterface fuer den NEC 8023a
+
+  DISKS    CFG       Konfigurationsfile fuer die Speicheraufteilung
+  SYSTEM   CFG       Konfigurationsfile fuer die Floppylaufwerke
+
+  ASM      SCR       8088/86 Postfix-Assembler
+  BLOCKING SCR       Hilfsprogramm, um physikalische Bloecke in Files zu uebertragen
+  DOUBLE   SCR       Definitionen fuer doppeltgenaue (32 bit) Zahlen
+  EDITOR   SCR       Full Screen Editor
+  EXTEND   SCR       Allgemeine Systemerweiterungen
+  F83ASM   SCR       Der Assembler aus F83
+  INSTALL  SCR       Definition der Befehlstasten des Editors
+  KERNEL   SCR       Sourcecode des volksFORTH Kerns
+  PRIMED   SCR       Primitivsteditor zur Anpassung an "Fastkompatible" Rechner
+  SEE      SCR       Der automatische Decompiler
+  SERIAL   SCR       Die serielle Schnittstelle
+  TASKER   SCR       Der Multitasker
+  TIMER    SCR       Der Timer im IBM-PC
+  TOOLS    SCR       Der manuelle Decompiler, der Tracer und DUMP-Utility
+
+  Zuerst sollte versucht werden, das Programm VOLKS4TH.COM zu starten. Meldet 
+  sich das System auf dem Bildschirm mit einer Statuszeile in der 25ten Zeile, 
+  so ist der Rechner kompatibel genug fuer den Multitasking Videotreiber 
+  MULTI.VID. Sollte jedoch keine Meldung auf dem Bildschirm erscheinen, so 
+  handelt es sich leider nur um einen "Fastkompatiblen" Rechner und es ist 
+  etwas Arbeit erforderlich, das volksFORTH anzupassen. 
+
+  Der naechste Versuch, MINIMAL.COM zu starten, sollte eigentlich erfolgreich 
+  sein. Wenn das nicht der Fall ist, dann handelt es sich noch nicht einmal um 
+  ein ordentliches MS-DOS Betriebssystem, da von dieser FORTH-Version 
+  keinerlei Routinen im ROM des Rechners direkt - unter Umgehung des MS-DOS - 
+  benutzt werden. 
+
+  MINIMAL listet nach dem Starten eine kurze Beschreibung des Primitivst-
+  editors, der nun dazu benutzt werden kann, das Loadfile VOLKS4TH.SYS so zu 
+  veraendern, daá damit ein System mit weniger anspruchsvollem Videodisplay-
+  treiber erzeugt werden kann. 
+
+  Voraussetzung dazu ist, dass durch das Systemfile CONFIG.SYS (siehe MS-DOS 
+  Handbuch) der Devicetreiber ANSI.SYS beim Booten des Systems installiert 
+  wurde. Existiert auch dieser nicht, so ist die Benutzung des Full-Screen 
+  Editors in der ausgelieferten Form nicht moeglich. Ist ANSI.SYS ins System 
+  integriert, so kann mit der Anpassung des Forthsystems fortgefahren werden. 
+  Nach starten von MINIMAL.COM ist folgendes einzugeben: 
+
+  USE VOLKS4TH.SYS   1 LIST
+
+  Danach kann durch das NEW Kommando (siehe Beschreibung des Primitivst-
+  editors) im File VOLKS4TH.SYS die Zeile, die 
+
+  "include multi.vid" enthaelt, durch "include ansi.vid" ersetzt werden.
+
+  Dann muss auch noch im File EDITOR.SCR auf Screen 1 eine entsprechende 
+  Aenderung vorgenommen werden, indem die Ladeanweisung fuer das Multitasking 
+  Display "auskommentiert" wird und entsprechend die Ladeanweisung fuer das 
+  ANSI-Display aktiviert wird dadurch, daá in der ersten Spalte der "\" 
+  (siehe: Interpreter-Worte) umgesetzt wird. 
+
+  Danach wird mit BYE ins Betriebssystem zurueckgekehrt. Die Befehlszeile
+
+  KERNEL INCLUDE VOLKS4TH.SYS
+
+  erstellt dann ein neues File VOLKS4TH.COM, das nun die ANSI.SYS Steuer-
+  sequenzen fuer die Cursorsteuerung benutzt. Dies dauert einige Zeit, da 
+  insgesamt ca. 15kByte Objectcode compiliert werden muessen. 
+
+  Nach dem Ende des Ladevorgangs meldet sich das System mit einem Piep und es 
+  sollte auch in der 25. Zeile eine inverse Statuszeile angezeigt werden. 
+
+  Nun kann noch mit Eingabe von INCLUDE DISKS.CFG die aktuelle Speicher-
+  kapazitaet der Diskettenlaufwerke festgelegt werden. Dies ist jedoch nur dann 
+  notwendig, wenn im DIRECT-Modus (siehe: Fileinterface) auf die Disketten 
+  zugegriffen werden soll. Danach evtl. mit SAVESYSTEM VOLKS4TH.COM die 
+  Aenderungen permanent auf die Disk zurueckschreiben. 
+
+  Damit ist die Anpassung an den Rechner beendet.
+
+  Der Videodisplaytreiber BIOS.VID benutzt - wie auch MULTI.VID - den BIOS-
+  call $10. Da jedoch keine Ruecksicht auf Multitaskingbetrieb genommen wird 
+  (Nur eine Task kann den Bildschirm steuern), ist die Bildschirmausgabe 
+  schneller.
+
+  Als letztes bleibt dann noch die Anpassung an den Drucker vorzunehmen. Dafuer 
+  gibt es im System bereits die drei Files
+
+  GRAPHIC.PRN   M130I.PRN   NEC8023.PRN.
+
+  Sollten Sie einen Drucker haben, der noch andere Steuersequenzen benoetigt, 
+  so muessen Sie sich fuer Ihren Drucker auch ein entsprechendes .PRN File 
+  schaffen. Als Vorbild kann dabei jedes der drei vordefinierten Files dienen; 
+  es sind lediglich die jeweils aktuellen Werte fuer die Steuersequenzen an 
+  passender Stelle einzutragen - dies erfordert jedoch schon einige 
+  Vertrautheit mit Forth. Sollten Sie dazu nicht in der Lage sein, so hilft 
+  Ihnen vielleicht ein alter Forth-Hase in ihrer Naehe, mit dem Sie viel-
+  leicht die Forth Gesellschaft eV ( http://www.forth-ev.de) in 
+  Verbindung bringen kann. Bitte denken Sie auch daran, neue Druckertreiber an 
+  die Forth Gesellschaft einzusenden, damit diese in das volksFORTH-Paket 
+  aufgenommen werden koennen.
+
+  Der passende Druckertreiber muss dann in dem Loadfile VOLKS4TH.SYS 
+  so eingetragen werden, wie das beim Videodisplaytreiber beschrieben wurde.
+
+* Emulator
+ * Windows 9x, ME
+   VolksForth 3.81 funktioniert sollte in der reinen DOS Umgebung dieser Betriesb-
+   systeme ohne Probleme funktionieren
+ 
+ * Windows NT, 2000, XP, Vista
+   VolksForth MS-DOS sollte auch in der Dos Umgebung moderner Windows Systeme laufen.
+   Wenn Sie Probleme mit dem VolksForth unter Windows NT, 2000, XP oder Vista bemerken,
+   empfehlen wir den Einsatz eines DOS-Emulators wie Dos-Box 
+   (http://dosbox.sourceforge.net/)
+
+ * OS/2 / eComStation
+   VolksForth 3.81 funktioniert ohne Probleme in der Dos-Umgebung von OS/2 und eComStation
+
+ * Unix / Linux
+   Unter Linux / Unix Systemen auf x86 Hardware Basis kann VolksForth unter der DosEmu
+   Umgebung ( http://www.dosemu.org ) ausgefuehrt werden. Auch der kommerzielle PC-Emulator
+   VMWare eignet sich gut um eine MS-DOS/PC-DOS Umgebung zu erstellen. Unter anderen System-
+   Platformen (MacOS X PowerPC, Solaris, HP/UX) sind die PC-Emulatoren Qemu 
+   (http://fabrice.bellard.free.fr/qemu/) und DosBox (http://dosbox.sourceforge.net/) zu
+   empfehlen.
+
+  Als freie Alternative zu MS-DOS / PC-DOS empfielt sich FreeDOS ( http://www.freedos.org/ ).
+
+Die Forth Live-Linux CD-ROM (erhaeltlich im Downloadbereich der Forth
+Gesellschaft Webseite) enthaelt die aktuellen Versionen des VolksForth direkt
+ausfuerbar auf der Linux CD-ROM, inkl. der VolksForth Handbuecher.
+
+Viel Spass mit VolksForth
+wuenscht das VolksForth Team
+
+
+---------------
+
+Weitere Informationen:
+
+volksFORTH 3.81 fuer den IBM-PC und Kompatible wurde aus dem volksFORTH 3.80 
+fuer CP/M Rechner entwickelt. 
+
+Es wurden wenige Aenderungen am Kern des Systems vorgenommen, diese beziehen 
+sich hauptsaechlich auf Stellen, die in der Version 3.80 unelegant waren und 
+fuer die inzwischen bessere Loesungen in der Forth-Community erarbeitet worden 
+waren. 
+
+Grundlegend Ueberarbeitet wurde das File-Interface. Auf der Benutzerebene 
+stehen die gleichen Worte, wie im volksFORTH 3.80 fuer den ATARI und CP/M zur 
+Verfuegung, die darunterliegende Implementation wurde jedoch grundlegend 
+geaendert, so dass jetzt endlich in Forth auch sequentielle Files, die nicht 
+die starre BLOCKstruktur haben, manipuliert werden koennen. Damit ist es 
+endlich moeglich, auch volksFORTH fuer kleine Hilfsprogramme zu verwenden, die 
+mit anderen Programmen erstellte Files "bearbeiten" und durch den Befehl 
+SAVESYSTEM als "standalone"-Programm abgespeichert wurden. 
+
+Besonders weitreichende Moeglichkeiten erschliessen sich dadurch, dass beim 
+Aufruf von volksFORTH auf der Betriebssystemebene noch eine ganze 
+Kommandozeile mit Uebergeben werden kann, die dann unmittelbar nach dem 
+Booten von Forth ausgefuehrt wird. Durch die Systemvariable RETURN_CODE kann 
+nach Verlassen des Forthprogramms ein Wert an MS-DOS zurueckgegeben werden, 
+der mit dem Batch-Befehl ERRORLEVEL abgefragt werden kann.
+
+Darueberhinaus ist es auch moeglich, mit dem Befehl MSDOS aus dem Forth heraus 
+eine weitere COMMAND.COM shell aufzurufen und spaeter mit EXIT wieder ins 
+Forth zurueckzukehren, wobei der Bildschirm, der zum Zeitpunkt des Aufrufs 
+bestand, wiederhergestellt wird. Selbstverstaendlich kann neben MSDOS selber 
+auch jedes andere beliebige Anwendungsprogramm aufgerufen werden - auch eine 
+weitere Inkarnation des Forth Systems - so daá sich mit diesen Moeglichkeiten 
+die Begrenzungen, die in dem beschraenkten Adressraum von 64k liegen, 
+ueberwinden lassen. Auch komplizierte Overlaystrukturen sind nicht mehr 
+notwendig, es werden einfach aus einem zentralen "Verwaltungsprogramm" 
+heraus spezielle Forth-Anwendungsprogramme aufgerufen. 
+
+=============================================================================
+
+Das Handbuch unterliegt dem Copyright 
+(c) 1985/1986   Ulrich Hoffmann, Georg Rehfeld und Dietrich Weineck. 
+(c) 1988/1989   Klaus Schleisiek, Joerg Staben, Klaus Kohl
+
+
+Informationen zu Änderungen genueber frueheren VolksForth Versionen und
+Aenderungen gegenueber dem Handbuch:
+
+ONLY
+  Dieses Wort wurde bisher nur durch einen undurchsichtigen "patch" im 
+  System realisiert. In dieser Version 3.81 ist ONLY nun eine ganz 
+  gewoehnliche :-Definition. Dazu wurde das Vokabular ROOT im Kern neu 
+  definiert, das alle die Definitionen enthaelt, die frueher im Vokabular ONLY 
+  enthalten waren. Jetzt koennen einfach durch ROOT DEFINITIONS in dieses 
+  Vokabular - das immer als letztes zu durchsuchendes Vokabular in die 
+  Suchreihenfolge eingefuegt ist - weitere Worte hineindefiniert werden.
+
+INTERPRET
+  Auch INTERPRET benoetigte bisher zur Implementation einen sehr mysterioesen 
+  Systempatch. Dank einer Idee von Mike Perry ist auch diese letzte Ecke nun 
+  abgeschliffen: Das deferred Wort PARSER enthaelt entweder den Code fuer den 
+  Interpreter oder den Compiler (durch [ und ] umzuschalten) und Interpret 
+  ist nun eine BEGIN ... REPEAT Schleife, in der das naechste Wort aus dem 
+  Quelltext geholt wird. Ist der Quelltext erschoepft, so wird die Schleife 
+  verlassen, andernfalls wird PARSER aufgerufen und dadurch das Wort ent-
+  weder interpretiert oder compiliert. Nun ist es auch sehr viel einfacher 
+  als vorher, selber eigene Worte zu definieren, die in PARSER eingehuengt 
+  werden. Dies ist immer dann sinnvoll, wenn der Interpreter in einem 
+  Anwendungsprogramm anders als der uebliche Forth-Interpreter arbeiten soll.
+
+>INTERPRET
+  Konnte gluecklicherweise gestrichen werden.
+
+QUIT QUERY
+  Bisher enthielt QUERY ein BLK OFF. Das war an dieser Stelle aber am 
+  falschen Platz und gehoert ins QUIT, wo es aber vorher nicht war. Das war 
+  bisher kaum aufgefallen, da QUERY eigentlich nur in der QUIT-Loop benutzt 
+  worden war.
+
+CAPITALIZE
+  War von den Parametern her so spezialisiert auf die Benutzung in NAME 
+  zugeschnitten, dass es darueber hinaus eigentlich sinnlos war. CAPITALIZE 
+  ist nun durch UPPER ersetzt worden. Es kann jetzt folgendermassen definiert 
+  werden:  
+              : CAPITALIZE   ( adr -- adr )   DUP COUNT UPPER ;
+
+NUMBER?
+  Ist ein ganz uebles Beispiel dafuer, dass in verschiedenen Faellen 
+  unterschiedliche Anzahlen von Parametern als Ergebnis auf dem Stack 
+  liegen. Es ist jedesmal eine Pein, wenn das Wort benutzt werden soll. 
+  Wir haben daraus gelernt, dass das ein grosser Fehler war, aber aus 
+  portabilitaetsgruenden alles so gelassen. 
+
+DOES>
+  Auf Grund des Maschinencodes des 8086 compiliert DOES> keine absolute 
+  Adresse zur Routine DODO, sondern einen relativen Sprung. Dies ist zum 
+  Beispiel beim Decompiler zu beachten.
+
+WARNING
+  Die Logik wurde "herumgedreht" und nun schaltet WARNING OFF die Meldung 
+  "exists" aus und WARNING ON wieder ein.
+
+(COLD
+  Bei der Ausfuehrung wird der gecountete String, der an der absoluten 
+  Adresse 80h steht, in den Texteingabepuffer uebertragen. Dieser Text, der 
+  von MS-DOS bei Aufruf des .COM-Files aus der Eingabezeile dorthin 
+  uebertragen wurde, wird dann als allererstes von Forth interpretiert. 
+  Dadurch ist es sehr einfach moeglich, Forth Programme in Batch-Files zu 
+  benutzen und mit Parametern zu versorgen. Zu beachten ist, dass immer dann, 
+  wenn ein COLD ausgefuehrt wird, gleichfalls der gecountete String an dieser 
+  Stelle interpretiert wird. Da MS-DOS die gleiche Stelle dazu benutzt, 
+  Namen von Files waehrend Directoryoperationen abzulegen, steht dort oft ein 
+  fuer Forth "unsinniger" Textstring.
+
+TRACE'
+  Im TOOLS-Vokabular wurde in TRACE umbenannt.
+
+VIEW
+  Zeigt nun nur noch den Screen auf dem Bildschirm, auf dem die ge"viewte" 
+  Definition steht. Soll gleichzeitig der Editor "angeworfen" werden, so ist 
+  das Wort FIX zu benutzen.
+
+                    Zusaetzliche Worte im Kern
+
+0=EXIT
+  Ist komplementaer zu ?EXIT und wurde in den Kern aufgenommen.
+
+FIX      <name>
+  Mit FIX <name> wird das File, in dem <name> definiert wurde, zum aktuellen 
+  File gemacht. Dann wird der Full-Screen-Editor aktiviert, der Screen ange-
+  zeigt, auf dem <name> definiert wurde und der Cursor stellt sich hinter 
+  die auf dem Screen hinter <name>. Durch diese Funktion ist es im 
+  allgemeinen ueberfluessig, waehrend der Programmentwicklung noch Quelltexte 
+  auszudrucken.
+
+FLIP     ( u1 -- u2 )
+  Das Byteswap des obersten Stackelements. u1 ist eine 16-bit Zahl mit den 
+  Bits B15 .. B8 B7 .. B0, wobei B15 .. B8 als das "high-Byte", B8 .. B0 als 
+  das "low-Byte" bezeichnet wird. Durch FLIP wird das High- mit dem Low-Byte 
+  ausgetauscht, so dass u2 als Ergebnis die Bits in der Reihenfolge
+  B7 .. B0 B15 .. B8 angeordnet hat.
+
+PROMPT
+  Ein deferred Wort, das fuer die Ausgabe des "ok" verantwortlich ist. Es 
+  wurde auch das Wort (QUIT neu implementiert. Nun ist es moeglich, den Forth 
+  Interpreter auch wie ein "klassisches" Betriebssystem arbeiten zu lassen, 
+  in dem eine Meldung nicht NACH jeder Aktion HINTER der Eingabe-zeile 
+  ausgegeben wird, sondern VOR einer Aktion am ANFANG der Eingabezeile. Ein 
+  entsprechendes Beispiel befindet sich im Quelltext hinter der Definition 
+  von QUIT.
+
+PARSER
+  siehe INTERPRET.
+
+Die INTEL-Prozessoren haben eine verkomplizierte Art, den Adressraum jenseits 
+von 64kBytes zu adressieren - naemlich mit sogenannten "Segmentregistern". 
+
+Am besten kommt man damit noch zurecht, wenn man diese Prozessoren als 16-
+bit Prozessoren betrachtet, die in der Lage sind, mehrere Programme, die 
+jeweils hoechstens 64k Programmspeicherbereich haben, gleichzeitig im 
+Speicher zu halten. Es ist deshalb auch unvernuenftig, auf diesen Prozessoren 
+ein Forthsystem mit 32-bit Adressen zu installieren - es handelt sich eben 
+nicht um 32-bit Prozessoren.
+
+Statt dessen ist in volksFORTH die Moeglichkeit gegeben, aus dem Forth heraus 
+mit dem Wort CALL (im DOS-Vokabular) ein weiteres .COM oder .EXE-Programm 
+aufzurufen. Dies koennen natuerlich ihrerseits Forth-Programme sein, denen 
+dann auch noch eine ganze Eingabezeile als Parameter mit "auf den Weg" 
+gegeben werden koennen. Ueber die Systemvariable RETURN_CODE ist es auch noch 
+moeglich, einen Errorcode bei Beendigung des Forth Programms an MS-DOS zu 
+uebergeben, der dann in Batch-Files getestet werden kann. Damit waere es zum 
+Beispiel moeglich, den Full-Screen Editor aus dem System auszulagern und mit 
+den Befehlen FIX, EDIT, ED usw. jeweils ein .COM-Programm aufzurufen, das 
+den Forth-Editor als "stand-alone" Programm enthaelt und damit keinen 
+Adressraum im Entwicklungssystem mehr verbraucht. 
+
+Die Intel-Prozessoren setzen die Speicheradressen aus zwei Teilen zusammen, 
+dem SEGMENT und dem OFFSET. Dies ist jedoch nicht mit "echten" 32-bit 
+Adressen zu verwechseln. Diese werden auf einem 16-bit Stack in der 
+Reihenfolge "low-word" unter dem "high-word" abgelegt. Uebertraegt man diese 
+Philosophie auf die "seg:addr" Adressen des 8086, dann blockiert dauernd die 
+Segmentadresse den Stack. Deshalb wird bei den Operatoren, die im 
+erweiterten Adressraum des 8086 operieren, die Segmentadresse UNTER der 
+Offsetadresse auf den Stack gelegt. 
+
+Der Stackkommentar dafuer lautet "seg:addr"
+
+Operatoren, die als Adressargument eine "erweiterte" Adresse benoetigen, haben 
+ein "l" im Namen vorangestellt.
+
+
+
+B/SEG         ( -- n )
+        Eine Konstante, die angibt, wieviele Bytes zwischen zwei Segmenten 
+        liegen. Dies sind beim 8086 16 Bytes, beim 80286 im 286-Modus 
+        jedoch 64 Bytes. volksFORTH auf dem 80286 setzt zur Zeit voraus, 
+        dass der 8086-Emulationsmodus eingeschaltet ist.
+
+DS@           ( -- seg )
+        Legt die Segmentadresse des Segments auf den Stack, in dem sich das 
+        maximal 64kByte grosse Forthsystem gerade befindet. Das Daten-, 
+        Extra-, Stack- und Codesegment werden durch Forth alle auf den 
+        gleichen Wert gesetzt.
+
+L@            ( seg:addr -- n )
+        Entspricht dem @, jedoch im erweiterten Adressraum.
+
+L!            ( n seg:addr -- )
+        Entspricht dem !, jedoch im erweiterten Adressraum.
+
+LALLOCATE     ( #pages -- seg ff / rest err# )   EXTEND
+        Es koennen hiermit im erweiterten Adreáraum die Anzahl #pages 
+        Speicherplatz angefordert werden. Die Groesse einer "Page" in Bytes 
+        entspricht der Konstanten B/SEG. Wenn die Speicheranforderung 
+        erfaellt werden kann, dann wird unter einer 0 als Flag fuer den 
+        Erfolg der Operation die Segmentadresse des ersten Segments 
+        innerhalb eines zusammenhaengenden Speicherbereichs von #page Pages 
+        auf den Stack gelegt. Ansonsten liegt unter einem Fehlercode die 
+        maximale Anzahl von Pages, die noch als zusammenhaengender Bereich 
+        verfuegbar sind. Diese Funktion ist in dem Wort SAVEVIDEO benutzt, 
+        um den Bildschirminhalt in den Speicher zu kopieren. Die 
+        komplementaeren Funktionen sind LFREE und RESTOREVIDEO.
+
+LC@           ( seg:addr -- 8b )
+        Entspricht dem C@, jedoch im erweiterten Adressraum.
+
+LC!           ( 8b seg:addr -- )
+        Entspricht dem C!, jedoch im erweiterten Adressraum.
+
+LDUMP         ( seg:addr quan -- )    TOOLS
+        Entspricht dem DUMP, jedoch im erweiterten Adressraum.
+
+LFREE         ( seg -- err# )
+        Der Speicherbereich, der an der Segmentadresse SEG beginnt, wird 
+        wieder an das Betriebssystem zurueckgegeben. Diese Operation ist nur 
+        definiert, wenn zu einem vorherigen Zeitpunkt eine LALLOCATE-
+        Operation durchgefuehrt worden war, die als Ergebnis die Segment-
+        adresse SEG gehabt hatte. Als Ergebnis liegt ein Fehlercode auf dem 
+        Stack, der im Erfolgsfall Null ist.
+
+LMOVE         ( from.seg:addr to.seg:addr quan -- )
+        Entspricht dem MOVE, jedoch im erweiterten Adressraum. Es koennen 
+        hiermit maximal 64kBytes auf einmal bewegt werden.
+
+LTYPE         ( seg:addr len -- )
+        Entspricht dem TYPE, jedoch im erweiterten Adressraum. Es ist zu 
+        beachten, dass TYPE in den Videodisplaytreibern BIOS.VID und 
+        MULTI.VID so implementiert ist, dass bei Erreichen des Zeilenendes 
+        nicht automatisch ein CR ausgefuehrt wird. Statt dessen werden alle 
+        Zeichen, die "jenseits" des rechten Rands liegen, nicht ausgegeben.
+
+PC@           ( port.addr -- 8b )
+        Holt ein Byte von port.addr aus einem Peripheriebaustein des 8086-
+        Systems auf den Stack. 
+
+PC!           ( 8b port.addr -- )
+        Speichert ein Byte in einen Peripheriebaustein des 8086-Systems bei 
+        port.addr.
+
+Drei wichtige Worte:  USE, LIST, LOAD und INCLUDE
+
+volksFORTH bearbeitet seine Quelltexte in sogenannten Screen Files, die 
+ueblicherweise die Endung .SCR haben. Das sind Files, die in 1 kB grosse 
+Screens aufgeteilt sind, jeweils in 16 Zeilen zu je 64 Zeichen strukturiert.
+
+Soll ein File, das schon existiert, bearbeitet werden, so wird es durch
+USE <filename> zum sogenannten "aktuellen" File gemacht. Zum Beispiel macht 
+USE KERNEL.SCR das File KERNEL.SCR zum aktuellen File, auf das sich alle 
+weiteren Fileoperationen beziehen, bis ein anderes File zum aktuellen File 
+gemacht wird.
+
+Mit <nn> LIST wird Screen nn auf dem Bildschirm angezeigt - also zum 
+Beispiel mit 1 LIST der Screen 1 des Files KERNEL.SCR.
+
+Mit <nn> LOAD wird ein Screen nn geladen, d.h. durch den Forth-Compiler 
+in das Woerterbuch compiliert.
+
+Ueblicherweise enthaelt Screen 0 eines jeden Files eine kurze Erklaerung ueber 
+den Inhalt des Files - dies ist auch deshalb sinnvoll, da der Screen 0 eines 
+Files nicht geladen werden kann. Screen 1 enthaelt ueblicherweise den 
+sogenannten "loadscreen". Dieser steuert den Ladevorgang des gesamten Files. 
+In Zeile 0 eines jeden Screens ist ein Kommentar ueber den Inhalt des Screens 
+und das Datum der letzten Aenderung enthalten.
+
+Mit INCLUDE <filename> kann man unkompliziert ein ganzes Screenfile laden. 
+Diese Operation ist der Sequenz "USE <filename> 1 LOAD" Aequivalent.
+
+#DRIVES       ( -- n )
+        Eine Konstante, die die moegliche Anzahl von logischen Laufwerken im 
+        System definiert. Diese Anzahl ist nur im DIRECT-Modus von 
+        Bedeutung. So, wie der Kern compiliert ist, sind maximal 6 
+        Laufwerke zugelassen.
+
+(BLOCK        ( blk file -- addr )
+        Liest den Block BLK aus dem File, dessen FCB bei der Adresse FILE 
+        beginnt und legt diesen in einen Puffer bei der Adresse ADDR ab.
+
+(BUFFER       ( blk file -- addr )
+        Reserviert einen 1kByte grossen Puffer im Adressbereich des Forth-
+        Systems fuer den Block BLK. FILE ist die Adresse des FCB's, in dem 
+        sich der Block befindet. Ist FILE = 0, dann handelt es sich um 
+        einen DIRECTen physikalischen Zugriff. ADDR ist die Anfangsadresse 
+        des Puffers.
+
+(R/W          ( addr blk fcb r/w -- *f )
+        Die Standardroutine fuer das deferred Wort R/W.
+
+(DISKERROR    ( #err -- )     DOS
+        Die Standard-System Fehlerbehandlungsroutine fuer Fehler beim 
+        Diskzugriff. Hiermit ist das deferred Wort ?DISKERROR 
+        initialisiert.
+
+(FSEARCH      ( string -- asciz *f )   DOS
+        Das File, dessen Name als String bei STRING steht, wird in der 
+        Directory gesucht. Enthaelt der Filename keine Suchpfadinformation, 
+        dann wird im aktuellen Directory gesucht. Bei Erfolg liegt eine 
+        Null auf dem Stack, sonst eine Fehlernummer.
+
+*BLOCK        ( blk -- d )    DOS
+        Die doppeltgenaue Zahl D ist die Byteadresse des ersten Bytes im 
+        1024-Byte groáen Block BLK.
+
+.FILE         ( fcb -- )      DOS
+        Druckt den Forth-Filenamen des Files, dessen FCB-Adresse auf dem 
+        Stack liegt.
+
+/BLOCK        ( d -- rest blk )       DOS
+        Die doppeltgenaue Zahl D wird umgerechnet in die REST-Anzahl von 
+        Bytes innerhalb des 1024-Byte groáen Blocks BLK.
+
+/DRIVE        ( blk1 -- blk2 drive )
+        Fuer den DIRECT-Modus beim Diskzugriff. Aus der absoluten 
+        Blocknummer BLK1 wird (siehe: CAPACITIES) die relative Blocknummer 
+        BLK2 auf Laufwerk DRIVE berechnet. Dabei ist Laufwerk A: Drive 0 
+        etc.
+
+>ASCIZ        ( string addr -- asciz )
+        Mit diesem Operator wird der gecountete String an der Adresse 
+        STRING umgewandelt in einen nullterminierten String, der an der 
+        Adresse ADDR abgelegt wird. ASCIZ ist die Adresse, an der der neue 
+        String liegt.
+
+>DRIVE        ( blk1 +n -- blk2 )
+        Dient zum "umrechnen" von Blocknummern im DIRECT-Modus. BLK2 ist 
+        die absolute Blocknummer, die dem relativen Block BLK1 auf Drive +N 
+        entspricht.
+
+?DISKERROR    ( -- )
+        Ein deferred Wort, dass die Fehlerbehandlungsroutine fuer Disk- und 
+        Filezugriffe enthaelt. Standardmaessig ist die Routine (DISKERROR 
+        zugewiesen.
+
+A: B: C: D: E: F: G: H:
+        Wie bei MS-DOS, macht das dadurch bezeichnete logische Laufwerk zum 
+        aktuellen Laufwerk.
+
+ASCIZ         ( -- asciz )
+        Holt das naechste Wort im Quelltext in den Speicher und legt es als 
+        nullterminierten String bei der Adresse ASCIZ ab.
+
+ASSIGN        ( -- )
+        Benutzt in der Form:
+
+                ASSIGN <filename>
+
+        Weist dem aktuellen File den physikalischen Filenamen <filename> 
+        zu.
+
+ATTRIBUT      ( -- addr )     DOS
+        Eine Variable, die die Fileattribute enthaelt, die bei der Suche 
+        nach Files in einem Directory beruecksichtigt werden. Standardmaessig 
+        mit 7 initialisiert, so daá in die Suche read-only, hidden und 
+        systemfiles eingeschlossen sind.
+
+CAPACITIES    ( -- addr )
+        Die Adresse eines Vektors, der die Kapazitaeten der angeschlossenen 
+        logischen Laufwerken in 1kByte-Bloecken enthaelt. Dafuer sind maximal 
+        6 Eintraege (siehe: #DRIVES) vorgesehen. Mit dem Hilfsprogramm 
+        DISKS.CFG koennen die Kapazitaeten fuer die Diskettenlaufwerke 
+        eingestellt werden. Die Kapazitaet der angeschlossenen Diskdrives 
+        sollten eigentlich von der Bootroutine aus dem System selber 
+        erschlossen werden.
+
+CLOSE         ( -- )
+        Schliesst das aktuelle File.
+
+COUNTED       ( asciz -- addr len )
+        Wird benutzt, um die Laenge eines mit einer Null terminierten 
+        Strings zu bestimmen. ASCIZ ist die Anfangsadresse dieses Strings 
+        (MS-DOS verwaltet Strings so), ADDR und LEN sind die 
+        Stringparameter, die zB. von TYPE verarbeitet werden wuerde.
+
+DIRECT        ( -- )
+        Die Filevariablen werden auf Null gesetzt und damit beziehen sich 
+        die Diskzugriffe durch BLOCK auf physikalische Blocks.
+
+ERROR#        ( -- addr )
+        Eine Variable, die die Fehlernummer des letzten Fehlers beim 
+        Zugriff auf ein File enthaelt.
+
+FBLOCK!       ( addr blk fcb -- )     DOS
+        1024 Bytes, die ab der Adresse ADDR innerhalb des 
+        Forthadressbereichs stehen, werden auf den Block BLK innerhalb des 
+        Files geschrieben, das durch FCB characterisiert ist.
+
+BLOCK@        ( addr blk fcb -- )     DOS
+        1024 Bytes, die im File FCB in Block BLK stehen, werden ab der 
+        Adresse ADR im Forthadressbereich abgelegt.
+
+CAPACITY      ( -- n )
+        N ist die Kapazitaet in 1024-Byte Bloecken des aktuellen Files bzw. 
+        des aktuellen Laufwerks bei DIRECT-Zugriff.
+
+DRIVE         ( n -- )
+        Macht N zum aktuellen Laufwerk.
+
+DRV           ( -- n )
+        N ist die Nummer des aktuellen Laufwerks.
+
+FCLOSE        ( fcb -- )      DOS
+        Das File, dessen FCB-Adresse auf dem Stack liegt, wird geschlossen.
+
+FGETC         ( fcb -- 8b / eof )     DOS
+        Aus dem File, dessen FCB-Adresse auf dem Stack liegt, wird das 
+        naechste Byte gelesen und der Schreib/Lesezeiger um eine Position 
+        weitergerueckt. Wenn das letzte Byte bereits gelesen war, wird die 
+        EndOfFile-Markierung -1 zurueckgegeben.
+
+FILE          ( -- )
+        siehe ATARI Fileinterface.
+
+FILE?
+        Zeigt den Forth-Filenamen des aktuellen Files an.
+
+FILE-LINK     ( -- addr )
+        Eine Variable zur Verwaltung der File-Control-Bloecke (FCB). Der 
+        Inhalt von FILE-LINK zeigt auf den Anfang des Parameterfeldes des 
+        zuletzt definierten FCB's - und an dieser Stelle steht dann die 
+        Adresse des davor definierten FCB's usw., so daá dadurch alle FCB's 
+        aufgefunden werden koennen.
+
+FILE!         ( 8b dfaddr fcb -- )   DOS
+        Das Byte 8B wird an die Position DFADDR des Files FCB geschrieben.
+
+FILE@         ( dfaddr fcb -- 8b / eof )   DOS
+        Das Byte an der 32-bit Position DFADDR im File, dass durch FCB 
+        charakterisiert ist, wird gelesen. Liegt DFADDR jenseits des 
+        letzten Bytes im File, so wird -1 zurueckgegeben. Nach erfolgreichem 
+        Lesen steht der Lese/Schreibzeiger hinter dem gelesenen Byte. 
+
+FILENAME      ( -- addr )     DOS
+        Die Anfangsadresse eines 62-Byte groáen Speicherbereichs, der zum 
+        ablegen von Filenamen waehrend DOS-Fileoperationen dient.
+
+FNAMELEN      ( -- n )        DOS
+        Eine Konstante, die die maximale Laenge von logischen Filenamen, 
+        bestehend aus Drive, Path und Name, die in den FCB's abgespeichert 
+        werden koennen, bestimmt. Wird dieser Wert veraendert, so kann die 
+        neue Laenge erst in den FCB's verwendet werden, die nach der 
+        Aenderung angelegt werden.
+
+FPUTC         ( 8b fcb -- )   DOS
+        Das Byte 8B wird an der aktuellen Position des Schreib/Lesezeigers 
+        in das File FCB geschrieben. Dabei wird der Zeiger um eine Position 
+        weitergerueckt.
+
+FRESET        ( fcb -- )      DOS
+        FCB ist die Adresse eines FileControlBlocks. Das dadurch 
+        charakterisierte File wird "zurueckgesetzt", d.h. das File wird 
+        geoeffnet (wenn es noch nicht geoeffnet war) und der Schreib/Lese-
+        zeiger wird auf den Anfang des Files gesetzt.
+
+FROM  Siehe ATARI Fileinterface.
+
+FSEARCH       ( string -- asciz *f )  DOS
+        Ein deferred Wort. Es enthaelt die Suchstrategie (siehe: (FSEARCH), 
+        die beim oeffnen eines Files verwendet wird, um das File auf der 
+        Disk zu lokalisieren.
+
+FSEEK         ( dfaddr fcb -- )   DOS
+        Der Schreib/Lesezeiger des Files, das durch FCB charakterisiert 
+        ist, wird auf die Position DFADDR gesetzt. Dabei ist DFADDR eine 
+        doppeltgenaue Zahl, so dass maximal Files von 4-GByte Groesse 
+        verwaltet werden koennen.
+
+INCLUDE       siehe ATARI Fileinterface.
+
+LFGETS        ( seg:addr quan fcb -- #read )   DOS
+        siehe: ~READ. Lediglich wird statt der Handlenummer die Adresse des 
+        FCB's des gewuenschten Files angegeben.
+
+LFPUTS        ( seg:addr quan fcb -- )
+        Die Anzahl QUAN von Bytes ab der erweiterten Adresse SEG:QUAN 
+        werden ab der aktuellen Position des Schreib/Lesezeigers in das 
+        File geschrieben, das durch FCB charakterisiert ist. Danach steht 
+        der Schreib/Lesezeiger hinter dem letzten geschriebenen Byte.
+
+LFSAVE        ( seg:addr quan string -- )
+        Erzeugt ein File mit dem Namen, der als gecounteter String an der 
+        Adresse STRING abgelegt ist und schreibt die Anzahl QUAN Bytes ab 
+        der erweiterten Adresse SEG:ADDR in dieses neue File.
+
+LOADFROM      Siehe ATARI Fileinterface.
+
+OPEN          ( -- )
+        Oeffnet das aktuelle File.
+
+PUSHFILE      ( -- )                  C
+        Wird in :-definitionen benutzt, um den aktuellen Zustand des 
+        Filevariablen ISFILE und FROMFILE nach dem Ende der :-Definition 
+        wiederherzustellen. Siehe: PUSH
+
+SAVEFILE      ( addr len -- )
+        Wird in der Form:
+
+                SAVEFILE <name>
+
+        benutzt und schreibt die Anzahl von LEN Bytes ab der Adresse ADDR 
+        in das neu erzeugte File mit dem Namen <name>.
+
+SAVESYSTEM    <name>
+        Schreibt eine bootbare Form des jetzt laufenden Forthsystems unter 
+        dem Namen <name> auf die Disk. Dabei muss <name> die Endung .COM 
+        haben, wenn dieses System spaeter wieder unter MS-DOS gestartet 
+        werden soll.
+
+USE           ( -- )
+        siehe ATARI Fileinterface.
+
+VIEW          ( -- )
+        Wird in der Form:
+
+                VIEW <name>
+
+        benutzt. Wenn <name> im Woerterbuch gefunden wird, so wird das File 
+        geoeffnet, in dem der Quelltext von <name> steht und der Block wird 
+        gelistet, auf dem <name> definiert ist. Siehe: LIST
+
+~CLOSE        ( handle -- )   DOS
+        Der MS-DOS Systemaufruf, um das File, das durch HANDLE 
+        characterisiert ist, zu schliessen.
+
+~CREAT        ( asciz attribut -- handle ff / err# )  DOS
+        Der MS-DOS Systemaufruf, um ein neues File zu erzeugen.
+
+~DIR          ( addr drive -- err# )   DOS
+        Der MS-DOS Systemaufruf, mit dem das aktuelle Directory an der 
+        Adresse ADDR als nullterminierter String abgelegt wird.
+
+~DISK?        ( -- n )        DOS
+        Der MS-DOS Systemaufruf, mit dem das aktuelle Laufwerk abgefragt 
+        wird.
+
+~FIRST        ( asciz attr -- err# )   DOS
+        Der MS-DOS Systemaufruf, um erstmalig nach einem File zu suchen.
+
+~NEXT         ( -- err# )     DOS
+        Der MS-DOS Systemaufruf, der nach ~FIRST benutzt wird, um weitere 
+        passende Filenamen aufzufinden.
+
+~OPEN         ( asciz mode -- handle ff / err# )   DOS
+        Der MS-DOS Systemaufruf fuer das Oeffnen eines Files. ASCIZ ist die 
+        Adresse des vollen Namensstrings und MODE bezeichnet die Art des 
+        Files (read-only, write-only, read-write). Bei Erfolg liegt eine 
+        HANDLE-nummer unter einer Null auf dem Stack, ansonsten eine 
+        Fehlernummer.
+
+~SELECT       ( n -- )        DOS
+        Der MS-DOS Systemaufruf, mit dem das aktuelle Laufwerk selektiert 
+        wird.
+
+~READ         ( seg:addr quan handle -- #read )   DOS
+        Die Anzahl QUAN von Bytes werden aus dem File gelesen, dass durch 
+        die Zahl HANDLE charakterisiert ist. Sie werden im erweiterten 
+        Speicherbereich bei SEG:ADDR abgelegt. Nach Ende der Leseoperation 
+        liegt die Anzahl der Bytes auf dem Stack, die tatsaechlich bis zum 
+        Ende des Files gelesen werden konnten. Es koennen jedoch nur maximal 
+        64kByte auf einmal gelesen werden.
+
+~UNLINK       ( asciz -- err# )       DOS
+        Der MS-DOS Systemaufruf, um einen Fileeintrag zu loeschen.

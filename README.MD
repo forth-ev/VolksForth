@@ -4,16 +4,20 @@ VolksForth is a 16bit Forth System produced by the german Forth Gesellschaft e.V
 of this system was done between 1985 until 1989. The VolksForth Project was revived in 2005 with
 the goal to produce a managable Forthsystem for computer systems with restricted system resources.
 
+
 Some modern Forth Systems were influenced by or were derived from VolksForth (GNU-Forth, bigForth).
 
-The current Version of VolskForth is 3.91. Work on Version 4.00 has started.
+The current Version of VolksForth is 3.91. Work on Version 4.00 has started.
+
+Version 3.9x is based on the Forth 83 standard, Version 4.00 will be
+based on the latest 200x Standard (https://forth-standard.org).
 
 At this time VolksForth is available for this Systems:
 
-VolksForth MS-DOS (Intel x86 Architektur i8086-ia64)
-VolksForth 6502 (Commodore 64, Commodore Plus 4)
-VolksForth Z80 (CP/M, Schneider CPC)
-VolksForth 68000 (Atari ST)
+ * VolksForth MS-DOS (Intel x86 Architektur i8086)
+ * VolksForth 6502 (Commodore 64, Commodore Plus 4, Atari XL/XE)
+ * VolksForth Z80 (CP/M, Schneider CPC)
+ * VolksForth 68000 (Atari ST, Amiga with EmuTOS)
 
 Copyright
 

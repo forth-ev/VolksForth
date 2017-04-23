@@ -3,7 +3,6 @@ VolksForth Readme
 VolksForth is a 16bit Forth System produced by the german Forth Gesellschaft e.V. Major development
 of this system was done between 1985 until 1989. The VolksForth Project was revived in 2005 with
 the goal to produce a managable Forthsystem for computer systems with restricted system resources.
-zu stellen.
 
 Some modern Forth Systems were influenced by or were derived from VolksForth (GNU-Forth, bigForth).
 

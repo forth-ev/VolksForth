@@ -1,0 +1,291 @@
+#+Title: VolksForth Handbuch
+#+Author: VolksForth Team
+#+Date: <2019-04-22 Mon>
+#+Language: de
+#+HTML_HEAD: <link rel="stylesheet" href="css/tufte.css" type="text/css" />
+
+* Prolog
+
+volksFORTH ist eine Sprache, die in verschiedener Hinsicht
+ungewöhnlich ist. Denn FORTH selbst ist nicht nur eine Sprache,sondern
+ein im Prinzip grenzenloses Programmiersystem. Eines der Hauptmerkmale
+des Programmiersystems FORTH ist seine Modularität. Diese Modularität
+wird durch die kleinste Einheit eines FORTH-Systems, das WORT,
+gewährleistet.
+
+In FORTH werden die Begriffe Prozedur, Routine, Programm, Definition
+und Befehl alle gleichbedeutend mit Wort gebraucht. FORTH besteht
+also, wie jede andere natürliche Sprache auch, aus Wörtern.
+
+Diese FORTH-Worte kann man als bereits kompilierte Module betrachten,
+wobei immer ein Kern aus einigen hundert Worten durch eigene Worte
+erweitert wird. Diese Worte des Kerns sind in einem FORTH-Standard
+festgelegt und stellen sicher, dass Standard-Programme ohne Änderungen
+auf dem jeweiligen FORTH-System lauffähig sind. Ungewö̈hnlich ist, dass
+der Programmtext des Kerns selbst ein FORTH—Programm ist, im Gegensatz
+zu anderen Programmiersprachen, denen ein Maschinensprach-Programm
+zugrunde liegt. Aus diesem Kern wird durch ein besonderes
+FORTH-Programm, den MetaCompi1er, das lauffähige Forth-System (unter
+MS-DOS z.B. =KERNEL.COM=) erzeugt:
+
+Wie fügt man nun diesem lauffähigen Kern eigene Worte hinzu? Das
+Kompilieren der Worte wird in FORTH mit COLON ":" eingeleitet und mit
+SEMICOLON ";" abgeschlossen:
+
+  =:= erwartet bei der Ausführung einen Namen und ordnet diesem Namen
+      alle nachfolgenden Wörter zu.
+
+  =;= beendet diese Zuweisung von Wörtern an den Namen und stellt das
+      neue Wort unter diesem Namen für Aufrufe bereit.
+
+** Interpreter und Compiler
+
+Ein klassisches FORTH-System stellt immer sowohl einen Interpreter als
+auch einen Compiler zur Verfügung. Nach der Einschaltmeldung oder
+einem Druck auf die RETURN-Taste wartet der FORTH-Interpreter mit dem
+FORTH-typischen "ok" auf Ihre Eingabe. Sie können ein oder mehrere
+Befehlswörter in eine Zeile schreiben. volks-FORTH beginnt erst nach
+einem Druck auf die RETURN-Taste <CR> mit seiner Arbeit, indem es der
+Reihe nach jeden Befehl in der Eingabezeile abarbeitet. Dabei werden
+Befehlsworte durch Leerzeichen begrenzt. Der Delimiter (Begrenzer) für
+FORTH-Prozeduren ist also das Leerzeichen, womit auch schon die Syntax
+der Sprache FORTH beschrieben wäre.
+
+Der Compiler eines FORTH-Systems ist also Teil der
+Interpreteroberfläche. Es gibt daher keinen Compiler-Lauf zur
+Erstellen des Programmtextes wie in anderen Compiler-Sprachen,
+sondern der Interpreter wird mit allen zur Problemlösung notwendigen
+Worten als Anwenderprogramm abgespeichert.
+
+Auch =:= (COLON) und =;= (SEMICOLON) sind kompilierte Worte, die aber
+für das System den Compiler ein- und ausschalten. Da sogar die Worte,
+die den Compiler steuern, "normale" FORTH-Worte sind, fehlen in FORTH
+die in anderen Sprachen üblichen Compiler-Optionen oder
+Compiler-Schalter. Der FORTH-Compiler wird mit FORTH-Worten gesteuert.
+
+Der Aufruf eines FORTH-Wortes erfolgt über seinen Namen ohne ein
+explizites =CALL= oder =GOSUB=. Dies führt zum FORTH-typischen Aussehen
+der Wortdefinitionen:
+
+#+BEGIN_SRC forth
+: <name>
+     <wort1> <word2> <wort3> ...;
+#+END_SRC
+
+Die Standard-Systemantwort in FORTH ist das berühmte "ok". Ein
+Anforderungszeichen wie =C:>= bei Windows oder =$= wie unter Unix gibt
+es nicht! Das kann dann dazu führen, dass nach einer erfolgreichen
+Aktion der Bildschirm völlig leer bleibt; getreu der Devise:
+
+Keine Nachrichten sind immer gute Nachrichten !
+
+Und — ungewöhnlicherweise - benutzt FORTH die sogenannte
+Postfix-Notation (UPN) vergleichbar den HP-Taschenrechnern, die in
+machen Kreisen sehr beliebt sind. Das bedeutet, FORTH erwartet immer
+erst die Argumente, dann die Aktion. Statt
+
+  3 + 2 und (5 + 5) * 10
+  heisst es
+  2 3 + . und 5 5 + 10 * .
+
+Da die Ausdrücke von links nach rechts ausgewertet werden, gibt es in
+FORTH keine Klammern.
+
+** Stack
+
+Ebenso ungewöhnlich ist, daß FORTH nur ausdrücklich angeforderte
+Aktionen ausführt: Das Ergebnis Ihrer Berechnungen bleibt solange in
+einem speziellen Speicherbereich, dem Stack, bis es mit einem
+Ausgabebefehl (meist =.= ) auf den Bildschirm oder dem Drucker
+ausgegeben wird.
+
+Da die FORTH-Worte den Unterprogrammen und Funktionen anderer
+Programmiersprachen entsprechen, benötigen sie gleichfalls die
+Möglichkeit, Daten zur Verarbeitung zu übernehmen und das Ergebnis
+abzulegen. Diese Funktion übernimmt der STACK. In FORTH werden
+Parameter für Prozeduren selten in Variablen abgelegt, sondern meist
+über den Stack übergeben.
+
+** Assembler
+
+Innerhalb einer PORTH-Umgebung kann man sofort in der Maschinensprache
+des Prozessors programmieren, ohne den Interpreter verlassen zu
+müssen. Assembier-Definitionen sind den FORTH-Programmen gleichwertige
+FORTH-Worte.
+
+** Vokabular-Konzept
+
+Das volksFORTH verfügt über eine erweiterte Vokabular-Struktur, die
+von W. Ragsdale vorgeschlagen wurde. Dieses Vokabular-Konzept erlaubt
+das Einordnen der FORTH-Worte in logische Gruppen.
+
+Damit können Sie notwendige Befehle bei Bedarf zuschalten und nach
+Gebrauch wieder wegschalten. Darüberhinaus ermöglichen die Vokabulare
+den Gebrauch gleicher Namen für verschiedene Worte, ohne in einen
+Namenskonflikt zu kommen. Eine im Ansatz ähnliche Vorgehensweise
+bietet das UNIT-Konzept von PASCAL- oder MODULA-Compilern.
+
+** FORTH-Dateien
+
+FORTH verwendet oftmals besondere Dateien für seine Programme. Dies
+ist historisch begründet und das Erbe einer Zeit, als FORTH noch sehr
+oft Aufgaben des Betriebssystems übernahm. Da gab es ausschließlich
+FORTH-Systeme, die den Massenspeicher vollständig selbst ohne ein
+Betriebssystem verwalteten und dafür ihre eigenen Dateistrukturen
+benutzten.
+
+Diese Dateien sind sogenannte Blockfiles und bestehen aus einer
+Aneinanderreihung von 1024 Byte großen Blöcken. Ein solcher Block, der
+gerne SCREEN genannt wird, ist die Grundlage der Quelltext-Bearbeitung
+in FORTH. Allerdings können mit dem VolksForth auch Dateien bearbeitet
+werden, die im Dateiformat des Systems vorliegen, sog. "Stream-Files".
+
+Generell steht hinter jeder Sprache ein bestimmtes Konzept, und nur
+mit Kenntnis dieses Konzeptes ist möglich, eine Sprache effizient
+einzusetzen. Das Sprachkonzept von FORTH wird beschrieben in dem Buch
+"In FORTH denken" von Leo Brodie (["Thinking
+Forth"][http://thinking-forth.sourceforge.net]). Einen ersten Eindruck
+vom VolksForth soll dieser Prolog vermitteln.
+
+** Warum stellen wir dieses System frei zur Verfügung?
+
+Die Verbreitung, die die Sprache FORTH gefunden hat, war wesentlich an
+die Existenz von figFORTH geknüpft. figFORTH ist ein Public-Domain
+Programm, d.h. es darf weitergegeben und kopiert werden.
+
+Das im Jahr 1979 erschienene figFORTH ist heute nicht mehr so aktuell,
+weil mit der weiteren Verbreitung von Forth eine Fülle von eleganten
+Konzepten entstanden sind, die z.T. in den Forth83-Standard Eingang
+gefunden haben, Daraufhin wurde von Laxen und Perry das F83
+geschrieben und als Public Domain verbreitet. Dieses freie
+Standard-FORTH mit seinen zahlreichen Utilities ist recht komplex und
+wird auch nicht mit Handbuch geliefert.
+
+Wir haben ein neues Forth für verschiedene Rechner entwickelt. Das
+Ergebnis ist das VolksForth, eines der besten Forth-Systeme, die es
+gibt. Das VolksForth soll an die Tradition der oben genannten Systeme,
+insbesondere des F83, anknüpfen und die Verbreitung der Sprache FORTH
+fördern.
+
+VolksForth wurde unter dem Namen ultraFORTH zunächst für den C64
+geschrieben.  Nach Erscheinen der Rechner der Atari ST-Serie
+entschlossen wir uns, auch für sie ein VolksForth zu entwickeln. Die
+erste ausgelieferte Version 3.7 war, was Editor und Massenspeicher
+betraf, noch stark an den C64 angelehnt. Sie enthielt jedoch schon
+einen verbesserten Tracer, die GEM-Bibliothek und die anderen Tools
+für den ST.
+
+Der nächste Schritt bestand in der Einbindung der Betriebssystem-
+Files. Nun konnten Quelltexte auch vom Desktop und mit anderen
+Utilities verarbeitet werden. Die dritte Adaption des volksFORTH
+entstand für die CP/M-Rechner (8080-Prozessoren), wobei speziell für
+den Schneider CPC auch die Grafikfähigkeit unterstützt wird. Zuletzt
+wurde das VolksForth für die weitverbreiteten Rechner der IBM PC-Serie
+angepasst.
+
+** Warum soll man in VolksForth programmieren?
+
+Das volksFORTH ist ein ausgesprochen leistungsfähiges und kompaktes
+Werkzeug. Durch residente Runtime-Library, Compiler, Editor und
+Debugger sind die ermüdenden ECLG-Zyklen ("Edit, Compile, Link and
+Go") überflüssig. Der Code wird Modul für Modul entwickelt, kompiliert
+und getestet.
+
+Der integrierte Debugger ist die perfekte Testumgebung für Worte. Es
+gibt keine riesigen Hexdumps oder Assemblerlistings, die kaum
+Ähnlichkeit mit dem Quelltext haben.
+
+Ein anderer wichtiger Aspekt ist das Multitasking. So wie man ein
+Programm in einzelne, unabhängige Module oder Worte aufteilt, so
+sollte man es auch in einzelne, unabhängige Prozesse aufteilen können.
+Das ist in den meisten Sprachen nicht möglich. Das VolksForth besitzt
+einen einfachen, aber leistungsfähigen Multitasker.
+
+Schließlich besitzt das VolksForth noch eine Fülle von Details, über
+die andere FORTH-Systeme nicht verfügen:
+
+   + Es benutzt an vielen Stellen Vektoren und sog. deferred Worte,
+     die eine einfache Umgestaltung des Systems für verschiedene
+     Gerätekonfigurationen ermöglichen.
+   + Es besitzt einen Heap für "namenlose" Worte oder für Code, der
+     nur zeitweilig benötigt wird.
+   + Der Blockmechanismus ist so schnell, daß er auch sinnvoll für die
+     Bearbeitung großer Datenmengen, die in Files vorliegen,
+     eingesetzt werden kann.
+   + Das System umfaßt Tracer, Decompiler, Multitasker, Assembler,
+     Editor, Printer-Interface ...
+
+Das volksFORTH erzeugt, verglichen mit anderen FORTH-Systemen, relativ
+schnellen Code, der aber langsamer als der anderer Compilersprachen
+ist.
+
+Mit diesem Handbuch soll die Unterstützung des VolksForth noch nicht
+Zuende sein. Die FORTH Gesellschaft e.V., ein gemeinnütziger Verein,
+bietet dafür die Plattform. Sie gibt die Vereins-FORTH-Zeitschrift
+"VIERTE DIMENSION" heraus und betreibt die [[http://www.forth-ev.de][Forth e.V. Webseite]]
+
+* Einstieg ins volksFORTH
+
+Damit Sie sofort beginnen können, wird in diesem Kapitel beschrieben,
+ * wie man das System startet
+ * wie man sich im System zurechtfindet
+ * wie man ein fertiges Anwendungsprogramm erstellt
+ * wie man ein eigenes Arbeitssystem zusammenstellt
+
+ | Datei        | Beschreibung                                                                                                                                                                                                                                                                                                                               |
+ |--------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+ | volks4th.com | als Ihr komplettes Arbeitsssystem enthält resident das Fileinterface, den Editor, den Assembler und von Ihnen eingefügte Werkzeuge (tools).                                                                                                                                                                                                |
+ | minimal.com  | ist eine Grundversion, die oft benötigte Systemteile enthält. Diese ist notwendig, da FORTH—Systeme allgemein nicht über einen Linker verfügen, sondern ausgehend vom Systemkern die zur Problemlösung notwendigen Einzelprogramme schrittweise hinzukompiliert werden.                                                                    |
+ | kernel.com   | ist eine Grundversion, die nur den Sprachkern enthält. Damit können Sie eigene FORTH-Versionen mit z.B. einem veränderten Editor zusammenstellen und dann mit =SAVESYSTEM <name>= als fertiges System abspeichern. In der gleichen Art können Sie auch fertige Anwendungen herstellen, denen man ihre FORTH-Abstammung nicht mehr ansieht. |
+ | kernel.fb    | enthält die Quelltexte des Sprachkerns. Eben dieser Quelltext ist mit einem Target-Compiler kompiliert worden und entspricht exakt dem =KERNEL.COM=. Sie können sich also den Compiler ansehen, wenn Sie wissen wollen, wie das volksFORTH funktioniert.                                                                                   |
+ | volks4th.sys | enthält einen Ladeblock (Block l), der alle Teile kompiliert, die zu Ihrem Arbeitssystem gehören. Mit diesem Loadscreen ist aus =KERNEL.COM= das Programm =VOLKS4TH.COM= zusammengestellt worden.                                                                                                                                          |
+ | extend.fb    | enthält Erweiterungen des Systems. Hier tragen Sie auch persönliche Erweiterungen ein.                                                                                                                                                                                                                                                     |
+ | ced.fb       | enthält den Quelltext des Kommandozeilen Editors, mit dem die Kommandozeile des Interpreters editiert  werden kann. Soll dieser CED ins System eingefügt werden, so ist diese Datei mit =include ced.fb  savesystem volks4TH.com= ins volksFORTH einzukompilieren.                                                                         |
+ | HISTORY      | wird von CED angelegt und enthält die zuletzt eingegebenen Kommandos.                                                                                                                                                                                                                                                                      |
+ | stream.fb    | enthält zwei oft gewünschte Dienstprogramme: Die Umwandlung von Text-Dateien (stream files, Endung =FS=) in Block-Dateien (block files, Endung "FB") und zurück.                                                                                                                                                                           |
+ | disasm.fb    | enthält den Dis-Assembler, der — wie beim CED beschrieben — ins System eingebaut werden kann.                                                                                                                                                                                                                                              |
+
+** Die Oberfläche
+
+Wenn Sie VOLKS4TH von der DOS-Ebene starten, meldet sich volksFORTH
+mit einer Einschaltmeldung, welche die Versionsnummer rev. <xxxx>
+enthält.
+
+Was Sie nun von volksFORTH sehen, ist die Oberfläche des Interpreters.
+FORTH-Systeme und damit auch volksFORTH sind fast immer interaktive
+Systeme, in denen Sie einen gerade entwickelten Gedankengang sofort
+überprüfen und verwirklichen können. Das Auffälligste an der
+volksFORTH-Oberfläche ist die inverse Statuszeile in der unteren
+Bildschirmzeile, die sich mit =status off= — und mit =status on= aus
+wieder einschalten lässt.
+
+Diese Statuszeile zeigt von links nach rechts folgende Informationen,
+wobei =/= für "oder" steht
+
+ | Status-Eintrag        | Beschreibung                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+ |-----------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+ | <2/8/10/16>           | die zur Zeit gültige Zahlenbasis (dezimal)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+ | =s <xx>=              | nennt die Anzahl der Zahlenwerte, die zum Verarbeiten bereitliegen                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+ | =Dic <xxxx>=          | nennt den freien Hauptspeicher                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+ | =Scr <xx>=            | ist die Nummer des aktuellen Blocks (einer Block-Datei)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+ | =<name>.<ext>=        | zeigt den Namen der Datei, die gerade bearbeitet wird. Dateien haben im MSDOS sowohl einen Namen <name> als auch eine dreibuchstabige Kennung, die Extension <ext>, wobei auch Dateien ohne Extension angelegt werden können.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+ | =FORTH FORTH   FORTH= | zeigt die aktuelle Suchreihenfolge gemäß dem Vokabularkonzept.                                                                                                                                                                                                                     Ein Beispiel dafür sind die Assembler-Befehle: Diese befinden sich in ASSEMBLER und assembler words zeigtIhnen den Befehlsvorrat des Assemblers an. Achten Sie bitte auf die rechte Seite der Statuszeiie, wo jetzt =assembler forth forth= zu sehen ist. Da Sie aber jetzt - noch - keine Assembler-Befehle einsetzen wollen, schalten Sie bitte mit forth die Suchlaufpriorität wiederum.Die Statuszeile zeigt wieder das gewohnte =forth forth  forth=. |
+
+Zur Orientierung im Arbeitssystem stellt das volksFORTH einige
+standardkonforme Wörter zur Verfügung:
+
+ * =words= zeigt Ihnen die Befehlsliste von FORTH, die verfügbaren
+   Wörter. Diese Liste stoppt bei einem Tastendruck mit der Ausgabe
+   oder bricht bei einem <ESC> ab.
+ * =files= zeigt alle im System angelegten logischen Datei-Variablen,
+   die zugehörigen handle Nummern, Datum und Uhrzeit des letzten
+   Zugriffs und ihre entsprechenden physikalischen DOS-Dateien. Eine
+   solche FORTH-Datei wird allein durch die Nennung ihres Namens
+   angemeldet. Die MSDOS-Dateien im Directory werden mit =dir=
+   angezeigt.
+ * =path= informiert über eine vollständige Pfadunterstützung nach dem
+   MSDOS-Prinzip, allerdings vollkommen unabhängig davon. Ist kein
+   Suchpfad gesetzt, so gibt =path= nichts aus.
+ * =order= beschreibt die Suchreihenfolge in den Befehlsverzeichnissen
+   (Vokabular).
+ * =vocs= nennt alle diese Unterverzeichnisse (vocabularies).

@@ -1,0 +1,323 @@
+#+Title: Änderungen im volksForth Atari ST
+
+* Version 3.80 gegenüber 3.7 ff
+
+Wir haben versucht, in diesem Dokument alle Änderungen seit Version
+3.7 zu erfassen. Dies ist für alle interessant, die bereits fertige
+Programme haben und diese nun anpassen möchten. Drei Hauptänderungen
+müssen dabei berücksichtigt werden: Das Fileinterface, die Änderungen
+im GEM und die Relokabilität des Systems.
+
+Nicht verschweigen wollen wir, daß wir eine Fülle kleiner Fehler und
+Unschönheiten korrigiert haben, nicht zuletzt aufgrund von
+Rückmeldungen der volksFORTH-83 Benutzer!
+
+** FORTH_83.SCR
+
+ - Das System ist relokatibel. Betroffen sind alle Assemblerworte, die
+   mit dem Register D7 gearbeitet haben. Das Wort =MEMPAGE= gibt es
+   nicht mehr. Stattdessen gibt es das neue Wort =FORTHSTART= , das eine
+   Langadresse liefert, die den Anfang des Systems kennzeichnet. Dort
+   befinden sich die Informationen, die GEM-Dos zum Aufbau der
+   Basepage braucht.
+
+ - =UP= ist eine Variable geworden (bisher Register A3).
+
+ - Im Kernel enthalten sind jetzt die Worte, die unter DOUBLE
+   zusammengefaßt waren, also =2@=, =2!=, =2VARIABLE=, =2CONSTANT=, =2OVER=,
+   =2SWAP= und =D-=.
+
+ - Ebenfalls im Kernel sind die Langoperationen, die auf den gesamten
+   Ram-Speicher arbeiten können als da sind: =LC@=, =LC!=, =L@=, =L!=, =LCMOVE=
+   (fehlerfrei), =L2@=, =L2!= und =LN+!= .
+
+ - =UM/MOD= erzeugt die Fehlermeldung "division overflow".
+
+ - Der Fehler in =-ROLL= wurde behoben.
+
+ - =drvinit= ist mit =: drvinit noop ;= definiert. Damit ist es möglich,
+   dort Routinen zu patchen, die nach dem Booten des Systems
+   ausgeführt werden sollen. Davon macht z.B. der Editor Gebrauch.
+
+ - Es gibt ein =(LOAD=, dem Screennummer und Position im Block
+   übergeben werden.
+
+ - Im Direktzugriff werden nur die Laufwerke A und B unterstützt,
+   allerdings sowohl einseitige als auch doppelseitige Laufwerke.
+   Umschaltung erfolgt beim Lesen oder Schreiben automatisch. Dazu
+   dienen die Worte =GETBLOCKS= und =MEDIACH?=.
+
+ - Neu ist das deferred word =MAKEVIEW=, das in =CREATE= das Viewfield
+   erzeugt.
+
+ - =>name= ist erheblich schneller, weil =nfa?= jetzt in Code
+   definiert ist.
+
+ - Die Uservariable =FILE= ist in =ISFILE= umbenannt worden. Ebenso
+   ist das Wort =FILE@= durch =ISFILE@= ersetzt. Zusätzlich gibt es die
+   Variable =FROMFILE=. =CONVEY= z.B. kopiert Screens von =FROMFILE= nach
+   =ISFILE=.
+
+ - Das deferred word =(DISKERR= ist nicht mehr vorhanden. Stattdessen
+   wird bei allen Diskoperationen ein =ABORT"= im Fehlerfalle
+   ausgeführt.
+
+ - Die Worte =BACKUP= und =EMPTYBUF= sind sichtbar.
+
+ - Im FORGET-Bereich ist das Wort =REMOVE= sichtbar. Neu ist das
+   deferred word =CUSTOM-REMOVE=.
+
+ - Die 68000 Errortraps führen auf ein =ABORT"= und räumen den
+   Systemstack richtig auf.
+
+ - Das System arbeitet nach wie vor im Supervisormodus. Bisher wurde
+   der SSP beim Verlassen des Systems nicht wieder restauriert. Das
+   ist jetzt der Fall und damit hoffentlich das mysteriöse Verhalten
+   einiger Programme (z.B. 1st_Word) im Anschluß an FORTH behoben.
+
+ - Das System enthält voreingestellt nur noch &10 Diskbuffer.
+
+** FILEINT.SCR
+
+ - Das gabs in Version 3.7 noch gar nicht. Hier sind deswegen die
+   Änderungen seit Version 3.71 aufgeführt.
+
+ - Das File =FILESAVE.SCR= gibt es nicht mehr. =SAVESYSTEM= ist jetzt
+   am Anfang des Fileinterface definiert.
+
+ - In =GETDRIVE= wurde der Systemstack nicht korrekt gerichtet. Das
+   führte bisweilen zum Absturz.
+
+ - =CAPACITY= enthält ein =OPEN=.
+
+ - Analog zu A: und B: gibt es jetzt auch die Worte C: und D:.
+
+ - In =(VIEW= wird überprüft, ob das File überhaupt vorhanden ist,
+   bevor =ISFILE= geändert wird.
+
+ - =?DISKABORT= läuft auf ein =ABORT"= ; es werden nicht mehr alle,
+   sondern nur die wichtigsten Fehlermeldungen im Klartext ausgegeben,
+   für den Rest gibt es die Fehlernummer.
+
+ - =PATHES= wurde auf 30 Zeichen verkürzt.
+
+ - =WORKSPACE= ist jetzt sichtbar.
+
+ - Im System selbst ist eine 'Disk Transfer Area' (DTA) enthalten.
+   Diese wird anstelle der des Systems benutzt. Vielleicht
+   verschwinden damit rätselhafte Fehler beim Umschalten von
+   Laufwerken mit =DIR= (?!?!)
+
+ - =OPEN=, =CLOSE=, =MAKE= und =USE= testen, ob der Wert in =ISFILE=
+   ein FCB ist.
+
+ - Die Worte =KILLFILE=, =KILLDIR= und =EMPTYFILE= sind gestrichen.
+
+ - =(MORE= ist neu; wird von =MORE= aufgerufen, ist aber schneller, weil
+   nicht jedemal ein =CLOSE= ausgeführt wird.
+
+ - =(MAKEVIEW= ist jetzt headerlos.
+
+ - =CONVEY= überprüft, ob die Blöcke überhaupt existieren.
+
+ - =FILES= zeigt die Subdirectories nicht mehr mit "" an, sondern mit
+   einem "D", damit mans auch drucken kann. Die Filelänge wird in der
+   gewählten Zahlenbasis und nicht mehr zwangsweise in decimal
+   ausgegeben.
+
+** PRINTER.SCR
+
+ - Die Epson-Anpassung wurde verbessert, sodaß sie nun auch auf
+   Epson-Druckern selbst läuft. Die Kompatiblen können nämlich
+   meistens mehr als das Original. Zusätzlich wurde eine
+   Umlaut-Wandlung eingebaut.
+
+ - Der Code zum Ausdrucken formatierter Listings wurde verbessert.
+   Zusätzlich wurde das Wort =PRINTALL= aufgenommen, das ein komplettes
+   File ohne Shadows druckt.
+
+ - Das Wort =SPOOL= wurde durch =SPOOL'= ersetzt. =SPOOL'= erlaubt die
+   Angabe eines Druckkommandos wie =LISTING= oder =PTHRU= und ist damit
+   flexibler.
+
+** ASSEMBLE.SCR
+
+ - Dieses File gehört nicht mehr zum Arbeitssystem, sondern kann
+   wahlweise zugeladen werden. Mit =2 LOADFROM ASSEMBLE.SCR= wird der
+   Assembler auf den HEAP geladen.
+
+ - Aufgrund der Relokation wurden einige neue Makros eingeführt,
+   ebenso hat sich die Belegung der Register geändert (Näheres im File
+   ASSEMBLE.DOC)
+
+** DOUBLE.SCR
+
+ - gibt es nicht mehr. Die entsprechenden Worte befinden sich im
+   Kernelsystem.
+
+** FILESAVE.SCR
+
+ - gibt es nicht mehr. Die entsprechenden Worte befinden sich im File =FILEINT.SCR=.
+
+
+** FORTHKER.PRG
+
+ - enthält jetzt bereits das Fileinterface.
+ - Das System ist auf =DECIMAL= voreingestellt.
+
+** STARTUP.SCR
+ - enthält nur noch die INCLUDE-Anweisungen, um aus =FORTHKER.PRG= ein
+   Arbeitssystem zusammenzustellen.
+
+** DIVERSES.SCR
+ - ist neu und enthält häufig benutzte Worte, die wir nirgendwo
+   unterbringen konnten.
+ - Das Wort =.BLK= enthält die Sequenz =BASE PUSH HEX=  nicht mehr.
+
+** TOOLS.SCR
+
+ - Im Decompiler ist =L= (für Literal) durch =K= (für Konstante) ersetzt
+   worden. Das vermeidet Namenskonflikte beim Aufruf des Editors.
+ - =NPUSH= im Tracer ist durch =CPUSH= ersetzt worden. Dieses Wort
+   befindet sich jetzt in =DIVERSES.SCR=, da es auch im Editor benutzt
+   wird.
+
+** STRINGS.SCR
+ - Neu ist das Wort =0"=, das einen counted und 0-terminated String im
+   Dicitonary ablegt. =0"= ist statesmart, kann also sowhl im
+   Interpreter- als auch im Compilermodus benutzt werden.
+ - =TEXT= funktioniert jetzt tatsächlich so, wie es dokumentiert ist.
+
+** LINE_A.SCR
+
+ - Insgesamt wurde dieses File 'entrümpelt' und stellt jetzt nur noch
+   die Grundfunktionen zur Verfügung. Andere sind z.B. nach =DEMO.SCR=
+   ausgelagert. Im Einzelnen sind folgende Worte betroffen: Variable
+   BKGRND OVERWRITE TRANSPARENT INVTRANS EXORWRITE RSET RDRAW HOME
+   PATTERN PATTERNS ARROW
+
+ - =A_SETUP= ist sichtbar und damit auch für neue Definitionen zu
+   gebrauchen.
+
+ - Die Variablen sind auf "_" statt "." umgestellt worden, also
+   =XMIN_CLIP= statt =XMIN.CLIP=, =Y_MAX= statt =Y.MAX= usw. Dies gilt auch
+   für die Funktionen =SHOW_MOUSE= =HIDE_MOUSE= =PUT_PIXEL= =GET_PIXEL= und
+   =FORM_MOUSE=.
+ - =+SPRITE= und =-SPRITE= funktionieren jetzt, können sich aber mit
+   normalen Hardwaresprites nicht messen.
+ - Die Copyraster-Funktionen sind gestrichen. Die entsprechenden
+   VDI-Funktionen sind ebenso schnell, daher muß diese aufwendige
+   Definition nicht wiederholt werden (File =VDI.SCR= im Ordner =GEM=,
+   Screen $10 ff).
+
+** DEMO.SCR
+ - Die Demos wurden z.T. umgeschrieben und sind jetzt noch viel
+   hübscher !! (Dank an GFA-Basic)
+
+** TASKER.SCR
+ - Die Uhr als Demonstration des Multitasking war nicht sehr gelungen
+   und ist daher gestrichen.
+ - Beim =FORGET= einer Task wird jetzt tatsächlich der gesamte
+   Speicherbereich freigegeben.
+ - Die Syntax des Spoolers wurde geändert (s.PRINTER.SCR)
+
+** Subdirectory GEM
+
+*** BASICS.SCR
+
+ - Die Arrays =INTIN=, =INTOUT= usw. wurden drastisch verkürzt.
+ - Die Pointernamen im GLOBAL-Array wurden gestrichen (Platzverschwendung)
+ - Neue Worte sind =C_WIDTH= =C_HEIGHT= =B_WIDTH= und =B_HEIGHT=. Sie
+   bezeichnen Positionen im Array =SIZES=.
+ - Das Wort AES hat einen Stackparameter, nämlich =#addrout=, weniger.
+   Dieser wird automatisch gesetzt. Alle AES-Aufrufe haben damit einen
+   Parameter weniger.
+ - Die Variable OBJC_TREE wird universeller verwendet und ist daher
+   schon hier statt wie bisher in =AES.SCR= definiert.
+ - Der Fehler in =S_CLIP= wurde korrigiert.
+
+*** AES.SCR
+
+ - An vielen Stellen wird der Inhalt von =OBJC_TREE= implizit
+   übergeben. Das vereinfacht die Parameterübergabe. Betroffen sind
+   die Worte MENU_BAR MENU_ICHECK MENU_IENABLE MENU_TNORMAL MENU_TNEXT
+   FORM_DO FORM_CENTER
+ - Bei =FSEL_INPUT= sind die Stringarrays sichtbar geworden, sodaß man
+   sie auch benutzen kann !! Sie heißen jetzt =INPATH= und =INSEL=.
+ - Die Screennummern im Loadscreen haben sich geändert (aufpassen,
+   wenn =LOADFROM AES.SCR= verwendet wird.)
+
+*** VDI.SCR
+ - =mem>scr= und =scr>mem= sind jetzt Defining-Words, mit denen sich
+   Worte konstruieren lassen, die das tun, was die beiden vorher
+   gemacht haben; dabei läßt sich aber ein MFDB (Memory Form
+   Definition Block) mitgeben. Damit ist es jetzt möglich, mit
+   mehreren MFDBs zu arbeiten. Syntax ist an den Beispielen in VDI.SCR
+   zu sehen. Im Editor werden zwei MFDBs benutzt.
+ - Die Screennummern im Loadscreen haben sich geändert (aufpassen,
+   wenn =LOADFROM VDI.SCR= verwendet wird.)
+
+*** SUPERGEM.SCR
+ - Neues File, das einige sinnvolle Befehle enthält, die die Arbeit
+   mit GEM erleichtern.
+
+*** GEMDEFS.SCR
+ - Neues File, enthält GEM-Definitionen in der Art von 'C'-#defines,
+   um Quelltexte lesbarer zu machen.
+
+*** EDITOR.SCR
+ - Neu !!! Enthält den GEM-Editor (hätten Sie's erraten?) und ist
+   vollständig mit Kommentarscreens versehen. Soll unter anderem
+   zeigen, wie man unter FORTH GEM programmieren kann.
+
+*** EDWINDOW.SCR
+
+ - Ebenfalls komplett geändert. Enthält die Routinen für das
+   GEM-Window des Editors. Auch dieses File kann als Beispiel für
+   eigene Programme benutzt werden.
+
+* Änderungen ab Version 3.80
+
+18.11.86
+
+Natürlich gibt es auch in Version 3.80 noch kleinere Änderungen. Sie
+sind bisher jedoch nicht so gravierend, daß sie eine neue
+Versionsnummer nötig machen.
+
+
+** FORTH_83.SCR
+
+ - Die Worte =OUT=, =WRAP=, =MEDIACH?= und =GETBLOCKS= sind nicht mehr
+   sichtbar.
+ - Aus Geschwindigkeitsgründen sind die Worte =*=, =M*=, =M/MOD=, =/MOD=, =/=,
+   =MOD= und =MINIMAX=, also die wichtigsten Arithmetik-Routinen in
+   Maschinencode geschrieben.
+
+** GEM\BASICS.SCR
+
+ - enthält jetzt die Worte =SHOW_C= und =HIDE_C=, die bisher in =VDI.SCR=
+   bzw. =SUPERGEM.SCR= definiert waren.
+ - Das Wort =SETARRAYS= ist jetzt sichtbar.
+ - Das Global-Array wurde um zwei Worte verlängert (wer weiß, warum ?!)
+
+** GEM\AES.SCR
+ - Der Message-Buffer bei =EVNT_MESAG= wurde auf 16 Bytes verkürzt.
+ - Bei =MENU_REGISTER= ist der Rückgabewert 0 kein Fehler; das Wort
+   wurde entsprechend korrigiert.
+
+** GEM\GEMDEFS.SCR
+
+ - Dieses File enthält keine Labels mehr, sondern spezielle
+   Konstanten. Diese werden komplett auf den Heap geladen. Die Wirkung
+   ist dieselbe wie vorher, aber es ist kein Vocabulary mehr nötig.
+
+** GEM\SUPERGEM.SCR
+
+ - GETNUMBER wurde so geändert, daß jetzt auch führende Leerzeichen
+   überlesen werden. Diese führten bislang zur Fehlermeldung '?'.
+
+** PRINTER.SCR
+ - In =PTHRU= ist jetzt ein =ARGUMENTS= enthalten. Damit werden
+   versehentliche falsche Eingaben weitgehend neutralisiert.
+ - Das Wort =>PRINTER=, das den Ausgabevektor für den Drucker beinhaltet
+   ist sichtbar geworden.

@@ -1,4 +1,8 @@
 
+# This Makefile and the build scripts in the emulator/ subdir require
+# the file format conversion tools from the tools/ subdir of
+# https://github.com/pzembrod/cc64 to be installed.
+
 vf_blk_d64_files = $(wildcard disks/*.d64)
 vf_blk_fth_files = $(patsubst %.d64, %.fth, $(vf_blk_d64_files))
 

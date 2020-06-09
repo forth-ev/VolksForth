@@ -281,23 +281,23 @@
 
 \ *** Block No. 10, Hexblock a
 
-\ include loadscreen           08jun20pz
+\ include loadscreen           09jun20pz
 
 
   : i/o-status?  $90 c@ ;
 
+  : dos-error  ( dev -- )
+   15 busin
+   BEGIN bus@ con! i/o-status? UNTIL
+   busoff ;
+
   : unloop  rdrop rdrop rdrop ;
 
-  : dev  (drv @ 8 + ;
-
- : lo/hi> ( lo hi -- u )
+  : lo/hi> ( lo hi -- u )
      255 and 256 * swap 255 and + ;
 
 
   1 4 +thru
-
-
-
 
 
 
@@ -337,14 +337,18 @@
 
 \ *** Block No. 12, Hexblock c
 
-\   fload-open  fload-close    25apr20pz
+\   fload-open  fload-close    09jun20pz
+
+| : i/o-status?abort  i/o-status? IF cr
+   fload-dev @ dos-error abort THEN ;
 
 | : fload-open ( addr c -- )
  fload-dev @
  fload-2nd @ 1- dup fload-2nd !
  busopen
  2dup cr type bustype
- " ,s,r" count bustype busoff ;
+ " ,s,r" count bustype busoff
+ i/o-status?abort ;
 
 | : fload-close ( -- )
  fload-dev @ fload-2nd @
@@ -359,13 +363,13 @@
    fload-dev @ I busclose  -1 +LOOP
  15 fload-2nd ! THEN ;
 
+\ *** Block No. 13, Hexblock d
+
+\   include                    09jun20pz
+
   : \ ( -- )
  blk @ IF [compile] \ exit THEN
  #tib @ >in ! ; immediate
-
-\ *** Block No. 13, Hexblock d
-
-\   include                    10may20pz
 
  create >tib-orig >tib @ ,
  fib >tib !
@@ -387,13 +391,10 @@
 
 
 
-
-
-
-
 \ *** Block No. 14, Hexblock e
 
-\ dir dos cat                  08jun20pz
+\ dir dos cat                  09jun20pz
+| : dev fload-dev @ ;
 
 : dir  ( -- )
    dev 0 busopen  ascii $ bus! busoff
@@ -408,13 +409,12 @@
    bl word count ?dup
       IF dev 15 busout bustype
       busoff cr ELSE drop THEN
-   dev 15 busin
-   BEGIN bus@ con! i/o-status? UNTIL
-   busoff ;
+   dev dos-error ;
 
 : cat   ( -- ) cr
    dev 2 busopen  bl word count bustype
-   busoff  dev 2 busin  BEGIN bus@ con!
+   busoff  i/o-status?abort
+   dev 2 busin  BEGIN bus@ con!
    i/o-status? UNTIL busoff
    dev 2 busclose ;
 

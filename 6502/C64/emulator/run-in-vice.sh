@@ -30,7 +30,7 @@ x64 \
   -fs8 "${basedir}/cbmfiles" \
   -9 "${basedir}/disks/vforth4_1.d64" \
   -10 "${basedir}/disks/vforth4_3.d64" \
-  -11 "${basedir}/disks/vforth4_4.d64" \
+  -11 "${basedir}/disks/file-words.d64" \
   -symkeymap "${emulatordir}/x11_sym_vf_de.vkm" \
   -keymap 2 \
   $autostart \

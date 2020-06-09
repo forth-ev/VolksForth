@@ -12,6 +12,6 @@ rm -f cbmfiles/devenv
 
 keybuf="2 drive 19 load\n1 drive 26 load\nsavesystem devenv\n"
 
-"${emulatordir}/build-in-vice.sh" "c64-volksforth83" "${keybuf}"
+"${emulatordir}/run-in-vice.sh" "c64-volksforth83" "${keybuf}"
 
 make emulator/devenv.T64

@@ -16,6 +16,9 @@ vf_blk_fth: $(vf_blk_fth_files)
 run-devenv: emulator/devenv.T64
 	emulator/run-in-vice.sh devenv
 
+run-testbase: emulator/testbase.T64
+	emulator/run-in-vice.sh testbase
+
 
 # Rules for building Forth binaries on top of the plain vanilla
 # c64-volksforth83.
@@ -23,6 +26,10 @@ run-devenv: emulator/devenv.T64
 cbmfiles/devenv: emulator/run-in-vice.sh emulator/build-devenv.sh \
     emulator/c64-volksforth83.T64
 	emulator/build-devenv.sh
+
+cbmfiles/testbase: emulator/run-in-vice.sh emulator/build-testbase.sh \
+    emulator/c64-volksforth83.T64
+	emulator/build-testbase.sh
 
 
 # Generic T64 tape image rule

@@ -7,4 +7,4 @@ include tester.fth
 
 1 verbose !
 
-include core.fth
+include core.fr

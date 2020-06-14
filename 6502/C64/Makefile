@@ -31,11 +31,12 @@ run-tests: emulator/testbase.T64 $(test_files_petscii)
 # c64-volksforth83.
 
 cbmfiles/devenv: emulator/run-in-vice.sh emulator/build-devenv.sh \
-    emulator/c64-volksforth83.T64
+    emulator/c64-volksforth83.T64 \
+     disks/vforth4_1.d64  disks/vforth4_3.d64  disks/file-words.d64
 	emulator/build-devenv.sh
 
 cbmfiles/testbase: emulator/run-in-vice.sh emulator/build-testbase.sh \
-    emulator/c64-volksforth83.T64
+    emulator/c64-volksforth83.T64 disks/file-words.d64
 	emulator/build-testbase.sh
 
 

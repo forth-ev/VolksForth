@@ -281,7 +281,7 @@
 
 \ *** Block No. 10, Hexblock a
 
-\ include loadscreen           09jun20pz
+\ include loadscreen           14jun20pz
 
 
   : i/o-status?  $90 c@ ;
@@ -291,7 +291,7 @@
    BEGIN bus@ con! i/o-status? UNTIL
    busoff ;
 
-  : unloop  rdrop rdrop rdrop ;
+  : unloop  r> rdrop rdrop rdrop >r ;
 
   : lo/hi> ( lo hi -- u )
      255 and 256 * swap 255 and + ;

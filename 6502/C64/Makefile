@@ -6,7 +6,7 @@
 vf_blk_d64_files = $(wildcard disks/*.d64)
 vf_blk_fth_files = $(patsubst %.d64, %.fth, $(vf_blk_d64_files))
 
-test_files = $(wildcard tests/*.fth)
+test_files = $(wildcard tests/*.f*)
 test_files_petscii = $(patsubst tests/%, cbmfiles/%, $(test_files))
 
 
@@ -49,6 +49,9 @@ emulator/%.T64: cbmfiles/%
 # Generic rule for populating cbmfiles/ with PETSCII text files
 
 cbmfiles/%.fth: tests/%.fth
+	ascii2petscii $< $@
+
+cbmfiles/%.fr: tests/%.fr
 	ascii2petscii $< $@
 
 

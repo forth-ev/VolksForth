@@ -20,3 +20,5 @@
 : sm/rem  dup >r  2dup xor >r  m/mod
     over IF r> 0< IF 1+ swap r> - swap ELSE rdrop THEN
     ELSE rdrop rdrop THEN ;
+
+: postpone  state @ IF [compile] [compile] ELSE compile THEN ; immediate

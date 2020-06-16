@@ -184,9 +184,11 @@ parenright     4 0 8
 
 # plus
 plus           5 0 0
+braceleft      5 0 1
 # minus
 minus          5 3 0
 grave          5 3 8
+braceright     5 3 1
 # dot
 period         5 4 8
 greater        5 4 1

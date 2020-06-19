@@ -16,8 +16,8 @@ Screen 0 not modified
 14                                                                 
 15                                                                 
 Screen 1 not modified     
- 0 \ BIOS display interface                     ks  1 sep 86       
- 1   Onlyforth   \needs Assembler   2 loadfrom asm.scr             
+ 0 \ BIOS display interface                     ks  1 secas 09jun20
+ 1   Onlyforth   \needs Assembler   2 loadfrom asm.fb              
  2   Variable dpage        dpage off                               
  3   Variable top          top off                                 
  4                                                                 

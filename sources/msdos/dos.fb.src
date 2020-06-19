@@ -16,8 +16,8 @@ Screen 0 not modified
 14                                                                 
 15                                                                 
 Screen 1 not modified     
- 0 \ MS-DOS file handli                                 28 jun 88  
- 1   Onlyforth   \needs Assembler   2 loadfrom asm.scr             
+ 0 \ MS-DOS file handli                                 cas 09jun20
+ 1   Onlyforth   \needs Assembler   2 loadfrom asm.fb              
  2                                                                 
  3   : fswap      isfile@  fromfile @   isfile !  fromfile ! ;     
  4                                                                 

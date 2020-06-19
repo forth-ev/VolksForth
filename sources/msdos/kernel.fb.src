@@ -16,10 +16,10 @@ Screen 0 not modified
 14 unausgereift und wird in der Version 3.90 entscheidend ver-     
 15 bessert sein.                                                   
 Screen 1 not modified     
- 0 \ MS-DOS   volksForth Load Screen                 ks 03 apr 88  
- 1   Onlyforth  \needs Transient   include meta.scr                
+ 0 \ MS-DOS   volksForth Load Screen                 ks cas 09jun20
+ 1   Onlyforth  \needs Transient   include meta.fb                 
  2                                                                 
- 3   2 loadfrom META.SCR                                           
+ 3   2 loadfrom META.fb                                            
  4                                                                 
  5   new FORTH.COM   Onlyforth Target definitions                  
  6                                                                 
@@ -2226,7 +2226,7 @@ Screen 130 not modified
 14                                                                 
 15                                                                 
 Screen 131 not modified     
- 0 MS-DOS file control block                       ks cacas 10sep11
+ 0 \ MS-DOS file control Block                          cas 19jun20
  1                                                                 
  2 | : Fcbytes  ( n1 len -- n2 )  Create over c, +                 
  3   Does>      ( fcbaddr -- fcbfield )  c@ + ;                    

@@ -23,3 +23,16 @@
 
   Execute =forth.com include volks4th.sys= to create a new fully
   equipped VolksForth executable =volks4th.com=.
+* creating a version of VolksForth that works with emu2
+
+  EMU2 is a nice PC Emulator that can run MS-DOS console applications
+  as Linux/MacOS/Windows console applications. EMU2 can be found at
+  https://github.com/dmsc/emu2
+
+  The standard Keyboard-Interface of VolksForth (BDOS) does not work
+  with EMU2, however it is possible to switch to the simpler BIOS
+  keyboard interface. For that, comment out the blocks #114 and #115
+  by placing =\\= at the beginning of the first row of these blocks
+  and comment in block #116 by changing the =\\= in the first row to
+  =\=. (=\= is "skip to end of line" comment, while =\\= is the "skip
+  to end of current block" commend)

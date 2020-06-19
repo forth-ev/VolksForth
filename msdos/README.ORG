@@ -35,4 +35,9 @@
   by placing =\\= at the beginning of the first row of these blocks
   and comment in block #116 by changing the =\\= in the first row to
   =\=. (=\= is "skip to end of line" comment, while =\\= is the "skip
-  to end of current block" commend)
+  to end of current block" commend).
+
+  The downside of this change is that the VolksForth full screen
+  editor does not work anymore, as the BIOS interface does not support
+  special keys like cursor or function keys. As a replacement, the
+  Retro-Forth Editor =rfe.fb= or some other Forth Editor can be used.

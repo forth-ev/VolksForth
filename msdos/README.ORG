@@ -1,0 +1,25 @@
+#+TITLE: VolksForth MS-DOS README
+#+AUTHOR: Carsten Strotmann
+#+DATE: <2020-06-19 Fri>
+
+* How to meta-compile a new kernel
+
+  After making changes the the Forth kernel source in =kernel.fb=,
+  restart =volksforth.com= to have a clean system and compile a new
+  "minimal" kernel with =include kernel.fb=. This will create a new
+  =FORTH.COM= executable.
+
+* creating a minimal system with a simple editor
+
+  Execute =forth.com include minimal.sys= to generate the file
+  =minimal.com= which contains a minimal VolksForth system with the
+  Retro-Forth editor
+  https://fossil.forth-ev.de/volksforth/wiki?name=Atari8bit-retrofortheditor
+
+  This system can be used to edit the file =volksforth.sys= or other
+  Forth source block files needed to create a full VolksForth system.
+
+* creating a full VolksForth system from the minimal kernel
+
+  Execute =forth.com include volks4th.sys= to create a new fully
+  equipped VolksForth executable =volks4th.com=.

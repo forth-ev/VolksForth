@@ -1,0 +1,35 @@
+#+TITLE: New Editor
+#+AUTHOR: Carsten Strotmann
+#+DATE: <2020-06-20 Sat>
+
+* New Editor
+
+ The file =neditor.fb= contains an updated full screen editor for
+ VolksForth. This version is based on the older fullscreen editor in
+ =editor.fb= by Ulli Hoffmann and Klaus Schleisiek.
+
+ The new editor works well in the =emu2= MS-DOS emulator and the
+ keybindings are based on the GNU/EMACS editor (
+ https://www.gnu.org/software/emacs/ ).
+
+* Keybindings
+
+ | Key          | Action                    |
+ |--------------+---------------------------|
+ | CTRL+A       | Jump to beginning of line |
+ | CTRL+E       | Jump to end of line       |
+ | CTRL+Q       | Toggle Overwrite          |
+ | CTRL+F       | Char Forward              |
+ | CTRL+B       | Char Backward             |
+ | CTRL+N       | Next Line                 |
+ | CTRL+P       | Previous Line             |
+ | CTRL+V       | Next Screen/Page          |
+ | CTRL+T       | Previous Screen/Page      |
+ | CTRL+L       | Copy Screen # on stack    |
+ | CTRL+F       | Fix Word                  |
+ | CTRL+K       | Kill Line to Clipboard    |
+ | CTRL+Y       | Yank Line from Clipboard  |
+ | CTRL+Z       | Kill Char to Clipboard    |
+ | CTRL+X       | Yank Char from Clipboard  |
+ | SHIFT+CTRL+/ | Undo                      |
+ | SHIFT+CTRL+_ | Undo                      |

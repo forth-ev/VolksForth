@@ -1,0 +1,442 @@
+Screen 0 not modified     
+ 0     HOW TO USE THE RAMDISK                            bp 17Aug86
+ 1                                                                 
+ 2 Die Ramdisk ist im Prinzip ein erweiterter Buffermechanismus,   
+ 3 der Buffer auûerhalb des Forth-Systems verwaltet. Die Organi-   
+ 4 sation ist analog, mit der Ausnahme, daû es kein Updateflag     
+ 5 gibt, geÑnderte Blîcke also sofort auf die Diskette zurÅckge-   
+ 6 schrieben werden. Die Benutzung ist vîllig transparent, am      
+ 7 Anfang muû nur einmal INITRAMDISK aufgerufen werden.            
+ 8                                                                 
+ 9 Die Struktur der Buffer wird auf Screen 3 dargestellt.          
+10                                                                 
+11 Die Ramdisk allokiert ihren Speicher mit MALLOC.                
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ loadscreen for more buffers                         bp 17Aug86
+ 1                                                                 
+ 2 \needs 2over                    include double.scr              
+ 3                                                                 
+ 4 Onlyforth                                                       
+ 5                                                                 
+ 6 \needs 4dup                     : 4dup    2over 2over ;         
+ 7 \needs 4drop                    : 4drop   2drop 2drop ;         
+ 8 \needs user'                    : user'   ' >body c@ ;          
+ 9 \needs d>                       : d>      2swap d< ;            
+10                                                                 
+11 2 $B +thru                                                      
+12                                                                 
+13   1 +load    \ patch ramdisk into system                        
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ patch ramdisk into System                           bp 17Aug86
+ 1                                                                 
+ 2 | : ((close  ( fcb -- fcb ...)   \ word for patch (CLOSE !!     
+ 3     dup flushramfile  [ Dos ' (close    >body @ , ]  ;          
+ 4                                                                 
+ 5 | : (empty-buffers   ( -- ...)   \ word for patching EMPTY-BUFFE
+ 6     emptyramdisk      [ ' empty-buffers >body @ , ]  ;          
+ 7                                                                 
+ 8                                                                 
+ 9 ' ramdiskr/w is r/w                                             
+10 ' ((close          Dos ' (close     >body !                     
+11 ' (empty-buffers   ' empty-buffers  >body !                     
+12                                                                 
+13 save                                                            
+14 initramdisk                                                     
+15                                                                 
+Screen 3 not modified     
+ 0 \ Variables and Constants                             bp 10Aug86
+ 1                                                                 
+ 2 2Variable ramprev     0. ramprev 2!   \ points to first buffer  
+ 3 2Variable ramfirst    0. ramfirst 2!  \ start of buffer area    
+ 4 2Variable ramsize     0. ramsize 2!   \ length of buffer area   
+ 5                                                                 
+ 6 $408 Constant b/rambuf                                          
+ 7                                                                 
+ 8 | Code link>file   ( d1 -- d2 )   .l 4 SP ) addq                
+ 9                                   Label >next  Next  end-code   
+10 | Code link>block       .l 6 SP ) addq  >next bra  end-code     
+11 | Code link>data        .l 8 SP ) addq  >next bra  end-code     
+12                            \\                                   
+13 structure of a buffer:                                          
+14 | link to next buffer | file | block | data .... |              
+15 +0                    +4     +6       +8           +1032        
+Screen 4 not modified     
+ 0 \ search for a buffer                                 bp 24Aug86
+ 1 \ D0:blk   D1:file   A0:bufadr  A1:Vorgaenger                   
+ 2 Label thisbuffer?                                               
+ 3    4 A0 D) D1 cmp   0= IF  6 A0 D) D0 cmp   THEN  rts           
+ 4                                                                 
+ 5 Code rambuf?  ( blk file -- dadr tf \ blk file )                
+ 6    2 SP D) D0 move   SP ) D1 move                               
+ 7    .l ramprev r#) A0 move .w  thisbuffer? bsr                   
+ 8    0= IF   Label blockfound  .l 8. # A0 adda  A0 SP ) move .w   
+ 9                 true # SP -) move  Next  THEN                   
+10    BEGIN  .l A0 A1 move   A1 ) A0 move   0. # A0 cmpa   .w      
+11           0= IF   false # SP -) move  Next   THEN               
+12           thisbuffer? bsr   0= UNTIL                            
+13    .l A0 ) A1 ) move                                            
+14       ramprev r#) A0 ) move   A0 ramprev r#) move  .w           
+15    blockfound bra   end-code                                    
+Screen 5 not modified     
+ 0 \ read and write buffers                              b28sep86we
+ 1                                                                 
+ 2 | : readrambuf    ( adr daddr -- )   \ copy from daddr to adr   
+ 3      rot >absaddr  b/blk  lcmove ;                              
+ 4                                                                 
+ 5 | : writerambuf   ( adr daddr --)    \ copy from adr to daddr   
+ 6      rot >absaddr 2swap b/blk lcmove ;                          
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 6 not modified     
+ 0 \ search for empty buffer                             bp 10Aug86
+ 1                                                                 
+ 2 \ : takerambuf    ( -- daddr )       \ get last buffer          
+ 3 \    ramprev  2@                                                
+ 4 \    BEGIN  2dup link>file l@  1+   ( empty buffer ? )          
+ 5 \    WHILE  2dup l2@ or             ( last buffer ? )           
+ 6 \    WHILE  l2@   REPEAT ;                                      
+ 7                                                                 
+ 8 | Code takerambuf  ( -- daddr )                                 
+ 9      .l  ramprev r#) A0 move                                    
+10   Label takeloop    .w -1  4 A0 D) cmpi                         
+11        0<> IF  .l A0 ) tst 0<>                                  
+12               IF   A0 ) A0 move  takeloop bra  THEN THEN        
+13   A0 SP -) move  Next  end-code                                 
+14                                                                 
+15                                                                 
+Screen 7 not modified     
+ 0 \ allocate a buffer                                   bp 24Aug86
+ 1                                                                 
+ 2 | 2Variable (daddr                                              
+ 3                                                                 
+ 4 \ | : markrambuf    ( blk file daddr  -- daddr )                
+ 5 \     2dup (daddr 2!  link>file l!  (daddr 2@ link>block l!     
+ 6 \     (daddr 2@ ;                                               
+ 7                                                                 
+ 8 | Code markrambuf   ( blk file daddr  -- daddr )  .l            
+ 9    SP )+ A0 move        .w  SP )+ 4 A0 D) move                  
+10    SP )+ 6 A0 D) move   .l A0 SP -) move        Next  end-code  
+11                                                                 
+12 | : makerambuf    ( adr blk file -- )  \ create a buffer        
+13     BEGIN  rambuf? 0= WHILE 2dup  takerambuf markrambuf         
+14                             2drop  REPEAT       writerambuf ;   
+15                                                                 
+Screen 8 not modified     
+ 0 \ clear buffers                                       bp 10Aug86
+ 1                                                                 
+ 2 : clearrambuf   ( laddr -- )    \ clear a buffer                
+ 3    link>file  -1 -rot  l! ;                                     
+ 4                                                                 
+ 5 : flushramfile  ( fcb -- )      \ clear all buffers of a file   
+ 6    >r  ramprev 2@                                               
+ 7    BEGIN  2dup or                                               
+ 8    WHILE  2dup link>file l@  r@ =  IF  2dup clearrambuf  THEN   
+ 9               l2@  REPEAT  2drop rdrop ;                        
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 9 not modified     
+ 0 \ allocate all buffers                                bp 10Aug86
+ 1                                                                 
+ 2 | : nextbuf       ( d1 -- d2)     \ adr of next buffer          
+ 3     b/rambuf extend d+ ;                                        
+ 4                                                                 
+ 5 | : ramfull?      ( daddr -- f)   \ true if more buffers        
+ 6     nextbuf  ramsize 2@  ramfirst 2@ d+  d> 0= ;                
+ 7                                                                 
+ 8 : emptyramdisk  ( -- )          \ initialize ramdisk            
+ 9   0. ramprev 2!   ramfirst 2@                                   
+10   BEGIN   2dup ramfull?                                         
+11   WHILE   2dup  clearrambuf         ( clear buffer )            
+12           ramprev 2@  2over  l2!    ( chain to list )           
+13           2dup ramprev 2!           ( store last buffer )       
+14           nextbuf  REPEAT  2drop ;                              
+15                                                                 
+Screen 10 not modified     
+ 0 \ Interactive memory allocation                       bp 17Aug86
+ 1                                                                 
+ 2 : #in           ( -- n)  query name number drop ;               
+ 3                                                                 
+ 4 : initramdisk   ( -- )                                          
+ 5    [ Dos ]  0. ramprev 2!                                       
+ 6    ramfirst 2@ or  IF  ramfirst 2@ mfree                        
+ 7                        drop ?diskabort   0. ramfirst 2!  THEN   
+ 8    cr  ."  Wie viele Kilos sollen es sein ? "   #in             
+ 9    b/rambuf um*  2. d+  2dup malloc     ( 2 Angstbytes zus.)    
+10      dup 0< IF drop ?diskabort THEN     ( Fehler !)             
+11      dup 0= abort" Speicher voll !!"    ( DR sei Dank gesagt !) 
+12    ramfirst 2!  ramsize 2!                                      
+13    emptyramdisk ;                                               
+14                                                                 
+15                                                                 
+Screen 11 not modified     
+ 0 \ new r/w                                             bp 10Aug86
+ 1                                                                 
+ 2 ' r/w >body @ Alias oldr/w                                      
+ 3                                                                 
+ 4 : ramdiskr/w    ( adr blk file rw/f -- f )                      
+ 5    ramprev 2@ or 0=  IF  oldr/w exit  THEN                      
+ 6    dup >r                                                       
+ 7    IF rambuf?  IF  readrambuf  rdrop false  exit  THEN THEN     
+ 8    r>   4dup oldr/w                                             
+ 9    IF  4drop  true exit  THEN   \ disk error !                  
+10    drop makerambuf false ;      \ create or overwrite buffer    
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 12 not modified     
+ 0 \ print a list of ram buffers                         bp 10Aug86
+ 1                                                                 
+ 2 : .rambufs       ( -- )                                         
+ 3    ramprev 2@                                                   
+ 4    BEGIN   2dup or                                              
+ 5    WHILE   cr  2dup  8 d.r  5 spaces    \ adress                
+ 6            2dup link>file l@                                    
+ 7            dup 1+ IF  [ Dos ] .file  4 spaces                   
+ 8                       2dup link>block l@ 5 .r                   
+ 9                   ELSE  drop ." empty" THEN                     
+10            l2@  stop? UNTIL  2drop ;                            
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 13 not modified     
+ 0 \ Wichtige Worte sind                                 bp 17Aug86
+ 1                                                                 
+ 2 INITRAMDISK   ( -- ) fragt nach der Zahl der Anzahl der         
+ 3    anzulegenden Buffer und erzeugt sie.                         
+ 4                                                                 
+ 5 EMPTYRAMDISK  ( -- ) lîscht den Inhalt aller Buffer.            
+ 6                                                                 
+ 7 RAMBUF?       ( blk file -- dadr tf \ blk file ff )             
+ 8    sucht den Buffer blk im File file in der Ramdisk.            
+ 9                                                                 
+10 CLEARRAMBUF?  ( laddr -- )                                      
+11    markiert den Ramdiskbuffer bei Adr. laddr als leer.          
+12                                                                 
+13                                                                 
+14 ..                                                              
+15                                                                 
+Screen 14 not modified     
+ 0                                                       bp 17Aug86
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6 Wird in RAMDISKR\W benutzt                                      
+ 7                                                                 
+ 8 Gibt Offset einer Uservariablen in der Userarea. Dieses         
+ 9   Wort gehîrt eigentlich in den Assembler !                     
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 15 not modified     
+ 0                                                       bp 17Aug86
+ 1                                                                 
+ 2 Dieses Wort wird in (CLOSE gepatched. FCB ist die Adresse des   
+ 3   zu schlieûenden Files. Alle Blockpuffer dieses Files werden   
+ 4   gelîscht.                                                     
+ 5 Dieses Wort wird in EMPTY-BUFFERS gepatched. Es lîscht alle     
+ 6   Ramdiskpuffer                                                 
+ 7                                                                 
+ 8                                                                 
+ 9 Neues R/W                                                       
+10 Patche (CLOSE                                                   
+11 Patche EMPTY-BUFFERS                                            
+12                                                                 
+13                                                                 
+14 Frage nach der Grîûe der Ramdisk                                
+15                                                                 
+Screen 16 not modified     
+ 0                                                       bp 17Aug86
+ 1                                                                 
+ 2 Zeiger auf den ersten Buffer in der Ramdisk.                    
+ 3 Beginn des fÅr die Ramdisk allokierten Speicherbereichs         
+ 4 LÑnge   "   "   "     "        "               "                
+ 5                                                                 
+ 6 LÑnge eines Buffers der Ramdisk                                 
+ 7                                                                 
+ 8 Diese Worte erlauben den Zugriff auf die Felder eines           
+ 9   Ramdiskbuffers.                                               
+10                                                                 
+11                                                                 
+12                                                                 
+13 Dies ist die Struktur eines Ramdiskbuffers. Alle Buffer befinden
+14  sich in einer gelinkten Liste, analog zum volksFORTH83-Block=  
+15  =buffermechanismus.                                            
+Screen 17 not modified     
+ 0                                                       bp 17Aug86
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5 Sucht einen Buffer in der Ramdisk. Gesucht wird der Buffer      
+ 6  mit der Nummer BLK aus dem File mit der Nummer FCB.            
+ 7 ZunÑchst wird der erste Eintrag untersucht (weniger Rechenzeit).
+ 8  Ist es nicht der oberste, so werden die restlichen Buffer      
+ 9  verglichen. Wurde er gefunden, so wird der betreffende Buffer  
+10  an den Anfang der Liste gehÑngt, so daû die Buffer immer in    
+11  der Reihenfolge des Zugriffs geordnet sind. Dadurch wird die   
+12  Zugriffsgeschwindigkeit erhîht.                                
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 18 not modified     
+ 0                                                       bp 17Aug86
+ 1                                                                 
+ 2 Kopiert den Inhalt des Ramdiskbuffers in den Blockbuffer des    
+ 3  volksFORTH-Systems                                             
+ 4                                                                 
+ 5 Kopiert den Inhalt des Blockbuffers im System in den Ramdisk=   
+ 6  =buffer.                                                       
+ 7                                                                 
+ 8 Diese beiden Worte kînnen noch optimiert werden, da LCMOVE      
+ 9  byteweise ÅbertrÑgt, aber auch langwortweise Åbertragen        
+10  werden kann.                                                   
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 19 not modified     
+ 0                                                       bp 17Aug86
+ 1                                                                 
+ 2 Dieses Wort sucht einen leeren Ramdiskbuffer. Ist keiner leer,  
+ 3  so wird der letzte Buffer in der Liste genommen.               
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 20 not modified     
+ 0                                                       bp 24Aug86
+ 1                                                                 
+ 2 Hilfsvariable                                                   
+ 3                                                                 
+ 4 Markiert den Ramdiskbuffer DADDR als Buffer fÅr den Block BLK   
+ 5  im File FILE.                                                  
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12 Erzeugt einen Buffer fÅr den Blockl BLK des Files FILE in der   
+13  Ramdisk. Der Inhalt des Buffers steht ab Adresse ADR im System.
+14  RAMBUF? wird benutzt, um den allokierten Buffer an die erste   
+15  Stelle zu hÑngen. Der WHILE-Teil wird max. einmal durchlaufen !
+Screen 21 not modified     
+ 0                                                       bp 17Aug86
+ 1                                                                 
+ 2 Lîscht den Buffer LADDR.                                        
+ 3                                                                 
+ 4                                                                 
+ 5 Lîscht alle Ramdiskbuffer, die zum File FCB gehîren.            
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 22 not modified     
+ 0                                                       bp 17Aug86
+ 1                                                                 
+ 2 Berechnet die Adresse D2 des Ramdiskbuffers, der auf den Buffer 
+ 3  mit der Adresse D1 folgt.                                      
+ 4                                                                 
+ 5 F ist wahr, falls noch weitere Buffer in der Ramdisk allokiert  
+ 6  werden kînnen.                                                 
+ 7                                                                 
+ 8 Initialisiert die Ramdisk. Es werden soviele Buffer angelegt,   
+ 9  wie in den durch RAMFIRST und RAMSIZE angegebenen Speicher=    
+10  =bereich passen. Alle allokierten Buffer werden als leer       
+11  markiert.                                                      
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 23 not modified     
+ 0                                                       bp 17Aug86
+ 1                                                                 
+ 2 Liest eine Zahl von der Tastatur ein                            
+ 3                                                                 
+ 4 Erzeugt die Ramdisk. ZunÑchst wird der alte Speicherbereich     
+ 5  freigegeben, falls einer allokiert war. Dann wird nach der     
+ 6  gewÅnschten Zahl von Buffern gefragt. Es wird ein Speicher=    
+ 7  =bereich vom GEM-Dos angeordert und mit leeren Buffern         
+ 8  gefÅllt.                                                       
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 24 not modified     
+ 0                                                       bp 17Aug86
+ 1                                                                 
+ 2 Die alte R/W-Routine wird natÅrlich auch benîtigt.              
+ 3                                                                 
+ 4 Kommuniziert mit den Massenspeichern.                           
+ 5  RW/F ist wahr, falls ein Lesezugriff erfolgen soll.            
+ 6  Ist die Ramdisk leer, so darf sie nicht angesprochen werden !  
+ 7  Sonst wird geprÅft, ob es sich um einen Lesezugriff handelt    
+ 8  und ob der Buffer in der Ramdisk vorliegt. Ist das der Fall,   
+ 9  so wird einfach dessen Inhalt kopiert. Andernfalls muû, falls  
+10  noch nicht vorhanden, ein Buffer allokiert werden. Der Inhalt  
+11  des Systembuffers wird dann in die Ramdisk kopiert und steht   
+12  beim nÑchsten Lesezugriff zur VerfÅgung.                       
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 25 not modified     
+ 0                                                       bp 17Aug86
+ 1                                                                 
+ 2 Es wird eine Liste mit dem Inhalt aller Ramdiskbuffer ausgegeben
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

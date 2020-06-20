@@ -1,0 +1,136 @@
+Screen 0 not modified     
+ 0 \\ documentation for dargon demo                    tcas20130106
+ 1 start the dragon with : <pos int> DRAG                          
+ 2               or with : <1 or -1> <pos int> DRAGON              
+ 3                                                                 
+ 4 DRAG clears the screen, defines the starting point and executes 
+ 5 DRAGON.                                                         
+ 6 The variable STEPSIZE defines the size of steps between 1 and 3 
+ 7 (larger values will produce grabage)                            
+ 8                                                                 
+ 9 odd numbers as input values do not work                         
+10                                                                 
+11 DDEMO is a loop executing the DRAGON demo which can be stopped  
+12 with a keypress once the 2nd dragon is fully painted (it is     
+13 recommended to press a key a little in advance)                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ dragon-loadscreen                                  cas20130106
+ 1                                                                 
+ 2 Onlyforth                                                       
+ 3                                                                 
+ 4 \needs Graphics    include line_a.fb                            
+ 5                                                                 
+ 6 Onlyforth    GEM also    Graphics also                          
+ 7                                                                 
+ 8 decimal                                                         
+ 9                                                                 
+10 1 5 +thru                                                       
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ dragon s.2                                           03oct86we
+ 1                                                                 
+ 2 Variable angle                                                  
+ 3 Variable stepsize      1 stepsize !                             
+ 4 Variable color         1 color !                                
+ 5 Variable xcood         Variable ycood                           
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0 \ set_pixel                                            03oct86we
+ 1                                                                 
+ 2 Label ?step                                                     
+ 3    stepsize pcrel) D2 move  D1 tst  0<> IF  D2 neg  THEN  rts   
+ 4                                                                 
+ 5 Code set_pixel                                                  
+ 6    xcood pcrel) D3 move   ycood pcrel) D4 move                  
+ 7    angle pcrel) D0 move   1 # D0 asr   D0 D1 move   1 D0 andi   
+ 8    1 # D1 asr   1 D1 andi                                       
+ 9    D0 tst  0=  IF ?step bsr  D2 D3 add   D3 xcood R#) move THEN 
+10    D0 tst  0<> IF ?step bsr  D2 D4 add   D4 ycood R#) move THEN 
+11    D3 SP -) move   D4 SP -) move   color pcrel) SP -) move      
+12    ;c: put_pixel ;                                              
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 4 not modified     
+ 0 \ dragon s.3                                           03oct86we
+ 1                                                                 
+ 2 Code turn   ( n -- )                                            
+ 3    angle pcrel) D0 move   SP )+ D0 add   D0 angle R#) move      
+ 4    Next end-code                                                
+ 5                                                                 
+ 6 : dragon  recursive   ( stepw rec_tiefe -- )                    
+ 7    dup 0= IF    2drop   set_pixel                               
+ 8           ELSE                                                  
+ 9            over  turn                                           
+10             1  over 1-   dragon                                 
+11            over  2* negate  turn                                
+12            -1  over 1-   dragon                                 
+13            drop  turn                                           
+14          THEN ;                                                 
+15                                                                 
+Screen 5 not modified     
+ 0 \ dragon s.4                                           03oct86we
+ 1                                                                 
+ 2 : drachen                                                       
+ 3    2 stepsize !                                                 
+ 4    100 xcood !  200 ycood !  1 14 dragon                        
+ 5    101 xcood !  200 ycood !  1 14 dragon                        
+ 6    100 xcood !  201 ycood !  1 14 dragon                        
+ 7    101 xcood !  201 ycood !  1 14 dragon                        
+ 8    1 stepsize ! ;                                               
+ 9                                                                 
+10 : schubs                                                        
+11      100 0 DO   I  112 over -  400 272  2over >r 1+ r> 1-       
+12                 scr>scr   LOOP ;                                
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 6 not modified     
+ 0 \ dragon s.5                                           03oct86we
+ 1                                                                 
+ 2 : drag   ( n -- )          page                                 
+ 3    angle off  100 xcood !  200 ycood !                          
+ 4    1 swap dragon ;                                              
+ 5                                                                 
+ 6 : ddemo                                                         
+ 7     16 drag   schubs                                            
+ 8     0 color !  199 xcood !  100 ycood !  1 16 dragon            
+ 9     1 color !  drachen  ;                                       
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 7 not modified     
+ 0 \                                                      03oct86we
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

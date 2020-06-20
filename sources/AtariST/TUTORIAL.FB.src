@@ -1,0 +1,85 @@
+Screen 0 not modified     
+ 0                                                       bp 27Aug86
+ 1                      W i l l k o m m e n                        
+ 2                             i m                                 
+ 3           v o l k s F O R T H 8 3 - E d i t o r                 
+ 4                                                                 
+ 5 Dieses File soll eine kurze EinfÅhrung in das volksFORTH83      
+ 6  geben. Schalten Sie bitte den Schreibschutz der Disketten an.  
+ 7 Probieren Sie ruhig den Editor etwas aus. Er befindet sich im   
+ 8  Auto-Hilfe-Modus, den Sie sicherlich von 1ST_WORD kennen...    
+ 9                                                                 
+10 Verlassen Sie dann bitte den Editor mit der Esc-Taste, tippen   
+11  Sie  EMPTY-BUFFERS  BYE  ein und drÅcken Sie die Return-Taste. 
+12                                                                 
+13 Danach sollten Sie Ihre Disketten kopieren und die 1ST_WORD-    
+14  Files ausdrucken, die Ihnen noch mehr Dinge erklÑren.          
+15                                                                 
+Screen 1 not modified     
+ 0                                                       bp 27Aug86
+ 1 Einiges sollten Sie zu diesem Editor noch wissen:               
+ 2                                                                 
+ 3 Einige Files auf dieser Diskette enthalten sog. Shadow Screens. 
+ 4  Das sind Screens mit Kommentaren. Jeder Screen mit Programmtext
+ 5  hat dann einen Shadow Screen. EnthÑlt ein File Shadows, so     
+ 6  sind sie alle in der zweiten HÑlfte des Files abgespeichert.   
+ 7  Mit   SHADOW SCR  kînnen Sie dann bequem zwischen Programm-    
+ 8  und Shadow-Screen hin und herschalten.                         
+ 9                                                                 
+10 Mit VIEW kînnen Sie sofort die Stelle finden, an der ein        
+11  Forth-Wort gespeichert ist. Geben Sie einfach ein Wort ein,    
+12  drÅcken Sie die Return-Taste und schon sind Sie am Ort.... ,   
+13  falls es das Wort gibt und Sie die richtige Diskette eingelegt 
+14  haben.                                                         
+15                                                                 
+Screen 2 not modified     
+ 0                                                       bp 27Aug86
+ 1                                                                 
+ 2 Auûerdem unterstÅtzt der Editor einen Zeilen- und Zeichenstack. 
+ 3  Falls Sie einen Screen umbauen wollen, kînnen Sie Zeilen auf   
+ 4  den Stack bewegen und an anderer Stelle wieder hervorholen.    
+ 5  Probieren Sie es ruhig aus. Versuchen Sie z.B. , die oberste   
+ 6  Zeile nach unten zu kopieren.                                  
+ 7                                                                 
+ 8 Wenn Sie diesen Screen ruiniert haben, drÅcken Sie einfach      
+ 9  die UNDO-Taste und schon ist alles wieder in Ordnung.          
+10  GeÑnderte Screens werden nÑmlich nicht sofort auf die Diskette 
+11  geschrieben, sondern solange in Puffern aufbewahrt, bis kein   
+12  Puffer mehr frei ist. Solange sich ein Block in einem Puffer   
+13  befindet, kînnen Sie Ihre énderungen mit UNDO rÅckgÑngig machen
+14  Das volksFORTH hat ca. 8 solche Puffer, diese Zahl kînnen Sie  
+15  aber auch Ñndern. Wie, steht im Kapitel 'Getting started'.     
+Screen 3 not modified     
+ 0                                                       bp 27Aug86
+ 1                                                                 
+ 2  Darum sollten Sie sich also nicht wundern, wenn ihre Diskette  
+ 3  ruhig ist, obwohl Sie auf einen anderen Screen gehen. Er wahr  
+ 4  dann noch im Puffer.                                           
+ 5  Links oben im Fenster wird angezeigt, ob der Screen im Puffer  
+ 6  geÑndert wurde, d.h. anders als sein Original auf der Diskette 
+ 7  aussieht.                                                      
+ 8                                                                 
+ 9 Rechts oben auf diesem Screen sehen Sie meine ID. Sie besteht   
+10  aus meinen Initialen und dem Tag, an dem ich diesen Text       
+11  getippt habe. Wenn Sie Ihre ID in GET ID... eintragen, wird    
+12  sie automatisch auf jeden Screen kopiert, den Sie modifiziert  
+13  haben. Nach UNDO steht dort natÅrlich wieder meine ID und      
+14  nicht mehr Ihre.                                               
+15                                                                 
+Screen 4 not modified     
+ 0                                                       bp 27Aug86
+ 1 Schlieûlich gibt es noch eine FÅlle von Mîglichkeiten, den      
+ 2  aktuellen Screen zu wechseln, Zeichen zu lîschen oder          
+ 3  einzufÅgen, Zeilen zu manipulieren und den Cursor zu bewegen.  
+ 4  Sie sollten sich mit diesen Mîglichkeiten vertraut machen, denn
+ 5  sie werden Ihr Programmiererdasein erleichtern.                
+ 6                                                                 
+ 7 Damit Åberlasse ich Sie Ihrer Neugier und bin gespannt, was     
+ 8  sie mit unserem Forth machen...                                
+ 9                                                                 
+10                 Bernd Pennemann                                 
+11                                                                 
+12  P.S. Dieses File kînnen Sie mit  USE TUTORIAL.SCR  0 4 PTHRU   
+13   ausdrucken lassen ...                                         
+14                                                                 
+15                                                                 

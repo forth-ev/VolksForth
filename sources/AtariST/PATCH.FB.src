@@ -1,0 +1,68 @@
+Screen 0 not modified     
+ 0 \\         ***  Loadscreen fr Arbeitssystem ***       03oct86we
+ 1                                                                 
+ 2 Die folgenden Screens werden benutzt, um von  FORTHKER.PRG  aus 
+ 3 ein Arbeitssystem hochzuziehen.                                 
+ 4                                                                 
+ 5 Da der Kernal noch kein Filesystem enth„lt, muž dieses zun„chst 
+ 6 im Direktzugriff geladen werden. Assembler und Fileinterface    
+ 7 mssen daher unbedingt am Anfang auf der Diskette liegen, damit 
+ 8 die absoluten Blocknummern stimmen ($16 und $18).               
+ 9                                                                 
+10 Anschliežend werden die Files FORTH_83.SCR und FILEINT.SCR er-  
+11 zeugt und die View-Felder der Worte auf diese Files gepatched.  
+12 Dazu mssen diese Files auf Diskette vorhanden sein.            
+13                                                                 
+14 Schliežlich werden mit  INCLUDE  die Files geladen, die man in  
+15 seinem System haben m”chte.                                     
+Screen 1 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2   6 load      cr .( Internal Assembler loaded ) cr              
+ 3 $18 load      cr .( File-Interface loaded)      cr              
+ 4  1 +load      cr .( now patch that stuff ... )  cr              
+ 5                                                                 
+ 6 path A:\;B:\                                                    
+ 7                                                                 
+ 8 use forth83.fb     0 0 patchviewfields                          
+ 9 use fileint.fb     ' arguments >name 4-  -$17 patchviewfields   
+10                                                                 
+11 flush  save                                                     
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ patch view-fields                                   bp 25May86
+ 1                                                                 
+ 2 here         300 hallot    heap dp !                            
+ 3 Variable blockoffset                                            
+ 4 : patch            ( viewadr -- )   \ patch view field          
+ 5    viewoffset blockoffset @ +    swap +! ;                      
+ 6                                                                 
+ 7 : patchthread      ( thread adr -- )                            
+ 8    >r  BEGIN   @ dup   WHILE  dup 1-  r@  u>                    
+ 9                        WHILE  dup 2- patch  REPEAT  drop rdrop ;
+10                                                                 
+11 : patchviewfields  ( n adr -- )   \ adr is bottom of patch area 
+12    blockoffset !   voc-link                                     
+13    BEGIN  @ ?dup  WHILE   2dup 4- swap  patchthread  REPEAT     
+14    drop ;                                                       
+15 dp !                                                            
+Screen 3 not modified     
+ 0 \                                                      05oct86we
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

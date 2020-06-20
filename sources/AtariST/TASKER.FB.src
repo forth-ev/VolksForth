@@ -1,0 +1,136 @@
+Screen 0 not modified     
+ 0 \\                    *** Multitasker ***             bp 12oct86
+ 1                                                                 
+ 2 Dieses File enth„lt die Worte fr das Multitasking.             
+ 3                                                                 
+ 4 Mit  TASK  werden Tasks eingerichtet. Jede Task hat ihren eige- 
+ 5  nen Daten- und Returnstack, deren Gr”že beim Einrichten der    
+ 6  Task angegeben werden muž.                                     
+ 7                                                                 
+ 8 Mit  MULTITASK  wird der Tasker eingeschaltet, mit  SINGLETASK  
+ 9  abgeschaltet. Mit  TASKS  kann man die Tasks im System und     
+10  ihren Zustand anzeigen.                                        
+11                                                                 
+12 N„heres zur Funktionsweise des Taskers findet man im Handbuch,  
+13  ebenso wie ein ausfhrliches Glossar !                         
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ Multitasker Loadscreen                               22nov86bp
+ 1                                                                 
+ 2 Onlyforth                                                       
+ 3                                                                 
+ 4 \needs Code        2 loadfrom assemble.scr                      
+ 5 \needs multitask   1 +load                                      
+ 6                                                                 
+ 7 02 05 +thru    \ Tasker                                         
+ 8    06 +load    \ Spooler                                        
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ stop singletask multitask                            14sep86we
+ 1                                                                 
+ 2 Code stop                                                       
+ 3   .l FP IP suba   .w IP SP -) move                              
+ 4   .l FP RP suba   .w RP SP -) move                              
+ 5      UP R#) D6 move   D6 reg) A0 lea                            
+ 6   .l FP SP suba   .w SP 8 A0 D) move                            
+ 7      2 A0 D) D6 move  D6 reg) jmp  end-code                     
+ 8                                                                 
+ 9 Label taskpause                                                 
+10     UP R#) D6 move   D6 reg) A0 lea   $4E43 # A0 ) move         
+11     Forth ' stop @ Assembler bra  end-code                      
+12                                                                 
+13 : singletask   [ ' pause @ ] Literal  ['] pause ! ;             
+14                                                                 
+15 : multitask    taskpause  ['] pause ! ;                         
+Screen 3 not modified     
+ 0 \ pass activate                                       bp 12oct86
+ 1                                                                 
+ 2 | : (pass   ( n0 ... nm-1 Taskaddr m -- )                       
+ 3    rdrop  swap            \ delete IP of ACTIVATE or PASS       
+ 4    $4E43 over !           \ awake Task                          
+ 5    r> -rot                \ get the IP;  Stack: IP m Taskaddr   
+ 6    &10 + >r               \ push s0 of Task                     
+ 7    r@ 2+ @ swap           \ Stack-Top:  IP r0 m                 
+ 8    2+ 2*                  \ bytes on Taskstack incl. r0 & IP    
+ 9    r@ @ over -            \ new SP                              
+10    dup r> 2- !            \ into Ssave                          
+11    swap bounds  ?DO  I !  2 +LOOP  ;                            
+12                                                                 
+13 : activate   ( Taddr -- )               0 (pass ;  restrict     
+14                                                                 
+15 : pass       ( n0 ... nm-1 Taskaddr m )   (pass ;  restrict     
+Screen 4 not modified     
+ 0 \ sleep wake taskerror                                bp 12oct86
+ 1                                                                 
+ 2 : sleep   ( Taddr -- )    $3C3C swap ! ; \ # D6 move opcode     
+ 3 : wake    ( Taddr -- )    $4E43 swap ! ; \ Trap 3 opcode        
+ 4                                                                 
+ 5 | : taskerror   ( string -- )                                   
+ 6      standardi/o  singletask  bell                              
+ 7      at?  &24 0 at  ." Task error : "  rot count type   at      
+ 8      multitask stop ;                                           
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 5 not modified     
+ 0 \ Task                                                 14sep86we
+ 1                                                                 
+ 2 : Task   ( rlen slen -- )                                       
+ 3    2 arguments                                                  
+ 4    0 Constant  here >r               \ Task-dp                  
+ 5    even dup  r@ +  r@ 2- !  allot  even  \ 68000 align          
+ 6    up@ here 100 cmove               \ init user area            
+ 7    here   $3C3C , up@ 2+ @ ,        \ JMP opcode to sleep task  
+ 8    $4EF3 , $6800 ,                                              
+ 9    dup  up@ 2+ !                    \ link task                 
+10    dup  6 -   dup , ,               \ ssave and s0              
+11    2dup + ,                         \ here + rlen = r0          
+12    r@ ,                             \ dp                        
+13    under  + here - allot  0 ,                                   
+14    ['] taskerror  swap  [ ' errorhandler >body c@ ] Literal + ! 
+15    r> 2- 2- , ;                                                 
+Screen 6 not modified     
+ 0 \ rendezvous 's tasks                                  22nov86bp
+ 1                                                                 
+ 2 : rendezvous   ( semaphoraddr -- )                              
+ 3    dup unlock  pause  lock ;                                    
+ 4                                                                 
+ 5 | : statesmart       state @ IF  [compile] Literal  THEN ;      
+ 6                                                                 
+ 7 : 's   ( Taddr -- adr )     \ adr is adress of the foll. uservar
+ 8    ' >body c@ +  statesmart ;  immediate                        
+ 9                                                                 
+10 : tasks   ( -- )                                                
+11    cr  ." Main "    up@ dup 2+ @                                
+12    BEGIN  2dup -  WHILE cr dup  [ ' r0 >body c@ ] Literal  +  @ 
+13                         2+ @ >name .name                        
+14                         dup @  $3C3C = IF  ." sleeping"  THEN   
+15            2+  @  REPEAT  2drop ;                               
+Screen 7 not modified     
+ 0 \ Printerspool                                         21oct86we
+ 1                                                                 
+ 2 $100 $200 Task spooler                                          
+ 3                                                                 
+ 4 : spool'  ( -- )   \ reads word                                 
+ 5    '  isfile@  offset @  base @   spooler  depth 1-  6 min  pass
+ 6    base !  offset !  isfile !  execute                          
+ 7    true abort" SPOOL' ready for next job!" stop ;               
+ 8                                                                 
+ 9 \\ syntax:                                                      
+10 spool' listing                                                  
+11 spool' printall                                                 
+12 from to spool' pthru                                            
+13 from to spool' document                                         
+14                                                                 
+15                                                                 

@@ -1,0 +1,629 @@
+Screen 0 not modified     
+ 0 \\                  *** Line-A Graphic ***           cas20130106
+ 1                                                                 
+ 2 This file contains the LINE-A graphic routines. While being     
+ 3 sometimes faster than VDI Routines, LINE-A Functions are not    
+ 4 supported on some newer Atari ST machines.                      
+ 5                                                                 
+ 6 It is recommended to only use VDI functions in new programs.    
+ 7 This library is provided for compatibility reasons to be able   
+ 8 to compile old source code. the programs will probablt not work 
+ 9 on newer Atari machines.                                        
+10                                                                 
+11                                                                 
+12 Examples for the use of LINE-A routines can be found in the file
+13 DEMO.FB                                                         
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ Line A - Graphics   Loadscreen                     cas20130106
+ 1                                                                 
+ 2 Onlyforth                                                       
+ 3 \needs Code  include assemble.fb                                
+ 4                                                                 
+ 5 .( use of LINE-A is deprecated and will not work on newer )     
+ 6 .( Atari machines. Please use VDI routines instead!       )     
+ 7                                                                 
+ 8 Vocabulary Graphics   Graphics also definitions                 
+ 9                                                                 
+10 1 $10 +thru                                                     
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ Table offsets                                        26oct86we
+ 1                                                                 
+ 2 base @  decimal                                                 
+ 3  0 >label v_planes            2 >label v_lin_wr                 
+ 4  4 >label _cntrl                                                
+ 5  8 >label _intin             12 >label _ptsin                   
+ 6 16 >label _intout            20 >label _ptsout                  
+ 7 24 >label _fg_bp_1           26 >label _fg_bp_2                 
+ 8 28 >label _fg_bp_3           30 >label _fg_bp_4                 
+ 9 32 >label _lstlin            34 >label _ln_mask                 
+10 36 >label _wrt_mode          38 >label _x1                      
+11 40 >label _y1                42 >label _x2                      
+12 44 >label _y2                46 >label _patptr                  
+13 50 >label _patmsk            52 >label _multifill               
+14 54 >label _clip              56 >label _xmn_clip                
+15 58 >label _ymn_clip          60 >label _xmx_clip                
+Screen 3 not modified     
+ 0 \ Table offsets                                        26oct86we
+ 1                                                                 
+ 2  62 >label _ymx_clip          64 >label _xacc_dda               
+ 3  66 >label _dda_inc           68 >label _t_sclsts               
+ 4  70 >label _mono_status       72 >label _sourcex                
+ 5  74 >label _sourcey           76 >label _destx                  
+ 6  78 >label _desty             80 >label _delx                   
+ 7  82 >label _dely              84 >label _fbase                  
+ 8  86 >label _fwidth            90 >label _style                  
+ 9  92 >label _litemask          94 >label _skewmask               
+10  96 >label _weight            98 >label _r_off                  
+11 100 >label _l_off            102 >label _scale                  
+12 104 >label _chup             106 >label _text_fg                
+13 108 >label _scrtchp          112 >label _scrpt2                 
+14 114 >label _text_bg          116 >label _copytran               
+15 base !                                                          
+Screen 4 not modified     
+ 0 \ Variable                                           cas20130106
+ 1                                                                 
+ 2 Variable xmin_clip          Variable xmax_clip                  
+ 3 Variable ymin_clip          Variable ymax_clip                  
+ 4 Variable multi_fill           0 multi_fill !                    
+ 5 Variable linemask         $FFFF linemask !      \ solid line    
+ 6 Variable plane1               1 plane1 !        \ black         
+ 7 Variable plane2               1 plane2 !        \ on            
+ 8 Variable plane3               0 plane3 !        \ white         
+ 9 Variable plane4               0 plane4 !                        
+10 Variable cur_x                0 cur_x !                         
+11 Variable cur_y                0 cur_y !                         
+12 Variable wr_mode              0 wr_mode !       \ overwrite     
+13 Variable scr_res              2 scr_res !       \ Hires         
+14                                                                 
+15                                                                 
+Screen 5 not modified     
+ 0 \ arrays                                               17sep86we
+ 1                                                                 
+ 2 Variable pat_mask      1 pat_mask !                             
+ 3 Variable pattern                                                
+ 4                                                                 
+ 5 Create   nopattern     0 , 0 ,                                  
+ 6 Create   fullpattern   $FFFF , $FFFF ,    fullpattern pattern ! 
+ 7                                                                 
+ 8 Variable checking      checking on                              
+ 9 Variable clipping      clipping off                             
+10                                                                 
+11 Create a_fonts  4 allot                                         
+12 Create a_base   4 allot                                         
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 6 not modified     
+ 0 \ Initialization                                       17sep86we
+ 1                                                                 
+ 2 Create a_setup   Assembler                                      
+ 3    $A000 ,  .l A0 a_base R#) move  A1 a_fonts R#) move          
+ 4    .w wr_mode R#) _wrt_mode A0 D) move                          
+ 5    plane1 R#) _fg_bp_1 A0 D) move                               
+ 6    plane2 R#) _fg_bp_2 A0 D) move                               
+ 7    plane3 R#) _fg_bp_2 A0 D) move                               
+ 8    plane4 R#) _fg_bp_4 A0 D) move                               
+ 9    rts  end-code                                                
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 7 not modified     
+ 0 \ line                                                 17sep86we
+ 1                                                                 
+ 2 Code line   ( x1 y1  x2 y2 -- )                                 
+ 3    a_setup bsr                                                  
+ 4    -1 # _lstlin A0 D) move    linemask R#) _ln_mask A0 D) move  
+ 5    SP )  _y2 A0 D) move    SP )+ cur_y R#) move                 
+ 6    SP )  _x2 A0 D) move    SP )+ cur_x R#) move                 
+ 7    SP )+ _y1 A0 D) move                                         
+ 8    SP )+ _x1 A0 D) move                                         
+ 9    $A003 ,  Next end-code                                       
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 8 not modified     
+ 0 \ rectangle                                            17sep86we
+ 1                                                                 
+ 2 Code rectangle  ( x1 y1  width heigth -- )                      
+ 3    a_setup bsr    clipping R#) _clip A0 D) move                 
+ 4    SP )+ D0 move   2 SP D) D0 add   D0 _y2 A0 D) move           
+ 5    SP )+ D0 move   2 SP D) D0 add   D0 _x2 A0 D) move           
+ 6    SP )+ _y1 A0 D) move     SP )+ _x1 A0 D) move                
+ 7    pattern R#) D6 move    D6 reg) A1 lea                        
+ 8    .l A1 _patptr A0 D) move  .w                                 
+ 9    pat_mask   R#) _patmsk A0 D) move                            
+10    multi_fill R#) _multifill A0 D) move                         
+11    xmin_clip  R#) _xmn_clip  A0 D) move                         
+12    ymin_clip  R#) _ymn_clip  A0 D) move                         
+13    xmax_clip  R#) _xmx_clip  A0 D) move                         
+14    ymax_clip  R#) _ymx_clip  A0 D) move                         
+15    $A005 ,  Next end-code                                       
+Screen 9 not modified     
+ 0 \ Maus-Functions                                       17sep86we
+ 1                                                                 
+ 2 Code show_mouse                                                 
+ 3    a_setup bsr   .l _cntrl A0 D) A1 move                        
+ 4    .w 2 A1 D) clr   1 # 6 A1 D) move                            
+ 5    .l _intin A0 D) A1 move   A1 ) clr   $A009 ,  Next end-code  
+ 6                                                                 
+ 7 Code hide_mouse     $A00A ,  Next end-code                      
+ 8                                                                 
+ 9 Code form_mouse    ( addr -- )                                  
+10    a_setup bsr   .l _intin A0 D) A1 move                        
+11    .w SP )+ D6 move   D6 reg) A0 lea                            
+12    A0 )+ A1 )+ move   A0 )+ A1 )+ move    1 # A1 )+ move        
+13      0 # A1 )+ move     1 # A1 )+ move                          
+14    $10 D0 moveq   D0 DO   .l A0 )+ A1 )+ move   LOOP            
+15    $A00B ,   Next end-code                                      
+Screen 10 not modified     
+ 0 \ copyraster                                          bp 12oct86
+ 1                                                                 
+ 2 cr  .( For copyraster use VDI-Functions !!)  cr                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9 \\                                                              
+10                                                                 
+11 $10 loadfrom gem\vdi.scr                                        
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 11 not modified     
+ 0 \ Checking                                           cas20130106
+ 1                                                                 
+ 2 | Create g_limits   &320 , &200 ,  &640 , &200 ,  &640 , &400 , 
+ 3                                                                 
+ 4 Code get_res   ( -- flag )                                      
+ 5    4 # A7 -) move  $0E trap   2 A7 addq   D0 SP -) move         
+ 6    Next end-code                                                
+ 7                                                                 
+ 8 | : (check       \ checking @ 0= ?exit                          
+ 9   dup  g_limits  scr_res @ 4 * 2+ + @ > abort" Y-Value too big" 
+10   over g_limits  scr_res @ 4 *   + @ > abort" X-Value too big" ;
+11                                                                 
+12 Code check   ( x y -- x y )                                     
+13    checking R#) tst 0= IF  NEXT  THEN  ;c:  (check ;            
+14                                                                 
+15                                                                 
+Screen 12 not modified     
+ 0 \ relative  set draw clipping                          18sep86we
+ 1                                                                 
+ 2 Code relative   ( dx dy  --  x y )                              
+ 3    SP )+ D0 move  cur_y R#) D0 add                              
+ 4    SP )+ D1 move  cur_x R#) D1 add                              
+ 5    D1 SP -) move  D0 SP -) move  Next end-code                  
+ 6                                                                 
+ 7 : set     ( x y -- )     check   cur_y !  cur_x ! ;             
+ 8 : draw    ( x y -- )     check   cur_x @ cur_y @  2swap  line ; 
+ 9                                                                 
+10 : clip_window   ( x1 y1  x2 y2 -- )                             
+11     clipping on                                                 
+12     ymax_clip !   xmax_clip !   ymin_clip !   xmin_clip ! ;     
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 13 not modified     
+ 0 \ box                                                  18sep86we
+ 1                                                                 
+ 2 Code box   ( width heigth -- )                                  
+ 3    cur_y R#) D4 move   D4 D7 move   SP )+ D7 add                
+ 4    cur_x R#) D3 move   D3 D5 move   SP )+ D5 add                
+ 5    a_setup bsr  D3 _x1 A0 D) move   D4 _y1 A0 D) move           
+ 6                 D5 _x2 A0 D) move   D4 _y2 A0 D) move   $A003 , 
+ 7    a_setup bsr  D5 _x1 A0 D) move   D4 _y1 A0 D) move           
+ 8                 D5 _x2 A0 D) move   D7 _y2 A0 D) move   $A003 , 
+ 9    a_setup bsr  D3 _x1 A0 D) move   D7 _y1 A0 D) move           
+10                 D5 _x2 A0 D) move   D7 _y2 A0 D) move   $A003 , 
+11    a_setup bsr  D3 _x1 A0 D) move   D4 _y1 A0 D) move           
+12                 D3 _x2 A0 D) move   D7 _y2 A0 D) move   $A003 , 
+13    Next end-code                                                
+14                                                                 
+15                                                                 
+Screen 14 not modified     
+ 0 \ +sprite -sprite                                      11dec86we
+ 1                                                                 
+ 2 Code +sprite   ( sprt_def_blk sprt_sav_blk  x y -- )            
+ 3    SP )+ D1 move  SP )+ D0 move                                 
+ 4    SP )+ D6 move  D6 reg) A2 lea                                
+ 5    SP )+ D6 move  D6 reg) A0 lea                                
+ 6    .l $1E A7 -) movem>   $A00D ,   $7800 A7 )+ movem<           
+ 7    Next end-code                                                
+ 8                                                                 
+ 9 Code -sprite   ( sprt_sav_blk  -- )                             
+10    SP )+ D6 move  D6 reg) A2 lea                                
+11    .l $1E A7 -) movem>   $A00C ,   $7800 A7 )+ movem<           
+12    Next end-code                                                
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 15 not modified     
+ 0 \ put_pixel get_pixel                                  17sep86we
+ 1                                                                 
+ 2 Code put_pixel   ( x y  color -- )                              
+ 3    a_setup bsr   .l a_base R#) A0 move                          
+ 4       _intin A0 D) A1 move  .w SP )+ A1 ) move                  
+ 5    .l _ptsin A0 D) A1 move  .w SP )+ 2 A1 D) move               
+ 6                                SP )+ A1 ) move                  
+ 7    $A001 ,  Next end-code                                       
+ 8                                                                 
+ 9 Code get_pixel   ( x y -- color )                               
+10    a_setup bsr                                                  
+11    .l a_base R#) A0 move   _ptsin A0 D) A1 move                 
+12    .w SP )+ 2 A1 D) move   SP )+ A1 ) move                      
+13    $A002 ,   D0 SP -) move    Next end-code                     
+14                                                                 
+15                                                                 
+Screen 16 not modified     
+ 0 \ polygon                                              17sep86we
+ 1                                                                 
+ 2 Code polygon   ( x1 y1 ... xn yn n )                            
+ 3    a_setup bsr                                                  
+ 4    clipping  R#) _clip A0 D) move                               
+ 5    pattern R#) D6 move    D6 reg) A1 lea                        
+ 6    .l A1 _patptr A0 D) move  .w                                 
+ 7    pat_mask   R#)    _patmsk A0 D) move                         
+ 8    multi_fill R#) _multifill A0 D) move                         
+ 9    xmin_clip  R#)  _xmn_clip A0 D) move                         
+10    ymin_clip  R#)  _ymn_clip A0 D) move                         
+11    xmax_clip  R#)  _xmx_clip A0 D) move                         
+12    ymax_clip  R#)  _ymx_clip A0 D) move                         
+13    .l _cntrl A0 D) A1 move   .w SP ) 2 A1 D) move               
+14    SP )+ D0 move   2 # D0 asl   2 D0 subq   D0 D5 move          
+15    $7FFF # D3 move    0 D4 moveq                                
+Screen 17 not modified     
+ 0 \ polygon forts.                                       17sep86we
+ 1                                                                 
+ 2    .l _ptsin A0 D) A1 move                                      
+ 3    BEGIN   .w 0 D0 SP DI) D1 move  D1 A1 )+ move  D0 1 # btst   
+ 4                  0= IF  D1 D3 cmp  CC IF  D1 D3 move  THEN      
+ 5                         D1 D4 cmp  CS IF  D1 D4 move  THEN  THEN
+ 6            D0 tst 0<> WHILE  2 D0 subq  REPEAT                  
+ 7    0 D5 SP DI) A1 )+ move  2 D5 subq  0 D5 SP DI) A1 ) move     
+ 8    4 D5 addq  D5 SP adda                                        
+ 9    .l A0 D5 move                                                
+10    BEGIN   D5 A0 move  .w D3 _y1 A0 D) move   $A006 ,           
+11            1 D3 addq  D3 D4 cmp  0= UNTIL                       
+12    Next end-code                                                
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 18 not modified     
+ 0 \                                                               
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 19 not modified     
+ 0 \ Line A - Graphics   Loadscreen                                
+ 1                                                                 
+ 2                                                                 
+ 3 Line-A Routinen erhalten ein eigenes Vocabular.                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 20 not modified     
+ 0 \ Table offsets                                        01jan86we
+ 1                                                                 
+ 2 Die Definitionen auf diesem Screen enthalten die sogenannten    
+ 3 Line_A Variablen. Der Aufruf Åber $A000 liefert unter anderem   
+ 4 die Basisadresse dieser Variablen zurÅck.                       
+ 5                                                                 
+ 6 Wenn diese Definitionen in anderen Programmen mitgenutzt werden 
+ 7 sollen, mÅssen diese beiden Screens mit                         
+ 8                                                                 
+ 9           2 LOADFROM LINE_A.SCR                                 
+10 und       3 LOADFROM LINE_A.SCR                                 
+11                                                                 
+12 eingebunden werden.                                             
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 21 not modified     
+ 0 \ Table offsets                                        01jan86we
+ 1                                                                 
+ 2 Die Beschreibung der Line_A Variablen findet man in der ent-    
+ 3 sprechenden Literatur (hoffentlich bald!!).                     
+ 4                                                                 
+ 5 Bei jeder Line_A Routine lÑût sich am Quelltext sehen, welche   
+ 6 Variablen gerade benutzt werden. Allerdings sind unsere Unter-  
+ 7 lagen (ATARI-Entwicklungspaket) auch nicht besonders aussage-   
+ 8 fÑhig....                                                       
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 22 not modified     
+ 0 \ Variable                                            bp 12oct86
+ 1                                                                 
+ 2 Diese vier Variablen beschreiben das 'Clipping-Window'.  Damit  
+ 3  lassen sich alle Ausgaben auf dieses Window beschrÑnken.       
+ 4 Anzahl der Planes fÅr FÅllmuster                                
+ 5 Bitmuster fÅr Linien ($FFFF = durchgezogen)                     
+ 6 Mit diesen vier Variablen werden die Farben der Planes fest-    
+ 7  gelegt.                                                        
+ 8                                                                 
+ 9                                                                 
+10 Hilfsvariable zur Vereinfachung bei Draw. EnthÑlt die Endkoordi-
+11  naten der zuletzt gezeichneten Linie.                          
+12 Schreibmodus: 0=over, 1= trans, 2=exor, 3=invtrans              
+13 Bildschirmauflîsung: 0=320x200, 1=320x400, 2=640x400            
+14                                                                 
+15                                                                 
+Screen 23 not modified     
+ 0 \ arrays                                               17sep86we
+ 1                                                                 
+ 2 EnthÑlt die Anzahl - 1 der Worte in Arrays fÅr FÅllmuster.      
+ 3 EnthÑlt die Adresse des aktuellen FÅllmusters.                  
+ 4                                                                 
+ 5 Zwei wichtige FÅllmuster: Leer                                  
+ 6 und voll                                                        
+ 7                                                                 
+ 8 Flag, ob die Koordinaten ÅberprÅft werden sollen (Geschwindigk.)
+ 9 Flag, ob mit Clipping gearbeitet wird.                          
+10                                                                 
+11 speichert die lange Adresse der ZeichsÑtze.                     
+12 speichert die lange Basis-Adresse der Line_A Variablen          
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 24 not modified     
+ 0 \ Initialization                                       17sep86we
+ 1                                                                 
+ 2 Wird bei vielen Routinen zu Beginn benutzt.                     
+ 3  $A000 Åbergibt in A0 a_base, in A1 a_fonts                     
+ 4  Schreibmodus                                                   
+ 5  und die Farben der Planes Åbergeben                            
+ 6  Alle diese Werte werden aus den FORTH-Variablen in die ent-    
+ 7  sprechenden Line_A Variablen geschrieben.                      
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 25 not modified     
+ 0 \ line                                                 17sep86we
+ 1                                                                 
+ 2 zeichnet eine Gerade von (x1,y1) nach (x2,y2).                  
+ 3  Initialisierung                                                
+ 4  Original-Ton ATARI: Set it to -1 and forget it !               
+ 5  Die Werte fÅr x2,y2 werden auch in cur_x und cur_y gemerkt.    
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 26 not modified     
+ 0 \ rectangle                                            17sep86we
+ 1                                                                 
+ 2 zeichnet ein gefÅlltes Rechteck mit x1,y1 als oberer linker Ecke
+ 3  und width und height als Breite und Hîhe.                      
+ 4  Umrechnung von Breite und Hîhe in Koordinaten                  
+ 5                                                                 
+ 6                                                                 
+ 7  Adresse des FÅllmusters Åbergeben.                             
+ 8                                                                 
+ 9  Anzahl der Worte im FÅllmuster                                 
+10  Anzahl der Planes fÅr FÅllmuster                               
+11  Koordinaten des Clipping-Rechtecks                             
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 27 not modified     
+ 0 \ Maus-Functions                                       17sep86we
+ 1                                                                 
+ 2 schaltet Maus-Cursor ein                                        
+ 3  CONTRL(1) wird gelîscht und CONTRL(3) auf 1 gesetzt (???)      
+ 4  INTIN(0) wird gelîscht, sonst wird die Anzahl der hide-Aufrufe 
+ 5  berÅcksichtigt (s.a. c-flag beim entsprechenden VDI-Aufruf)    
+ 6                                                                 
+ 7 schaltet Maus-Cursor aus.                                       
+ 8                                                                 
+ 9 Damit kann eine eigene Mausform entwickelt werden.              
+10  Adresse enthÑlt ein Array mit folgendem Aufbau:                
+11  Maskenfarbe, Datenfarbe                                        
+12  16 Worte Maske                                                 
+13  16 Worte Daten                                                 
+14                                                                 
+15                                                                 
+Screen 28 not modified     
+ 0 \ copyraster                                          bp 12oct86
+ 1                                                                 
+ 2 Die Copyrasterfunktionen verlangen eine sehr komplexe Parameter-
+ 3  Åbergabe. Diese ist im File VDI.SCR an der entsprechenden      
+ 4  Stelle enthalten. Da diese Funktion gegenÅber der VDI-Funktion 
+ 5  kaum Geschwindigkeitsvorteile bringt, wurde auf die nochmalige 
+ 6  Definition hier verzichtet.                                    
+ 7                                                                 
+ 8 Wen's interessiert, mîge im File VDI.SCR unter Rasterfunctions  
+ 9  nachlesen.                                                     
+10                                                                 
+11 So lÑdt man den entsprechenden Teil der VDI-Bibliothek !        
+12  Dieser Teil wird schon vom Editor benîtigt und ist daher im    
+13  System normalerweise schon vorhanden.                          
+14                                                                 
+15                                                                 
+Screen 29 not modified     
+ 0 \ Checking                                             18sep86we
+ 1                                                                 
+ 2 Array mit den Grenzen fÅr die drei Auflîsungsstufen.            
+ 3                                                                 
+ 4 flag=0 bei 320x200, flag=1 bei 320x400, flag=2 bei 640x400      
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8 ÅberprÅft, ob x und y innerhalb des Bildschirms liegen.         
+ 9  Ansonsten erfolgt Abbruch. Diese PrÅfung kostet Zeit, erspart  
+10  aber SystemabstÅrze bei falschen Parametern.                   
+11                                                                 
+12 prÅft x und y, wenn checking eingeschaltet ist.                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 30 not modified     
+ 0 \ relative  set draw clipping                          18sep86we
+ 1                                                                 
+ 2 berechnet aus den Offsets dx und dy und den in cur_y und cur_y  
+ 3  gespeicherten Werten die neuen Koordinaten x und y.            
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7 setzt cur_x und cur_y                                           
+ 8 zeichnet eine Linie von (cur_x,cur_y) nach (x,y).               
+ 9                                                                 
+10 setzt das Clipping-Window und schaltet clipping ein.            
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 31 not modified     
+ 0 \ box                                                  18sep86we
+ 1                                                                 
+ 2 zeichnet ein ungefÅlltes Rechteck mit der Breite width und Hîhe 
+ 3  height. Die Koordinaten der linken oberen Ecke werden aus      
+ 4  cur_x und cur_y entnommen.                                     
+ 5  Das ganze besteht aus vier einzelnen Geraden.                  
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 32 not modified     
+ 0 \ +sprite -sprite                                      17sep86we
+ 1                                                                 
+ 2 zeichnet ein Sprite und speichert den Bildschirm                
+ 3 sprt_def_blk enthÑlt die Sprite-Daten                           
+ 4 sprt_sav_blk ist die Adresse des Zwischenspeichers fÅr den Bild-
+ 5  schirm. Es werden pro Plane 64 Byte benîtigt.                  
+ 6 (x,y) ist der 'Hotspot' des Sprites.                            
+ 7                                                                 
+ 8 lîscht das Sprite und restauriert den Bildschirm.               
+ 9                                                                 
+10 Der sprt_def_blk hat folgenden Aufbau:                          
+11  x-offset zum Hotspot, y-offset zum Hotspot                     
+12  Format-Flag, Hintergrundfarbe, Zeichenfarbe                    
+13  32 Worte mit Muster:                                           
+14   Hintergrund 1.Zeile, Vordergrund 1.Zeile                      
+15   Hintergrund 2.Zeile, Vordergrund 2.Zeile   usw.               
+Screen 33 not modified     
+ 0 \ put_pixel get_pixel                                  17sep86we
+ 1                                                                 
+ 2 zeichnet ein Pixel am Punkt (x,y) mit Farbe color.              
+ 3                                                                 
+ 4 Man kann definieren:                                            
+ 5    : plot   ( x y -- )        1 putpixel ;                      
+ 6    : unplot ( x y -- )        0 putpixel ;                      
+ 7                                                                 
+ 8                                                                 
+ 9 color ist die Farbe des Punktes (x,y).                          
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 34 not modified     
+ 0 \ polygon                                              17sep86we
+ 1                                                                 
+ 2 zeichnet ein n-Eck mit den Eckpunkten (x1,y1) ... (xn,yn).      
+ 3                                                                 
+ 4  Clipping auswerten                                             
+ 5  FÅllmuster Åbergeben                                           
+ 6                                                                 
+ 7  FÅllmustermaske                                                
+ 8  und Anzahl der Planes Åbergeben                                
+ 9  Clipping-Window setzen                                         
+10                                                                 
+11                                                                 
+12                                                                 
+13  Anzahl der Ecken                                               
+14  Eckpunkte ins ptsin-Array Åbernehmen                           
+15  D3 und D4 enthalten die Koordianten des grîûten Punktes        
+Screen 35 not modified     
+ 0 \ polygon forts.                                       17sep86we
+ 1                                                                 
+ 2  fÅr die FÅllfunktion                                           
+ 3  Werte Åbergeben und D3,D4 ggf updaten.                         
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7  ersten Punkt wiederholen, vereinfacht die öbergabe             
+ 8                                                                 
+ 9  $A006 so oft aufrufen, bis das n-Eck vollstÑndig gefÅllt ist.  
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 36 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

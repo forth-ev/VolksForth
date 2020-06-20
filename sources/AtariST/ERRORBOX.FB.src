@@ -1,0 +1,102 @@
+Screen 0 not modified     
+ 0     ERRORBOX.SCR                                       26oct86we
+ 1                                                                 
+ 2 Dieses File gibt ABORT"-Fehlermeldungen in ALERT-Boxen aus.     
+ 3                                                                 
+ 4 Diese Box enthÑlt die Buttons "Cancel" und "Editor", falls der  
+ 5    Fehler beim Laden eines Files auftrat. Der Button "Editor"   
+ 6    verzweigt in den Editor, "Cancel" zum Kommandointerpreter.   
+ 7    "Editor" ist der Defaultwert, der bei DrÅcken von <Return>   
+ 8    ausgelîst wird.                                              
+ 9 Trat der Fehler bei AusfÅhrung von Tastatureingaben auf, gibt   
+10    es nur den OK-Button.                                        
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ Loadscreen for errorbox                              26oct86we
+ 1                                                                 
+ 2 Onlyforth Gem also definitions                                  
+ 3                                                                 
+ 4 0 list                                                          
+ 5                                                                 
+ 6 1 +load                                                         
+ 7                                                                 
+ 8 ' boxhandler errorhandler !                                     
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ Display all errors in an ALERT-Box                   26oct86we
+ 1                                                                 
+ 2 | : addstring     ( string -- )        \ add a string to pad    
+ 3        count  $add ;                                            
+ 4                                                                 
+ 5 : boxhandler    ( string -- )                                   
+ 6    show_c       pad   dup off  $sum !                           
+ 7    " [3][" addstring                                            
+ 8    here addstring                                               
+ 9    " |" addstring    addstring                                  
+10    blk @ ?dup IF    scr !   >in @ r# !                          
+11                     2 " ][Cancel|Editor]"                       
+12               ELSE  1 " ][Ok]"  THEN  addstring                 
+13    pad c>0"   pad  form_alert  hide_c                           
+14    2 = IF  v THEN  quit ;                                       
+15                                                                 
+Screen 3 not modified     
+ 0     ERRORBOX.SCR                                       26oct86we
+ 1                                                                 
+ 2 Zugleich wollen wir zeigen, wie einfach unter volksFORTH Alert- 
+ 3  Boxen programmiert werden kînnen. Bei unserem Beispiel handelt 
+ 4  es sich sogar um einen komplizierten Fall, weil der auszu-     
+ 5  gebende String erst in PAD zusammengestellt werden muû.        
+ 6                                                                 
+ 7 Ansonsten kînnte eine Alert-Box z.B. so programmiert werden.    
+ 8  (Das folgende Beispiel kînnen Sie ausprobieren, indem Sie den  
+ 9   Cursor in die nÑchste Zeile setzen und CTRL-L eingeben.       
+10                                                                 
+11  Create boxtext ," [3][Dies ist eine Alert-Box][Seh ich selbst]"
+12         boxtext c>0"                                            
+13                                                                 
+14   : test    1 boxtext form_alert drop ;                         
+15                                                                 
+Screen 4 not modified     
+ 0 \ Loadscreen for errorbox                              26oct86we
+ 1                                                                 
+ 2 setzt Searchorder auf       GEM GEM FORTH ONLY     GEM          
+ 3                                                                 
+ 4 gibt Screen 0 mit der Anleitung aus.                            
+ 5                                                                 
+ 6 kompiliert den folgenden Screen.                                
+ 7                                                                 
+ 8 setzt BOXHANDLER als neuen errorhandler. Alle Fehlermeldungen,  
+ 9  die Åber abort"  laufen, erscheinen jetzt in Boxen.            
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 5 not modified     
+ 0 \ Display all errors in an ALERT-Box                   26oct86we
+ 1                                                                 
+ 2 ADDSTRING  hÑngt den String bei Adresse string an den String    
+ 3  bei $SUM an. Benutzt $ADD aus dem File STRINGS.SCR             
+ 4                                                                 
+ 5 BOXHANDLER   gibt den String von ABORT" in einer Alert-Box aus. 
+ 6  Maus einschalten und PAD als Ziel fÅr ADDSTRING vorbereiten.   
+ 7  Die 3 sorgt fÅr das STOP-Icon in der Box.                      
+ 8  Bei HERE steht das Wort, das den Fehler verursacht hat.        
+ 9  In die nÑchste Zeile kommt die Fehlermeldung von ABORT"        
+10  Wenn der Fehler beim Kompilieren auftrat, werden Screen und    
+11    Cursorposition gemerkt und zwei Buttons ausgegeben.          
+12  Sonst kann man den Fehler nur quittieren.                      
+13  Bei PAD ist jetzt der gesamte Boxtext zusammengestellt.        
+14  Falls 'EDITOR' angeklickt wurde, wird der Editor mit dem       
+15  fehlerhaften Screen aufgerufen.                                

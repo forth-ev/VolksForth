@@ -1,0 +1,510 @@
+Screen 0 not modified     
+ 0 \\                 *** Printer-Interface ***           10oct86we
+ 1                                                                 
+ 2 Dieses File enthÑlt das Printer-Interface. Die Definitionen fÅr 
+ 3 die Druckersteuerung mÅssen ggf. an Ihren Drucker angepaût wer- 
+ 4 den.                                                            
+ 5                                                                 
+ 6 PRINT  lenkt alle Ausgabeworte auf den Drucker um, mit  DISPLAY 
+ 7 wird wieder auf dem Bildschirm ausgegeben.                      
+ 8                                                                 
+ 9 Zum Ausdrucken der Quelltexte gibt es die Worte                 
+10                                                                 
+11    pthru      ( from to -- )   druckt Screen from bis to        
+12    document   ( from to -- )  wie pthru, aber mit Shadow-Screens
+13    printall   ( -- )   wie pthru, aber druckt das ganze File    
+14    listing    ( -- )   wie document, aber fÅr das ganze File    
+15                                                                 
+Screen 1 not modified     
+ 0 \ Printer Interface Epson RX80\FX80                    21oct86we
+ 1                                                                 
+ 2 Onlyforth                                                       
+ 3                                                                 
+ 4 \needs file?            ' noop  | Alias file?                   
+ 5 \needs capacity         ' blk/drv Alias capacity                
+ 6                                                                 
+ 7 Vocabulary Printer   Printer definitions also                   
+ 8                                                                 
+ 9  1 &13 +thru                                                    
+10                                                                 
+11 Onlyforth  \ clear                                              
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ Printer  p! and controls                             18nov86we
+ 1                                                                 
+ 2 ' bcostat | Alias ready?   ' 0 | Alias printer                  
+ 3                                                                 
+ 4 : p!  ( n -- )                                                  
+ 5    BEGIN  pause  printer ready?  UNTIL  printer bconout ;       
+ 6                                                                 
+ 7                                                                 
+ 8 | : ctrl:  ( 8b -- )   Create c,   does>  ( -- )   c@ p! ;      
+ 9                                                                 
+10  07   ctrl: BEL      $7F | ctrl: DEL       $0D | ctrl: RET      
+11 $1B | ctrl: ESC      $0A   ctrl: LF        $0C   ctrl: FF       
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0 \ Printer controls                                     09sep86re
+ 1                                                                 
+ 2 | : esc:  ( 8b -- )   Create c,   does>  ( -- )   ESC c@ p! ;   
+ 3                                                                 
+ 4 | : esc2  ( 8b0 8b1 -- )   ESC p! p! ;                          
+ 5                                                                 
+ 6 | : on:  ( 8b -- )  Create c,  does>  ( -- )  ESC c@ p!  1 p! ; 
+ 7                                                                 
+ 8 | : off: ( 8b -- )  Create c,  does>  ( -- )  ESC c@ p!  0 p! ; 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 4 not modified     
+ 0 \ Printer Escapes Epson RX-80/FX-80                    12sep86re
+ 1                                                                 
+ 2 $0F | ctrl: (+17cpi             $12 | ctrl: (-17cpi             
+ 3                                                                 
+ 4 Ascii P | esc: (+10cpi          Ascii M | esc: (+12cpi          
+ 5 Ascii 0   esc: 1/8"             Ascii 1   esc: 1/10"            
+ 6 Ascii 2   esc: 1/6"             Ascii T   esc: suoff            
+ 7 Ascii N   esc: +jump            Ascii O   esc: -jump            
+ 8 Ascii G   esc: +dark            Ascii H   esc: -dark            
+ 9 \ Ascii 4   esc: +cursive         Ascii 5   esc: -cursive       
+10                                                                 
+11 Ascii W   on:  +wide            Ascii W   off: -wide            
+12 Ascii -   on:  +under           Ascii -   off: -under           
+13 Ascii S   on:  sub              Ascii S   off: super            
+14                                                                 
+15                                                                 
+Screen 5 not modified     
+ 0 \ Printer Escapes Epson RX-80/FX-80                    12sep86re
+ 1                                                                 
+ 2 : 10cpi   (-17cpi (+10cpi ;     ' 10cpi   Alias pica            
+ 3 : 12cpi   (-17cpi (+12cpi ;     ' 12cpi   Alias elite           
+ 4 : 17cpi   (+10cpi (+17cpi ;     ' 17cpi   Alias small           
+ 5                                                                 
+ 6 : lines  ( #.of.lines -- )   Ascii C esc2 ;                     
+ 7                                                                 
+ 8 : "long  ( inches -- )   0 lines p! ;                           
+ 9                                                                 
+10 : american   0 Ascii R esc2 ;                                   
+11                                                                 
+12 : german     2 Ascii R esc2 ;                                   
+13                                                                 
+14 : normal     10cpi  american  suoff  1/6"  &12 "long  RET ;     
+15                                                                 
+Screen 6 not modified     
+ 0 \ Umlaute                                              14oct86we
+ 1                                                                 
+ 2 | Create DIN                                                    
+ 3 Ascii Ñ c,      Ascii î c,      Ascii Å c,      Ascii û c,      
+ 4 Ascii é c,      Ascii ô c,      Ascii ö c,      Ascii › c,      
+ 5                                                                 
+ 6 | Create AMI                                                    
+ 7 Ascii { c,      Ascii | c,      Ascii } c,      Ascii ~ c,      
+ 8 Ascii [ c,      Ascii \ c,      Ascii ] c,      Ascii @ c,      
+ 9                                                                 
+10 here AMI - | Constant tablen                                    
+11                                                                 
+12 | : p!  ( char -- )   dup $80 < IF  p! exit  THEN               
+13    tablen 0 DO  dup  I DIN + c@  =                              
+14                 IF  drop  I AMI + c@  LEAVE  THEN  LOOP         
+15    german p! american ;                                         
+Screen 7 not modified     
+ 0 \ Printer Output                                       12sep86re
+ 1                                                                 
+ 2 | Variable pcol   pcol off      | Variable prow   prow off      
+ 3                                                                 
+ 4 | : pemit  ( 8b -- )    p!  1 pcol +! ;                         
+ 5 | : pcr  ( -- )         RET LF  1 prow +!  pcol off ;           
+ 6 | : pdel  ( -- )        DEL  pcol @ 1- 0 max pcol ! ;           
+ 7 | : ppage  ( -- )       FF  prow off  pcol off ;                
+ 8 | : pat  ( row col -- )   over  prow @ <  IF  ppage  THEN       
+ 9      swap  prow @ -  0 ?DO  pcr  LOOP                           
+10      dup  pcol @ <  IF  RET  pcol off  THEN  pcol @ - spaces ;  
+11 | : pat?  ( -- row col )   prow @  pcol @ ;                     
+12 | : ptype  ( adr len -- )                                       
+13      dup pcol +!  bounds ?DO  I c@ p!  LOOP ;                   
+14                                                                 
+15                                                                 
+Screen 8 not modified     
+ 0 \ Printer output                                       18nov86we
+ 1                                                                 
+ 2 Output: >printer   pemit pcr ptype pdel ppage pat pat? ;        
+ 3                                                                 
+ 4 Forth definitions                                               
+ 5                                                                 
+ 6 : print   >printer  normal ;                                    
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 9 not modified     
+ 0 \ Variables and Setup                                 bp 12oct86
+ 1                                                                 
+ 2 Printer definitions                                             
+ 3                                                                 
+ 4 ' 0 | Alias logo                                                
+ 5                                                                 
+ 6 | : header  ( pageno -- )                                       
+ 7      12cpi  +dark  ."   volksFORTH-83    FORTH-Gesellschaft eV "
+ 8      -dark  17cpi  ." (c) 1985/86 we/bp/re/ks  "  12cpi +dark   
+ 9      file?  -dark  17cpi ."  Seite "  . ;                       
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 10 not modified     
+ 0 \ Print 2 screens across on a page                     26oct86we
+ 1                                                                 
+ 2 | : 2lines  ( scr#1 scr#2 line# -- )                            
+ 3      cr  dup 2 .r space  c/l * >r                               
+ 4      pad  c/l 2* 1+  bl fill  swap                              
+ 5      block  r@ +  pad           c/l cmove                       
+ 6      block  r> +  pad c/l + 1+  c/l cmove                       
+ 7      pad  c/l 2* 1+  -trailing  type ;                          
+ 8                                                                 
+ 9 | : 2screens  ( scr#1 scr#2 -- )                                
+10      cr cr  &30 spaces                                          
+11      +wide +dark over 4 .r  &28 spaces  dup 4 .r  -wide -dark   
+12      cr  l/s 0 DO  2dup  I 2lines  LOOP  2drop ;                
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 11 not modified     
+ 0 \ print 6 screens on a page                            18sep86we
+ 1                                                                 
+ 2 | : pageprint  ( last+1 first pageno -- )                       
+ 3      header  2dup - 1+  2/  dup 0                               
+ 4      ?DO  >r  2dup under r@ + >                                 
+ 5           IF  dup r@ +  ELSE  logo  THEN  2screens 1+ r>  LOOP  
+ 6      drop 2drop  page ;                                         
+ 7                                                                 
+ 8 | : >shadow   ( n1 -- n2 )                                      
+ 9      capacity 2/  2dup < IF + ELSE - THEN ;                     
+10                                                                 
+11 | : shadowprint  ( last+1 first pageno -- )                     
+12      header  2dup -  0                                          
+13      ?DO  dup dup >shadow  2screens  1+  LOOP                   
+14      2drop page ;                                               
+15                                                                 
+Screen 12 not modified     
+ 0 \ Printing without Shadows                            b11nov86we
+ 1                                                                 
+ 2 Forth definitions  also                                         
+ 3                                                                 
+ 4 | Variable printersem    0 printersem !    \ for multitasking   
+ 5                                                                 
+ 6 : pthru  ( first last -- )      2 arguments                     
+ 7    printersem lock   output push  print                         
+ 8    1+  capacity umin  swap  2dup -  6 /mod  swap 0<> -  0       
+ 9    ?DO  2dup 6 + min  over  I 1+  pageprint  6 +  LOOP          
+10    2drop  printersem unlock ;                                   
+11                                                                 
+12 : printall  ( -- )   0 capacity 1- pthru ;                      
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 13 not modified     
+ 0 \ Printing with Shadows                               bp 12oct86
+ 1                                                                 
+ 2 : document  ( first last -- )                                   
+ 3    printersem lock   output push   print                        
+ 4    1+  capacity 2/ umin  swap  2dup -  3 /mod  swap 0<> -  0    
+ 5    ?DO  2dup 3+ min  over  I 1+  shadowprint  3+  LOOP          
+ 6    2drop   printersem unlock ;                                  
+ 7                                                                 
+ 8 : listing  ( -- )   0 capacity 2/ 1- document ;                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 14 not modified     
+ 0 \ Printerspool                                         14oct86we
+ 1                                                                 
+ 2 \needs Task        \\                                           
+ 3                                                                 
+ 4 $100 $200 Task spooler                                          
+ 5                                                                 
+ 6 : spool'   ( -- )    \ reads word                               
+ 7    '  isfile@  offset @  base @   spooler  depth 1-  6 min  pass
+ 8    base !  offset !  isfile !  execute                          
+ 9    true abort" SPOOL' ready for next job!" stop ;               
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 15 not modified     
+ 0 \\                 *** Printer-Interface ***           13oct86we
+ 1                                                                 
+ 2 Eingestellt ist das Druckerinterface auf Epson und kompatible   
+ 3  Drucker. Die Steuersequenzen auf den Screens 2, 4 und 5 mÅssen 
+ 4  gegebenenfalls auf Ihren Drucker angepaût werden. Bei uns gab  
+ 5  es mit verschiedenen Druckern allerdings keine Probleme, da    
+ 6  sich inzwischen die meisten Druckerhersteller an die Epson-    
+ 7  Steuercodes halten.                                            
+ 8                                                                 
+ 9 Arbeiten Sie mit einem IBM-kompatiblen Drucker, muû die Umlaut- 
+10  wandlung auf Screen 6 wegkommentiert werden.                   
+11                                                                 
+12 ZusÑtzliche 'exotische' Steuersequenzen kînnen nach dem Muster  
+13  auf den Screens 4 und 5 jederzeit eingebaut werden.            
+14                                                                 
+15                                                                 
+Screen 16 not modified     
+ 0 \ Printer Interface Epson RX80                         13oct86we
+ 1                                                                 
+ 2 setzt order auf  FORTH FORTH ONLY   FORTH                       
+ 3                                                                 
+ 4 falls das Fileinterface nicht im System ist, werden die ent-    
+ 5  sprechenden Worte ersetzt.                                     
+ 6                                                                 
+ 7 Printer-Worte erhalten ein eigenes Vocabulary.                  
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 17 not modified     
+ 0 \ Printer  p! and controls                             10oct86we
+ 1                                                                 
+ 2 nur aus stilistischen GrÅnden. Das Folgende liest sich besser.  
+ 3                                                                 
+ 4 Hauptausgabewort; gibt ein Zeichen auf den Drucker aus. Es wird 
+ 5  gewartet, bis der Drucker bereit ist. (PAUSE fÅr Multitasking) 
+ 6                                                                 
+ 7                                                                 
+ 8 gibt Steuerzeichen an Drucker                                   
+ 9                                                                 
+10 Steuerzeichen fÅr Drucker. Gegebenenfalls anpassen!             
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 18 not modified     
+ 0 \ Printer controls                                     10oct86we
+ 1                                                                 
+ 2 gibt Escape-Sequenzen an den Drucker aus.                       
+ 3                                                                 
+ 4 gibt Escape und zwei Zeichen aus.                               
+ 5                                                                 
+ 6 gibt Escape, ein Zeichen und eine 1 an den Drucker aus.         
+ 7                                                                 
+ 8 gibt Escape, ein Zeichen und eine 0 an den Drucker aus.         
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 19 not modified     
+ 0 \ Printer Escapes Epson RX-80/FX-80                    10oct86we
+ 1                                                                 
+ 2 setzt bzw. lîscht Ausgabe komprimierter Schrift.                
+ 3                                                                 
+ 4 setzt Zeichenbreite auf 10 bzw. 12 cpi.                         
+ 5 Zeilenabstand in Zoll.                                          
+ 6                                 schaltet Super- und Subscript ab
+ 7 Perforation Åberspringen ein- und ausschalten.                  
+ 8 Es folgen die Steuercodes fÅr Fettdruck, Kursivschrift, Breit-  
+ 9  schrift, Unterstreichen, Subscript und Superscript.            
+10  Diese mÅssen ggf. an Ihren Drucker angepaût werden.            
+11  SelbstverstÑndlich kînnen auch weitere FÑhigkeiten Ihres Druk- 
+12  kers genutzt werden wie Proportionalschrift, NLQ etc.          
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 20 not modified     
+ 0 \ Printer Escapes Epson RX-80/FX-80                    13oct86we
+ 1                                                                 
+ 2 Hier wird die Zeichenbreite eingestellt. Dazu kann man sowohl   
+ 3  Worte mit der Anzahl der characters per inch (cpi) als auch    
+ 4  pica, elite und small benutzen.                                
+ 5                                                                 
+ 6 setzt Anzahl der Zeilen pro Seite; Einstellung:                 
+ 7  &66 lines      oder     &12 "long                              
+ 8                                                                 
+ 9                                                                 
+10 schaltet auf amerikanischen Zeichensatz.                        
+11                                                                 
+12 schaltet auf deutschen Zeichensatz.                             
+13                                                                 
+14 Voreinstellung des Druckers auf 'normale' Werte; wird beim      
+15  Einschalten mit PRINT ausgefÅhrt.                              
+Screen 21 not modified     
+ 0 \ Umlaute                                             bp 12oct86
+ 1                                                                 
+ 2 Auf diesem Screen werden die Umlaute aus dem IBM-(ATARI)-Zeichen
+ 3  satz in DIN-Umlaute aus dem deutschen Zeichensatz gewandelt.   
+ 4                                                                 
+ 5 Wenn Sie einen IBM-kompatiblen Drucker benutzen, kann dieser    
+ 6  Screen mit \\ in der ersten Zeile wegkommentiert werden.       
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12 p! wird neu definiert. Daher brauchen die folgenden Worte p!    
+13  nicht zu Ñndern, egal, ob mit oder ohne Umlautwandlung gearbei-
+14  tet wird.                                                      
+15                                                                 
+Screen 22 not modified     
+ 0 \ Printer Output                                       10oct86we
+ 1                                                                 
+ 2 aktuelle Druckerzeile und -spalte.                              
+ 3 Routinen zur Druckerausgabe     entspricht Befehl               
+ 4 ein Zeichen auf Drucker         emit                            
+ 5 CR und LF auf Drucker           cr                              
+ 6 ein Zeichen lîschen (?!)        del                             
+ 7 neue Seite                      page                            
+ 8 Drucker auf Zeile und Spalte    at                              
+ 9  positionieren; wenn nîtig,                                     
+10  neue Seite.                                                    
+11 Position feststellen            at?                             
+12 Zeichenkette ausgeben           type                            
+13                                                                 
+14 Damit sind die Worte fÅr eine eigene Output-Struktur vorhanden. 
+15                                                                 
+Screen 23 not modified     
+ 0 \ Printer output                                       10oct86we
+ 1                                                                 
+ 2 erzeugt die Output-Tabelle >printer.                            
+ 3                                                                 
+ 4 Die folgenden Worte sind von FORTH aus zugÑnglich.              
+ 5                                                                 
+ 6 schaltet Ausgabe auf Printer um. (ZurÅckschalten mit DISPLAY)   
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 24 not modified     
+ 0 \ Variables and Setup                                  10oct86we
+ 1                                                                 
+ 2 Diese Worte sind nur im Printer-Vokabular enthalten.            
+ 3                                                                 
+ 4 Dieser Screen wird gedruckt, wenn es nichts besseres gibt.      
+ 5                                                                 
+ 6 Druckt die öberschrift der Seite pageno.                        
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 25 not modified     
+ 0 \ Print 2 screens across on a page                     10oct86we
+ 1                                                                 
+ 2 druckt nebeneinander die Zeilen line# der beiden Screens.       
+ 3  Die komplette Druck-Zeile wird erst in PAD aufbereitet.        
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9 formatierte Ausgabe der beiden Screens nebeneinander            
+10  mit fettgedruckten Screennummern. Druck erfolgt mit 17cpi, also
+11  in komprimierter Schrift.                                      
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 26 not modified     
+ 0 \ print 6 screens on a page                            10oct86we
+ 1                                                                 
+ 2 gibt eine Seite aus. Anordnung der Screens auf der Seite:  1 4  
+ 3  Wenn weniger als 6 Screens vorhanden sind, werden         2 5  
+ 4  LÅcken auf der rechten Seite mit dem Logo-Screen (0)      3 6  
+ 5  aufgefÅllt.                                                    
+ 6                                                                 
+ 7                                                                 
+ 8 berechnet zu Screen n1 den Shadowscreen n2 (Kommentarscreen wie 
+ 9  dieser hier).                                                  
+10                                                                 
+11 wie pageprint, aber anstelle der Screens 4, 5 und 6 werden die  
+12  Shadowscreens zu 1, 2 und 3 gedruckt.                          
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 27 not modified     
+ 0 \ Printing without Shadows                            b22oct86we
+ 1                                                                 
+ 2 Die folgenden Definitionen stellen das Benutzer-Interface dar.  
+ 3  Daher sollen sie in FORTH gefunden werden.                     
+ 4                                                                 
+ 5 PRINTERSEM ist ein Semaphor fÅr das Multitasking, der den Zugang
+ 6  auf den Drucker fÅr die einzelnen Tasks regelt.                
+ 7                                                                 
+ 8 PTHRU gibt die Screens von  from  bis  to  aus.                 
+ 9  AusgabegerÑt merken und Drucker einschalten. Multitasking wird,
+10  sofern es den Drucker betrifft, gesperrt.                      
+11  Die Screens werden mit pageprint ausgegeben.                   
+12                                                                 
+13                                                                 
+14 wie oben, jedoch wird das komplette File gedruckt.              
+15                                                                 
+Screen 28 not modified     
+ 0 \ Printing with Shadows                                10oct86we
+ 1                                                                 
+ 2 wie pthru, aber mit Shadowscreens.                              
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8 wie printall, aber mit Shadowscreens.                           
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 29 not modified     
+ 0 \ Printerspool                                         10oct86we
+ 1                                                                 
+ 2 Falls der Multitasker nicht vorhanden ist, wird abgebrochen.    
+ 3                                                                 
+ 4 Der Arbeitsbereich der Task wird erzeugt.                       
+ 5                                                                 
+ 6 Mit diesem Wort wird das Drucken im Hintergrund gestartet.      
+ 7 Aufruf mit :                                                    
+ 8   spool' listing                                                
+ 9   spool' printall                                               
+10   from to spool' pthru                                          
+11   from to spool' document                                       
+12 Vor (oder auch nach) dem Aufruf von spool' muû der Multitasker  
+13  mit multitask eingeschaltet werden.                            
+14                                                                 
+15                                                                 

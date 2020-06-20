@@ -1,0 +1,1258 @@
+Screen 0 not modified     
+ 0 \\                  *** File-Interface ***             25may86we
+ 1                                                                 
+ 2 Dieses File enth„lt das File-Interface.                         
+ 3 Damit wird der Zugriff auf normale GEM-Dos Files m”glich. Wenn  
+ 4 ein File mit  USE  benutzt wird, beziehen sich alle Worte, die  
+ 5 mit dem Massenspeicher arbeiten, auf dieses File. Ebenfalls un- 
+ 6 tersttzt das File-Interface Subdirectories, sogar mit mehr     
+ 7 M”glichkeiten als unter GEM-Dos.                                
+ 8                                                                 
+ 9 Da es normalerweise im Direktzugriff geladen wird, mssen die   
+10 View-Felder der Worte anschliežend gepatched werden             
+11 (s. STARTUP.SCR)                                                
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ File interface load and patch block                  13oct86we
+ 1                                                                 
+ 2 Onlyforth                                                       
+ 3                                                                 
+ 4 1   3 +thru   \ savesystem, always needed                       
+ 5 4 $21 +thru   \ Fileinterface                                   
+ 6                                                                 
+ 7 ' (makeview     Is makeview                                     
+ 8 ' remove-files  Is custom-remove                                
+ 9 ' filer/w       Is r/w                                          
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ File functions for save-system                     cas20130105
+ 1                                                                 
+ 2 : arguments ( n -- )                                            
+ 3      depth 1- > abort" not enough Parameters" ;                 
+ 4                                                                 
+ 5 | Code (createfile   ( C$ -- handle )                           
+ 6    0 # A7 -) move               \ normal file, no protection    
+ 7    SP )+ D6 move   D6 reg) A0 lea   .l A0 A7 -) move            
+ 8    .w $3C # A7 -) move   1 trap   8 A7 addq                     
+ 9    D0 SP -) move   Next   end-code                              
+10                                                                 
+11 | Code (closefile    ( handle -- f )                            
+12    SP )+  A7 -) move                                            
+13    $3E # A7 -) move   1 trap   4 A7 addq                        
+14    D0 SP -) move   Next   end-code                              
+15                                                                 
+Screen 3 not modified     
+ 0 \ write into file                                    cas20130105
+ 1                                                                 
+ 2 | Code (filewrite  ( buff len handle -- n )                     
+ 3    SP )+ D0 move   .l D2 clr  .w  SP )+ D2 move                 
+ 4    SP )+ D6 move   D6 reg) A0 lea                               
+ 5    .l  A0 A7 -) move           \ buffer adress                  
+ 6        D2 A7 -) move           \ buffer length                  
+ 7    .w  D0 A7 -) move           \ handle                         
+ 8     $40 # A7 -) move           \ call  WRITE                    
+ 9    1 trap    $0C # A7 adda                                      
+10    D0 SP -) move               \ errorflag, num written Bytes   
+11    Next  end-code                                               
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 4 not modified     
+ 0 \ save-system                                        cas20130105
+ 1                                                                 
+ 2 : save-system       save   flush    \ Filename follows          
+ 3    bl word count   dup     0= abort" missing filename"          
+ 4    over + off    (createfile  dup >r   0< abort" no device "    
+ 5    $601A 0 !  align  here $1C - $04 !   0 , 0 ,                 
+ 6    0  here r@ (filewrite  here - abort" write error"            
+ 7    r> (closefile  0< abort" close error" ;                      
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 5 not modified     
+ 0 \ disk errors                                          13oct86we
+ 1                                                                 
+ 2 Vocabulary Dos   Dos also definitions                           
+ 3                                                                 
+ 4 | ' 2-   Alias body>            \ just for style                
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10 | : 2digits   ( n -- adr len )                                  
+11     base push  decimal   extend <# # # #> ;                     
+12                                                                 
+13 | 0 Constant #adr                                               
+14         \ will hold the adr of "00" in following abort" ..."    
+15                                                                 
+Screen 6 not modified     
+ 0 \ disk errors                                        cas20130105
+ 1                                                                 
+ 2 : .diskerror  ( -n -- )     negate                              
+ 3     &13 case? abort" disk is proteced"                          
+ 4     &33 case? abort" file not found"                            
+ 5     &34 case? abort" path not found"                            
+ 6     &36 case? abort" access denied"                             
+ 7     &37 case? abort" illegal handle#"                           
+ 8     &46 case? abort" illegal drive num"                         
+ 9     2digits  #adr swap   cmove                                  
+10     true     [ here 2+      ( adress of counted string )   ]    
+11     abort" Dos-Error #00"                                       
+12              [ count +  2-  ' #adr >body !  ( adr of "00") ] ;  
+13                                                                 
+14 : ?diskabort   ( -n -- )    dup 0< IF .diskerror  THEN  drop ;  
+15                                                                 
+Screen 7 not modified     
+ 0 \ File control block structure                         09sep86we
+ 1                                                                 
+ 2 | : Fcbyte ( n len -- n' )   \ defining word for fcb contents   
+ 3     Create over c, +  does>  c@ + ;                             
+ 4                                                                 
+ 5 &25 Constant filenamelen      \ only SHORT pathes will fit !    
+ 6 |  0  2 Fcbyte nextfile       \ link to next file               
+ 7 filenamelen Fcbyte filename       \ name of file                
+ 8       4 Fcbyte filesize       \ size in Bytes ,  low..high      
+ 9       2 Fcbyte filehandle     \ handle from GEMdos              
+10       2 Fcbyte fileno         \ fileno. for VIEW                
+11     Constant b/fcb            \ bytes per file                  
+12                                                                 
+13 : handle        ( -- n )  isfile@ filehandle @ ;                
+14                                                                 
+15 \ *** nextfile must be the first field !                        
+Screen 8 not modified     
+ 0 \ position into block                                  13oct86we
+ 1                                                                 
+ 2 Code lseek      ( d handle n -- d' )                            
+ 3    SP )+ A7 -) move    SP )+ A7 -) move    .l SP )+ A7 -) move  
+ 4    .w $42 # A7 -) move   1 trap    $0A # A7 adda                
+ 5    .l D0 SP -) move   Next  end-code                            
+ 6                                                                 
+ 7 : position      ( d handle -- f )                               
+ 8    0 lseek   0< ?exit   drop false ;                            
+ 9                                                                 
+10 : position?     ( handle -- d )                                 
+11    0 0 rot  1  lseek   dup 0<  IF  ?diskabort  THEN ;           
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 9 not modified     
+ 0 \ read and write a memory area                       cas20130105
+ 1                                                                 
+ 2 Code (fileread   ( buff len handle -- n )                       
+ 3    SP )+ D0 move   .l D2 clr  .w  SP )+ D2 move                 
+ 4    SP )+ D6 move   D6 reg) A0 lea                               
+ 5    .l  A0 A7 -) move           \ buffer adress                  
+ 6        D2 A7 -) move           \ buffer length                  
+ 7    .w  D0 A7 -) move           \ handle                         
+ 8     $3F # A7 -) move           \ call  READ                     
+ 9    1 trap    $0C # A7 adda                                      
+10    D0 SP -) move               \ errorflag or bytes read        
+11    Next  end-code                                               
+12                                                                 
+13 ' (filewrite Alias (filewrite                                   
+14                                                                 
+15                                                                 
+Screen 10 not modified     
+ 0 \ (open-file  setdta                                   26oct86we
+ 1                                                                 
+ 2 Code (openfile  ( C$ -- handle )                                
+ 3    2 # A7 -) move                                               
+ 4    SP )+ D6 move   D6 reg) A0 lea   .l A0 A7 -) move            
+ 5    .w $3D # A7 -) move   1 trap   8 A7 addq                     
+ 6    D0 SP -) move   Next   end-code                              
+ 7                                                                 
+ 8 Create dta      &44 allot                                       
+ 9                                                                 
+10 Code setdta     ( addr -- )                                     
+11    SP )+ D6 move   D6 reg) A0 lea   .l A0 A7 -) move            
+12    .w $1A # A7 -) move   1 trap   6 A7 addq   Next   end-code   
+13                                                                 
+14 ' (closefile  Alias (closefile                                  
+15 ' (createfile Alias (createfile                                 
+Screen 11 not modified     
+ 0 \ search for files                                     03oct86we
+ 1                                                                 
+ 2 Code search0    ( C$ attr -- f )    \ search for first file     
+ 3    SP )+ A7 -) move    SP )+ D6 move   D6 reg) A0 lea           
+ 4    .l A0 A7 -) move   .w $4E # A7 -) move   1 trap   8 A7 addq  
+ 5    D0 SP -) move    Next  end-code                              
+ 6                                                                 
+ 7 Code searchnext    ( -- f )         \ search for next file      
+ 8    $4F # A7 -) move   1 trap   2 A7 addq                        
+ 9    D0 SP -) move    Next  end-code                              
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 12 not modified     
+ 0 \ Create a subdir                                   bp 11 oct 86
+ 1                                                                 
+ 2 Code (makedir  ( C$ -- f )     \ Create a subdir                
+ 3    $39 # D1 move                                                
+ 4 Label long-adr                                                  
+ 5    SP )+ D6 move   D6 reg) A0 lea   .l A0 A7 -) move            
+ 6    .w D1 A7 -) move   1 trap   6 A7 addq                        
+ 7    D0 SP -) move   Next  end-code                               
+ 8                                                                 
+ 9 Code (setdir     ( C$ -- f )                                    
+10    $3B # D1 move   long-adr bra    end-code                     
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 13 not modified     
+ 0 \ select drive                                         09sep86we
+ 1                                                                 
+ 2 Code setdrive   ( n -- )                                        
+ 3    SP )+ A7 -) move                                             
+ 4    $0E # A7 -) move   1 trap   4 A7 addq   Next end-code        
+ 5                                                                 
+ 6 Code getdrive   ( -- n )                                        
+ 7    $19 # A7 -) move   1 trap   2 A7 addq                        
+ 8    D0 SP -) move   Next   end-code                              
+ 9                                                                 
+10 Code getdir     ( addr n -- f )  \ n is drive, string in addr   
+11    SP )+ A7 -) move   SP )+ D6 move   D6 reg) A0 lea            
+12    .l A0 A7 -) move   .w $47 # A7 -) move   1 trap   8 A7 addq  
+13    D0 SP -) move   Next   end-code                              
+14                                                                 
+15                                                                 
+Screen 14 not modified     
+ 0 \ file sizes                                          b30aug86we
+ 1                                                                 
+ 2 : (capacity  ( fcb -- n)             \ calculates size in blocks
+ 3    filesize 2@   2dup or  0= IF  drop exit  THEN                
+ 4    b/blk  um/mod  swap  IF  1+  THEN ;  \ add 1 block for rest  
+ 5                                                                 
+ 6 | : in-range  ( block fcb -- f) \ makes sure, block is in file  
+ 7      (capacity  u< not &36 * ;    \ Errorcode -&36              
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 15 not modified     
+ 0 \ read and write into files                         bp 11 oct 86
+ 1                                                                 
+ 2 | : set-pos   ( block handle -- f)                              
+ 3       >r  b/blk um*  r>  position ;                             
+ 4                                                                 
+ 5 | : fileaccess   ( buff block fcb -- buff len handle/ errorcode)
+ 6       2dup  in-range  ?dup IF >r 2drop drop r> rdrop exit THEN  
+ 7       filehandle @   under  set-pos                             
+ 8                       ?dup IF >r 2drop      r> rdrop exit THEN  
+ 9       b/blk swap ;                                              
+10                                                                 
+11 | : fileread     ( buff block fcb -- ff / errorcode )           
+12       fileaccess  (fileread  dup 0>  IF  drop false  THEN ;     
+13                                                                 
+14 | : filewrite    ( buff block fcb -- ff / errorcode )           
+15       fileaccess  (filewrite  dup 0>  IF  drop false  THEN ;    
+Screen 16 not modified     
+ 0 \ twiggling the file variables                      bp 11 oct 86
+ 1                                                                 
+ 2 : scan-name     ( C$ -- adr len')  \ length of "C"-string       
+ 3      $1000 over swap  0 scan  drop  over - ;                    
+ 4                                                                 
+ 5 : .file ( fcb --)                  \ print only filename        
+ 6      ?dup 0=  IF  ." DIRECT ! " exit  THEN  body> >name .name ; 
+ 7                                                                 
+ 8 : .fcb      ( fcb -- )             \ print filename             
+ 9      dup filehandle @ 2 .r   dup filesize 2@  6 d.r   3 spaces  
+10      dup .file  2 spaces  filename scan-name type ;             
+11                                                                 
+12 : !files   ( fcb -- )              \ set file and isfile        
+13       dup  isfile !  fromfile ! ;                               
+14                                                                 
+15                                                                 
+Screen 17 not modified     
+ 0 \ PATHes                                            bp 11 oct 86
+ 1                                                                 
+ 2 | &30 Constant pathlen          \ max. len of all pathes        
+ 3                                                                 
+ 4 Variable  pathes  pathlen allot \ counted string of pathes      
+ 5      pathes off                                                 
+ 6                                                                 
+ 7 : pathes?       ( -- )          \ print a list of the pathes    
+ 8      cr  3 spaces  pathes count type ;                          
+ 9                                                                 
+10 : setpath       ( adr len --)   \ set's the list of pathes      
+11      pathlen min   pathes place                                 
+12      Ascii ;  pathes count + c!   pathes c@ 1+ pathes c! ;      
+13                                                                 
+14 \\ PATH : see elsewhere in this file                            
+15                                                                 
+Screen 18 not modified     
+ 0 \ search for files                                  bp 11 oct 86
+ 1                                                                 
+ 2 Variable workspace    &64 allot       \ place for c$            
+ 3                                                                 
+ 4 | : try.path   ( adr len fcb attr -- f )                        
+ 5     2swap   workspace swap   2dup + >r   move                   
+ 6     swap   filename  r>  filenamelen cmove                      
+ 7     workspace   swap  search0 0= ;                              
+ 8                                                                 
+ 9 | : makec$     ( adr len -- c$ )        \ make adr len to a c$  
+10     workspace swap  2dup + >r   move                            
+11     r> off  ( make a c$ ) workspace ;                           
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 19 not modified     
+ 0 \ "                                                 bp 11 oct 86
+ 1                                                                 
+ 2 | Variable sfile                       \ "dirty" variable       
+ 3 | 7 Constant defaultattr               \ find all filetypes     
+ 4                                                                 
+ 5 | : path@       ( adr len -- adr len1 adr len2) \ isolate a path
+ 6      Ascii ; skip   2dup  2dup  Ascii ; scan   nip -  ;         
+ 7                                                                 
+ 8 : (searchfile   ( fcb -- ff/ C$ f)     \ search for file in path
+ 9    sfile !    pathes count             \ and in act. directory  
+10    BEGIN   path@  sfile @  defaultattr   try.path               
+11                   IF  2drop  workspace true  exit  THEN         
+12            Ascii ; scan   dup 0=  UNTIL  nip ;                  
+13                                                                 
+14 : searchfile   ( fcb -- C$ )   \ file was found in path         
+15    (searchfile ?exit    -&33 ?diskabort ;                       
+Screen 20 not modified     
+ 0 \ open a file, filer/w                                b26oct86we
+ 1                                                                 
+ 2 | : @length       ( -- d)          dta  &26 +   2@ ;            
+ 3 | : copylength    ( fcb --)        @length  rot filesize 2! ;   
+ 4                                                                 
+ 5 : (open         ( fcb --)       \ open file                     
+ 6      dup  filehandle @  IF  drop exit  THEN                     
+ 7      dta setdta  dup searchfile  over copylength    (openfile   
+ 8           dup ?diskabort   swap filehandle ! ;                  
+ 9                                                                 
+10 Forth definitions                                               
+11                                                                 
+12 : capacity      ( -- n)                                         
+13     isfile@ ?dup  IF  dup (open (capacity  exit THEN  blk/drv ; 
+14                                                                 
+15 Dos definitions                                                 
+Screen 21 not modified     
+ 0 \ filer/w, Create a file                            bp 11 oct 86
+ 1                                                                 
+ 2 : filer/w       ( buff block fcb f -- f)                        
+ 3      over  0= IF  STr/w exit  THEN                              
+ 4      over (open                                                 
+ 5      IF  fileread  ELSE  filewrite  THEN  dup ?diskabort ;      
+ 6                                                                 
+ 7 : createfile    ( fcb --)       \ create a file in fcb          
+ 8    dup filename (createfile     dup ?diskabort                  
+ 9    over filehandle !      0 0 rot filesize  2!                  
+10    offset off ;                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 22 not modified     
+ 0 \ store names for files                             bp 11 oct 86
+ 1                                                                 
+ 2 | : !name       ( adr len --)      \ store name in record       
+ 3    2dup erase     >r  name count                                
+ 4    dup  r>   < not abort" string too long"                      
+ 5    >r swap r> cmove ;                                           
+ 6                                                                 
+ 7 : !fcb          ( fcb --)          \ next word is filename      
+ 8    dup filehandle off   filename  filenamelen !name ;           
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 23 not modified     
+ 0 \ print dta and directory                              26oct86we
+ 1                                                                 
+ 2 | : .dtaname      ( addr --)       \ addr is addr of name       
+ 3       dup  BEGIN  dup c@  ?dup  WHILE  emit  1+  REPEAT         
+ 4        -  &15 +  spaces ;                                       
+ 5                                                                 
+ 6 : .dta          ( --)           \ print contents of dta         
+ 7      cr  dta &21 +  c@ $10 and                                  
+ 8      IF  Ascii D  ELSE  bl  THEN emit   space                   
+ 9      dta &30 +  .dtaname   @length  &10 d.r ;                   
+10                                                                 
+11 : (dir          ( attr adr len --)   \ given a match string     
+12      makec$  swap   dta setdta   search0                        
+13      BEGIN  0=  WHILE  stop? 0= WHILE .dta  searchnext  REPEAT ;
+14                                                                 
+15                                                                 
+Screen 24 not modified     
+ 0 \ primitives for fcb's                                bp 18May86
+ 1                                                                 
+ 2 User file-link   file-link off    \ list thru files             
+ 3                                                                 
+ 4 | : #file       ( -- n)         \ View number of next file      
+ 5    file-link @ dup  IF  fileno @  THEN  1+ ;                    
+ 6                                                                 
+ 7                                                                 
+ 8 : forthfiles         ( --)      \ print a list of :             
+ 9     file-link @             \ forthword,filename,handle,len     
+10     BEGIN  dup  WHILE                                           
+11        cr   dup .fcb     @  stop? UNTIL drop ;                  
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 25 not modified     
+ 0 \ Close a file                                        bp 18May86
+ 1                                                                 
+ 2 |  ' save-buffers  >body $C  + @  Alias backup                  
+ 3                                                                 
+ 4 | : filebuffer?        ( fcb -- fcb bufaddr/flag)               
+ 5    prev  BEGIN  @ dup  WHILE  2dup  2+ @  =  UNTIL ;            
+ 6                                                                 
+ 7 | : flushfile          ( fcb -- )       \ flush file buffers    
+ 8    BEGIN  filebuffer?  ?dup  WHILE                              
+ 9           dup backup  emptybuf  REPEAT  drop ;                  
+10                                                                 
+11 : (close        ( fcb --)       \ close file in fcb             
+12    dup flushfile                                                
+13    filehandle dup @   ?dup 0= IF  drop exit THEN   swap off     
+14    (closefile -$41 case? ?exit  ?diskabort  ;                   
+15                                                                 
+Screen 26 not modified     
+ 0 \ Create fcb's                                      bp 11 oct 86
+ 1                                                                 
+ 2 Forth definitions                                               
+ 3                                                                 
+ 4                                                                 
+ 5 : File          ( -- )          \ Create a fcb                  
+ 6      Create  here  b/fcb allot   dup b/fcb erase                
+ 7              #file  over fileno !                               
+ 8              file-link @   over file-link !  swap !             
+ 9     does>  !files  ;                                            
+10                                                                 
+11 : direct        0 !files ;      \ switch to direct access       
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 27 not modified     
+ 0 \ flush buffers & misc.                                bp 8jun86
+ 1                                                                 
+ 2 : flush         ( --)           flush  file-link                
+ 3    BEGIN  @ ?dup  WHILE  dup (close  REPEAT ;                   
+ 4                                                                 
+ 5 : file?    isfile@  .file ;        \ print current file         
+ 6                                                                 
+ 7 : list          ( n --)                                         
+ 8    3 spaces  file?  list ;                                      
+ 9                                                                 
+10 : path          ( -- )          \ this is a smart word !        
+11    name count                                                   
+12    dup 0=   IF  2drop  pathes?  exit  THEN                      
+13    dup 1 =  IF  over c@  Ascii ;  =                             
+14                  IF  2drop  pathes off  exit  THEN  THEN        
+15    setpath ;                                                    
+Screen 28 not modified     
+ 0 \ File Interface User words                            26oct86we
+ 1                                                                 
+ 2 | : isfile?     ( adr -- adr f)  \ is adr a fcb ?               
+ 3    file-link  BEGIN  @ dup 0= ?exit  2dup 2- = UNTIL drop true ;
+ 4                                                                 
+ 5 | : ?isfile@   isfile@ body>                                    
+ 6                isfile? 0= abort" not in direct mode"   >body ;  
+ 7                                                                 
+ 8 : open         ?isfile@ (open   offset off ;                    
+ 9 : close        ?isfile@ (close ;                                
+10 : assign       close  isfile@ !fcb  open ;                      
+11 : make         ?isfile@ dup !fcb  createfile ;                  
+12                                                                 
+13 : use          >in @  name find  \ create a fcb if not present !
+14    IF  isfile?  IF execute drop  exit THEN THEN drop            
+15    dup >in ! File    dup >in ! ' execute    >in !  assign ;     
+Screen 29 not modified     
+ 0 \ File Interface User words                         bp 11 oct 86
+ 1                                                                 
+ 2 : makefile     >in @  file  dup >in ! ' execute  >in ! make ;   
+ 3                                                                 
+ 4 : from         isfile push  use ;         \ sets only fromfile  
+ 5 : loadfrom     ( n --)                    \ load 1 scr from file
+ 6                isfile push  fromfile push   use load   close ;  
+ 7 : include      1 loadfrom ;                                     
+ 8                                                                 
+ 9 : eof           ( -- f)                   \ end of file ?       
+10    isfile@  dup  filehandle @  position?                        
+11              rot  filesize  2@  d= ;                            
+12                                                                 
+13 : files         $10   " *.*"   count  (dir ;                    
+14 : files"        $10 Ascii "  word count (dir ;                  
+15                                                                 
+Screen 30 not modified     
+ 0 \ extend files                                      bp 11 oct 86
+ 1                                                                 
+ 2 | : >fileend    isfile@ filesize 2@   handle  position          
+ 3                 ?diskabort ;                                    
+ 4                                                                 
+ 5 | : addsize     isfile@ filesize dup  2@ b/blk 0 d+  rot 2! ;   
+ 6                                                                 
+ 7 | : addblock    ( n --)         \ add block n to file           
+ 8     buffer b/blk  2dup bl fill  >fileend  handle (filewrite     
+ 9     dup ?diskabort   b/blk -                                    
+10     IF  close  abort" Disk voll" THEN  addsize ;                
+11                                                                 
+12 : (more   ( n --)                                               
+13     capacity swap bounds ?DO  I addblock  LOOP ;                
+14                                                                 
+15 : more    ( n --)     ?isfile@  (open  (more  close ;           
+Screen 31 not modified     
+ 0 \ make,kill and set directories                     bp 11 oct 86
+ 1                                                                 
+ 2 | : dir$        ( -- adr )      name count   makec$ ;           
+ 3                                                                 
+ 4 : makedir       dir$ (makedir ?diskabort ;                      
+ 5                                                                 
+ 6 : dir           name count                                      
+ 7                 0 case? IF  getdrive 2dup 1+ getdir ?diskabort  
+ 8                             cr 3 spaces  Ascii A + emit   ." :" 
+ 9                             scan-name type exit  THEN           
+10                 makec$ (setdir ?diskabort ;                     
+11                                                                 
+12 | : driveset    Create c,  Does>  c@ setdrive ;                 
+13 0 driveset A:   1 driveset B:   2 driveset C:   3 driveset D:   
+14                                                                 
+15                                                                 
+Screen 32 not modified     
+ 0 \ words for VIEWing                                 bcas20130105
+ 1                                                                 
+ 2 | $200 Constant viewoffset      \ max. &512 kbyte long files    
+ 3                                                                 
+ 4 | : (makeview     ( -- n)       \ calc. view field for a name   
+ 5    blk @  dup  0= ?exit                                         
+ 6    loadfile @  ?dup  IF  fileno @  viewoffset *   +  THEN  ;    
+ 7                                                                 
+ 8 : (view         ( blk -- blk')  \ select file and leave block   
+ 9    dup  0= ?exit                                                
+10    viewoffset  u/mod  file-link                                 
+11    BEGIN  @ dup  WHILE  2dup fileno @ = UNTIL                   
+12    dup  searchfile drop   \ file not found : abort              
+13    !files  drop  ;                                              
+14                                                                 
+15                                                                 
+Screen 33 not modified     
+ 0 \ ugly FORGETing of files                           bp 11 oct 86
+ 1                                                                 
+ 2 : remove?            ( dic symb addr -- dic symb addr f)        
+ 3    dup heap?  IF  2dup u>  exit  THEN  2 pick  over 1+ u< ;     
+ 4                                                                 
+ 5 | : remove-files ( dic symb -- dic symb)   \ flush files !      
+ 6    isfile   @ remove?  nip  IF  0 !files      THEN              
+ 7    fromfile @ remove?  nip  IF  fromfile off  THEN              
+ 8    file-link                                                    
+ 9    BEGIN  @ ?dup  WHILE  remove?  IF  dup (close  THEN  REPEAT  
+10    file-link remove ;                                           
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 34 not modified     
+ 0 \ convey for files                                  bp 11 oct 86
+ 1                                                                 
+ 2 | : togglefiles    ( -- )      \ changes isfile and fromfile    
+ 3      isfile@  fromfile @   isfile !  fromfile ! ;               
+ 4                                                                 
+ 5 : convey           ( [blk1 blk2] [to.blk --)                    
+ 6    3 arguments   >r  2dup swap -  >r                            
+ 7    togglefiles       dup capacity 1- >                          
+ 8    togglefiles  r> r@ +  capacity 1- >                          
+ 9     or abort" wrong range!"                                     
+10    r>  convey ;                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 35 not modified     
+ 0 \ print a list of all blocks                           bp 9Apr86
+ 1                                                                 
+ 2 : .blocks                                                       
+ 3    prev BEGIN  @ ?dup WHILE  stop? abort" stopped"              
+ 4                cr dup u.  dup 2+ @  dup 1+                      
+ 5                 IF ."    Block :" over  4+ @ 5 .r               
+ 6                    ."     File : "  [ Dos ] .file               
+ 7                    dup 6 + @ 0< IF ."    updated" THEN          
+ 8                 ELSE ." Block empty" drop  THEN  REPEAT  ;      
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 36 not modified     
+ 0 \ create a file of direct blocks                    bcas20130105
+ 1                                                                 
+ 2 Dos also                                                        
+ 3                                                                 
+ 4 | File outfile                                                  
+ 5                                                                 
+ 6 : blocks>file   ( from to -- )    \ name of file follows        
+ 7    ?isfile@  -rot  outfile make                                 
+ 8    1+ swap ?DO  I over (block   b/blk  handle (filewrite        
+ 9                          b/blk - abort" write error"            
+10             LOOP  close   isfile ! ;                            
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 37 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6 MAKEVIEW        erzeugt aus ISFILE und BLK das Viewfeld         
+ 7 CUSTOM-REMOVE   erlaubt das FORGETten von eig. Datenstrukturen  
+ 8 R/W             setzt Forthbl”cke in Disksektoren um ....       
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 38 not modified     
+ 0                                                        13oct86we
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 39 not modified     
+ 0                                                        13oct86we
+ 1                                                                 
+ 2 ARGUMENTS       liefert etwas Sicherheit ...                    
+ 3                                                                 
+ 4                                                                 
+ 5 (CREATEFILE     erzeugt ein File, dessen Namen in C$ steht, im  
+ 6    aktuellen oder im durch den Pfadnamen angegebenen Directory. 
+ 7    HANDLE ist die Handle des Files oder ein Fehlerflag.         
+ 8    Es wird immer ein "ganz normales" File erzeugt.              
+ 9                                                                 
+10 (CLOSEFILE      Schliežt das File mit der Handle HANDLE. Dabei  
+11   sollten alle TOS-Buffer zurckgeschrieben und das Directory   
+12   gesichert werden. F ist ein Fehlerflag. Die Handle ist        
+13   anschliežend ungltig.                                        
+14                                                                 
+15                                                                 
+Screen 40 not modified     
+ 0                                                        13oct86we
+ 1                                                                 
+ 2 (FILEWRITE      schreibtLEN Bytes in das File HANDLE. Die Bytes 
+ 3    werden ab Adresse BUFF im Speicher geholt.                   
+ 4    N ist die Zahl der geschriebenen Bytes oder eine             
+ 5    Fehlernummer, wenn N zwischen -66 und -1 liegt.              
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 41 not modified     
+ 0                                                      cas20130105
+ 1                                                                 
+ 2 SAVE-SYSTEM speichert ein FORTH-System im aktuellen Zustand auf 
+ 3  Diskette ab.                                                   
+ 4                                                                 
+ 5 Voodoo-Code fr den GEMDOS-Fileheader; keine Relokatinsinfos    
+ 6                                                                 
+ 7 Mit SAVE-SYSTEM lassen sich eigene Arbeitssysteme oder auch     
+ 8  Applikationen erstellen, denen man ihre FORTH-Herkunft nicht   
+ 9  mehr ansieht.                                                  
+10  Stellen Sie ein System nach Ihren Wnschen zusammen, und spei- 
+11  chern Sie es dann mit  SAVE-SYSTEM MYPROG.PRG  ab.             
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 42 not modified     
+ 0                                                        13oct86we
+ 1                                                                 
+ 2 DOS             enth„lt die "unwichtigen" Worte des             
+ 3                 Fileinterfaces                                  
+ 4                                                                 
+ 5 BODY>           ( cfa -- pfa )   Kompilationsadresse in         
+ 6                  Parameterfeldadresse umwandeln ...             
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10 Diese Worte werden fr die ble Patcherei in .diskabort benutzt.
+11  Nur so kann die Dos-Fehlernummer in der abort" -Meldung unter- 
+12  gebracht werden. Bei einer Ausgabe mit . w„re keine Umleitung  
+13  ber ERRORHANDLER m”glich.                                     
+14                                                                 
+15                                                                 
+Screen 43 not modified     
+ 0                                                        13oct86we
+ 1                                                                 
+ 2 -n ist die Fehlernummer; es wird der zugeh”rige Text ausgedruckt
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9  Ist die Fehlernummer nicht in den CASE-Anweisungen zu finden,  
+10  wird Dos-Error #   ausgegeben. Die Fehlernummer wird dann in   
+11  den abort" String gepatched. Dieses Verfahren ist zwar „užerst 
+12  h„žlich, nichtsdestoweniger aber sehr effektiv.                
+13                                                                 
+14 Prft, ob ein Fehler vorliegt und druckt ggf. den Text aus und  
+15   ABORTed anschliežend.                                         
+Screen 44 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2 Definierendes Wort fr die Benamsung der Felder eines           
+ 3   File control blocks  ( FCB bzw. FILE in den Stackkommentaren) 
+ 4                                                                 
+ 5                                                                 
+ 6 Zeiger auf den n„chsten FCB                                     
+ 7 Platz fr max. 24 Zeichen fr den TOS-Filenamen                 
+ 8 L„nge des Files in Bytes                                        
+ 9 Handlenummer, die das TOS beim ™ffnen eines Files liefert.      
+10 Eine eigene Nummer, die in das VIEW-Feld eingetragen wird.      
+11 L„nge eines FCB wird auch berechnet...                          
+12                                                                 
+13 Liefert die Handle des aktuellen Files. Null, falls das         
+14  File nicht offen .                                             
+15                                                                 
+Screen 45 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2 LSEEK           N ist ein Flag, das angibt, ob relativ zum      
+ 3    Fileanfang, zum Fileende oder zur aktuellen Position im File 
+ 4    positioniert werden soll. HANDLE ist die Handle des Files, in
+ 5    dem positioniert wird und D die neue Position im File.       
+ 6    D' ist die neue Position.                                    
+ 7 POSITION        positioniert auf das Byte d, gez„hlt vom Anfang 
+ 8    des Files mit der Handle HANDLE .                            
+ 9                                                                 
+10 POSITION?       liefert die Position des zuletzt gelesenen,     
+11    geschriebenen oder mit POSITION bzw. LSEEK angew„hlten Bytes.
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 46 not modified     
+ 0                                                        13oct86we
+ 1                                                                 
+ 2 FILEREAD        liest LEN Bytes aus dem File HANDLE. Die Bytes  
+ 3    werden ab Adresse BUFF im Speicher abgelegt.                 
+ 4    N ist die Zahl der gelesenen Bytes oder eine Fehlernummer,   
+ 5    wenn N zwischen -66 und -1 liegt.                            
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13 Das headerlose (FILEWRITE bekommt nun einen Header im Vocabulary
+14  Dos.                                                           
+15                                                                 
+Screen 47 not modified     
+ 0                                                        26oct86we
+ 1                                                                 
+ 2 OPENFILE        ™ffnet ein File. Der Name steht im String C$.   
+ 3   C$ ist durch ein $00-Byte begrenzt. HANDLE ist die diesem     
+ 4   File zugeordnete Handle oder eine Fehlernummer.               
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8 DTA             ist ein 44 Byte grožer Buffer, in dem einige    
+ 9   Fileinformationen vom GEMDOS gehalten werden.                 
+10 SETDTA          ADDR ist die Adresse der 'disk transfer area'.  
+11                                                                 
+12                                                                 
+13                                                                 
+14 (CLOSEFILE und (CREATEFILE erhalten Header im Vocabulary Dos.   
+15                                                                 
+Screen 48 not modified     
+ 0                                                        13oct86we
+ 1                                                                 
+ 2 SEARCH0         SEARCH0 sucht ein File. C$ ist der Name des File
+ 3    mit Pfad usw. . C$ wird, wie immer, durch ein $00-Byte       
+ 4    begrenzt. ATTR ist ein Attributwort, das z.B. bestimmt, ob   
+ 5    auch Subdirectories gefunden werden. F ist ein Fehlerflag.   
+ 6    Die DTA enth„lt anschliežend Filenamen, -l„nge usw.          
+ 7 SEARCHNEXT      sucht das n„chste File mit dem bei SEARCH0      
+ 8    angegeben Namen...                                           
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 49 not modified     
+ 0                                                        13oct86we
+ 1                                                                 
+ 2 (MAKEDIR        erzeugt „hnlich (CREATEFILE ein Subdirectory.   
+ 3    C$ ist der Name des Directories, F ist ein Fehlerflag.       
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9 (SETDIR         setzt das durch C$ angegeben Subdirectory als   
+10    das "Aktuelle", auf das sich alle Such- und "Erzeugungs-"    
+11    operationen ohne eigenen Pfadnamen beziehen.                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 50 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2 SETDRIVE        N ist die Nummer des aktuellen Laufwerkes, auf  
+ 3   das sich alle Operationen ohne eigenen Pfadnamen beziehen.    
+ 4   Vergleiche (SETDIR.   Laufwerk A: hat die Nummer 0 !          
+ 5                                                                 
+ 6 GETDRIVE        N ist die Nummer des bei SETDRIVE genannten     
+ 7   Laufwerks.                                                    
+ 8                                                                 
+ 9                                                                 
+10 GETDIR          Das durch (SETDIR gesetzte Subdirectory wird    
+11   ab Adresse ADDR als C$ im Speicher abgelegt. N ist die Nummer 
+12   des Laufwerkes ( Laufwerk A: hat die Nummer 1 !!!! ), denn    
+13   verschiedene Laufwerke k”nnen verschiedene aktuelle Sub-      
+14   directories haben.                                            
+15                                                                 
+Screen 51 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2 (CAPACITY       FCB ist die Adresse des FCB des Files, von      
+ 3    dem die L„nge in Blocks bestimmt werden soll. N ist dann     
+ 4    die Zahl der Bl”cke in diesem File.                          
+ 5                                                                 
+ 6 IN-RANGE        prft, ob sich ein Block mit der Nummer BLOCK   
+ 7    im File FCB befindet. Ist das nicht der Fall, wird als       
+ 8    Fehlernummer -36 geliefert. Siehe auch ?DISKABORT            
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 52 not modified     
+ 0                                                        13oct86we
+ 1                                                                 
+ 2 SET-POS         positioniert im File mit der Handle HANDLE auf  
+ 3    den Anfangs des Blocks BLOCK. F ist ein Fehlerflag.          
+ 4                                                                 
+ 5 FILEACCESS      wird in FILEREAD und FILEWRITE ben”tigt.        
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11 FILEREAD        liest den Block BLOCK an die Adresse BUFF aus   
+12    dem File FCB. Hinterl„žt eine Fehlernummer.                  
+13                                                                 
+14 FILEWRITE       berschreibt den Block BLOCK mit den Daten ab   
+15    Adresse BUFF im File FCB. Hinterl„žt eine Fehlernummer.      
+Screen 53 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2 SCAN-NAME       'LEN ist die L„nge eines durch ein $00-Byte     
+ 3    begrenzten C$.                                               
+ 4                                                                 
+ 5 .FILE           druckt den Forthnamen des Files mit der Adresse 
+ 6    FCB.                                                         
+ 7                                                                 
+ 8 .FCB            druckt Forthnamen, TOS-Namen, Handle und L„nge  
+ 9    des Files mit der Adresse FCB aus.                           
+10                                                                 
+11 !FILES          setzt die Variable ISFILE und FROMFILE (darin   
+12    steht das File, aus dem bei COPY und CONVEY gelesen wird)    
+13    auf das File mit der Adresse FCB.                            
+14                                                                 
+15                                                                 
+Screen 54 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2 PATHES          Hier ist Platz fr den durch SETPATH angegeben  
+ 3    String, der die Namen der zu durchsuchenden Laufwerke und    
+ 4    Directories enth„lt.                                         
+ 5 PATHES?         Druckt den Inhalt von PATHES aus.               
+ 6                                                                 
+ 7 SETPATH         Setzt PATHES auf den String ab der Adresse ADR, 
+ 8    dessen L„nge LEN ist. Anschliežend wird noch ein ; angefgt, 
+ 9    um auch den letzten Path korrekt zu beenden.                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 55 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2 WORKSPACE       Hier wird aus File- und Pathnamen ein C$        
+ 3   zusammengebastelt.                                            
+ 4                                                                 
+ 5 TRY.PATH        ADR und LEN enthalten den Pfadnamen (aus        
+ 6   PATHES mit PATH@ extrahiert), FCB ist die Adresse des Files   
+ 7   und ATTR ein Attribut (siehe SEARCH0). Aus Pfadnamen und FCB  
+ 8   wird in WORKSPACE ein String zusammengebastelt, der dann mit  
+ 9   SEARCH0 gesucht wird. F gibt an, ob wir erfolgreich waren.    
+10                                                                 
+11 MAKEC$          konvertiert einen durch ADR und LEN definierten 
+12   String in einen C$ (durch ein $00-Byte begrenzt) und          
+13   hinterl„žt dessen Adresse.                                    
+14                                                                 
+15                                                                 
+Screen 56 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2 SFILE           enth„lt die Adresse des FCB des gesuchten Files.
+ 3 DEFAULTATTR     enstpricht "Suche alle Files, egal welches ATTR"
+ 4                                                                 
+ 5 PATH@           extrahiere aus dem noch nicht zum Suchen verwen-
+ 6    deten Teil von PATHES, der durch ADR und LEN angegeben wird, 
+ 7    den n„chsten zu durchsuchenden Pfad ADR LEN1.                
+ 8 (SEARCHFILE     durchsucht alle in PATHES stehenden Pfade nach  
+ 9    dem in FCB stehenden Filenamen. Aufgeh”rt wird, wenn das File
+10    gefunden wurde oder alle Pfade durchsucht wurden.            
+11    Am Schluž wird auch der leere Pfad (L„nge Null) durchsucht,  
+12    der dem aktuellen Directory (siehe SETDIR) entspricht.       
+13                                                                 
+14 SEARCHFILE      Sucht das File FCB in allen Pfaden und im akt.  
+15    Directory. Hinterlassen wird der vollst„ndige Pfad des Files.
+Screen 57 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2 @LENGTH         holt die L„nge des zuletzt gefundenen Files     
+ 3 COPYLENGTH      kopiert die L„nge des zuletzt gefundenen Files  
+ 4    in den Fcb FCB.                                              
+ 5 (OPEN           ”ffnet das durch FCB angegebene File            
+ 6    und speichert LEN dort die Handle und L„nge. Dazu muž es     
+ 7    natrlich erst gesucht werden, denn nur dann steht die L„nge 
+ 8    in der DTA.                                                  
+ 9                                                                 
+10                                                                 
+11                                                                 
+12 CAPACITY        N ist die Zahl der Bl”cke im aktuellen (durch   
+13   ISFILE angegeben) File. Ist ISFILE Null, so wird die Kapazit„t
+14   der Diskette im Direktzugriff angegeben.                      
+15                                                                 
+Screen 58 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2 FILER/W         ist das zentrale Wort fr den Zugriff auf Files.
+ 3     BUFF ist die Adresse des Blocks BLOCK im Speicher, FCB die  
+ 4     Nummer des Files (0 heižt Direktzugriff) und R/W gibt an, in
+ 5     welcher Richtung die Daten zu transportieren sind.          
+ 6     F ist true, falls ein Fehler auftrat.                       
+ 7                                                                 
+ 8 CREATEFILE      erzeugt ein File, dessen Name im Fcb FCB steht. 
+ 9     Handle und Filel„nge werden korrigiert.                     
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 59 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2 !NAME           speichert einen auf !NAME folgenden String      
+ 3    ab Adresse ADR mit maximaler L„nge LEN im Speicher ab.       
+ 4    Der String wird durch $00-Bytes begrenzt.                    
+ 5                                                                 
+ 6                                                                 
+ 7 !FCB            speichert einen auf !FCB folgenden String im    
+ 8    Fcb FCB ab. Die Handle wird gel”scht, weil das               
+ 9    so zugewiesene File noch nicht ge”ffnet worden ist.          
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 60 not modified     
+ 0                                                        13oct86we
+ 1                                                                 
+ 2 .DTANAME        druckt den Filenamen, er ab Adresse d in der DTA
+ 3    steht, linksbndig in einem Feld der Breite 15 aus.          
+ 4                                                                 
+ 5                                                                 
+ 6 .DTA            druckt den Inhalt der DTA formattiert aus.      
+ 7   Zun„chst wird ein "D" ausgegeben, das anzeigt, ob es sich     
+ 8   um ein Subdirectory handelt, anschliežend der Name gefolgt    
+ 9   von der L„nge des Files.                                      
+10                                                                 
+11 (DIR            druckt alle Files aus, auf die der String ADR   
+12    LEN und das Attribut ATTR "passt". Die Ausgabe kann wie      
+13    blich angehalten und abgebrochen werden.                    
+14                                                                 
+15                                                                 
+Screen 61 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2 FILE-LINK       enth„lt einen Zeiger auf den FCB des            
+ 3    zuletzt definierten Files.                                   
+ 4 #FILE           N ist die Nummer, die in das Viewfeld des       
+ 5    n„chsten zu definierenden Files eingetragen werden soll.     
+ 6                                                                 
+ 7                                                                 
+ 8 FORTHFILES      druckt die Forth- und TOS-Namen mit Handle und  
+ 9    L„nge aller definierten Files aus. Dazu wird FILE-LINK       
+10    benutzt. Die Ausgabe kann wie blich angehalten oder beendet 
+11    werden.                                                      
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 62 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2 FILEBUFFER?     guckt nach, ob zu dem File FCB noch ein Block-  
+ 3    puffer exisitiert. Liefert false, falls keiner vorhanden ist.
+ 4                                                                 
+ 5 FLUSHFILE       sichert alle zum File FCB geh”renden Blockpuffer
+ 6    auf dem Massenspeicher und l”scht sie anschliežend.          
+ 7                                                                 
+ 8                                                                 
+ 9 (CLOSE          sichert alle Blockpuffer, schliežt anschliežend 
+10    das File, falls es nicht schon geschlossen war und ignoriert 
+11    den Fehler mit der Nummer -65, weil der so oft auftritt...   
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 63 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2 FILE            ist ein definierendes Wort, daž einen FCB       
+ 3    erzeugt. Wird der FCB sp„ter ausgefhrt, so tr„gt er sich    
+ 4    als aktuelles File und als FROMFILE ein.                     
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8 DIRECT          ein "spezieller FCB" fr den Direktzugriff.     
+ 9    Der Direktzugriff ist immer dann interessant, wenn man       
+10    einen Diskmonitor braucht, ihn aber gerade verliehen hat...  
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 64 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2 FLUSH           schliežt zus„tzlich alle Files..                
+ 3                                                                 
+ 4                                                                 
+ 5 FILE?           druckt den Namen des aktuellen Files aus.       
+ 6                                                                 
+ 7 LIST            druckt zus„tzlich den Filenamen aus...          
+ 8                                                                 
+ 9                                                                 
+10 PATH            druckt PATHES aus               oder            
+11                 l”scht PATHES                   oder            
+12                 setzt PATHES auf einen anderen String.          
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 65 not modified     
+ 0                                                        13oct86we
+ 1                                                                 
+ 2 ISFILE?         F ist wahr, falls ADR die Kompilationsadresse   
+ 3    eines FCB ist (also durch FILE erzeugt wurde...).            
+ 4                                                                 
+ 5 ?ISFILE@        steht in ISFILE berhaupt ein File ?            
+ 6                                                                 
+ 7 OPEN            ”ffnet das aktuelle File.                       
+ 8 CLOSE           schliežt es.                                    
+ 9 ASSIGN          Anderer Filename in aktuellen FCB eintragen.    
+10 MAKE            Neu erzeugter Filename in aktuellen FCB..       
+11                                                                 
+12 USE             Erzeuge FCB (mit Filenamen !), falls Name nicht 
+13    schon vorhanden. Wenn Name vorhanden, prfe ob es File ist.  
+14    Trage dann FCB in ISFILE ein.                                
+15                                                                 
+Screen 66 not modified     
+ 0                                                        13oct86we
+ 1                                                                 
+ 2 MAKEFILE        erzeugt FCB und File gleichen Namens.           
+ 3                                                                 
+ 4 FROM            setzt FROMFILE fr COPY und CONVEY              
+ 5 LOADFROM        l„dt den Screen N vom File, dessen Name auf     
+ 6    LOADFROM folgt.   z.B.    1 loadfrom forth_83.scr            
+ 7 INCLUDE         l„dt den Loadscreen des Files...                
+ 8                                                                 
+ 9 EOF             F ist wahr, falls wir am Ende des Files         
+10    angekommen sind.                                             
+11                                                                 
+12                                                                 
+13 FILES           liefert Inhaltsverzeichnis des akt. Directories.
+14 FILES"          erlaubt Pfad- und Filenamen                     
+15                                                                 
+Screen 67 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2 >FILEEND        springe ans Ende des aktuellen Files            
+ 3                                                                 
+ 4                                                                 
+ 5 ADDSIZE         erh”ht die L„ngenangabe im aktuellen FCB um     
+ 6   1024 Bytes.                                                   
+ 7 ADDBLOCK        fgt den Block N am Fileende an.                
+ 8   Aužerdem wird ein leerer Buffer mit dieser Nummer angelegt.   
+ 9                                                                 
+10                                                                 
+11                                                                 
+12 (MORE           fgt n Bl”cke am Fileende an.                   
+13                                                                 
+14 MORE            Wie (MORE, jedoch etwas Sicherheit..            
+15                                                                 
+Screen 68 not modified     
+ 0                                                        13oct86we
+ 1                                                                 
+ 2 DIR$            ADR ist die Adresse eines auf DIR$ folgenden C$.
+ 3                                                                 
+ 4 MAKEDIR         erzeugt ein Directory mit dem folgenden Namen.. 
+ 5                                                                 
+ 6 DIR             gibt, falls kein Name folgt, das aktuelle Lauf- 
+ 7    werk und Subdirectory aus. Folgt ein Name, so wird er als    
+ 8    das neue aktuelle Directory an das TOS bergeben.            
+ 9                                                                 
+10                                                                 
+11                                                                 
+12 A: B: C: D:     Kurzformen fr SETDRIVE.                        
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 69 not modified     
+ 0                                                        13oct86we
+ 1                                                                 
+ 2 VIEWOFFSET      teilt das 16-Bit Viewfeld in ein Feld mit der   
+ 3     Filenummer und ein Feld mit der Blocknummer. Die unteren 9  
+ 4     Bits sind fr die Blocknummer reserviert.                   
+ 5 (MAKEVIEW       macht aus BLK und der Nummer des geladenen Files
+ 6     LOADFILE eine 16-Bit Zahl, die von CREATE dann als Viewfeld 
+ 7     hinterlegt wird.                                            
+ 8 (VIEW           zerlegt den Inhalt BLK eines Viewfeldes in      
+ 9     Filenummer und Blocknummer BLK' . Der zur Filenummer        
+10     geh”rende FCB wird gesucht, und falls gefunden, in ISFILE   
+11     und FROMFILE eingetragen. Kann kein FCB gefunden werden,    
+12     so wird eine Fehlermeldung ausgegeben.                      
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 70 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2 REMOVE?         DIC (SYMB) ist die Adresse im Dictionary (HEAP),
+ 3    oberhalb (unterhalb, der Heap w„chst von oben nach unten !)  
+ 4    derer alle Worte vergessen werden mssen. F gibt an, ob      
+ 5    ADDR innerhalb des zu vergessenden Intervalls liegt.         
+ 6                                                                 
+ 7 REMOVE-FILES    guckt nach, ob ISFILE oder FROMFILE vergessen   
+ 8    werden. Ist das der Fall, so werden sie auf den Direktzugriff
+ 9    umgeschaltet.                                                
+10    Anschliežend werden alle zu vergessenden Files geschlossen   
+11    und aus der Liste aller Files FILE-LINK entfernt.            
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 71 not modified     
+ 0                                                        bp 4oct86
+ 1                                                                 
+ 2 TOGGLEFILES     vertauscht ISFILE und FROMFILE.                 
+ 3                                                                 
+ 4                                                                 
+ 5 CONVEY          prft, ob die zu bewegenden Bl”cke vorhanden    
+ 6    sind und bewegt sie ggf.                                     
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 72 not modified     
+ 0                                                        13oct86we
+ 1                                                                 
+ 2 .BLOCKS         listet den Inhalt der Blockpuffer auf.          
+ 3    Angegeben werden Adresse, Blocknummer und Filename sowie,    
+ 4    ob der Block geUPDATEd wurde.                                
+ 5                                                                 
+ 6 Bei der Entwicklung des Fileinterfaces war das ein ntzliches   
+ 7    Hilfsmittel.                                                 
+ 8                                                                 
+ 9                                                                 
+10 Dieser und der n„chste Screen werden normalerweise vom Load-    
+11  screen nicht mitkompiliert.                                    
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 73 not modified     
+ 0                                                        13oct86we
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6 Mit BLOCKS>FILE l„žt sich eine Folge von Diskettenbl”cken in    
+ 7  einem File ablegen. Damit k”nnen Disketten, die bisher im      
+ 8  Direktzugriff benutzt worden sind, auf das Fileinterface um-   
+ 9  gestellt werden.                                               
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

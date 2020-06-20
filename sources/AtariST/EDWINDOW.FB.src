@@ -1,0 +1,306 @@
+Screen 0 not modified     
+ 0 \\                     *** EDWINDOW.SCR ***            14sep86we
+ 1                                                                 
+ 2 Dieses File enthÑlt das Editorfenster. Es kann als Beispiel fÅr 
+ 3 die Programmierung eines eigenen Fensters benutzt werden.       
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ Window-Handling Loadscreen                           30oct86we
+ 1                                                                 
+ 2 Onlyforth   Gem also definitions                                
+ 3                                                                 
+ 4 1 7 +thru                                                       
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ VDI-Functions for window                             24aug86we
+ 1                                                                 
+ 2 : bar    ( x1 y1 x2 y2 -- )                                     
+ 3    ptsin 4 array!   1 function !   &11 2 0 VDI ;                
+ 4                                                                 
+ 5 : swr_mode   ( mode -- )         intin !   &32 0 1 VDI  ;       
+ 6                                                                 
+ 7 : sf_interior   ( style  -- )    intin !    &23 0 1 VDI  ;      
+ 8 : sf_style   ( styleindex -- )   intin !    &24 0 1 VDI  ;      
+ 9 : sf_color   ( color -- )        intin !    &25 0 1 VDI  ;      
+10 : sf_perimeter   ( pervis -- )   intin !   &104 0 1 VDI  ;      
+11                                                                 
+12 : fbox  ( x1 y1 x2 y2 -- )                                      
+13    1 swr_mode  1 sf_interior  0 sf_color  0 sf_perimeter  bar ; 
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0 \ save and restore the screen                          10sep86we
+ 1                                                                 
+ 2 ?head @    1 ?head !                                            
+ 3                                                                 
+ 4 Create memMFDB2  7 , 0 , &640 , &400 , &40 , 0 , 1 ,            
+ 5                  0 , 0 , 0 ,                                    
+ 6                                                                 
+ 7 memMFDB2 scr>mem scr>mem2  ( Xleft Ytop Width Heigth -- )       
+ 8 memMFDB2 mem>scr mem2>scr  ( Xleft Ytop Width Heigth -- )       
+ 9                                                                 
+10 : save_screen       0 0 cwidth &80 *  cheight &25 *             
+11                     scr>mem2 ;                                  
+12 : restore_screen    0 0 cwidth &80 *  cheight &25 *             
+13                     mem2>scr ;                                  
+14                                                                 
+15                                                                 
+Screen 4 not modified     
+ 0 \ Windowcomponents and Windowsize                      30aug86we
+ 1                                                                 
+ 2 :name  :move +  :info +  :uparrow +  :dnarrow +  :vslide +      
+ 3 Constant wi_components                                          
+ 4                                                                 
+ 5 : wi_x       ( -- n )      dx cwidth  * ;                       
+ 6 : wi_y       ( -- n )      dy cheight * ;                       
+ 7 : wi_width   ( -- n )     c/l cwidth  * ;                       
+ 8 : wi_height  ( -- n )     l/s cheight * ;                       
+ 9                                                                 
+10 : wi_size   ( -- wx wy wwidth wheight )                         
+11    0  wi_components                                             
+12    wi_x 1-  wi_y 1-  wi_width 2+  wi_height 2+  wind_calc       
+13    intout 2+ 4@ ;                                               
+14                                                                 
+15                                                                 
+Screen 5 not modified     
+ 0 \ Window's title and sliders                           25sep86we
+ 1                                                                 
+ 2 Variable wi_handle                                              
+ 3                                                                 
+ 4 : wi_string  ( 0string function# -- )       swap  >r            
+ 5    wi_handle @  swap  r> >absaddr swap  0 0  wind_set ;         
+ 6                                                                 
+ 7 : wi_title   ( 0string -- )    :wf_name wi_string ;             
+ 8 : wi_status  ( 0string -- )    :wf_info wi_string ;             
+ 9                                                                 
+10 : vslide_size                                                   
+11    wi_handle @  :wf_vslize  &1000 capacity /  0 0 0  wind_set ; 
+12                                                                 
+13 : vslide   ( scr# -- )      wi_handle @  :wf_vslide             
+14    rot  &1000  capacity dup 1-  IF 1- THEN   */                 
+15    0 0 0  wind_set ;                                            
+Screen 6 not modified     
+ 0 \ Draw window on screen                                30aug86we
+ 1                                                                 
+ 2 : small_big  ( -- sx sy sw sh  bx by bw bh )                    
+ 3    little 4@  wi_size ;                                         
+ 4                                                                 
+ 5 : growbox       small_big graf_growbox ;                        
+ 6 : shrinkbox     small_big graf_shrinkbox ;                      
+ 7                                                                 
+ 8 : wi_clear     wi_x 1-   wi_y 1-                                
+ 9    over wi_width 1+ +    over wi_height 1+ +  fbox ;            
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 7 not modified     
+ 0 \ Open and close window                                30aug86we
+ 1                                                                 
+ 2 : wi_open    ( -- )        save_screen   growbox                
+ 3    wi_components wi_size wind_create   dup wi_handle !          
+ 4    pad  dup off  dup wi_title  wi_status                        
+ 5    wi_size wind_open   wi_clear ;                               
+ 6                                                                 
+ 7 : wi_close   ( -- )                                             
+ 8    wi_handle @  dup wind_close  wind_delete                     
+ 9    shrinkbox  restore_screen ;                                  
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 8 not modified     
+ 0 \ redrawing the rest of screen                         10sep86we
+ 1                                                                 
+ 2 : restore_rect    ( x y w h -- )      1- >r  1-  r>  mem2>scr ; 
+ 3                                                                 
+ 4 : rect_update   ( function# -- x y w h )                        
+ 5    0  swap  wind_get  intout 2+  4@  ;                          
+ 6                                                                 
+ 7 : redraw_screen      :wf_firstxywh rect_update                  
+ 8    BEGIN  2dup or                                               
+ 9    WHILE  restore_rect  :wf_nextxywh rect_update  REPEAT        
+10    2drop 2drop ;                                                
+11                                                                 
+12 ?head !                                                         
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 9 not modified     
+ 0                                                        14sep86we
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 10 not modified     
+ 0 \ Window-Handling Loadscreen                           14sep86we
+ 1                                                                 
+ 2 Suchreihenfolge: Zuerst GEM, dann FORTH                         
+ 3                                                                 
+ 4 Gebraucht werden die Definitionen aus GEMDEFS.SCR               
+ 5                                                                 
+ 6 Dieses Vokabular wird als erstes durchsucht.                    
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 11 not modified     
+ 0 \ VDI-Functions for window                             14sep86we
+ 1                                                                 
+ 2 FÅr das Fenster werden einige Funktionen aus VDI gebraucht,     
+ 3  die auf diesem Screen zusammengestellt sind. Beschreibung siehe
+ 4  Beschreibung VDI (hoffentlich haben wir die schon!)            
+ 5                                                                 
+ 6 Im Grunde wird nur eine Routine benutzt, mit der man ein weiûes 
+ 7  Rechteck zum Lîschen des Fensterinhaltes erzeugen kann. Dies   
+ 8  erledigt fbox                                                  
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 12 not modified     
+ 0 \ save and restore the screen                          14sep86we
+ 1                                                                 
+ 2 alle folgenden Funktionen sollen headerless kompiliert werden.  
+ 3                                                                 
+ 4 Ein zweiter Speicherbereich wird gebraucht, um den Bildschirm   
+ 5  beim Verlassen des Editors zu restaurieren. Dieses Verfahren   
+ 6  ren ist erheblich schneller als die Neuausgabe des Bildschirms,
+ 7  braucht aber Speicherplatz  (Wir hams ja!)                     
+ 8                                                                 
+ 9                                                                 
+10 Der gesamte Bildschirm wird in den dafÅr vorgesehenen Speicher- 
+11  bereich gerettet (auûerhalb des FORTH-Systems, versteht sich)  
+12 Das Ganze umgekehrt stellt den Bildschirm wieder her. Diese     
+13  Funktionen sind recht nÅtzlich, weil man Werte noch sehen kann,
+14  die z.B. bei LIST weggescrollt wÅrden.                         
+15                                                                 
+Screen 13 not modified     
+ 0 \ Windowcomponents and Windowsize                      14sep86we
+ 1                                                                 
+ 2 Die Bestandteile des Fensters werden einfach aufaddiert und     
+ 3 als Konstante zur VerfÅgung gestellt.                           
+ 4                                                                 
+ 5 linke obere Ecke des Fensters in Bildschirmkoordinaten          
+ 6                                                                 
+ 7 Breite des Fensters in Bildschirmkoordinaten                    
+ 8 Hîhe des Fensters in Bildschirmkoordinaten                      
+ 9                                                                 
+10 berechnet die Ausmaûe des Fensters fÅr alle weiteren Funktionen 
+11  unter Zuhilfenahme von WIND-CALC. Leider liefert diese Funktion
+12  bei Breite und Hîhe ein Pixel zu wenig. Digital Research allein
+13  mag wissen, warum ...                                          
+14                                                                 
+15                                                                 
+Screen 14 not modified     
+ 0 \ Window's title and sliders                           14sep86we
+ 1                                                                 
+ 2 Window-Handle des Fensters                                      
+ 3                                                                 
+ 4 zur Ausgabe eines Textes in Titel- oder Infozeile               
+ 5  Der String muû mit einer Null abgeschlossen sein.              
+ 6                                                                 
+ 7 gibt 0string in der Titelzeile aus.                             
+ 8 gibt 0string in der Infozeile aus.                              
+ 9                                                                 
+10 Die Grîûe des vertikalen Sliders wird aus der Gesamtgrîûe des   
+11  Files, das editiert wird, berechnet.                           
+12                                                                 
+13 Die Position des vertikalen Sliders wird relativ zur Gesamtgrîûe
+14  des Files eingestellt.                                         
+15                                                                 
+Screen 15 not modified     
+ 0 \ Draw window on screen                                14sep86we
+ 1                                                                 
+ 2 gibt die Grîûe eines kleinen Rechtecks sowie des ganzen Fensters
+ 3                                                                 
+ 4                                                                 
+ 5 zeichnet ein wachsendes Rechteck (nur fÅrs Auge ...)            
+ 6 zeichnet ein schrumpfendes Rechteck ( s.o.)                     
+ 7                                                                 
+ 8 lîscht den Innenraum des Fenster durch öberschreiben mit einem  
+ 9  weiûen Rechteck.                                               
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 16 not modified     
+ 0 \ Open and close window                                14sep86we
+ 1                                                                 
+ 2 îffnet das Editorfenster:  Bildschirminhalt merken              
+ 3  Fenster erzeugen mit entsprechender Grîûe und Attributen       
+ 4  Titel- und Infozeile lîschen                                   
+ 5  Fenster auf dem Bildschirm ausgeben und Inhalt lîschen         
+ 6                                                                 
+ 7 schlieût das Editorfenster:                                     
+ 8  Fenster vom Bildschirm und Åberhaupt entfernen                 
+ 9  Bildschirm restaurieren.                                       
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 17 not modified     
+ 0 \ redrawing the rest of screen                         14sep86we
+ 1                                                                 
+ 2 Rechteck per Pixelmove restaurieren                             
+ 3                                                                 
+ 4 liefert die Koordinaten eines neu zu zeichnenden Rechtecks.     
+ 5                                                                 
+ 6 Der Screenmanager stellt eine Liste von Rechtecken zurVerfÅgung,
+ 7  die nach einer Aktion geÑndert worden sind.                    
+ 8  Durch diese Liste hangelt sich die Routine hindurch und        
+ 9  erzeugt die Rechtecke per Pixelmove (schnell) neu.             
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

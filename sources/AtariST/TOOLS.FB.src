@@ -1,0 +1,272 @@
+Screen 0 not modified     
+ 0 \\                       *** Tools ***                 25may86we
+ 1                                                                 
+ 2 In diesem File sind die wichtigsten Debugging-Tools enthalten.  
+ 3                                                                 
+ 4 Dazu geh”ren ein einfacher Decompiler, ein Speicherdump und     
+ 5 der Tracer (s. Kapitel im Handbuch)                             
+ 6 Vor allem der Tracer hat sich als sehr sinnvolles Werkzeug bei  
+ 7 der Fehlerbek„mpfung entwickelt. Normalerweise sind Fehlerquel- 
+ 8 len beim Tracen sofort auffindbar, manchmal allerdings auch     
+ 9 nicht ganz so schnell ...                                       
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ Loadscreen for simple decompiler                     26oct86we
+ 1                                                                 
+ 2 Onlyforth    Vocabulary Tools  Tools also definitions           
+ 3                                                                 
+ 4 1 5 +thru                                                       
+ 5   6 +load     \ Tracer                                          
+ 6                                                                 
+ 7 Onlyforth                                                       
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ Tools for decompiling                                26oct86we
+ 1                                                                 
+ 2 | : ?:     dup 4 u.r ." :" ;                                    
+ 3 | : @?     dup @ 6 u.r ;                                        
+ 4 | : c?     dup c@ 3 .r ;                                        
+ 5                                                                 
+ 6 : s   ( adr - adr+ )                                            
+ 7    ?: space  c? 3 spaces  dup 1+ over c@ type                   
+ 8    dup c@ + 1+ even ;                                           
+ 9                                                                 
+10 : n   ( adr - adr+2 )    ?: @? 2 spaces  dup @ >name .name 2+ ; 
+11 : k   ( adr - adr+2 )    ?: 5 spaces @? 2+ ;                    
+12 : b   ( adr - adr+1)     ?: @? dup @ over + 5 u.r 2+ ;          
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0 \ Tools for decompiling                                26oct86we
+ 1                                                                 
+ 2 : d   ( adr n - adr+n)                                          
+ 3    2dup swap ?:  swap  0 DO c? 1+ LOOP  2 spaces  -rot type ;   
+ 4                                                                 
+ 5 : c   ( adr - adr+1)     1 d ;                                  
+ 6                                                                 
+ 7                                                                 
+ 8 \\                                                              
+ 9 : dump ( adr n -) bounds ?DO cr I 10 d drop stop? IF LEAVE      
+10 THEN 10 +LOOP ;                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14 \ dekompiliere  String Name Konstant Char Branch Dump           
+15 \               =      =    =        =    =      =              
+Screen 4 not modified     
+ 0 \ General Dump Utility - Output                        26oct86we
+ 1                                                                 
+ 2 | : .2      ( n -- )       0  <#   # #   #>   type  space ;     
+ 3 | : .6      ( d -- )       <#  # # # # # #  #>  type ;          
+ 4 | : d.2     ( addr len -- )      bounds ?DO  I c@  .2  LOOP ;   
+ 5 | : emit.   ( char -- )     $7F and                             
+ 6          dup bl $7E uwithin not IF drop Ascii . THEN  emit ;    
+ 7                                                                 
+ 8 | : dln   ( addr --- )                                          
+ 9      cr  dup 6 u.r  2 spaces  8 2dup d.2  space                 
+10      over + 8 d.2  space   $10 bounds ?DO  I c@ EMIT.  LOOP  ;  
+11 | : ?.n    ( n1 n2 -- n1 )                                      
+12      2dup = IF  ." \/"  drop  ELSE  2 .r  THEN   space ;        
+13 | : ?.a    ( n1 n2 -- n1 )                                      
+14      2dup = IF  ." v"  drop   ELSE  1 .r  THEN ;                
+15                                                                 
+Screen 5 not modified     
+ 0 \ Longdump  basics                                     24aug86we
+ 1                                                                 
+ 2 | : ld.2   ( hiaddr loaddr len -- hiaddr )                      
+ 3      bounds ?DO  I over lc@ .2  LOOP  ;                         
+ 4                                                                 
+ 5 | : ldln   ( hiaddr loaddr  -- )                                
+ 6      cr  dup >r  over   .6  2 spaces                            
+ 7      r@ 8 ld.2 space   r@ 8 + 8 ld.2 space                      
+ 8      r> $10 bounds ?DO  I over lc@ emit.  LOOP drop ;           
+ 9                                                                 
+10 | : .head   ( addr len -- addr' len' )                          
+11       swap  dup -$10 and  swap  $0F and  cr 8 spaces            
+12       8 0 DO  I ?.n  LOOP  space  $10 8 DO  I ?.n  LOOP         
+13       space  $10 0 DO  I ?.a  LOOP  rot + ;                     
+14                                                                 
+15                                                                 
+Screen 6 not modified     
+ 0 \ Dump and Fill Memory Utility                         10sep86we
+ 1                                                                 
+ 2 Forth definitions                                               
+ 3                                                                 
+ 4 : ldump   ( laddr len -- )                                      
+ 5    base push hex   >r swap r>  .head                            
+ 6    bounds ?DO  dup I ldln  stop? IF  LEAVE  THEN                
+ 7                I $FFF0 = IF  1+  THEN  $10 +LOOP drop ;         
+ 8                                                                 
+ 9 : dump   ( addr len -- )                                        
+10    base push  hex    .head                                      
+11    bounds ?DO  I dln  stop? IF  LEAVE  THEN  $10 +LOOP ;        
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 7 not modified     
+ 0 \ Trace Loadscreen                                     26oct86we
+ 1                                                                 
+ 2 Onlyforth       \needs Tools    Vocabulary Tools                
+ 3 Tools also definitions                                          
+ 4                                                                 
+ 5 \needs cpush   1 +load                                          
+ 6 \needs >absaddr                 : >absaddr   0  forthstart d+ ; 
+ 7                                                                 
+ 8 2 8 +thru                                                       
+ 9                                                                 
+10 Onlyforth                                                       
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 8 not modified     
+ 0 \ throw status on Return-Stack                         26oct86we
+ 1                                                                 
+ 2 | Create: cpull                                                 
+ 3       rp@ count  2dup + even rp!  r> swap cmove ;               
+ 4                                                                 
+ 5 : cpush  ( addr len --)   r> -rot  over >r                      
+ 6       rp@ over 2+ -  even dup rp!  place  cpull >r  >r ;        
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 9 not modified     
+ 0 \ Variables do-trace                                   10sep86we
+ 1                                                                 
+ 2 | Variable (W           \ Variable for saving W                 
+ 3 | Variable <ip          \ start of trace trap range             
+ 4 | Variable ip>          \ end of trace trap range               
+ 5 | Variable nest?        \ True if NEST shall performed          
+ 6 | Variable newnext      \ Address of new Next for tracing       
+ 7 | Variable last'        \ holds adr of position in traced word  
+ 8 | Variable #spaces      \ for indenting nested trace            
+ 9 | Variable trap?        \ True if trace is allowed              
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 10 not modified     
+ 0 \ install Tracer                                       11sep86we
+ 1                                                                 
+ 2 Label trnext   0 # D6 move   .l 0 D6 FP DI) jmp  end-code       
+ 3                                                                 
+ 4 Label (do-trace      newnext R#) D0 move  D0 trnext 2+ R#) move 
+ 5    .w trnext # D6 move   .l D6 reg) A0 lea    A0 D5 move        
+ 6    .w UP R#) D6 move                                            
+ 7    .l ' next-link >body c@ D6 FP DI) D6 .w move                 
+ 8    BEGIN   .l D6 reg) A1 lea   .w D6 tst  0<>                   
+ 9    WHILE   .w &10 # A1 suba   .l D5 A0 move                     
+10               A0 )+ A1 )+ move   A0 )+ A1 )+ move               
+11               .w 2 A1 addq   A1 ) D6 move                       
+12    REPEAT  rts   end-code                                       
+13                                                                 
+14   Code do-trace  \ opposite of end-trace                        
+15      (do-trace bsr   Next end-code                              
+Screen 11 not modified     
+ 0 \ reenter tracer                                       04sep86we
+ 1                                                                 
+ 2 | : oneline   .status space query interpret  -&82 allot         
+ 3               rdrop  ( delete quit from tracenext ) ;           
+ 4                                                                 
+ 5 | Code (step                                                    
+ 6       RP )+ D7 move   .l D7 IP lmove   FP IP adda               
+ 7       .w (W R#) D7 move    -1 # trap? R#) move                  
+ 8 Label fnext                                                     
+ 9       D7 reg) D6 move  D6 reg) jmp  end-code                    
+10                                                                 
+11 | Create: nextstep   (step ;                                    
+12                                                                 
+13 : (debug  ( addr -- )   \ start tracing at addr                 
+14  dup  <ip !  BEGIN  1+ dup @   ['] unnest =  UNTIL  2+ ip> ! ;  
+15                                                                 
+Screen 12 not modified     
+ 0 \ check trace conditions                               10sep86we
+ 1                                                                 
+ 2 Label tracenext   tracenext newnext !                           
+ 3    IP )+ D7 move                                                
+ 4    trap? R#) tst    fnext beq                                   
+ 5    .b nest? R#) D0 move  \ byte order!!                         
+ 6    0= IF    .l IP D0 move   FP D0 sub                           
+ 7             .w <ip R#) D0 cmp  fnext bcs                        
+ 8                ip> R#) D0 cmp  fnext bhi                        
+ 9       ELSE  .b 0 # nest? R#) move  THEN  \ low byte still set   
+10                                                                 
+11                             \ one trace condition satisfied     
+12   .w D7 (W R#) move     trap? R#) clr                           
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 13 not modified     
+ 0 \ tracer display                                       26oct86we
+ 1                                                                 
+ 2 ;c:  nest? @                                                    
+ 3      IF  nest? off   r>  ip> push  <ip push  dup 2- (debug      
+ 4          #spaces push  1 #spaces +!  >r   THEN                  
+ 5  r@  nextstep >r  input push  output push  standardi/o          
+ 6  2-   dup last' !                                               
+ 7  cr #spaces @ spaces    dup 5 u.r   @ dup 6 u.r   2 spaces      
+ 8  >name .name    $1C col -  0 max spaces       .s                
+ 9  state push    blk push    >in push    ['] 'quit >body push     
+10  [ ' >interpret >body ] Literal push                            
+11  #tib push    tib #tib @ cpush    r0 push    rp@ r0 !           
+12  &82 allot    ['] oneline Is 'quit    quit ;                    
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 14 not modified     
+ 0 \ DEBUG with errorchecking                             11sep86we
+ 1                                                                 
+ 2 | : traceable  ( cfa -- adr)                                    
+ 3  recursive  dup @                                               
+ 4  ['] : @    case? ?exit                                         
+ 5  ['] key @  case? IF  >body c@  Input @ + @  traceable exit THEN
+ 6  ['] type @ case? IF  >body c@ Output @ + @  traceable exit THEN
+ 7  ['] r/w  @ case? IF  >body  @               traceable exit THEN
+ 8  drop dup @ @ $4EAB =  IF  @ 4+  exit  THEN \ 68000 voodoo code 
+ 9  >name .name ." can't be DEBUGged" quit ;                       
+10                                                                 
+11 : nest                  \ trace next high-level word executed   
+12     last' @ @ traceable drop  nest? on ;                        
+13                                                                 
+14 : unnest                \ ends tracing of actual word           
+15     <ip on  ip> off ;   \ clears trap range                     
+Screen 15 not modified     
+ 0 \ misc. words for tracing                              bp 9Mar86
+ 1                                                                 
+ 2 : endloop               \ sets trap range next current word     
+ 3     last' @ 4+ <ip ! ;  \ used to skip LOOPs, REPEATs, ...      
+ 4                                                                 
+ 5 ' end-trace  Alias unbug                                        
+ 6                                                                 
+ 7 Forth definitions                                               
+ 8                                                                 
+ 9 : debug  ( --)          \ reads a word                          
+10       '  traceable  Tools   (debug                              
+11       nest? off  trap? on  #spaces off  do-trace ;              
+12                                                                 
+13 : trace' (  --)         \ traces fol. word                      
+14     debug  <ip perform  end-trace ;                             
+15                                                                 

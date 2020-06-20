@@ -1,0 +1,170 @@
+Screen 0 not modified     
+ 0 \\                       *** Diverses ***              26oct86we
+ 1                                                                 
+ 2 In diesem File haben wir Worte untergebracht, die zwar hÑufig   
+ 3  gebraucht werden, aber nicht bestimmten Files zugeordnet werden
+ 4  kînnen.                                                        
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ Loadscreen fÅr Diverses                              26oct86we
+ 1                                                                 
+ 2 Onlyforth                                                       
+ 3                                                                 
+ 4 1 2  +thru                                                      
+ 5                                                                 
+ 6 ' .blk Is .status                                               
+ 7                                                                 
+ 8                                                                 
+ 9 \ 3 +load   setvec                                              
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ HÑufig benutzte Definitionen                         26oct86we
+ 1                                                                 
+ 2 : >absaddr   ( addr -- abs_laddr )       0  forthstart d+ ;     
+ 3                                                                 
+ 4 : .blk     ( -- )         blk @   ?dup   0= ?exit               
+ 5      dup 1 =  IF  cr file?  THEN   ."  Blk " . ?cr ;            
+ 6                                                                 
+ 7 : abort(  ( f -- )                                              
+ 8    IF  [compile] .(  true abort"  !"  THEN  [compile] ( ;       
+ 9                                                                 
+10 \needs arguments   abort( use definition in FILEINT.SCR)        
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0 \ HÑufig benutzte Definitionen II                      26oct86we
+ 1                                                                 
+ 2 | Create: cpull                                                 
+ 3       rp@ count  2dup + even rp!  r> swap cmove ;               
+ 4                                                                 
+ 5 : cpush  ( addr len --)   r> -rot  over >r                      
+ 6       rp@ over 2+ -  even dup rp!  place  cpull >r  >r ;        
+ 7                                                                 
+ 8                                                                 
+ 9 : bell                           7 con! ;                       
+10 : blank    ( addr count -- )     bl fill ;                      
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 4 not modified     
+ 0 \ TOS-Alerts abschalten                                16oct86we
+ 1                                                                 
+ 2 Create oldvec   4 allot                                         
+ 3                                                                 
+ 4 Label newvector                                                 
+ 5    -8 D1 cmpi  0<> IF  -&13 D1 cmpi  0<>  IF                    
+ 6      .l oldvec pcrel) A2 move   A2 ) jmp   THEN  THEN           
+ 7    .l D1 D0 move   rts   end-code                               
+ 8                                                                 
+ 9 : setvec    $0.0404 l2@  oldvec 2!                              
+10             newvector >absaddr   $0.0404 l2! ;                  
+11                                                                 
+12 : restvec   oldvec 2@ $0.0404 l2! ;                             
+13                                                                 
+14 : bye       restvec bye ;                                       
+15                                                                 
+Screen 5 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 6 not modified     
+ 0 \ Loadscreen fÅr Diverses                              26oct86we
+ 1                                                                 
+ 2 setzt Searchorder auf     FORTH FORTH ONLY    FORTH             
+ 3                                                                 
+ 4 kompiliert die nÑchsten 2 Screens.                              
+ 5                                                                 
+ 6 .STATUS ist ein 'deferred word', das jeweils beim Kompilieren   
+ 7  eines Quelltextscreens aufgerufen wird.                        
+ 8                                                                 
+ 9 Screen 4 wird nicht mitkompiliert, denn SETVEC muû nach jedem   
+10  Neustart wieder aufgerufen werden. Falls Sie diese Funktion    
+11  nutzen wollen, mÅssen Sie nach jedem Laden SETVEC eingeben.    
+12  (Dazu muû natÅrlich Screen 4 kompiliert worden sein.)          
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 7 not modified     
+ 0 \ HÑufig benutzte Definitionen                         26oct86we
+ 1                                                                 
+ 2 >ABSADDR    rechnet eine - relative- Adresse im FORTH-System in 
+ 3             eine absolute 32-Bit-Adresse um.                    
+ 4 .BLK        gibt die Nummer des gerade kompilierten Screens aus,
+ 5             bei Screen 1 auch den Filenamen.                    
+ 6                                                                 
+ 7 ABORT(      bewirkt das gleiche wie ABORT", ist aber im Direkt- 
+ 8             modus zulÑssig.                                     
+ 9                                                                 
+10 ARGUMENTS   prÅft, ob eine bestimmte (Mindest-)Anzahl von Werten
+11             auf dem Stack liegt. Dieses Wort ist bereits im     
+12             FORTHKER.PRG vorhanden, da es vom File-Interface    
+13             gebraucht wird.                                     
+14                                                                 
+15                                                                 
+Screen 8 not modified     
+ 0 \ HÑufig benutzte Definitionen II                      26oct86we
+ 1                                                                 
+ 2 CPUSH       sorgt im Zusammenspiel mit CPULL dafÅr, daû ein     
+ 3             String (bzw. ein beliebiger Speicherbereich, z.B.   
+ 4             ein Array) nach dem Aufruf einer Funktion wieder    
+ 5             die alten Werte erhÑlt. Entspricht dem Wort PUSH,   
+ 6             aber fÅr Strings anstelle von Variablen.            
+ 7                                                                 
+ 8                                                                 
+ 9 BELL        Dieses Wort ist selbsterklÑrend !!!                 
+10 BLANK       fÅllt ab addr count Speicherstellen mit Leerzeichen.
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 9 not modified     
+ 0 \ TOS-Alerts abschalten                                26oct86we
+ 1                                                                 
+ 2 Vielleicht haben Sie es schon einmal bemerkt. Wenn Sie auf eine 
+ 3  Diskette schreiben wollen, bei der der Schreibschutz gesetzt   
+ 4  ist, erscheint eine Alert-Box, aber ohne Maus, sodaû Sie den   
+ 5  ABBRUCH-Knopf nur durch geduldiges Experimentieren mit der Maus
+ 6  erreichen kînnen. Diese Box wird vom Betriebssystem ohne unser 
+ 7  Zutun und ohne Einwirkungsmîglichkeit erzeugt.                 
+ 8 NEWVECTOR Ñndert den zugehîrigen Vector (critical error handler)
+ 9  so, daû diese Boxen nicht mehr erscheinen, wohl aber die, in   
+10  denen z.B. zum Diskettenwechsel aufgefordert wird.             
+11 SETVEC und RESTVEC dienen zum Umschalten zwischen altem und     
+12  neuen Vector.                                                  
+13 Insbesondere muû BYE den alten Vector wiederherstellen, sonst   
+14  stÅrzt das System gnadenlos ab.                                
+15 Noch keine besonders elegante Lîsung, aber besser als keine !!  

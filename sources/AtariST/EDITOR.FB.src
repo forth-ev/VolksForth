@@ -1,0 +1,1598 @@
+Screen 0 not modified     
+ 0 \\                   *** Screen-Editor ***             10aug86we
+ 1                                                                 
+ 2 Dieses File enthÑlt den volksFORTH - Editor.                    
+ 3 Er basiert auf dem Editor im F83 von Laxen/Perry, besitzt aber  
+ 4 erheblich erweiterte Funktionen (Zeichen- und Zeilenstack) und  
+ 5 ist ein vollstÑndig in GEM integrierter Fullscreen-Editor.      
+ 6                                                                 
+ 7 Obwohl die Steuerung mit Maus und Menuzeile erfolgt, kînnen     
+ 8 ihn die 'Profis' auch vollstÑndig Åber Controltasten bedienen,  
+ 9                                                                 
+10 Die Dauerhilfe-Funktion macht eine Funktionsbeschreibung Åber-  
+11 flÅssig. Solange im HILFE-Menu Dauerhilfe gewÑhlt ist, erscheint
+12 vor der AusfÅhrumg jeder Editor-Funktion ein erlÑuternder Text  
+13 mit der Mîglichkeit zum Abbruch. Dies gilt jedoch nicht, wenn   
+14 die Funktion per Tastendruck aufgerufen wurde.                  
+15                                                                 
+Screen 1 not modified     
+ 0 \ Load Screen for the Editor                         cas20130105
+ 1                                                                 
+ 2 Onlyforth  GEM also                                             
+ 3 include ediicon.fb                                              
+ 4                                                                 
+ 5 | Variable (dx  2 (dx !           | Variable (dy    4 (dy !     
+ 6 | : dx     (dx @ ;                | : dy     (dy @ ;            
+ 7                                                                 
+ 8 \needs -text         .( strings needed !!)    abort             
+ 9 \needs file?         .( Filesystem needed !!) abort             
+10 include gem\supergem.fb                                         
+11 include gem\gemdefs.fb                                          
+12 include edwindow.fb                                             
+13                                                                 
+14 Forth definitions                                               
+15  1 $2C  +thru                                                   
+Screen 2 not modified     
+ 0 \ Editor Variable                                      10sep86we
+ 1                                                                 
+ 2 Variable 'scr  1 'scr !         Variable 'r#  'r# off           
+ 3 Variable 'edifile                                               
+ 4                                                                 
+ 5 ?head @      1 ?head !                                          
+ 6                                                                 
+ 7 Variable changed                Variable edistate               
+ 8 Variable edifile                                                
+ 9 Variable ycur                                                   
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0 \ Edi move cursor with position-checking or cyclic     30aug86we
+ 1                                                                 
+ 2 : c  ( n -- )   \ checks the cursor position                    
+ 3     r# @ +  dup 0 b/blk uwithin 0= abort" Border!"  r# ! ;      
+ 4                                                                 
+ 5 \  : c  ( n -- )   \ moves cyclic thru the screen               
+ 6 \   r# @ +  b/blk mod  r# ! ;                                   
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 4 not modified     
+ 0 \ Move the Editor's cursor around                      08aug86we
+ 1                                                                 
+ 2 : top          ( -- )       r# off ;                            
+ 3 : cursor       ( -- n )     r# @ ;                              
+ 4 : t            ( n -- )     c/l * cursor - c ;                  
+ 5 : line#        ( -- n )     cursor  c/l  /  ;                   
+ 6 : col#         ( -- n )     cursor  c/l  mod  ;                 
+ 7 : +t           ( n -- )     line# + t   ;                       
+ 8 : 'start       ( -- addr )  scr @ block ;                       
+ 9 : 'cursor      ( -- addr )  'start  cursor  + ;                 
+10 : 'line        ( -- addr )  'cursor  col# -  ;                  
+11 : #after       ( -- n )     c/l col# -  ;                       
+12 : #remaining   ( -- n )     b/blk cursor - ;                    
+13 : #end         ( -- n )     #remaining col# +  ;                
+14                                                                 
+15                                                                 
+Screen 5 not modified     
+ 0 \ Move the Editors cursor                              08aug86we
+ 1                                                                 
+ 2 : curup      c/l negate c ;                                     
+ 3 : curdown    c/l c ;                                            
+ 4 : curleft     -1 c ;                                            
+ 5 : curright     1 c ;                                            
+ 6 : +tab       cursor  $10 / 1+ $10 * cursor - c ;                
+ 7 : -tab       cursor  8 mod  negate  dup 0=  8 * +  c ;          
+ 8 : >""end     'start b/blk -trailing nip  b/blk 1- min  r# ! ;   
+ 9 : <cr>       line# t curdown ;                                  
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 6 not modified     
+ 0 \ buffers                                              14sep86we
+ 1                                                                 
+ 2 : modified   ( -- )             scr @ block drop  update        
+ 3    changed @ ?exit   edistate off  changed on  ;                
+ 4                                                                 
+ 5 &84 Constant c/pad                                              
+ 6 &42 Constant c/buf                                              
+ 7                                                                 
+ 8 : 'work     ( -- work-buf )     pad     c/pad + ;               
+ 9 : 'insert   ( -- ins-buf )      'work   c/pad + ;               
+10 : 'find     ( -- find-buf )     'insert c/buf + ;               
+11                                                                 
+12 : 'find+    ( n1 -- n2 )        'find c@ +  ;                   
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 7 not modified     
+ 0 \ Errorchecking                                        09sep86we
+ 1                                                                 
+ 2 : ?bottom  ( -- )     'start b/blk + c/l -  c/l  -trailing nip  
+ 3                           abort" You would lose a line" ;       
+ 4                                                                 
+ 5 : ?end  ( -- )        'line c/l + 1- c@  bl -                   
+ 6                           abort" You would lose a char" ;       
+ 7                                                                 
+ 8 : ?range  ( n -- n )   dup  0 capacity uwithin not              
+ 9                           abort" Out of range!" ;               
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 8 not modified     
+ 0 \ Graphics for display                                 23aug86we
+ 1                                                                 
+ 2 : lineclr      ( line# -- )                                     
+ 3    wi_x   swap cheight *  wi_y +                                
+ 4    over  wi_width +   over cheight +  fbox  ;                   
+ 5                                                                 
+ 6 : lineinsert   ( line# -- )                                     
+ 7    wi_x   over  cheight *  wi_y +                               
+ 8    wi_width   over  l/s 1- cheight *  wi_y +  swap -            
+ 9    2over cheight +   scr>scr    lineclr   ;                     
+10                                                                 
+11 : linedelete   ( line# -- )                                     
+12    wi_x    swap 1+ cheight *  wi_y +                            
+13    wi_width   over  l/s cheight *  wi_y +  swap -               
+14    2over cheight -   scr>scr    l/s 1- lineclr   ;              
+15                                                                 
+Screen 9 not modified     
+ 0 \ Editor-Window Title and Status-Line                cas20130105
+ 1                                                                 
+ 2 : 'workblank                                                    
+ 3    'work dup $sum !   dup off   dup 1+ c/l blank   c/l + off ;  
+ 4                                                                 
+ 5                                                                 
+ 6 : update$   ( -- string )                                       
+ 7    scr @ updated? not IF  " not updated" exit THEN  " updated" ;
+ 8                                                                 
+ 9 : .edistate      edistate @ ?exit  edistate on  'workblank      
+10    "  Scr # " count $add   scr @ extend  <# # # # #> $add       
+11    'work c@ 2+ 'work c!    update$ count $add                   
+12    'work 1+ wi_status ;                                         
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 10 not modified     
+ 0 \ screen display                                       30aug86we
+ 1                                                                 
+ 2 : .edifile       'workblank   1 'work c!                        
+ 3     isfile@  ?dup 0=  IF  " DIRECT"  ELSE  2- >name  THEN       
+ 4     count $add  'work count + 1+  c/l  min off                  
+ 5     'work 1+  wi_title ;                                        
+ 6                                                                 
+ 7 : 'line#   ( line# -- addr count )                              
+ 8    dup dy +  dx at   c/l * 'start +  c/l ;                      
+ 9                                                                 
+10 : .line      ( line# -- )  dup lineclr  'line# -trailing type ; 
+11 : redisplay  ( line# -- )  'line# type ;                        
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 11 not modified     
+ 0 \ screen display                                       14sep86we
+ 1                                                                 
+ 2 &18 Constant id-len                                             
+ 3 Create id   id-len allot   id id-len erase                      
+ 4                                                                 
+ 5 : stamp       id  1+ count  'start c/l +  over -  swap  cmove ; 
+ 6 : ?stamp      changed @ IF  stamp  THEN ;                       
+ 7                                                                 
+ 8                                                                 
+ 9 : edilist     edistate off  changed off                         
+10               vslide_size   scr @ vslide                        
+11               .edifile  .edistate   l/s 0 DO  I  .line  LOOP ;  
+12                                                                 
+13 : undo        scr @ block drop    prev @ emptybuf   edilist ;   
+14                                                                 
+15 : do_redraw   hide_c  wi_clear redraw_screen  edilist ;         
+Screen 12 not modified     
+ 0 \ Edi Variables,                                       23aug86we
+ 1                                                                 
+ 2 Variable (pad   (pad off                                        
+ 3 : memtop  ( -- addr )   sp@ $100 - ;                            
+ 4                                                                 
+ 5 Variable chars                  Variable #chars                 
+ 6 : 'chars  ( -- addr )   chars @  #chars @ + ;                   
+ 7                                                                 
+ 8 Variable lines                  Variable #lines                 
+ 9 : 'lines  ( -- addr )   lines @  #lines @ + ;                   
+10                                                                 
+11 Variable (key                                                   
+12                                                                 
+13 Variable imode  imode off                                       
+14                                                                 
+15                                                                 
+Screen 13 not modified     
+ 0 \ Edi line handling                                    09aug86we
+ 1                                                                 
+ 2 : linemodified   modified  line# redisplay ;                    
+ 3                                                                 
+ 4 : clrline        'line c/l blank        linemodified ;          
+ 5 : clrright       'cursor #after blank   linemodified ;          
+ 6                                                                 
+ 7 : delline        'line #end c/l delete                          
+ 8                  line# linedelete   modified ;                  
+ 9 : backline       curup  delline ;                               
+10                                                                 
+11 : instline       ?bottom   'line c/l over #end insert           
+12                  line# lineinsert  clrline ;                    
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 14 not modified     
+ 0 \ Edi line handling                                    09aug86we
+ 1                                                                 
+ 2 : @line         'lines  memtop u> abort" line buffer full"      
+ 3                 'line 'lines c/l cmove  c/l #lines +! ;         
+ 4                                                                 
+ 5 : copyline      @line curdown ;                                 
+ 6 : line>buf      @line delline ;                                 
+ 7                                                                 
+ 8 : !line         c/l negate #lines +!  'lines 'line c/l cmove    
+ 9                 linemodified ;                                  
+10                                                                 
+11 : buf>line      #lines @ 0= abort" line buffer empty"           
+12                 ?bottom  instline  !line ;                      
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 15 not modified     
+ 0 \ Edi char handling                                    09aug86we
+ 1                                                                 
+ 2 : delchar      'cursor #after 1 delete  linemodified ;          
+ 3 : backspace    curleft  delchar ;                               
+ 4                                                                 
+ 5 : inst1        ?end   'cursor 1 over #after insert ;            
+ 6 : instchar     inst1  bl 'cursor c!  linemodified ;             
+ 7                                                                 
+ 8 : @char        'chars 1-  lines @  u> abort" char buffer full"  
+ 9                'cursor c@  'chars c!   1 #chars +! ;            
+10 : copychar     @char curright ;                                 
+11 : char>buf     @char delchar ;                                  
+12                                                                 
+13 : !char        -1 #chars +!  'chars c@ 'cursor c! ;             
+14 : buf>char     #chars @ 0= abort" char buffer empty"            
+15                inst1  !char  linemodified ;                     
+Screen 16 not modified     
+ 0 \ from Screen to Screen ...                            22oct86we
+ 1                                                                 
+ 2 : setscreen  ( n -- )       ?stamp  ?range  scr !  edilist ;    
+ 3 : n    scr @  1+  setscreen ;                                   
+ 4 : b    scr @  1-  setscreen ;                                   
+ 5                                                                 
+ 6 : >shadow   ( n1 -- n2 ) capacity 2/  2dup < IF + ELSE - THEN ; 
+ 7 : w                      scr @  >shadow  setscreen ;            
+ 8                                                                 
+ 9 : (mark       scr @ 'scr !   r# @ 'r# !   isfile@ 'edifile ! ;  
+10 : mark        (mark  true abort" marked !" ;                    
+11                                                                 
+12 : a           ?stamp   'edifile @   [ Dos ]  dup searchfile drop
+13                         isfile@ 'edifile !   !files             
+14               'r# @  r# @ 'r# !  r# !                           
+15               'scr @   scr @ 'scr !   ?range scr !  edilist ;   
+Screen 17 not modified     
+ 0 \ splitting a line, replace                            17aug86we
+ 1                                                                 
+ 2 : split          ?bottom  pad c/l 2dup blank                    
+ 3    'cursor #remaining insert   linemodified                     
+ 4    col#   <cr>  line# lineinsert                                
+ 5    'start cursor +  c/l  rot  delete  linemodified ;            
+ 6                                                                 
+ 7 : ins      'insert count  under 'cursor #after  insert  c ;     
+ 8                                                                 
+ 9 : r                                                             
+10    c/l   'line over -trailing  nip  -                           
+11    'insert c@  'find c@ -  <  abort" not enough room"           
+12    'find c@  dup negate c  'cursor #after rot  delete  ins      
+13    linemodified ;                                               
+14                                                                 
+15                                                                 
+Screen 18 not modified     
+ 0 \ find und search                                      30aug86we
+ 1                                                                 
+ 2 : >last?   ( -- f )    :dfright state_gaddr l@  1 and ;         
+ 3 : >last                :dfright select   :dfleft   deselect ;   
+ 4 : >1st                 :dfleft  select   :dfright  deselect ;   
+ 5                                                                 
+ 6 Variable fscreen                                                
+ 7                                                                 
+ 8 : find?  ( - n f )   'find count  'cursor #remaining  search ;  
+ 9                                                                 
+10 : s   BEGIN   find?   IF  'find+ c  edilist  exit  THEN   drop  
+11               fscreen @  scr @   -  ?dup   stop? 0= and         
+12       WHILE   0< IF  -1  ELSE  1  THEN  scr +! top scr @ vslide 
+13       REPEAT  :sfind tree!                                      
+14    >last? IF  >1st :df1st  ELSE  >last :dflast THEN             
+15    getnumber drop fscreen !  edilist  true abort" not found" ;  
+Screen 19 not modified     
+ 0 \ Search-Findbox auswerten                             24aug86we
+ 1                                                                 
+ 2 : initfind   ( -- )                                             
+ 3    :dfmatch select   :dfignore deselect   >last                 
+ 4    1 extend :df1st putnumber                                    
+ 5    capacity 1- extend :dflast putnumber ;                       
+ 6                                                                 
+ 7 : getfind    ( -- n )                                           
+ 8    :dfignore state_gaddr l@  1 and  caps !                      
+ 9    >last?  IF  :dflast  ELSE  :df1st  THEN  getnumber drop      
+10    capacity 1- min                                              
+11    :dffstrin 'find getstring   :dfrstrin 'insert getstring ;    
+12                                                                 
+13 : do_fbox   ( -- button )    :sfind tree!                       
+14    edifile @ isfile@ - IF  isfile@ edifile ! initfind  THEN     
+15    show_object  :dffstrin form_do  dup deselect  hide_object ;  
+Screen 20 not modified     
+ 0 \ Replacing ...                                        24aug86we
+ 1                                                                 
+ 2 Variable ?replace                                               
+ 3                                                                 
+ 4 : show_replace   ( -- )                                         
+ 5    &320 &200 &10 &10 little 4!                                  
+ 6    col# dx + 2-  cwidth *   line# dy + 1+ cheight *             
+ 7      2dup 0 objc_setpos   0 objc_getwh big 4!                   
+ 8    big 4@  scr>mem1    1  little 4@  big 4@  form_dial          
+ 9    0 ( install) 3 ( depth)  big 4@ objc_draw  show_c ;          
+10                                                                 
+11 : replace  ( -- )                                               
+12    :fbox tree!      BEGIN                                       
+13    show_replace   0 form_do  dup deselect  hide_object          
+14    dup :fboxcanc - WHILE  :fboxyes = IF  r  THEN  s             
+15    REPEAT drop ;                                                
+Screen 21 not modified     
+ 0 \ Editor's find and replace                            24aug86we
+ 1                                                                 
+ 2 Variable (findbox   (findbox off                                
+ 3                                                                 
+ 4 : repfind  ( -- )                                               
+ 5   (findbox @  'find c@  and   0= abort" use find first"         
+ 6   ?stamp   fscreen @  capacity 1-  min  fscreen !               
+ 7   s ?replace @  IF replace  THEN  ;                             
+ 8                                                                 
+ 9 : edifind  ( -- )                                               
+10    do_fbox     :dfcancel case? ?exit                            
+11      :dfreplac =  ?replace  swap IF  on  ELSE  off  THEN        
+12    :edimenu tree!  :repeat 1 menu_ienable  (findbox on          
+13      :sfind tree!  getfind fscreen !  repfind ;                 
+14                                                                 
+15                                                                 
+Screen 22 not modified     
+ 0 \ exiting the Editor                                   30aug86we
+ 1                                                                 
+ 2 Defer resetmouse                                                
+ 3                                                                 
+ 4 : done   ( ff addr  -- tf )                                     
+ 5    :edimenu tree! 0 menu_bar   resetmouse  hide_c               
+ 6    wi_close   ycur @ 0 at cr ." Scr #"  scr @ 3 .r  2 spaces    
+ 7    count type  true ;                                           
+ 8                                                                 
+ 9 : cdone   ( ff -- tf )   prev @ emptybuf   " canceled" done ;   
+10 : sdone   ( ff -- tf )   ?stamp save-buffers  " saved" done ;   
+11 : xdone   ( ff -- tf )   ?stamp   update$              done ;   
+12 : ldone   ( ff -- tf )   drop true                              
+13                          ?stamp save-buffers " loading" done ;  
+14                                                                 
+15                                                                 
+Screen 23 not modified     
+ 0 \ get User's ID, jump to screen                        24aug86we
+ 1                                                                 
+ 2 : do_getid                                                      
+ 3    :sgetid tree!     id 1+ :idtext putstring                    
+ 4    show_object  :idtext form_do  dup deselect  hide_object      
+ 5    :idcancel case? ?exit                                        
+ 6    :noid = IF  id off  exit THEN                                
+ 7    :idtext id 1+ getstring ;                                    
+ 8                                                                 
+ 9 : get-id                                                        
+10    id c@  ?exit  1 id c!  do_getid ;                            
+11                                                                 
+12 : jumpscreen         :sgetscr tree!                             
+13    pad  dup off  :scrnr putstring                               
+14    show_object  :scrnr form_do  dup deselect  hide_object       
+15    :sgcancel = ?exit   :scrnr getnumber drop   setscreen ;      
+Screen 24 not modified     
+ 0 \ insert- and overwrite-mode                           24aug86we
+ 1                                                                 
+ 2 : mark_item   ( item# -- )     1 menu_icheck ;                  
+ 3 : clr_item    ( item# -- )     0 menu_icheck ;                  
+ 4                                                                 
+ 5 : setimode    imode on   :edimenu tree!                         
+ 6               :imode mark_item  :omode clr_item ;               
+ 7 : clrimode    imode off  :edimenu tree!                         
+ 8               :omode mark_item  :imode clr_item ;               
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 25 not modified     
+ 0 \ viewing words                                        24aug86we
+ 1                                                                 
+ 2 : >view   ( -- )                                                
+ 3     'find count pad place  pad capitalize  bl pad count + c!    
+ 4      find 0= abort" Haeh?"                                      
+ 5     >name ?dup 0= abort" no view-field"                         
+ 6     4- @  ?dup 0= abort" hand made"                             
+ 7     (view scr !  top curdown  find? 0= IF drop exit THEN        
+ 8     'find+ c ;                                                  
+ 9                                                                 
+10 : do_view  ( -- )                                               
+11    :sview tree!   pad  dup off  :svword putstring               
+12    show_object  :svword form_do  dup deselect  hide_object      
+13    :idcancel case? ?exit                                        
+14    :svword 'find getstring   :svmark = IF  (mark  THEN          
+15    >view  edilist ;                                             
+Screen 26 not modified     
+ 0 \ Table of keystrokes                                  10aug86we
+ 1                                                                 
+ 2 Create keytable                                                 
+ 3 $4800 0 , ,     $4B00 0 , ,     $5000 0 , ,     $4D00 0 , ,     
+ 4 $4838 1 , ,     $4B34 1 , ,     $5032 1 , ,     $4D36 1 , ,     
+ 5                                 $5000 2 , ,     $7400 2 , ,     
+ 6 $0E08 0 , ,     $537F 0 , ,     $5200 0 , ,     $240A 2 , ,     
+ 7 $0E08 1 , ,     $537F 1 , ,     $5230 1 , ,     $6100 0 , ,     
+ 8 $1709 2 , ,     $180F 2 , ,     $1205 2 , ,     $531F 2 , ,     
+ 9 $1C0D 0 , ,     $1C0D 1 , ,     $0F09 0 , ,     $0F09 1 , ,     
+10 $4700 0 , ,     $4737 1 , ,     $2207 2 , ,     $2F16 2 , ,     
+11 $2106 2 , ,     $1312 2 , ,     $320D 2 , ,                     
+12 $011B 0 , ,     $1F13 2 , ,     $2D18 2 , ,     $260C 2 , ,     
+13 $310E 2 , ,     $3002 2 , ,     $1E01 2 , ,     $1117 2 , ,     
+14                                                                 
+15 here keytable - 2/ 2/  Constant #keys                           
+Screen 27 not modified     
+ 0 \ Table of actions                                     11aug86we
+ 1                                                                 
+ 2 Create actiontable  ]                                           
+ 3 curup           curleft         curdown         curright        
+ 4 line>buf        char>buf        buf>line        buf>char        
+ 5                                 copyline        copychar        
+ 6 backspace       delchar         instchar        jumpscreen      
+ 7 backline        delline         instline        undo            
+ 8 setimode        clrimode        clrline         clrright        
+ 9 <cr>            split           +tab            -tab            
+10 top             >""end          do_getid        do_view         
+11 edifind         repfind         mark                            
+12 cdone           sdone           xdone           ldone           
+13 n               b               a               w               
+14                                                                 
+15 [  here actiontable -  2/  #keys -  abort( # of actions)        
+Screen 28 not modified     
+ 0 \ Table of Menuevents                                  24aug86we
+ 1                                                                 
+ 2 Create menutable                                                
+ 3 $FF c,          $FF c,          $FF c,          $FF c,          
+ 4 :cutline c,     :cutchar c,     :pastelin c,    :pastecha c,    
+ 5                                 :copyline c,    :copychar c,    
+ 6 $FF c,          $FF c,          $FF c,          :jump c,        
+ 7 :backline c,    :delline c,     :insline c,     :undo c,        
+ 8 :imode c,       :omode c,       :eraselin c,    :erasrest c,    
+ 9 $FF c,          :split c,       :tab c,         :backtab c,     
+10 :home c,        :toend c,       :getid c,       :view c,        
+11 :search c,      :repeat c,      :mark c,                        
+12 :canceled c,    :flushed c,     :updated c,     :loading c,     
+13 :next c,        :back c,        :alternat c,    :shadow c,      
+14                                                                 
+15 here menutable -   #keys -  abort( # of menuitems)              
+Screen 29 not modified     
+ 0 \ Table of Help-Boxes                                  24aug86we
+ 1                                                                 
+ 2 Create helptable                                                
+ 3 $FF c,          $FF c,          $FF c,          $FF c,          
+ 4 :hlicut c,      :hchcut  c,     :hlipaste c,    :hchpaste c,    
+ 5                                 :hlicopy c,     :hchcopy c,     
+ 6 $FF c,          $FF c,          $FF c,          :hjump c,       
+ 7 :hliback c,     :hlidel c,      :hliins c,      :hexundo c,     
+ 8 :hspins c,      :hspover c,     :hlierase c,    :hlirest c,     
+ 9 $FF c,          :hlisplit c,    :hcutabr c,     :hcutabl c,     
+10 :hcuhome c,     :hcuend c,      :hspgetid c,    :hview c,       
+11 :hspfind c,     :hsprepea c,    :hscmark c,                     
+12 :hexcancl c,    :hexsave c,     :hexupdat c,    :hexload c,     
+13 :hscnext c,     :hscback c,     :hscalter c,    :hscshado c,    
+14                                                                 
+15 here helptable -   #keys -  abort( # of menuitems)              
+Screen 30 not modified     
+ 0 \ Prepare multi-event                                  09sep86we
+ 1                                                                 
+ 2 Variable mflag   mflag off                                      
+ 3                                                                 
+ 4 : ediprepare                                                    
+ 5    %00110111                                                    
+ 6    1  1  1                                                      
+ 7    mflag @                                                      
+ 8       dx cwidth *  dy cheight *  c/l cwidth *  l/s cheight *    
+ 9    0 0 0 0 0                                                    
+10    0 0                                                          
+11    intin $10 array!  message >absaddr  addrin 2! ;              
+12                                                                 
+13 ' pause  | Alias ev-timer                                       
+14 : ev-r1    1 mflag 1+ ctoggle ;                                 
+15                                                                 
+Screen 31 not modified     
+ 0 \ Button Event                                         24aug86we
+ 1                                                                 
+ 2 Variable ?cursor  ?cursor off                                   
+ 3                                                                 
+ 4 : curon    ?cursor @ ?exit  ?cursor on                          
+ 5    3 swr_mode   1 sf_color  1 sf_interior  0 sf_perimeter       
+ 6    at?  cwidth *  swap cheight *                                
+ 7    over cwidth 1- +   over cheight + 1-    bar ;                
+ 8                                                                 
+ 9 : curoff  ?cursor off  curon  ?cursor off ;                     
+10                                                                 
+11 : ev-button       mflag @  0= ?exit                             
+12    intout 4+ @  cheight /  dy -  c/l *                          
+13    intout 2+ @  cwidth  /  dx -  +  r# !    hide_c curoff ;     
+14                                                                 
+15                                                                 
+Screen 32 not modified     
+ 0 \ Key event                                            17aug86we
+ 1                                                                 
+ 2 : visible?  ( key -- f )   $FF and  ;                           
+ 3                                                                 
+ 4 : putchar  ( -- )                                               
+ 5    (key @  dup visible? 0=  abort" What?"                       
+ 6    imode @  IF  inst1  THEN  'cursor c! linemodified curright ; 
+ 7                                                                 
+ 8 : findkey  ( d_key -- addr )                                    
+ 9    ['] putchar -rot                                             
+10      #keys 0 DO  2dup  keytable  I 2* 2* +  2@ d=               
+11        IF  rot drop  actiontable  I 2* + @  -rot  LEAVE  THEN   
+12              LOOP  2drop ;                                      
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 33 not modified     
+ 0 \ Key event                                            23aug86we
+ 1                                                                 
+ 2 Variable jingle   jingle on                                     
+ 3 Variable ?mouse                                                 
+ 4                                                                 
+ 5 : edit-at     cursor c/l /mod  dy + swap dx + at ;              
+ 6                                                                 
+ 7 : ev-key      ?mouse off                                        
+ 8    intout &10 + dup  @ dup (key !  hide_c  edit-at curoff       
+ 9    swap 2- @  dup 1 and +  2/  findkey execute                  
+10    jingle on .edistate  BEGIN  getkey 0=  UNTIL ;               
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 34 not modified     
+ 0 \ Message events for window                            30aug86we
+ 1                                                                 
+ 2 : getmessage    ( n -- n' )      2* message + @ ;               
+ 3                                                                 
+ 4 : wm_arrowed                                                    
+ 5    4 getmessage  1 and IF  n  exit THEN  b ;                    
+ 6                                                                 
+ 7 : wm_vslide                                                     
+ 8    4 getmessage  capacity 1- &1000 */  setscreen ;              
+ 9                                                                 
+10 : wm_moved                                                      
+11    4 getmessage   cwidth  /  1 max  &14 min  (dx !              
+12    5 getmessage   cheight /  1 max    5 min  3 + (dy !          
+13    wi_handle @  5  wi_size  wind_set   redraw_screen ;          
+14                                                                 
+15                                                                 
+Screen 35 not modified     
+ 0 \ Message events (the menuline)                        02sep86we
+ 1                                                                 
+ 2 Variable ?help    ?help on                                      
+ 3                                                                 
+ 4 : do_help   ( n -- )                                            
+ 5    helptable + c@ alert  1 = ?exit                              
+ 6    true abort" Dann eben nicht !!" ;                            
+ 7                                                                 
+ 8 : do_copyr      :copyr tree!                                    
+ 9    show_object  0 form_do  deselect  hide_object ;              
+10                                                                 
+11 : do_menuhelp    show_c  :hhemenu alert  hide_c                 
+12    :edimenu tree!  1 and  :menuhelp over menu_icheck            
+13    ?help ! ;                                                    
+14                                                                 
+15                                                                 
+Screen 36 not modified     
+ 0 \ Message events from menuline                         02sep86we
+ 1                                                                 
+ 2 : do_other  ( -- )      4 getmessage                            
+ 3     :menuhelp  case?  IF  do_menuhelp exit THEN                 
+ 4     :hmouse    case?  IF  :hhemouse alert drop exit THEN        
+ 5     :hfuncts   case?  IF  :hhef1f10 alert drop exit THEN        
+ 6     drop  do_copyr ;                                            
+ 7                                                                 
+ 8 : menu-message  ( -- )    message @ :mn_selected - ?exit        
+ 9    :edimenu tree!    3 getmessage  1 menu_tnormal               
+10    ['] do_other  4 getmessage                                   
+11    #keys 0 DO  dup  menutable I +  c@ =                         
+12       IF ?help @  IF  I do_help  THEN                           
+13          nip  actiontable  I 2* + @ swap  LEAVE  THEN           
+14             LOOP drop  execute  jingle on .edistate ;           
+15                                                                 
+Screen 37 not modified     
+ 0 \ Handle message-event                                 24aug86we
+ 1                                                                 
+ 2 : ev-message         hide_c  edit-at curoff                     
+ 3    message @  :mn_selected case? IF  menu-message exit  THEN    
+ 4               :wm_arrowed  case? IF  wm_arrowed   exit  THEN    
+ 5               :wm_vslid    case? IF  wm_vslide    exit  THEN    
+ 6               :wm_moved    case? IF  wm_moved     exit  THEN    
+ 7               :wm_redraw   case? IF  do_redraw    exit  THEN    
+ 8    drop ;                                                       
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 38 not modified     
+ 0 \ Handle all events                                    30aug86we
+ 1                                                                 
+ 2 Create ev-flag                                                  
+ 3    :mu_mesag c,  :mu_m1 c,  :mu_button c,                       
+ 4    :mu_keybd c,  :mu_timer c,                                   
+ 5                                                                 
+ 6 Create: event-actions                                           
+ 7    ev-message  ev-r1  ev-button  ev-key  ev-timer  ;            
+ 8                                                                 
+ 9 : handle-events  ( which -- )                                   
+10    5 0 DO  ev-flag I + c@  over and  IF  drop I LEAVE THEN  LOOP
+11    2* event-actions + perform ;                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 39 not modified     
+ 0 \ Change mouse-movement Vector                         10sep86we
+ 1                                                                 
+ 2 2Variable savevec                                               
+ 3                                                                 
+ 4 Create newvector   Assembler                                    
+ 5    ?mouse pcrel) A0 lea    true # A0 ) move                     
+ 6    .l savevec pcrel) A0 move   A0 ) jmp   end-code              
+ 7                                                                 
+ 8 Code ?show_c   ?mouse R#) tst   0= IF  Next  THEN  ;c: show_c ; 
+ 9                                                                 
+10 : ex_motv    ( pusrcode -- )                                    
+11    contrl &14 + 2!  &126 0 0 VDI  contrl &18 + 2@  savevec 2! ; 
+12                                                                 
+13 : setmousevec       newvector >absaddr  ex_motv ;               
+14 : resetmousevec     savevec 2@ ex_motv ;                        
+15 ' resetmousevec Is resetmouse                                   
+Screen 40 not modified     
+ 0 \ The Editor's LOOP                                    02sep86we
+ 1                                                                 
+ 2 : ediloop  r0 @ rp!                                             
+ 3    BEGIN   edit-at curon   ?show_c   false                      
+ 4            ediprepare evnt_multi  handle-events   UNTIL ;       
+ 5                                                                 
+ 6 : alarm    bell jingle off ;                                    
+ 7                                                                 
+ 8 : edierror  ( string -- )                                       
+ 9    jingle @ 0= IF  drop ediloop  THEN     alarm                 
+10    'workblank   c/l 2/ 'work c!   count c/l 2/ min  $add        
+11    'work 1+ wi_status   edistate off   ediloop ;                
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 41 not modified     
+ 0 \ Installing the Editor                                20nov86we
+ 1                                                                 
+ 2 Create   ediresource   &12 allot                                
+ 3 Variable edihandle                                              
+ 4                                                                 
+ 5 : setediresource       ediresource ap_ptree &12 cmove ;         
+ 6                                                                 
+ 7 : ?clearbuffer                                                  
+ 8    pad (pad @ = ?exit  pad (pad !                               
+ 9    'find b/blk + dup chars !  c/l 2* +  lines !                 
+10    #chars off  #lines off  'find off  'insert off (findbox off ;
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 42 not modified     
+ 0 \ Installing the Editor                                20nov86we
+ 1                                                                 
+ 2 : finstall   ( -- )                                             
+ 3    pad memtop u> abort" No room for buffers!"                   
+ 4    get-id    changed off   row ycur !   setmousevec             
+ 5    ?clearbuffer   ?cursor off                                   
+ 6    ap_ptree &12 cpush  setediresource                           
+ 7    grhandle push  edihandle @ grhandle !                        
+ 8    wi_open   :edimenu tree! 1 menu_bar                          
+ 9    errorhandler push  ['] edierror errorhandler !               
+10    r0 push  rp@ r0 !   ediloop ;                                
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 43 not modified     
+ 0 \ Entering the Editor                                  11sep86we
+ 1                                                                 
+ 2 Forth definitions   ?head !                                     
+ 3                                                                 
+ 4 | : ?load    0= ?exit  scr @ r# @ (load ;                       
+ 5                                                                 
+ 6 : v   ( -- )     scr @ ?range drop   finstall  ?load ;          
+ 7                                                                 
+ 8 : l   ( scr -- ) 1 arguments ?range  scr !   top  v ;           
+ 9                                                                 
+10 | : >find        bl word count 'find place ;                    
+11                                                                 
+12 : view  ( -- )   >find  >view v ;                               
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 44 not modified     
+ 0 \ Init the Editor for different resolutions            18sep86we
+ 1                                                                 
+ 2 | : q_extnd   ( info_flag -- )    intin !  &102 0 1 VDI ;       
+ 3                                                                 
+ 4 | : setMFDB   ( addr_of_MFDB -- )     >r                        
+ 5      0 q_extnd  intout 2@  r@ 4+  2!    intout @ $10 /  r@ 6 + !
+ 6      1 q_extnd  intout 8 + @  r> &12 +  ! ;                     
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 45 not modified     
+ 0 \ save-system for Editor                             cas20130105
+ 1                                                                 
+ 2 | : edistart     grinit  rsrc_load" ediicon.rsc"   0 graf_mouse 
+ 3      grhandle @ edihandle !   ap_ptree ediresource &12 cmove    
+ 4      memMFDB1 setMFDB   memMFDB2 setMFDB                        
+ 5     ['] noop  [ ' drvinit >body ] Literal ! ;                   
+ 6                                                                 
+ 7 : bye    grexit bye ;           grinit                          
+ 8                                                                 
+ 9 : save-system     id off  r# off  1 scr !  'r# off  1 'scr !    
+10    (findbox off  (pad off                                       
+11    ['] edistart  [ ' drvinit >body ] Literal !                  
+12    [ ' forth83.fb >body ] Literal 'edifile !                    
+13    flush  save-system   bye ;                                   
+14                                                                 
+15                                                                 
+Screen 46 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 47 not modified     
+ 0 \\                   *** Screen-Editor ***             17aug86we
+ 1                                                                 
+ 2 In den Editor gelangt man mit  l ( Screen-Nr. -- ), mit v oder  
+ 3 view. view verlangt als weitere Eingabe ein FORTH-Wort und      
+ 4 sucht dann den Screen, auf dem das Wort definiert wurde.        
+ 5                                                                 
+ 6 Alle Eingaben werden unmittelbar in den Blockbuffer geschrieben,
+ 7 der den aktuellen Screen enthÑlt.                               
+ 8                                                                 
+ 9 Die Position des Cursors hÑngt von 2 Variablen ab:              
+10 scr enthÑlt die Nummer des aktuellen Screens;                   
+11 r#  bestimmt die Position des Cursors.                          
+12 Beides sind Systemvariable, die auch beim Compilieren benutzt   
+13 werden. Bei Abbruch wegen eines Fehlers ruft man den Editor mit 
+14 v  auf. Der Cursor steht hinter dem Wort, das den Abbruch       
+15 ausgelîst hat.                                                  
+Screen 48 not modified     
+ 0 \ Load Screen for the Editor                           24aug86we
+ 1                                                                 
+ 2 bindet Vocabulary GEM mit in die Suchreihenfolge ein.           
+ 3 Labels fÅr Editor-Resource                                      
+ 4                                                                 
+ 5 (dx und (dy sind Variable, die die Lage des Editorfensters      
+ 6 relativ zur linken oberen Ecke des Bildschirms angeben.         
+ 7 Der Editor benîtigt einige Definitionen aus anderen Files.      
+ 8 - fÅr die Suchfunktionen.                                       
+ 9 - falls kein File-Interface vorhanden ist.                      
+10 - fÅr das Fenster                                               
+11 Labels fÅr Gem-Aufrufe                                          
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 49 not modified     
+ 0 \ Editor Variable                                      26oct86we
+ 1                                                                 
+ 2 Screen-Nr. und Cursorposition vom markierten Screen             
+ 3 File fÅr markierten Screen                                      
+ 4                                                                 
+ 5 Alle folgenden Definitionen werden headerless compiliert.       
+ 6                                                                 
+ 7 Flag fÅr énderungen am Screen;  Flag, ob Statuszeile neu ge-    
+ 8 File, das editiert wird         schrieben werden muû            
+ 9 ycur ist die Cursorposition beim Aufruf des Editors             
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 50 not modified     
+ 0 \ Edi move cursor with position-checking or cyclic     30aug86we
+ 1                                                                 
+ 2 bewegt den Cursor um n Stellen vor- bzw. rÅckwÑrts.             
+ 3  Wird der Cursor Åber Anfang oder Ende des Screens hinausbewegt,
+ 4  stehen zwei Mîglichkeiten zur Wahl:                            
+ 5  - Kommando wird nicht ausgefÅhrt.                              
+ 6  - Der Screen wird zyklisch durchlaufen.                        
+ 7                                                                 
+ 8 WÑhlen Sie durch 'Wegkommentieren' und Neucompilieren des       
+ 9  Editors.                                                       
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 51 not modified     
+ 0 \ Move the Editor's cursor around                      05aug86we
+ 1                                                                 
+ 2 setzt Cursor in die obere linke Ecke (Home).                    
+ 3 n ist die aktuelle Position des Cursors (Offset von Home)       
+ 4 setzt Cursor auf Beginn der Zeile n.                            
+ 5 n ist die Zeile, in der der Cursor steht.                       
+ 6 n ist die Spalte, in der der Cursor steht.                      
+ 7 bewegt Cursor um n Zeilen vor- bzw. rÅckwÑrts auf Zeilenanfang. 
+ 8 addr ist die Anfangsadresse des aktuellen Blocks im Speicher.   
+ 9 addr ist die der Cursorposition entsprechende Speicheradresse.  
+10 addr ist die Speicheradresse des Beginns der Cursorzeile.       
+11 n ist die Stellenanzahl zwischen Cursorposition und Zeilenende. 
+12 n ist die Stellenanzahl zwischen Cursorposition und Blockende.  
+13 n ist die Stellenanzahl zwischen Cursorzeile und Blockende.     
+14                                                                 
+15                                                                 
+Screen 52 not modified     
+ 0 \ Move the Editors cursor                              07aug86we
+ 1                                                                 
+ 2 setzt Cursor um eine Zeile nach oben.                           
+ 3 setzt Cursor um eine Zeile nach unten.                          
+ 4 setzt Cursor um ein Zeichen nach links.                         
+ 5 setzt Cursor um ein Zeichen nach rechts.                        
+ 6 setzt Cursor um eine Tabulatorposition nach vorn (s.unten).     
+ 7 setzt Cursor um eine Tabulatorposition zurÅck (s.unten).        
+ 8 setzt Cursor auf das letzte Zeichen des Screens.                
+ 9 setzt Cursor auf Beginn der nÑchsten Zeile.                     
+10                                                                 
+11                                                                 
+12 VorwÑrtstabs:                                                   
+13 +               +               +               +               
+14 RÅckwÑrtstabs:                                                  
+15 -       -       -       -       -       -       -       -       
+Screen 53 not modified     
+ 0 \ buffers                                              24aug86we
+ 1                                                                 
+ 2 markiert einen geÑnderten Block zum ZurÅckschreiben auf Disk    
+ 3  setzt Flag fÅr ?stamp und lîscht Flag fÅr .edistate            
+ 4                                                                 
+ 5 Byteanzahl in PAD (min. &84 nach 83-Standard!).                 
+ 6 Byteanzahl in einem Buffer (&40 durch Resource vorgegeben).     
+ 7                                                                 
+ 8 'work, 'insert und 'find sind Buffer, die beim Aufruf des       
+ 9  Editors oberhalb von PAD eingerichtet werden.                  
+10  'work dient zur Aufbreitung von Strings fÅr die Statuszeile    
+11  'find enthÑlt den Suchstring und 'insert den Replacestring.    
+12 n2 ist n1 zuzÅglich der LÑnge des Findbuffers.                  
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 54 not modified     
+ 0 \ Errorchecking                                        17aug86we
+ 1                                                                 
+ 2 bricht ab, wenn beim EinfÅgen einer Zeile kein Platz mehr ist.  
+ 3                                                                 
+ 4                                                                 
+ 5 bricht ab, wenn beim EinfÅgen eines Zeichens kein Platz mehr ist
+ 6                                                                 
+ 7                                                                 
+ 8 bricht ab, wenn ein Screen auûerhalb des aktuellen Files edi-   
+ 9  tiert werden soll.                                             
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 55 not modified     
+ 0 \ Graphics for display                                 23aug86we
+ 1                                                                 
+ 2 lîscht Zeile n durch öberschreiben mit einem weiûen Rechteck    
+ 3  x - und y - Koordinate der linken oberen Ecke                  
+ 4  x - und y - Koordinate der rechten unteren Ecke                
+ 5                                                                 
+ 6 fÅgt auf dem Bildschirm an der Cursorposition eine Leerzeile ein
+ 7  x - und y - Koordinate des zu verschiebenden Rechtecks         
+ 8  Breite setzen und Hîhe berechnen                               
+ 9  x - und y - Koordinate des Zielrechtecks ( 1 Zeile tiefer )    
+10  das ganze mit Pixelmove (schnell) verschieben und Zeile lîschen
+11 lîscht auf dem Bildschirm die Cursorzeile                       
+12  x - und y - Koordinate des zu verschiebenden Rechtecks         
+13  Breite setzen und Hîhe berechnen                               
+14  x - und y - Koordinate des Zielrechtecks ( 1 Zeile hîher )     
+15  das ganze mit Pixelmove verschieben und unterste Zeile lîschen 
+Screen 56 not modified     
+ 0 \ Editor-Window Title and Status-Line                  30aug86we
+ 1                                                                 
+ 2 setzt 'work als Arbeitsspeicher und lîscht ihn; 0 als Abschluû  
+ 3                                                                 
+ 4                                                                 
+ 5 f ist true, wenn der aktuelle Screen als updated markiert ist.  
+ 6                                                                 
+ 7 Åbergibt in AbhÑngigkeit vom Updatezustand den richtigen String.
+ 8                                                                 
+ 9                                                                 
+10 Statuszeile wird nur beschrieben, wenn sich etwas verÑndert hat.
+11  Screennummer wird in 'work zusammengestellt,                   
+12  2 Leerzeichen und dann die Updatemeldung.                      
+13  das Ganze wird an .wi_state als 0-terminated String Åbergeben. 
+14                                                                 
+15                                                                 
+Screen 57 not modified     
+ 0 \ screen display                                       30aug86we
+ 1                                                                 
+ 2 gibt den Filenamen in der Titelzeile aus;  'work lîschen        
+ 3  Adresse des Strings, der den Filenamen enthÑlt, ermitteln      
+ 4  und nach 'work bringen, maximal eine Zeile, Leerzeichen am Ende
+ 5  als 0-terminated String an wi_title Åbergeben.                 
+ 6                                                                 
+ 7 berechnet die Speicheradresse von Zeile line#,                  
+ 8  setzt Cursor und bereitet die Parameter fÅr type auf.          
+ 9                                                                 
+10 lîscht Zeile line# und gibt sie dann aus (schnell!!).           
+11 gibt Zeile line# neu aus (langsam, aber ohne Flackern).         
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 58 not modified     
+ 0 \ screen display                                       14sep86we
+ 1                                                                 
+ 2 maximale LÑnge der User-ID, die automatisch in die obere rechte 
+ 3 Ecke des Screens gesetzt wird, wenn dieser geÑndert wurde.      
+ 4                                                                 
+ 5 setzt ID rechtsbÅndig (!) in die erste Zeile.                   
+ 6 setzt ID, wenn der aktuelle Screen verÑndert wurde.             
+ 7                                                                 
+ 8                                                                 
+ 9 gibt einen Screen im Editorfenster aus. Flags fÅr ?stamp und    
+10  vertikaler Slider wird auf richtige Grîûe und Position gesetzt 
+11  .edistate werden zurÅckgesetzt.                                
+12                                                                 
+13 lîscht den aktuellen Buffer und erzwingt so Neueinlesen von Disk
+14  Der Blockzugriff ist fÅr Multitasking nîtig.                   
+15 zeichnet den gesamten Bildschirm neu (nach Accessory-Aufruf).   
+Screen 59 not modified     
+ 0 \ Edi Variables, putchar                               17aug86we
+ 1                                                                 
+ 2 Adresse von PAD beim Editieren fÅr ?clearbuffer.                
+ 3 Obergrenze fÅr Zeichen- (128 Zeichen)  und Zeilenbuffer, der    
+ 4  oberhalb von PAD bis zur Speichergrenze reicht                 
+ 5 Adresse des Zeichenbuffers      Anzahl der Zeichen im Buffer    
+ 6 liefert die nÑchste freie Adresse im Zeichenbuffer.             
+ 7                                                                 
+ 8 Adresse des Zeilenbuffers       Anzahl der Zeilen im Buffer     
+ 9 liefert die nÑchste freie Adresse im Zeilenbuffer.              
+10                                                                 
+11 speichert das zuletzt eingegebene Zeichen.                      
+12                                                                 
+13 Insertmodus, voreingestellt aus                                 
+14                                                                 
+15                                                                 
+Screen 60 not modified     
+ 0 \ Edi line handling                                    17aug86we
+ 1                                                                 
+ 2 erneuert gerade bearbeitete Zeile auf dem Bildschirm; setzt Flag
+ 3  fÅr ?stamp.                                                    
+ 4 lîscht die Cursorzeile.                                         
+ 5 lîscht vom Cursor bis zum Zeilenende.                           
+ 6                                                                 
+ 7 lîscht Cursorzeile und zieht Rest des Bildschirms nach oben.    
+ 8                                                                 
+ 9 lîscht Zeile Åber dem Cursor und zieht Rest des Bildschirms nach
+10  oben.                                                          
+11 fÅgt an der Cursorposition eine Leerzeile ein; Rest des Bild-   
+12  schirms wird nach unten geschoben.                             
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 61 not modified     
+ 0 \ Edi line handling                                    17aug86we
+ 1                                                                 
+ 2 prÅft, ob Platz im Zeilenbuffer vorhanden ist, und kopiert      
+ 3  eine Zeile in den Zeilenbuffer.                                
+ 4                                                                 
+ 5 kopiert eine Zeile in den Buffer, setzt Cursor auf die nÑchste. 
+ 6 kopiert eine Zeile in den Buffer und lîscht sie.                
+ 7                                                                 
+ 8 setzt aus dem Zeilenbuffer eine Zeile in der Cursorzeile ein.   
+ 9                                                                 
+10                                                                 
+11 benutzt !line, prÅft vorher, ob Zeilen im Buffer sind.          
+12  FÅr die neue Zeile wird zuerst eine Leerzeile eingefÅgt.       
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 62 not modified     
+ 0 \ Edi char handling                                    17aug86we
+ 1                                                                 
+ 2 lîscht Zeichen unter dem Cursor.                                
+ 3 lîscht Zeichen links neben dem Cursor.                          
+ 4                                                                 
+ 5 fÅgt an der Cursorposition ein Zeichen im Buffer ein.           
+ 6 benutzt inst1, um ein Leerzeichen einzufÅgen.                   
+ 7                                                                 
+ 8 analog zu @line, kopiert ein Zeichen in den Zeichenbuffer.      
+ 9                                                                 
+10 kopiert ein Zeichen in den Buffer, setzt Cursor auf das nÑchste.
+11 kopiert ein Zeichen in den Buffer und lîscht es.                
+12                                                                 
+13 analog zu !line, setzt ein Zeichen aus dem Buffer bei Cursor ein
+14 benutzt !char, prÅft vorher, ob Zeichen im Buffer sind.         
+15  FÅr das neue Zeichen wird zuerst ein Leerzeichen eingefÅgt.    
+Screen 63 not modified     
+ 0 \ from Screen to Screen ...                            24aug86we
+ 1                                                                 
+ 2 prÅft, ob der angeforderte Screen vorhanden ist und gibt ihn aus
+ 3 geht auf den nÑchsten Screen.                                   
+ 4 geht auf den vorherigen Screen.                                 
+ 5                                                                 
+ 6 berechnet zu Screen n1 den Shadow-Screen n2 oder umgekehrt.     
+ 7 schaltet zwischen Original und Shadow hin und her.              
+ 8                                                                 
+ 9 markiert den aktuellen Screen mit File und Cursorposition.      
+10 s.o., jedoch mit Meldung.                                       
+11                                                                 
+12 vertauscht aktuellen und markierten Screen. Dabei wird auch das 
+13  File mitberÅcksichtigt. Dies erlaubt es, nach VIEW einen mar-  
+14  kierten Screen wieder zu benutzen.                             
+15                                                                 
+Screen 64 not modified     
+ 0 \ splitting a line, replace                            17aug86we
+ 1                                                                 
+ 2 setzt den Rest der Zeile ab Cursor auf den Anfang einer neu     
+ 3  eingefÅgten Zeile. Dazu wird erst eine komplette leere Zeile   
+ 4  eingefÅgt und dann von Cursorspalte bis Anfang der neuen       
+ 5  Zeile gelîscht.                                                
+ 6                                                                 
+ 7 fÅgt den Insert-Buffer an der Cursorposition ein.               
+ 8                                                                 
+ 9 ersetzt den gefundenen String durch den Insert-Buffer.          
+10  berechnet Anzahl der Leerzeichen am Ende der Zeile.            
+11  Abbruch, wenn weniger als Differenz zwischen Find und Insert,  
+12  sonst Findstring lîschen und Insert-Buffer einfÅgen            
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 65 not modified     
+ 0 \ find und search                                      30aug86we
+ 1                                                                 
+ 2 f ist 1, wenn in Richtung last Screen gesucht wird, sonst 1.    
+ 3 schaltet Button in der Findbox auf Suche Richtung last screen.  
+ 4 schaltet Button in der Findbox auf Suche Richtung 1st screen.   
+ 5                                                                 
+ 6 Der Screen, bis zu dem gesucht werden soll                      
+ 7                                                                 
+ 8 sucht von Cursor bis Screenende; n ist Offset zu Cursorposition.
+ 9                                                                 
+10 sucht von Cursor bis Screen fscreen vorwÑrts oder rÅckwÑrts.    
+11  solange bis fscreen erreicht ist oder Esc oder CTRL-C gedrÅckt,
+12  wird der nÑchste Screen aufgerufen.                            
+13  Abbruch, falls nicht gefunden und Umschalten der Suchrichtung  
+14  in der Box und in fscreen.                                     
+15  Screen auflisten und Abbruchmeldung ausgeben.                  
+Screen 66 not modified     
+ 0 \ Search-Findbox auswerten                             17aug86we
+ 1                                                                 
+ 2 Vorbelegung der Buttons und Screennummern in der Find-box:      
+ 3  Groû-Kleinschreibung unterscheiden.                            
+ 4  Aufsteigend suchen bis Fileende.                               
+ 5  1 fÅr 1st Screen, letzten Screen im File als Last Screen       
+ 6                                                                 
+ 7 Filebox auswerten:                                              
+ 8  Variable caps entsprechend setzen.                             
+ 9  Suchrichtung bestimmt, ob der erste oder letzte Screen         
+10  als Endscreen benutzt wird.                                    
+11  Strings in die entsprechenden Buffer Åbernehmen.               
+12                                                                 
+13 Falls das File gewechselt wurde, neu initialisieren, geschieht  
+14  auch automatisch, wenn sich PAD und damit Find- und Insert-    
+15  buffer verÑndert haben.                                        
+Screen 67 not modified     
+ 0 \ Replacing ...                                        17aug86we
+ 1                                                                 
+ 2 Flag fÅr Ersetzen des Find-Strings durch den Insert-String      
+ 3                                                                 
+ 4 O Schreck und Graus !!!                                         
+ 5  Die Replace-Box soll natÅrlich nicht den gefundenen String     
+ 6  verdecken; die von form_center gelieferten Werte sind also     
+ 7  unbrauchbar. X- und Y-Position mÅssen von Hand berechnet werden
+ 8  und zwar so, daû die linke obere Ecke der Box auf den Such-    
+ 9  string zeigt;  zeichnen des Objects wie in show_object.        
+10                                                                 
+11 ersetzt solange den Suchstring durch den Insertstring, bis      
+12  CANCEL gedrÅckt oder der Suchstring nicht gefunden wird.       
+13  Abbruch auch, wenn der Insertstring sich nicht einsetzen lÑût. 
+14  Sonst wie bei Find Abbruch mit Esc. oder CTRL-C mîglich.       
+15                                                                 
+Screen 68 not modified     
+ 0 \ Editor's find and replace                            17aug86we
+ 1                                                                 
+ 2 Flag fÅr repfind, ob bereits eine Suche stattgefunden hat.      
+ 3                                                                 
+ 4 fÅhrt erneute Suche (und Ersetzen) durch ohne Find-Box.         
+ 5  Abbruch, wenn noch kein Aufruf der Find-Box oder Findbuffer    
+ 6  leer; sonst sicherstellen, daû fscreen innerhalb des Files     
+ 7  liegt und s bzw replace ausfÅhren.                             
+ 8                                                                 
+ 9 Das ist das aufrufende Wort; im CANCEL-Fall abbrechen,          
+10  sonst Flag fÅr replace setzen, wenn :dfreplac gewÑhlt wurde    
+11  Im Menubalken Repeatfind enable'n                              
+12  Screennummer merken; suchen und ggf. ersetzen mit repfind.     
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 69 not modified     
+ 0 \ exiting the Editor                                   30aug86we
+ 1                                                                 
+ 2 Setzt Mausvector zurÅck, wird erst spÑter definiert.            
+ 3                                                                 
+ 4 gemeinsame Routine fÅr alle Exits                               
+ 5 lîscht (und restauriert) das Fenster, setzt Mausvector zurÅck   
+ 6  gibt an der alten Cursorpositione eine Meldung aus             
+ 7  und setzt  Flag zum Verlassen von ediloop.                     
+ 8                                                                 
+ 9 wirft alle énderungen weg, falls man sich 'vereditiert' hat.    
+10 speichert den Screen auf Disk, falls er verÑndert wurde.        
+11 markiert den Screen, ohne ihn direkt zurÅckzuschreiben.         
+12 speichert den Screen auf Disk, falls er verÑndert wurde         
+13  und compiliert ab Cursorposition.                              
+14                                                                 
+15                                                                 
+Screen 70 not modified     
+ 0 \ get User's ID, jump to screen                        17aug86we
+ 1                                                                 
+ 2 User-ID holen                                                   
+ 3  bisherige ID im Fenster ausgeben                               
+ 4  das Åbliche form-handling                                      
+ 5  bei Cancel nichts wie raus!                                    
+ 6  bei NO-ID wird sie gelîscht; die Box erscheint dann bei nÑch-  
+ 7  ster Gelegenheit wieder; sonst ID Åbernehmen (auch Leerstring) 
+ 8                                                                 
+ 9 User-ID nur holen, wenn noch keine vorhanden ist.               
+10  Wird beim Eintritt in den Editor benutzt.                      
+11                                                                 
+12 springt auf beliebigen Screen im File.                          
+13  Leerstring in die Box setzen.                                  
+14  das Åbliche form-handling                                      
+15  Screen-Nr. fÅr setscreen Åbernehmen und Screen ausgeben        
+Screen 71 not modified     
+ 0 \ insert- and overwrite-mode                           11aug86we
+ 1                                                                 
+ 2 setzt im Pulldownmenu ein HÑkchen.                              
+ 3 wie oben, nur umgekehrt.                                        
+ 4                                                                 
+ 5 Insert-Modus setzen und Pulldownmenu entsprechend Ñndern.       
+ 6                                                                 
+ 7 Overwrite-Modus setzen und Pulldownmenu entsprechend Ñndern.    
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 72 not modified     
+ 0 \ viewing words                                        17aug86we
+ 1                                                                 
+ 2 Hilfswort fÅr do_view                                           
+ 3  Findbuffer wird nach PAD gebracht und fÅr find aufbereitet.    
+ 4  sucht CFA des Wortes im Findbuffer, um                         
+ 5  das zugehîrige Name- und damit das View-Feld zu finden.        
+ 6  setzt File und Screen-Nr. und sucht auf dem Screen nach dem    
+ 7  Wort; falls gefunden, wird der Cursor dahinter positioniert.   
+ 8                                                                 
+ 9                                                                 
+10 lîscht den String in der Box;  das Åbliche form-handling        
+11  String in Findbuffer Åbernehmen, falls nicht Cancel gewÑhlt;   
+12  aktuellen Screen markieren, wenn MARK                          
+13  angeklickt wurde, und gesuchten Screen aufrufen                
+14  Danach kann mit CTRL-A wieder auf den anderen Screen gewechselt
+15  werden. Sehr nÅtzlich, um Zeilen aus anderen Files zu 'klauen'.
+Screen 73 not modified     
+ 0 \ Table of keystrokes                                  17aug86we
+ 1                                                                 
+ 2 Diese Tabelle enthÑlt alle Tasten, die irgendwelche Sonder-     
+ 3  funktionen haben. Das jeweils erste Wort ist der Scancode der  
+ 4  Taste, das zweite die zusÑtzlich gedrÅckten Tasten:            
+ 5                 1 = linke oder rechte SHIFT-Taste               
+ 6                 2 = CONTROL-Taste                               
+ 7                 4 = ALTERNATE-Taste ( wird nicht benutzt )      
+ 8  Auf die Funktionstasten wurde bewuût verzichtet, weil man damit
+ 9  nicht vernÅnftig umgehen kann.                                 
+10                                                                 
+11                                                                 
+12 Zusatzvorschlag:                                                
+13  Alternate-Shift-Control bei gleichzeitig gedrÅckter Enter- und 
+14  F10-Taste ---> lîscht den Bildschirm.                          
+15                                                                 
+Screen 74 not modified     
+ 0 \ Table of actions                                     17aug86we
+ 1                                                                 
+ 2 Tabelle aller Editorfunktionen                                  
+ 3  Die Position eines Tabelleneintrags stimmt mit der des         
+ 4  zugehîrigen Tastendrucks Åberein, um die öbersicht zu behalten.
+ 5  Dies gilt auch fÅr die folgenden Screens.                      
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14 prÅft, ob Anzahl der Funktionen mit Anzahl der Tasten Åberein-  
+15  stimmt. Wird nur wÑhrend der Compilation gebraucht.            
+Screen 75 not modified     
+ 0 \ Table of Menuevents                                  17aug86we
+ 1                                                                 
+ 2 Tabelle der MenueintrÑge.                                       
+ 3  Alle Editorfunktionen sind sowohl Åber die MenÅleiste als auch 
+ 4  Åber Tastendruck zu erreichen.                                 
+ 5  Bei allen Worten mit : am Anfang handelt es sich um 'kopflose' 
+ 6  Konstanten aus dem Resource-Definitionen-File (EDIICON.SCR),   
+ 7  das mit dem Programm CONVH.SCR aus EDIICON.H erzeugt wurde.    
+ 8  EDIICON.H wird vom 'Resource Construction Set' ausgegeben.     
+ 9  An dieser Stelle unser herzlicher Dank an Digital Research fÅr 
+10  dieses hervorragende Produkt. Nur ca. 80 SystemabstÅrze gab es 
+11  bei der Entwicklung, weil Icons bisweilen auf ungeraden Spei-  
+12  cheradressen abgelegt werden. Auûerdem war bei knapp 10 kByte  
+13  LÑnge der Resource mein Speicher (1024 kByte!!!) grundsÑtzlich 
+14  voll bis absturzvoll. Dann bleibt das Programm stehen, nicht   
+15  ohne vorher die letzte lauffÑhige Resource zu lîschen....      
+Screen 76 not modified     
+ 0 \ Table of Help-Boxes                                  17aug86we
+ 1                                                                 
+ 2 Tabelle der Help-Boxen.                                         
+ 3  Zu jeder Editorfunktion gibt es eine Box, die die Funktion     
+ 4  beschreibt. WÑhlt man Dauerhilfe, erscheinen solche Boxen      
+ 5  immer, wenn ein Befehl aus der Menuleiste abgerufen wird.      
+ 6  Soll beim Einarbeiten in den Editor Hilfe leisten. Die Idee    
+ 7  dazu stammt aus 1st Word.                                      
+ 8  Gibt es zu einer Funktion keine Box (z.B. Cursortasten), ist   
+ 9  der entsprechende Eintrag mit $FF gekennzeichnet.              
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 77 not modified     
+ 0 \ Prepare multi-event                                  24aug86we
+ 1                                                                 
+ 2 Flag, ob Maus innerhalb oder auûerhalb von Rechteck1            
+ 3                                                                 
+ 4 FÅr den Multi-Event mÅssen 17 (!) Parameter Åbergeben werden.   
+ 5  timer, message, mouse, button + keyboard events zulassen.      
+ 6  1 Tastendruck auf linke Maustaste, event bei gedrÅckter Taste  
+ 7  1, wenn Maus im Fensterbereich                                 
+ 8  Rechteck 1 (énderung der Mausfunktion) umfaût Editor-Fenster   
+ 9  Rechteck 2 gibts nicht                                         
+10  Timer auf 0 Millisekunden (sonst kommt der Multi-Event nicht   
+11  zurÅck)                                                        
+12                                                                 
+13 Wenn nichts anderes zu tun ist, kann eine andere Task ran.      
+14 schaltet Flag um.                                               
+15                                                                 
+Screen 78 not modified     
+ 0 \ Button Event                                         17aug86we
+ 1                                                                 
+ 2 Flag, das anzeigt, ob der Cursor sichtbar ist (1 = sichtbar)    
+ 3                                                                 
+ 4 schaltet Cursor ein, wenn er noch nicht eingeschaltet ist;      
+ 5  die Funktion arbeitet im EXOR-Modus, daher dieser Aufwand.     
+ 6  baut an der aktuellen Cursorposition ein schwarzes Rechteck    
+ 7  in der Grîûe eines Zeichens.                                   
+ 8                                                                 
+ 9 kann curon benutzen wegen EXOR-Modus, muû aber das Flag setzen. 
+10                                                                 
+11 Mausknopfereignis dann, wenn die Maus im Editorfenster steht.   
+12  die Position der Maus (in Pixel) wird in Zeile und Spalte umge-
+13  rechnet und nach r# gespeichert. Maus abschalten und alten     
+14  Cursor lîschen (in dieser Reihenfolge!)                        
+15                                                                 
+Screen 79 not modified     
+ 0 \ Key event                                            17aug86we
+ 1                                                                 
+ 2 Steuertasten erzeugen keinen ASCII-Code, sondern eine Null.     
+ 3                                                                 
+ 4 gibt ein Zeichen auf dem Bildschirm aus und schreibt es in den  
+ 5  Blockbuffer. Abbruch, wenn kein druckbares Zeichen vorliegt.   
+ 6  Auf Insert-Modus prÅfen und Zeichen ausgeben.                  
+ 7                                                                 
+ 8 ermittelt die Adresse der zu einer Taste gehîrenden Funktion.   
+ 9  d_key enthÑlt im oberen Wort den Status von Shift, Control usw.
+10  putchar ist voreingestellt,  keytable wird auf d_key abgesucht 
+11  wenn gefunden, wird die Adresse von putchar entfernt und statt-
+12  dessen die zugehîrige Adresse aus actiontable hinterlegt.      
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 80 not modified     
+ 0 \ Key event                                            17aug86we
+ 1                                                                 
+ 2 Flag fÅr Fehlerpiep                                             
+ 3 Flag, ob die Maus sichtbar ist                                  
+ 4                                                                 
+ 5 positioniert den Cursor auf die Position in r#.                 
+ 6                                                                 
+ 7 Tasten-Event    schaltet Mausflag ab                            
+ 8  Tastencode holen und Maus und Cursor abschalten.               
+ 9  Status der Sondertasten aufbereiten und Tastenfunktion ausfÅh- 
+10  ren, Fehlerpiep ermîglichen, Status ausgeben                   
+11  und - darauf bin ich ganz stolz - alle weiteren TastendrÅcke   
+12  lîschen!! Dadurch lÑuft auch bei schnellem Tastenrepeat keine  
+13  Funktion 'nach', wird aber trotzdem schnellstmîlich ausgefÅhrt.
+14  Funktioniert allerdings dann nicht, wenn das lahme GEM was zu  
+15  tun hat, also beim Screenwechsel (CTRL-B und CTRL-N)           
+Screen 81 not modified     
+ 0 \ Message events for window                            30aug86we
+ 1                                                                 
+ 2 holt Wort n aus dem AES-message Buffer.                         
+ 3                                                                 
+ 4 bei Anklicken des Sliders oder der Pfeile                       
+ 5  wird der nÑchste oder vorherige Screen aufgerufen.             
+ 6                                                                 
+ 7 beim Verschieben des Sliders                                    
+ 8  wird aus der Position die Screennummer berechnet.              
+ 9                                                                 
+10 beim Verschieben des ganzen Fensters                            
+11  wird die vom User gewÅnschte Position berechnet                
+12  und in ganze Zeile bzw. Spalten umgewandelt; auûerhalb des     
+13  Screens kann nicht positioniert werden, sonst kînnte man       
+14  ohne Sichtkontrolle weiter editieren. öber den Sinn dieser     
+15  Funktion kann man streiten, aber ich wollte zeigen, daû es geht
+Screen 82 not modified     
+ 0 \ Message events (the menuline)                        17aug86we
+ 1                                                                 
+ 2 Flag fÅr Dauerhilfe bei jeder MenÅfunktion                      
+ 3                                                                 
+ 4 Hilfsbox Nr. n ausgeben                                         
+ 5  passende Hilfsbox aus Tabelle suchen und anzeigen, bei OK Ende.
+ 6  sonst Funktion abbrechen.                                      
+ 7 Es folgen die Funktionen, die nicht in der helptable auftauchen.
+ 8 Info-, Werbe- und Prunk-Box                                     
+ 9  braucht nur angezeigt zu werden, spricht fÅr sich selbst.      
+10                                                                 
+11 Dauerhilfe-Box anzeigen; je nach gewÑhltem Knopf                
+12  HÑkchen bei Menu Help setzen oder lîschen                      
+13  dito fÅr Flag                                                  
+14                                                                 
+15                                                                 
+Screen 83 not modified     
+ 0 \ Message events from menuline                         24aug86we
+ 1                                                                 
+ 2 Funktion, die nicht in actiontable steht, ausfÅhren             
+ 3  mit case? die passende Funktion auswÑhlen                      
+ 4  Tabelle lohnt hier nicht.                                      
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8 MenÅauswahl verarbeiten                                         
+ 9  MenÅtitel von revers auf normal schalten                       
+10  voreingestellt ist do_other, Nummer des angeklickten Items     
+11  holen, menutable wird auf Item-Nr. abgesucht                   
+12  wenn gefunden, wird die Adresse von do_other entfernt und      
+13  stattdessen die zugehîrige Adresse aus actiontable hinterlegt. 
+14  Funktion ausfÅhren, Fehlerpiep ermîglichen und Status ausgeben.
+15                                                                 
+Screen 84 not modified     
+ 0 \ Handle message-event                                 24aug86we
+ 1                                                                 
+ 2 hier werden die Messages ausgewertet, die AES zurÅckgibt.       
+ 3  wenn ein MenÅpunkt angeklickt wird, menu-message ausfÅhren.    
+ 4  alle anderen Messages betreffen die Window-Attribute und       
+ 5  werden entsprechend ausgefÅhrt.                                
+ 6                                                                 
+ 7  Wenn ein Desk-Accessory ausgefÅhrt wurde, erhÑlt man lediglich 
+ 8  die Meldung, daû neu gezeichnet werden muû, und dies auch nur  
+ 9  dann, wenn ein Fenster aktiv ist.                              
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 85 not modified     
+ 0 \ Handle all events                                    24aug86we
+ 1                                                                 
+ 2 Tabelle der mîglichen Events (werden als gesetztes Bit gemeldet)
+ 3  in der Reihenfolge ihrer PrioritÑt, sonst kommt z.B. der Timer 
+ 4  immer                                                          
+ 5                                                                 
+ 6 und der zugehîrigen Funktionen                                  
+ 7                                                                 
+ 8                                                                 
+ 9 Das ist der Event-Handler                                       
+10  gemeldeter Event wird mit Liste verglichen (PrioritÑt !!)      
+11  und die entsprechende Event-Aktion ausgefÅhrt.                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 86 not modified     
+ 0 \ Change mouse-movement Vector                         17aug86we
+ 1                                                                 
+ 2 Variable, um den alten Mausvektor zu speichern.                 
+ 3                                                                 
+ 4 Die neue Mausroutine soll zusÑtzlich das Flag ?mouse setzen,    
+ 5  wenn die Maus bewegt wurde. So wird die Maus bei jedem Tasten- 
+ 6  druck ausgeschaltet und erst wieder eingeschaltet bei Bewegung.
+ 7  Schick, gell?!                                                 
+ 8 Aus GeschwindigkeitsgrÅnden in Assembler                        
+ 9                                                                 
+10 Ñndert den Mausvektor.                                          
+11                                                                 
+12 Mausvektor auf neuen Wert, alter Wert nach savevec.             
+13 Mausvektor auf alten Wert (muû unbedingt ausgefÅhrt werden, das 
+14  Betriebssystem erledigt das beim Verlassen von FORTH nicht !!  
+15 resetmousevec lîst das deffered word in done auf.               
+Screen 87 not modified     
+ 0 \ The Editor's LOOP                                    30aug86we
+ 1                                                                 
+ 2 ediloop rÑumt den Returnstack auf, falls mit abort" abgebrochen.
+ 3  Das ist die Endlos-Schleife, die erst verlassen wird, wenn     
+ 4  das Flag fÅr UNTIL durch done gesetzt wird.                    
+ 5                                                                 
+ 6 Fehlerpiep, nur einmal ausfÅhren, sonst klingelts dauernd.      
+ 7                                                                 
+ 8 Errorhandler fÅr Editor                                         
+ 9  falls Fehlermeldung bereits erfolgt, sofort nach ediloop       
+10  piepen, 'work vorbereiten                                      
+11  in der Statuszeile rechts Fehlertext ausgeben, soweit Platz ist
+12  und RÅcksprung in ediloop ;                                    
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 88 not modified     
+ 0 \ Installing the Editor                                26oct86we
+ 1                                                                 
+ 2 Alle Routinen in der GEM-Library sind so geschrieben, daû sie   
+ 3  implizit auf eine Variable grhandle zurÅckgreifen. Dies        
+ 4  vereinfacht die ParameterÅbergabe erheblich.                   
+ 5  Sollen verschiedene Grafik-Applikationen aktiviert werden, darf
+ 6  trotzdem nur eine Appliktion angemeldet werden. Dies geschieht 
+ 7  bereits beim Laden des FORTH-Systems.                          
+ 8 Beim Laden eines Resource-Files mit rsrc_load wird die Adresse  
+ 9  der zugehîrigen Baumstruktur im Global-Array unter ap_ptree    
+10  abgelegt. Diese Adresse kann man zum Umschalten auf verschie-  
+11  dene Resources benutzen.                                       
+12 Wenn PAD sich verÑndert hat (durch neue Worte oder forget)      
+13  sind Find- und Insert-Buffer verschoben und mÅssen neu initia- 
+14  lisiert werden. Ebenso Zeichen und Zeilenbuffer.               
+15  (findbox wird gelîscht, damit die Findbox initialisiert wird.  
+Screen 89 not modified     
+ 0 \ Installing the Editor                                26oct86we
+ 1                                                                 
+ 2 initialisiert den Editor beim Aufruf.                           
+ 3  Abbruch, wenn kein Platz fÅr die Editor-Buffer ist (s.u...)    
+ 4  aktuelle Cursorposition merken, Mausvector initialisieren      
+ 5  Buffer bei Bedarf initialisieren                               
+ 6  Editor-Resource und Grafik-Handle installieren.                
+ 7  Fenster îffnen und MenÅzeile ausgeben                          
+ 8  Errorhandler auf Editor umschalten, alten merken.              
+ 9                                                                 
+10                                                                 
+11 ...das Dictionary ist zu voll. Entweder man 'vergiût' einige    
+12  Worte oder schafft mit z.B.  'save 4 buffers'  mehr Raum. Mit  
+13  BUFFERS lÑût sich die Anzahl der Diskbuffer festlegen. Dabei   
+14  steht mehr Platz im Dictionary gegen Arbeitskomfort beim Edi-  
+15  tieren. Beachten Sie auch, daû BUFFERS ein COLD ausfÅhrt.      
+Screen 90 not modified     
+ 0 \ Entering the Editor                                  17aug86we
+ 1                                                                 
+ 2 Es folgen die Forth-Worte zum Aufruf des Editors.               
+ 3                                                                 
+ 4 Flag entscheidet, ob compiliert werden soll (ldone).            
+ 5                                                                 
+ 6 Screen mit Nummer in scr und Cursor in r# wird aufgerufen.      
+ 7  Diese Systemvariablen werden auch bei Fehlern gesetzt, also    
+ 8  kann man bei einem Compilationsfehler auf den richtigen Screen 
+ 9  gelangen; Cursor steht dann hinter dem Wort, das den Fehler    
+10  ausgelîst hat.                                                 
+11 l editiert Screen-Nr. n                                         
+12 view erwartet ein Wort und editiert den Screen, auf dem das     
+13  Wort definiert wurde (s.a. >view)                              
+14                                                                 
+15                                                                 
+Screen 91 not modified     
+ 0 \ savesystem for Editor                                17aug86we
+ 1                                                                 
+ 2 Damit der Editor auf Schwarz-Weiû und Farbmonitoren lÑuft,      
+ 3  mÅssen die entsprechenden Parameter ermittelt und in die       
+ 4  beiden Arrays, die fÅr die Zwischenspeicherung des Bildschirms 
+ 5  verantwortlich sind, gepatched werden.                         
+ 6  FÅr die Zwischenspeicherung werden 2 Buffer benutzt, die ober- 
+ 7  halb des Systems liegen. Nur dadurch kann der Bildschirminhalt 
+ 8  so schnell restauriert werden, wenn Alertboxen oder andere     
+ 9  aufgerufen wurden.                                             
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 92 not modified     
+ 0 \ savesystem for Editor                                30aug86we
+ 1                                                                 
+ 2 Diese Routine muû beim Start des Systems (!) ausgefÅhrt werden, 
+ 3  setzt die Variablen fÅr die GEM-Routinen des Editors           
+ 4  und fÅr die beiden Speicherdefinitions-Arrays                  
+ 5  wird daher nach  drvinit  gepatched, klinkt sich selbst aus.   
+ 6                                                                 
+ 7 savesystem muû eine Reihe von Variablen zurÅcksetzen, damit     
+ 8  das System mit 'vernÅnftigen' Werten hochkommt.                
+ 9  drvinit wird mit edistart gepatched.                           
+10  FORTH-83.SCR als File fÅr markierten Screen.                   
+11  geÑnderte Blîcke auf Diskette zurÅckschreiben                  
+12  und altes savesystem ausfÅhren.                                
+13 Neues bye muû zusÑtzlich ein  GREXIT  ausfÅhren.  GRINIT  bei   
+14  Neukompilation nîtig wegen  GREXIT in  BYE .                   
+15                                                                 
+Screen 93 not modified     
+ 0 \ savesystem for Editor                                17aug86we
+ 1                                                                 
+ 2 Damit der Editor auf Schwarz-Weiû und Farbmonitoren lÑuft,      
+ 3  mÅssen die entsprechenden Parameter ermittelt und in die       
+ 4  beiden Arrays, die fÅr die Zwischenspeicherung des Bildschirms 
+ 5  verantwortlich sind, gepatched werden.                         
+ 6  FÅr die Zwischenspeicherung werden 2 Buffer benutzt, die ober- 
+ 7  halb des Systems liegen. Nur dadurch kann der Bildschirminhalt 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

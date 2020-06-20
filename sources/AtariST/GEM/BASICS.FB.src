@@ -1,0 +1,170 @@
+Screen 0 not modified     
+ 0 \\                   *** GEM - Basics ***              26may86we
+ 1                                                                 
+ 2 Die Routinen in dieser Library entsprechen dem, was auch dem    
+ 3 Pascal-, C- oder Modula-Programmierer zur VerfÅgung steht.      
+ 4 FÅr eine genaue Beschreibung der einzelnen Routinen verweisen   
+ 5 wir auf die GEM-Dokumentation des ST-Entwicklungspaketes bzw.   
+ 6 entsprechende Literatur.                                        
+ 7                                                                 
+ 8 Aus diesem Grunde wurden die - teilweise kryptischen - Namen    
+ 9 von Digital Research beibehalten; auch die öbergabeparameter    
+10 der einzelnen Funktionen sind unverÑndert geblieben.            
+11 Der Aufbau einer FORTH-Library mit 'Super-Befehlen' ist in      
+12 Arbeit.                                                         
+13                                                                 
+14 Die Worte in diesem File werden sowohl fÅr VDI- als auch fÅr    
+15 AES-Funktionen benîtigt.                                        
+Screen 1 not modified     
+ 0 \ VDI GEM Arrays and Controls Loadscreen               02nov86we
+ 1                                                                 
+ 2 Onlyforth                                                       
+ 3                                                                 
+ 4 \needs >absaddr     : >absaddr   0 forthstart d+ ;              
+ 5 \needs Code         2 loadfrom assemble.scr                     
+ 6                                                                 
+ 7 Vocabulary GEM   GEM definitions also                           
+ 8                                                                 
+ 9  1  8 +thru                                                     
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \  VDI GEM Arrays                                      05aug86we
+ 1                                                                 
+ 2 Create intin   &60 allot        Create ptsin   &256 allot       
+ 3 Create intout  &90 allot        Create ptsout  &24  allot       
+ 4 Create addrin    8 allot        Create addrout   4  allot       
+ 5 Variable grhandle                                               
+ 6                                                                 
+ 7 | : gemconstant  ( addr n -- addr+n)      over Constant + ;     
+ 8                                                                 
+ 9 Create contrl   $16 allot                                       
+10 contrl 2 gemconstant opcode                                     
+11        2 gemconstant #intin                                     
+12        2 gemconstant #intout     ' #intout Alias #ptsout        
+13        2 gemconstant #addrin                                    
+14        2 gemconstant #addrout                                   
+15        2 gemconstant function     drop                          
+Screen 3 not modified     
+ 0 \  global array, Parameter blocks                      02nov86we
+ 1                                                                 
+ 2 Create global   $20 allot                                       
+ 3 global &10 + Constant ap_ptree                                  
+ 4                                                                 
+ 5 | : gemarray   ( n0 ... nk-1 k --)    Create 0 ?DO  , LOOP ;    
+ 6                                                                 
+ 7 addrout addrin intout intin global contrl 6 gemarray (AESpb     
+ 8         ptsout intout ptsin intin  contrl 5 gemarray (VDIpb     
+ 9                                                                 
+10 Create AESpb  &24 allot         Create VDIpb  &20 allot         
+11                                                                 
+12 : setarrays                                                     
+13    6 0 DO  (AESpb I 2* + @ >absaddr  AESpb I 2* 2* + 2!  LOOP   
+14    5 0 DO  (VDIpb I 2* + @ >absaddr  VDIpb I 2* 2* + 2!  LOOP ; 
+15                                                                 
+Screen 4 not modified     
+ 0 \  Array-Handling                                      09sep86we
+ 1                                                                 
+ 2 Code array!   ( n0 ... nk-1 adr k --)                           
+ 3    SP )+ D0 move  SP )+ D6 move  D6 reg) A0 lea                 
+ 4    D0 A0 adda  D0 A0 adda  1 D0 subq                            
+ 5    D0 DO  SP )+ A0 -) move  LOOP    Next end-code               
+ 6                                                                 
+ 7 Code 4!   ( n1 .. n4 addr -- )                                  
+ 8    SP )+ D6 move  8 D6 addq  D6 reg) A0 lea   3 # D0 move       
+ 9      D0 DO  SP )+ A0 -) move  LOOP     Next end-code            
+10                                                                 
+11 Code 4@   ( addr -- n1 .. n4 )                                  
+12    SP )+ D6 move  D6 reg) A0 lea   3 # D0 move                  
+13      D0 DO  A0 )+ SP -) move  LOOP     Next end-code            
+14                                                                 
+15                                                                 
+Screen 5 not modified     
+ 0 \  AES-Aufruf                                          09sep86we
+ 1                                                                 
+ 2 Code AES   ( opcode #intin #intout #addrin -- intout@ )         
+ 3    SP )+ contrl 6 + R#) move                    \ #addrin       
+ 4    SP )+ contrl 4 + R#) move                    \ #intout       
+ 5    SP )+ contrl 2+  R#) move                    \ #intin        
+ 6    SP ) D0 move   SP )+ contrl R#) move         \ opcode        
+ 7    contrl 8 + R#) clr                           \ #addrout      
+ 8    &112 D0 cmpi              \ Funktions-Nr. von rsrc_gaddr     
+ 9         0= IF  1 # contrl 8 + R#) move  THEN                    
+10    AESpb # D6 move   D6 reg) A0 lea   A0 D1 lmove               
+11    .w $C8 # D0 move   2 trap                                    
+12    intout R#) SP -) move   Next   end-code                      
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 6 not modified     
+ 0 \  VDI-Aufruf                                          09sep86we
+ 1                                                                 
+ 2 Code VDI  ( opcode #ptsin #intin --)                            
+ 3    SP )+ contrl 6 + R#) move                                    
+ 4    SP )+ contrl 2+  R#) move   SP )+ contrl  R#) move           
+ 5    grhandle R#)  contrl &12 + R#) move                          
+ 6    VDIpb # D6 move   D6 reg) A0 lea   A0 D1 lmove               
+ 7    $73 D0 moveq  2 trap                                         
+ 8    Next   end-code                                              
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 7 not modified     
+ 0 \  appl_init appl_exit graf_handle                    bp 12oct86
+ 1                                                                 
+ 2 : appl_init    global &14 + $10 erase   &10 0 1 0 AES drop ;    
+ 3 : appl_exit    &19 0 1 0 AES drop ;                             
+ 4                                                                 
+ 5                                                                 
+ 6 | : sizeconstant  ( addr n -- addr+n@ )                         
+ 7      over Create , +   Does>  @ @ ;                             
+ 8                                                                 
+ 9 Create sizes 8 allot       $08 $10 $13 $13  sizes 4!            
+10 sizes 2 sizeconstant cwidth     2 sizeconstant cheight          
+11       2 sizeconstant bwidth     2 sizeconstant bheight   drop   
+12                                                                 
+13 : graf_handle       &77 0 5 0 AES grhandle !                    
+14    intout 2+ sizes 8 cmove ;                                    
+15                                                                 
+Screen 8 not modified     
+ 0 \  opnvwk clrwk clsvwk updwk                           02nov86we
+ 1                                                                 
+ 2 : opnvwk                                                        
+ 3    intin &10 0 DO  1 over I 2* + !  LOOP  drop                  
+ 4    2 intin &20 + !   &100 0 &11 VDI                             
+ 5    contrl &12 + @  grhandle ! ;                                 
+ 6                                                                 
+ 7 : clrwk        3 0 0 VDI ;                                      
+ 8 : clsvwk    &101 0 0 VDI ;                                      
+ 9                                                                 
+10 : updwk      4 0 0 VDI  ;                                       
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 9 not modified     
+ 0 \  s_clip grinit grexit show_c hide_c                  02nov86we
+ 1                                                                 
+ 2 : s_clip      ( x1 y1 x2 y2 clipflag -- )                       
+ 3    intin !  ptsin 4 array!   &129 2 1 VDI  ;                    
+ 4                                                                 
+ 5 : grinit    setarrays  appl_init  graf_handle  opnvwk ;         
+ 6 : grexit    clsvwk appl_exit ;                                  
+ 7                                                                 
+ 8 2Variable objc_tree             0. objc_tree 2!                 
+ 9                                                                 
+10 Variable c_flag       c_flag off                                
+11 : show_c   ( -- )     c_flag @ intin !  &122 0 1 VDI  ;         
+12 : hide_c   ( -- )     &123 0 0 VDI  ;                           
+13                                                                 
+14 \\ st_load_fonts  st_unload_fonts                               
+15    wÑr auch ganz hÅbsch, hamse aber nich!                       

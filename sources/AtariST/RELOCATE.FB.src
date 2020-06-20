@@ -1,0 +1,51 @@
+Screen 0 not modified     
+ 0 \\                                                     26oct86we
+ 1                                                                 
+ 2 Diese File enth„lt Worte, mit denen die Speicheraufteilung      
+ 3 des volksFORTH ver„ndert werden kann.                           
+ 4                                                                 
+ 5 RELOCATE  setzt  R0  und  S0  neu, beachten Sie dazu auch die   
+ 6 Ausfhrungen im Handbuch.                                       
+ 7                                                                 
+ 8 Mit  BUFFERS  kann man die Anzahl der Diskbuffer ver„ndern.     
+ 9 Standardm„žig ist das System auf &10 Buffer eingestellt. Reicht 
+10 der Platz im Dictionary bei sehr grožen Programmen nicht aus,   
+11 kann man hier am ehesten Speicherplatz einsparen.               
+12 Umgekehrt erh”ht sich der Arbeitskomfort beim Editieren, wenn   
+13 m”glichst viele Diskbuffer vorhanden sind, um Diskettenzugriffe 
+14 zu minimieren.                                                  
+15                                                                 
+Screen 1 not modified     
+ 0 \ Relocate a system                                    26oct86we
+ 1                                                                 
+ 2 | : relocate-tasks   ( mainup -- )    up@ dup                   
+ 3      BEGIN  2+ under @  2dup - WHILE  rot drop  REPEAT  2drop ! 
+ 4      up@ 2+ @  origin 2+ ! ;                                    
+ 5                                                                 
+ 6 : relocate   ( stacklen rstacklen -- )                          
+ 7    2dup +   limit origin -   b/buf -   2-                       
+ 8        u> abort" kills all buffers"                             
+ 9    over  pad $100 +  origin - u< abort" cuts the dictionary"    
+10    dup  udp @ $40 +                                             
+11        u< abort" kills returnstack"                             
+12    flush  empty  over +  origin +  origin &12 + !    \ r0       
+13    origin +  dup  relocate-tasks                 \ multitasking 
+14    6 -  origin &10 + !                               \ s0       
+15    cold ;                                          -->          
+Screen 2 not modified     
+ 0 \ bytes.more  buffers                                  15sep86we
+ 1                                                                 
+ 2 | : bytes.more   ( n+-  -- )                                    
+ 3      up@  origin -  +  r0 @ up@ -  relocate ;                   
+ 4                                                                 
+ 5 : buffers      ( +n   -- )                                      
+ 6     b/buf *  4+  limit  r0 @ -  swap  -  bytes.more ;           
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

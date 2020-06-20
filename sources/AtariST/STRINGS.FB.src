@@ -1,0 +1,204 @@
+Screen 0 not modified     
+ 0 \\                      *** Strings ***                13oct86we
+ 1                                                                 
+ 2 Dieses File enthÑlt einige Grundworte zur Stringverarbeitung,   
+ 3 vor allem ein  SEARCH  fÅr den Editor. Ebenfalls sind Worte     
+ 4 zur Umwandlung von counted Strings (Forth) in 0-terminated      
+ 5 Strings, wie sie z.B. vom Betriebssystem oft benutzt werden,    
+ 6 vorhanden.                                                      
+ 7                                                                 
+ 8 Beim SEARCH entscheidet die Variable  CAPS  , ob Groû- und      
+ 9 Kleinschreibung unterschieden wird oder nicht. Ist  CAPS  ON,   
+10 so werden groûe und kleine Buchstaben gefunden, die Suche dau-  
+11 ert allerdings lÑnger.                                          
+12                                                                 
+13 c>0"  wandelt einen String mit fÅhrendem Countbyte in einen     
+14 mit 0 abgschlossenen, wie er vom Betriebssystem oft gebraucht   
+15 wird. 0>c" arbeitet umgekehrt.                                  
+Screen 1 not modified     
+ 0 \ String Functions Loadscreen                          25may86we
+ 1                                                                 
+ 2 1 4 +thru                                                       
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ -text                                                13oct86we
+ 1                                                                 
+ 2 Variable caps   caps off                                        
+ 3                                                                 
+ 4 Code -text   ( addr0 len addr1 -- n )                           
+ 5    SP )+ D6 move  D6 reg) A1 lea                                
+ 6    SP )+ D0 move  0= IF  SP ) clr  Next  THEN  1 D0 subq        
+ 7    SP )+ D6 move  D6 reg) A0 lea                                
+ 8 Label comp                                                      
+ 9    .b A0 )+ A1 )+ cmpm  comp  D0 dbne                           
+10    .w D0 clr  .b A0 -) D0 move  A1 -) D0 sub   .w D0 ext        
+11       D0 SP -) move   Next end-code                             
+12                                                                 
+13 Label >upper   ( D3 -> D3 )     .b Ascii a D3 cmpi              
+14    >= IF  Ascii z D3 cmpi  <= IF  bl D3 subi  THEN  THEN  rts   
+15                                                                 
+Screen 3 not modified     
+ 0 \ -capstext compare                                    13oct86we
+ 1                                                                 
+ 2 | Code -capstext   ( addr0 len addr1 -- n )                     
+ 3    SP )+ D6 move  D6 reg) A1 lea                                
+ 4    SP )+ D0 move  0= IF  SP ) clr  Next  THEN  1 D0 subq        
+ 5    SP )+ D6 move  D6 reg) A0 lea                                
+ 6 Label capscomp                                                  
+ 7    .b A0 )+ D3 move  >upper bsr  D3 D1 move                     
+ 8       A1 )+ D3 move  >upper bsr  D3 D2 move                     
+ 9      D1 D2 cmp  capscomp D0 dbne   .w D1 clr                    
+10    .b A0 -) D3 move  >upper bsr  D3 D1 move                     
+11       A1 -) D3 move  >upper bsr  D3 D2 move                     
+12    .b D2 D1 sub  .w D1 SP -) move   Next end-code               
+13                                                                 
+14 : compare   ( addr0 len addr1 -- n )                            
+15    caps @ IF  -capstext  ELSE  -text  THEN ;                    
+Screen 4 not modified     
+ 0 \ search delete insert                                 10aug86we
+ 1                                                                 
+ 2 : search   ( text textlen buf buflen  -- offset flag )          
+ 3    over >r  2 pick -  3 pick c@ >r                              
+ 4    BEGIN  caps @  0= IF  r@ scan  THEN  ?dup                    
+ 5    WHILE  >r >r  2dup r@  compare                               
+ 6           0= IF  2drop r> rdrop rdrop r> -  true exit  THEN     
+ 7    r> r>  1 /string   REPEAT   -rot 2drop  rdrop  r> - false ;  
+ 8                                                                 
+ 9 : delete   ( buffer size count -- )                             
+10    over min >r  r@ - ( left over )  dup 0>                      
+11    IF  2dup swap dup  r@ +  -rot  swap  cmove  THEN             
+12   + r> bl fill ;                                                
+13                                                                 
+14 : insert   ( string length buffer size -- )                     
+15    rot over min >r  r@ - over dup r@ +  rot cmove>  r> cmove ;  
+Screen 5 not modified     
+ 0 \ String operators                                     13oct86we
+ 1                                                                 
+ 2 Variable $sum                   \ pointer to stringsum          
+ 3 : $add      ( addr len -- )     dup >r                          
+ 4    $sum @ count +  swap  move   $sum @  dup c@  r> +  swap c! ; 
+ 5                                                                 
+ 6 : c>0"   ( addr -- )                                            
+ 7    count >r  dup 1-  under  r@ cmove   r> + 0 swap c!  ;        
+ 8 : 0>c"   ( addr -- )                                            
+ 9    dup >r  true false scan nip negate 1-                        
+10    r@ dup 1+ 2 pick cmove>  r> c!  ;                            
+11                                                                 
+12 : ,0"   Ascii " parse 1+  here over allot  place                
+13         0 c,  align ; restrict                                  
+14 : 0"    state @ IF compile (" ,0" compile 1+ exit THEN          
+15                    here 1+  ,0" ;        immediate              
+Screen 6 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 7 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 8 not modified     
+ 0 \ -text                                                13oct86we
+ 1                                                                 
+ 2 ist CAPS on, wird beim Suchen nicht auf Groû- Kleinschreibung   
+ 3  geachtet.                                                      
+ 4 addr0 und addr1 sind die Adressen von zwei counted strings, len 
+ 5  die Anzahl der Zeichen, die verglichen werden sollen. n liefert
+ 6  die Differenz der beiden ersten nicht Åbereinstimmenden Zeichen
+ 7  Ist n=0, sind beide Strings gleich.                            
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13 wandelt das Zeichen im Register D3 in den entsprechenden Groû-  
+14  buchstaben.                                                    
+15                                                                 
+Screen 9 not modified     
+ 0 \ -capstext compare                                    13oct86we
+ 1                                                                 
+ 2 wie -text, jedoch wird beim Vergleich nicht nach Groû- und Klein
+ 3  schreibung unterschieden. Dieser Vergleich erfordert erheblich 
+ 4  mehr Zeit und sollte daher nur in SonderfÑllen benutzt werden. 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14 wie -text, in AbhÑngigkeit von der Variablen caps wird -text    
+15  oder -capstext ausgefÅhrt.                                     
+Screen 10 not modified     
+ 0 \ search delete insert                                 13oct86we
+ 1                                                                 
+ 2 Im Text ab Adresse text wird in der LÑnge textlen  nach dem     
+ 3  String buf mit LÑnge buflen gesucht.                           
+ 4  ZurÅckgeliefert wird ein Offset in den durchsuchten Text an die
+ 5  Stelle, an der der String gefunden wurde sowie ein Flag. Ist   
+ 6  flag wahr, wurde der String gefunden, sonst nicht.             
+ 7  search berÅcksichtigt die Variable caps bei der Suche.         
+ 8                                                                 
+ 9 Im Buffer der LÑnge size werden count Zeichen entfernt. Der Rest
+10  des Buffers wird 'heruntergezogen'.                            
+11                                                                 
+12                                                                 
+13                                                                 
+14 Der string ab Adresse string und der LÑnge length wird in den   
+15  Buffer mit der Grîûe size eingefÅgt.                           
+Screen 11 not modified     
+ 0 \ String operators                                     13oct86we
+ 1                                                                 
+ 2 Ein pointer auf die Adresse des Strings, zu dem ein anderer     
+ 3  hinzugefÅgt werden soll.                                       
+ 4 $ADD hÑngt den String ab addr und der LÑnge len an den String   
+ 5  in $sum an. Der Count wird dabei addiert.                      
+ 6 wandelt den counted String ab addr in einen 0-terminated String.
+ 7                                                                 
+ 8 wandelt den 0-terminated String ab addr in einen counted String.
+ 9  Die LÑnge der Strings bleibt gleich (Countbyte statt 0).       
+10                                                                 
+11                                                                 
+12 legt einen counted und mit 0 abgeschlossenen String im          
+13   Dictionary ab.                                                
+14 aufrufendes Wort fÅr ,0"; kompiliert zusÑtzlich (".             
+15  0" ist statesmart.                                             

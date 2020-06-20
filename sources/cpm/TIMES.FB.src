@@ -1,0 +1,34 @@
+Screen 0 not modified     
+ 0 \\ Times Often: interactive loops                        11Nov86
+ 1                                                                 
+ 2 Dieses File enthaelt die Definitionen der beiden Utility-Worte  
+ 3 TIMES, OFTEN, die interaktiv benutzt werden koennen, was        
+ 4 normalerweise mit BEGIN WHILE ... nicht moeglich ist.           
+ 5                                                                 
+ 6 Benutzung:  nur interaktiv!                                     
+ 7                                                                 
+ 8 a b ... nn times \ Wiederhole die Befehlsfolge "a b ..." nn mal,
+ 9                  \ oder bis eine Taste gedrueckt wird, oder     
+10                  \ bis ein Fehler auftritt,                     
+11                                                                 
+12 a b ... often     \ Wiederhole die Befehlsfolge "a b ..."       
+13                   \ so oft, bis eine Taste gedrueckt wird, oder 
+14                   \ bis ein Fehler auftritt.                    
+15                                                                 
+Screen 1 not modified     
+ 0 \ Times, Often                                           02feb86
+ 1                                                                 
+ 2 also Forth definitions                                          
+ 3                                                                 
+ 4 : often    stop? ?exit  >in off ;                               
+ 5                                                                 
+ 6 | Variable #times   #times off                                  
+ 7                                                                 
+ 8 : times   ( n --)                                               
+ 9  ?dup IF  #times @ 2+  u<  stop? or                             
+10           IF  #times off  exit  THEN  1 #times +!               
+11  ELSE  stop? ?exit  THEN  >in off ;                             
+12                                                                 
+13 toss definitions                                                
+14                                                                 
+15                                                                 

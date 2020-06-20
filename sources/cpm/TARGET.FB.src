@@ -1,0 +1,578 @@
+Screen 0 not modified     
+ 0  \                                                       05Jul86
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ Target compiler loadscr                             UH 07Jun86
+ 1 \ Idea and first Implementation by ks/bp                        
+ 2 \ Implemented on 6502  by ks/bp                                 
+ 3 \ ultraFORTH83-Version by bp/we                                 
+ 4 \ Atari 520 ST - Version by we                                  
+ 5 \ CP/M 2.2 Version by UH                                        
+ 6                                                                 
+ 7 Onlyforth hex     Assembler nonrelocate                         
+ 8 Vocabulary Ttools                                               
+ 9 Vocabulary Defining                                             
+10  1 10 +thru   \ Target compiler                                 
+11 11 13 +thru   \ Target Tools                                    
+12 14 16 +thru   \ Redefinitions                                   
+13 save  17 20 +thru  \ Predefinitions                             
+14                                                                 
+15 Onlyforth                                                       
+Screen 2 not modified     
+ 0 \ Target header pointers                              UH 26Mar88
+ 1                                                                 
+ 2 Create   lastname $20 allot                                     
+ 3 Variable tdp                  : there  tdp @ ;                  
+ 4 Variable displace                                               
+ 5 Variable image                                                  
+ 6 Variable ?thead               ?thead off                        
+ 7 Variable tlast                tlast  off                        
+ 8 Variable glast'               glast' off                        
+ 9 Variable tdoes>                                                 
+10 Variable >in:                                                   
+11 Variable tvoc                 tvoc off                          
+12 Variable tvoc-link            tvoc-link off                     
+13 0 | Constant <forw>                                             
+14 0 | Constant <res>                                              
+15 | : Is> ( cfa -- )  [compile] Does> here 3 - swap >body ! 0 ] ; 
+Screen 3 not modified     
+ 0 \ Image and byteorder                                 UH 26Mar88
+ 1                                                                 
+ 2 Code c+! ( 8b addr -- )                                         
+ 3    H pop   D pop   E A mov   M add   A M mov   Next   end-code  
+ 4                                                                 
+ 5 Code /block  ( addr -- +n blk )                                 
+ 6    H pop    L E mov    H A mov    3 ani    A D mov              
+ 7    H A mov   $FC ani    rrc rrc  A L mov   0 H mvi   dpush jmp  
+ 8 end-code                                                        
+ 9                                                                 
+10 : >image    ( addr1 - addr2 )                                   
+11    displace @ ( -  /block   image @ +  block ) + ;              
+12                                                                 
+13 : >heap  ( from quan - )  dup hallot heap swap cmove ;          
+14 \\ : c+!   ( 8b addr -- )        dup c@ rot + swap c! ;         
+15    : /block ( addr -- +n blk )  b/blk /mod ;                    
+Screen 4 not modified     
+ 0 \ Ghost-creating                                      UH 26Mar88
+ 1                                                                 
+ 2 | : (make.ghost  ( str -- cfa.ghost )  dp push                  
+ 3      count  dup 1 $1F uwithin not Abort" invalid Ghostname"     
+ 4      here 2+ place                                              
+ 5      here state @          \ address of link field              
+ 6      IF  context @  ELSE current  THEN  @  under @ ,  \ link    
+ 7      1 here c+!  here c@  allot  bl c,  \ name                  
+ 8      here over - swap  \ offset to codefield                    
+ 9      <forw> , 0 , 0 ,           \ code and parameter field      
+10      here over - >heap          \ move to heap                  
+11      heap rot !                 \ link                          
+12      heap  +  ;                 \ codefield address             
+13                                                                 
+14 | : Make.Ghost ( -- cfa.ghost )  name (make.ghost ;             
+15                                                                 
+Screen 5 not modified     
+ 0 \ ghost words                                         UH 28Apr88
+ 1                                                                 
+ 2 : gfind  ( string - cfa tf / string ff )                        
+ 3    >r bl r@ count + c!  1 r@ c+!  r@ find  -1 r> c+! ;          
+ 4                                                                 
+ 5 : (ghost   ( string -- cfa )  gfind  ?exit  (make.ghost ;       
+ 6                                                                 
+ 7 : ghost ( -- cfa )  name (ghost ;                               
+ 8                                                                 
+ 9 : gdoes>  ( cfa.ghost - cfa.does )  dp push                     
+10     4+ dup @    IF  @ exit  THEN   \ defined                    
+11     here <forw> , 0 ,  4 >heap     \ forward-chain              
+12     heap dup rot ! ;               \ forward-link               
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 6 not modified     
+ 0 \ ghost utilities                                    2UH 26Mar88
+ 1                                                                 
+ 2 : g' ( -- cfa.ghost )  name gfind 0= abort" ?" ;                
+ 3                                                                 
+ 4 | : .ghost-type ( cfa.ghost -- ) @                              
+ 5       <forw> case? IF ." forward" exit THEN                     
+ 6       <res> - Abort" type unknown" ." resolved " ;              
+ 7                                                                 
+ 8 | : .does-type ( cfa.does -- )  @                               
+ 9       <forw> case? IF ." forward-define" exit THEN              
+10       <res> - Abort" does-type unknown"  ." resolved-define" ;  
+11                                                                 
+12 : '. ( -- ) g'         dup .ghost-type  dup 2+ @ 5 u.r          
+13      4+ @ ?dup 0=exit  dup  .does-type      2+ @ 5 u.r  ;       
+14                                                                 
+15 ' ' Alias h'                                                    
+Screen 7 not modified     
+ 0 \ .unresolved                                         UH 26Mar88
+ 1                                                                 
+ 2 | : forward? ( cfa -- f )  dup @  <forw> =  swap 2+ @ and ;     
+ 3 | : ghost?   ( nfa -- f )  count $1F and + 1- c@ bl = ;         
+ 4                                                                 
+ 5 | : unresolved? ( addr - f ) 2+                                 
+ 6     dup     ghost? not IF drop false exit THEN                  
+ 7     name> dup forward? IF drop true  exit THEN                  
+ 8     4+ @      forward? ;                                        
+ 9                                                                 
+10 | : unresolved-words  ( thread -- )  BEGIN @ ?dup WHILE         
+11      dup unresolved?  IF dup 2+ .name ?cr  THEN REPEAT ;        
+12                                                                 
+13 : .unresolved ( -- ) voc-link @                                 
+14     BEGIN dup 4- unresolved-words  @ ?dup 0= UNTIL ;            
+15                                                                 
+Screen 8 not modified     
+ 0 \ Extending Vocabularys for Target-Compilation       2UH 26Mar88
+ 1                                                                 
+ 2 : Vocabulary       Vocabulary 0 , here tvoc @ , tvoc ! ;        
+ 3                                                                 
+ 4 Vocabulary Transient    tvoc off                                
+ 5                                                                 
+ 6 Root definitions                                                
+ 7                                                                 
+ 8 : T Transient ;   immediate                                     
+ 9 : H Forth     ;   immediate                                     
+10                                                                 
+11 OnlyForth                                                       
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 9 not modified     
+ 0 \ Transient primitives                                UH 26Mar88
+ 1                                                                 
+ 2 Code byte>   ( 8bl 8bh -- 16b )                                 
+ 3    D pop  H pop  E H mov  hpush jmp end-code                    
+ 4 Code >byte   ( 16b -- 8bh 8bl )                                 
+ 5    H pop  H E mov  0 H mvi  H D mov  dpush jmp end-code         
+ 6                                                                 
+ 7 Transient definitions                                           
+ 8 : c@ ( addr -- 8b )  H >image  c@ ;                             
+ 9 : c! ( 8b addr -- )  H >image  c!  ( update ) ;                 
+10 : @  ( addr -- n  )  dup T c@ H  swap 1+  T c@ H  byte> ;       
+11 : !  ( n addr --  )  >r  >byte r@  T c! H  r> 1+  T c! H ;      
+12 : cmove ( from.mem to.target quan -)                            
+13      bounds ?DO  dup  H c@   I  T c! H  1+ LOOP drop ;          
+14 : on  ( addr -- )  true  swap T ! H ;                           
+15 : off ( addr -- )  false swap T ! H ;                           
+Screen 10 not modified     
+ 0 \ Transient primitives                                UH 26Mar88
+ 1                                                                 
+ 2 : here  ( -- taddr )   there ;                                  
+ 3 : allot ( n -- )  Tdp +! ;                                      
+ 4 : c, ( c -- )  T here c! 1 allot H ;                            
+ 5 : ,  ( n -- )  T here  ! 2 allot H ;                            
+ 6                                                                 
+ 7 : ," ( -- )  Ascii " parse                                      
+ 8      dup T c,  under  here swap cmove  allot H ;                
+ 9                                                                 
+10 : fill ( addr len c -- )                                        
+11    -rot bounds ?DO dup I  T c! H  LOOP drop ;                   
+12                                                                 
+13 : erase ( addr len -- )  0  T fill H ;                          
+14 : blank ( addr len -- )  bl T fill H ;                          
+15 : here! ( addr -- )  H tdp ! ;                                  
+Screen 11 not modified     
+ 0 \ Resolving                                           UH 26Mar88
+ 1                                                                 
+ 2 Forth definitions                                               
+ 3                                                                 
+ 4 : resolve ( cfa.ghost cfa.target -- )                           
+ 5    2dup  swap >body   dup @ >r   !   over @ <res> =             
+ 6    IF drop >name space .name ." exists" ?cr rdrop exit THEN     
+ 7    r> swap >r  <res> rot !  ?dup 0= IF rdrop exit THEN          
+ 8    BEGIN dup T @ H 2dup = abort" resolve loop"                  
+ 9          r@ rot T ! H  ?dup 0= UNTIL rdrop ;                    
+10                                                                 
+11 : resdoes> ( cfa.ghost cfa.target -- )                          
+12     swap gdoes> dup @ <res> = IF 2+ ! exit THEN swap resolve ;  
+13                                                                 
+14 ' <forw> Is> ( -- )  dup @ there rot ! T , H ; \ forward link   
+15 ' <res>  Is> ( -- )  @ T , H ;  \ compile target.cfa            
+Screen 12 not modified     
+ 0 \ move-threads                                        UH 26Mar88
+ 1                                                                 
+ 2 : move-threads           Tvoc @ Tvoc-link @                     
+ 3   BEGIN  over ?dup                                              
+ 4   WHILE  2- @ over 2- T ! @ H swap @ swap  REPEAT               
+ 5   error" some undef. Target-Vocs left" drop ;                   
+ 6                                                                 
+ 7 | : tlatest ( - addr)       Current @  6  + ;                   
+ 8                                                                 
+ 9                                                                 
+10 : save-target \ filename                                        
+11     $100 dup >image  there rot -  savefile ;                    
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 13 not modified     
+ 0 \ compiling names into targ.                          UH 26Mar88
+ 1                                                                 
+ 2 | : viewfield ( -- n ) H blk @  $200 + ; \ in File #1           
+ 3                                                                 
+ 4 : (theader  ( -- ) ?thead @ IF  1 ?thead +! exit THEN           
+ 5    >in push                                                     
+ 6    name dup c@  1 $20 uwithin  not abort" invalid Targetname"   
+ 7    viewfield T ,                                                
+ 8    H there  tlatest @ T , H  tlatest !   \ link                 
+ 9    there dup tlast !                                            
+10    over c@ 1+   dup T allot   cmove H ;                         
+11                                                                 
+12 : Theader ( -- )  tlast off                                     
+13     (theader Ghost dup glast' !  there resolve ;                
+14                                                                 
+15                                                                 
+Screen 14 not modified     
+ 0 \ prebuild defining words                          bp2UH 26Mar88
+ 1                                                                 
+ 2 | : executable? ( adr - adr f )       dup ;                     
+ 3 | : tpfa,                             there , ;                 
+ 4                                                                 
+ 5 | : (prebuild ( cfa.adr -- )  >in push  Create  here 2- ! ;     
+ 6                                                                 
+ 7 : prebuild ( adr 0.from.: - 0 )  0 ?pairs                       
+ 8     executable? dup >r                                          
+ 9     IF  [compile] Literal compile (prebuild  ELSE  drop  THEN   
+10     compile Theader  Ghost gdoes> ,                             
+11     r> IF  compile tpfa,  THEN  0 ;    immediate restrict       
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 15 not modified     
+ 0 \ code portion of def.words                        bp2UH 26Mar88
+ 1                                                                 
+ 2 : dummy      0 ;                                                
+ 3                                                                 
+ 4 : DO> ( - adr.of.jmp.dodoes> 0 )                                
+ 5     [compile] Does>  here 3 -  compile @  0 ] ;                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 16 not modified     
+ 0 \ The Target-Assembler                                UH 26Mar88
+ 1                                                                 
+ 2                                                                 
+ 3 Forth definitions                                               
+ 4 | Create relocate  ]  T c, , c@ here allot ! c! H  [            
+ 5                                                                 
+ 6 Transient definitions                                           
+ 7                                                                 
+ 8 : Assembler      H [ Assembler ] relocate >codes ! Assembler ;  
+ 9 : >label ( 16b -)   H >in @ name gfind rot >in !                
+10                     IF over resolve dup THEN drop Constant ;    
+11 : Label          H there T >label Assembler H ;                 
+12 : Code           H Theader there 2+ T , Assembler H ;           
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 17 not modified     
+ 0 \ immed. restr. ' \ compile                        bp2UH 26Mar88
+ 1                                                                 
+ 2 : ?pairs   ( n1 n2 -- )    H - abort" unstructured" ;           
+ 3 : >mark    ( - addr)       H there T 0 , H ;                    
+ 4 : >resolve ( addr -)       H there over - swap T ! H ;          
+ 5 : <mark    ( - addr)       H there ;                            
+ 6 : <resolve ( addr -)       H there - T , H ;                    
+ 7 : immediate  H Tlast @ ?dup 0=exit  dup T c@ $40 or swap c! H ; 
+ 8 : restrict   H Tlast @ ?dup 0=exit  dup T c@ $80 or swap c! H ; 
+ 9 : ' ( <name> - cfa)        H g' dup @ <res> - abort" ?" 2+ @ ;  
+10 : |                        H ?thead @ ?exit ?thead on ;         
+11 : compile                  H Ghost , ; immediate restrict       
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 18 not modified     
+ 0 \ Target tools                                        UH 26Mar88
+ 1 Onlyforth Ttools also definitions                               
+ 2                                                                 
+ 3 | : ttype ( adr n -)   bounds ?DO I T c@ H  dup                 
+ 4    bl > IF  emit  ELSE  drop ascii . emit  THEN  LOOP ;         
+ 5                                                                 
+ 6 : .name ( nfa -)       ?dup IF dup 1+ swap T c@ H $1F and ttype 
+ 7                             ELSE ." ??? " THEN space ?cr ;      
+ 8                                                                 
+ 9 | : nfa? ( cfa lfa - nfa / cfa ff)                              
+10   BEGIN  dup  WHILE  2dup 2+ dup T c@ H $1F and + 1+ =          
+11      IF  2+ nip exit  THEN   T @ H REPEAT ;                     
+12                                                                 
+13 : >name ( cfa - nfa / ff)                                       
+14    Tvoc BEGIN  @ dup  WHILE  under 2- @ nfa? ?dup               
+15      IF nip exit THEN   swap REPEAT  nip ;                      
+Screen 19 not modified     
+ 0 \ Ttools for decompiling                           ks29jun85we  
+ 1                                                                 
+ 2 | : ?:        dup 4 u.r ." :" ;                                 
+ 3 | : @?        dup T @ H 6 u.r ;                                 
+ 4 | : c?        dup T c@ H 3 .r ;                                 
+ 5                                                                 
+ 6 : s ( adr - adr+)         ?: space c? 3 spaces                  
+ 7  dup 1+ over T c@ H ttype dup T c@ H + 1+ ;                     
+ 8                                                                 
+ 9 : n ( adr - adr+2)        ?: @? 2 spaces                        
+10  dup T @ H [ Ttools ] >name .name H 2+ ;                        
+11                                                                 
+12 : d ( adr n - adr+n)      2dup swap ?: swap 0 DO  c? 1+  LOOP   
+13                           2 spaces -rot ttype ;                 
+14                                                                 
+15                                                                 
+Screen 20 not modified     
+ 0 \ Tools for decompiling                            bp204dec85we 
+ 1                                                                 
+ 2 : l ( adr - adr+2)        ?: 5 spaces @? 2+ ;                   
+ 3                                                                 
+ 4 : c ( adr - adr+1)        1 d ;                                 
+ 5                                                                 
+ 6 : b ( adr - adr+1)        ?: @? dup T @ H over + 5 u.r  2+ ;    
+ 7                                                                 
+ 8 : dump ( adr n -)         bounds ?DO cr I 10 d drop stop?       
+ 9                             IF LEAVE THEN 10 +LOOP ;            
+10                                                                 
+11 : view                    T ' H [ Ttools ] >name ?dup           
+12                             IF  4 - T @ H list  THEN ;          
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 21 not modified     
+ 0 \ reinterpretation def.-words                         UH 26Mar88
+ 1                                                                 
+ 2 Onlyforth                                                       
+ 3                                                                 
+ 4 : redefinition ( -- )  tdoes> @ 0=exit                          
+ 5    >in push [ ' parser >body ] Literal push                     
+ 6    state push   context push                                    
+ 7    >in: @ >in ! name [ ' Transient 2+ ] Literal (find nip ?exit 
+ 8    cr ." Redefinition: " here .name                             
+ 9    >in: @ >in ! : Defining interpret  tdoes> off ;              
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 22 not modified     
+ 0 \ Create..does> structure                                27Apr86
+ 1                                                                 
+ 2 | : (;tcode      Tlast @ dup T c@ + 1+ ! H rdrop ;              
+ 3                                                                 
+ 4 | : changecfa    compile lit tdoes> @ , compile (;tcode ;       
+ 5                                                                 
+ 6 Defining definitions                                            
+ 7                                                                 
+ 8 : ;code          0 ?pairs changecfa reveal rdrop rdrop ;        
+ 9                                      immediate restrict         
+10                                                                 
+11 Defining ' ;code Alias does>         immediate restrict         
+12                                                                 
+13 : ;              [compile] ; rdrop rdrop ; immediate restrict   
+14                                                                 
+15                                                                 
+Screen 23 not modified     
+ 0 \ redefinition conditionals                        bp27jun85we  
+ 1                                                                 
+ 2 ' DO     Alias DO        immediate restrict                     
+ 3 ' ?DO    Alias ?DO       immediate restrict                     
+ 4 ' LOOP   Alias LOOP      immediate restrict                     
+ 5 ' IF     Alias IF        immediate restrict                     
+ 6 ' THEN   Alias THEN      immediate restrict                     
+ 7 ' ELSE   Alias ELSE      immediate restrict                     
+ 8 ' BEGIN  Alias BEGIN     immediate restrict                     
+ 9 ' UNTIL  Alias UNTIL     immediate restrict                     
+10 ' WHILE  Alias WHILE     immediate restrict                     
+11 ' REPEAT Alias REPEAT    immediate restrict                     
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 24 not modified     
+ 0 \ clear Liter. Ascii ['] ."                           UH 26Mar88
+ 1                                                                 
+ 2 Onlyforth Transient definitions                                 
+ 3                                                                 
+ 4 : clear  True abort" There are ghosts" ;                        
+ 5 : Literal ( n -) H dup $FF00 and IF T compile lit , H exit THEN 
+ 6                    T compile clit c, H ; immediate              
+ 7 : Ascii  H bl word 1+ c@                                        
+ 8           state @ 0=exit T [compile] Literal H ; immediate      
+ 9 : [']   T ' [compile] Literal H ; immediate restrict            
+10 : "     T compile (" ," H ;       immediate restrict            
+11 : ."    T compile (." ," H ;      immediate restrict            
+12                                                                 
+13 : even   H ; immediate   \ machen nichts beim 8080              
+14 : align  H ; immediate                                          
+15 : halign H ; immediate                                          
+Screen 25 not modified     
+ 0 \ Target compilation  ]  [                         bp0UH 26Mar88
+ 1                                                                 
+ 2 Forth definitions                                               
+ 3                                                                 
+ 4 : tcompile ( str -- )  count lastname place                     
+ 5    lastname find ?dup                                           
+ 6    IF 0> IF  execute exit  THEN  drop lastname THEN             
+ 7    gfind IF  execute exit  THEN                                 
+ 8    number? ?dup                                                 
+ 9    IF 0> IF  swap T [compile] Literal  THEN                     
+10                     [compile] Literal H exit THEN               
+11    (ghost execute ;                                             
+12                                                                 
+13 Transient definitions                                           
+14 : ]           H State on ['] tcompile is parser ;               
+15                                                                 
+Screen 26 not modified     
+ 0 \ Target conditionals                              bp27jun85we  
+ 1                                                                 
+ 2 : IF           T compile ?branch >mark H 1 ; immediate restrict 
+ 3 : THEN         abs 1 T ?pairs >resolve H ;   immediate restrict 
+ 4 : ELSE         T 1 ?pairs compile branch >mark swap >resolve    
+ 5                H -1 ;                        immediate restrict 
+ 6 : BEGIN        T <mark H 2 ;                 immediate restrict 
+ 7 : WHILE        T 2 ?pairs 2 compile ?branch >mark -2 H 2swap ;  
+ 8                                              immediate restrict 
+ 9 | : (repeat    T 2 ?pairs <resolve H BEGIN dup -2 =             
+10                     WHILE drop T >resolve H REPEAT ;            
+11 : UNTIL        T compile ?branch (repeat H ; immediate restrict 
+12 : REPEAT       T compile branch (repeat H ;  immediate restrict 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 27 not modified     
+ 0 \ Target conditionals                              bp27jun85we  
+ 1                                                                 
+ 2 : DO             T compile (do >mark H 3 ;  immediate restrict  
+ 3 : ?DO            T compile (?do >mark H 3 ; immediate restrict  
+ 4 : LOOP           T 3 ?pairs compile (loop compile endloop       
+ 5                  >resolve H ;               immediate restrict  
+ 6 : +LOOP          T 3 ?pairs compile (+loop compile endloop      
+ 7                  >resolve H ;               immediate restrict  
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 28 not modified     
+ 0 \ predefinitions                                   bp27jun85we  
+ 1                                                                 
+ 2 : abort"                T compile (abort" ," H ; immediate      
+ 3 : error"                T compile (err" ," H ;   immediate      
+ 4                                                                 
+ 5 Forth definitions                                               
+ 6                                                                 
+ 7 Variable torigin                                                
+ 8 Variable tudp           0 tudp !                                
+ 9                                                                 
+10 : >user                 T c@ H torigin @ + ;                    
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 29 not modified     
+ 0 \ Datatypes                                        bp2UH 07Nov87
+ 1                                                                 
+ 2 Transient definitions                                           
+ 3 : origin!            H torigin ! ;                              
+ 4 : user' ( - 8b)      T ' 2 + c@ H ;                             
+ 5 : uallot ( n -)      H tudp @ swap tudp +! ;                    
+ 6                                                                 
+ 7                      DO> >user ;                                
+ 8 : User               prebuild User 2 T uallot c, ;              
+ 9                                                                 
+10                      DO> ;                                      
+11 : Create             prebuild (create ;                         
+12                                                                 
+13                      DO> T @ H ;                                
+14 : Constant           prebuild Constant T , ;                    
+15 : Variable           Create 2 T allot ;                         
+Screen 30 not modified     
+ 0 \ Datatypes                                           UH 07Nov87
+ 1                                                                 
+ 2 dummy                                                           
+ 3 : Vocabulary                                                    
+ 4  H >in @ Vocabulary >in ! T prebuild Vocabulary 0 , 0 ,         
+ 5  here H tvoc-link @ T , H tvoc-link ! ;                         
+ 6                                                                 
+ 7                                                                 
+ 8                 dummy                                           
+ 9 : (create       prebuild (create ;                              
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 31 not modified     
+ 0 \ target defining words                                  27Apr86
+ 1                                                                 
+ 2               Do> ;                                             
+ 3 : Defer       prebuild Defer 2 T allot ;                        
+ 4 : Is          T ' H >body State @ IF T compile (is , H          
+ 5                                   ELSE T ! H THEN ; immediate   
+ 6 | : dodoes>   T compile (;code H Glast' @                       
+ 7               there resdoes> there tdoes> ! ;                   
+ 8                                                                 
+ 9 : ;code       0 T ?pairs dodoes> Assembler H [compile] [        
+10               redefinition ; immediate restrict                 
+11 : does>       T dodoes> $CD c,                                  
+12               compile (dodoes> H ;      immediate restrict      
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 32 not modified     
+ 0 \ :  Alias  ;                                        bUH 07Jun86
+ 1                                                                 
+ 2 dummy                                                           
+ 3 : :      H tdoes> off >in @ >in: ! T prebuild :                 
+ 4          H current @ context ! T ] H 0 ;                        
+ 5                                                                 
+ 6 : Create:  Create  H current @ context ! T ] H 0 ;              
+ 7                                                                 
+ 8 : Alias ( n -- )       H Tlast off (theader Ghost over resolve  
+ 9                        tlast @ T c@ H 20 or tlast @ T c! , H ;  
+10                                                                 
+11 : ;      T 0 ?pairs compile unnest [compile] [ H redefinition ; 
+12                                             immediate restrict  
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 33 not modified     
+ 0 \ predefinitions                                      UH 26Mar88
+ 1                                                                 
+ 2 : compile             T compile compile H ; immediate restrict  
+ 3 : Host                H Onlyforth Ttools also ;                 
+ 4 : Compiler            T Host H Transient also definitions ;     
+ 5 : [compile]           H ghost execute ; immediate restrict      
+ 6 \  : Onlypatch           H there 3 - 0 tdoes> ! 0 ;             
+ 7                                                                 
+ 8 Onlyforth                                                       
+ 9 : Target              Onlyforth Transient also definitions ;    
+10                                                                 
+11 Transient definitions                                           
+12 Ghost c, drop                                                   
+13                                                                 
+14                                                                 
+15                                                                 

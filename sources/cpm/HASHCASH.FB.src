@@ -1,0 +1,85 @@
+Screen 0 not modified     
+ 0 \ HashCash Suchalgorithmus                            UH 11Nov86
+ 1                                                                 
+ 2 Ein Algorithmus, der die Dictionarysuche beschleunigt:          
+ 3 Zuerst wird uebr das gesucht Wort gehasht und in in einer       
+ 4 Tabelle nachgesehen. Schlaegt der Versuch fehl, wird ganz normal
+ 5 gesucht. Suchzeit geht auf ca. 70-80% gegenueber normalem Suchen
+ 6 herunter.                                                       
+ 7                                                                 
+ 8 Hinzu kommen die Worte:                                         
+ 9 cash, hash-thread, erase-cash, 'cash, und found?                
+10                                                                 
+11 Im Kernal neudefiniert oder gepatched werden muessen:           
+12 (find, hide, reveal, forget-words                               
+13                                                                 
+14 (find und (forget benutzen jejweils die alten Worte. Sie muessen
+15 umbenannt oder in die neuen Worte eingebettet werden.           
+Screen 1 not modified     
+ 0 \ Hash Cash fuer volksFORTH                           UH 11Nov86
+ 1                                                                 
+ 2 Create cash $200 allot                                          
+ 3                                                                 
+ 4 ' Forth >body Constant hash-thread                              
+ 5 : erase-cash ( -- ) cash $200 erase ;  erase-cash               
+ 6                                                                 
+ 7 1 3 +thru                                                       
+ 8                                                                 
+ 9 patch (find                                                     
+10 ( patch forget-words )  ' forget-words \ forget-words           
+11    dup  ' clear   >body   6 + ! \ liegt auf einer ungluecklichen
+12    dup  ' (forget >body $12 + ! \ Adresse, sodass das automa-   
+13    dup  ' empty   >body   8 + ! \ tische Patchen nicht klappt.  
+14         ' save    >body    4+ !                                 
+15 patch hide   patch reveal    forget (patch  save                
+Screen 2 not modified     
+ 0 \ 'cash found? hfind                                  UH 23Oct86
+ 1                                                                 
+ 2 : 'cash ( nfa -- 'cash )                                        
+ 3     count $1F and  under bounds                                 
+ 4     ?DO  I c@ +  LOOP   $FF and   2*  cash + ;                  
+ 5                                                                 
+ 6 : found? ( str nfa -- f )                                       
+ 7    count rot count rot over = IF swap -text 0= exit THEN        
+ 8    drop 2drop false ;                                           
+ 9                                                                 
+10 : (find ( str thread -- str false | nfa true )                  
+11    dup hash-thread -  IF (find exit THEN                        
+12    drop dup 'cash @  2dup found?   IF nip true exit THEN        
+13    drop   hash-thread (find   dup 0= ?exit   over dup 'cash ! ; 
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0 \ Kernal changes                                      UH 23Oct86
+ 1                                                                 
+ 2 ' hide >body @  | Alias last?                                   
+ 3                                                                 
+ 4 : hide   last? IF  0   over 'cash !  2- @ current @ !  THEN ;   
+ 5                                                                 
+ 6 : reveal last? IF  dup  dup 'cash !  2-   current @ !  THEN ;   
+ 7                                                                 
+ 8 ' clear >body 6 + @ | Alias forget-words                        
+ 9                                                                 
+10 | : forget-words  erase-cash forget-words ;                     
+11                                                                 
+12 : .cash   cash $200 bounds DO  I @ ?dup IF .name THEN  2 +LOOP ;
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 4 not modified     
+ 0 \ patching                                            UH 23Oct86
+ 1                                                                 
+ 2 : (patch ( new old -- )                                         
+ 3     ['] cash 0 DO                                               
+ 4       i @ over = IF cr I u.  over I ! THEN  LOOP 2drop ;        
+ 5                                                                 
+ 6 : patch \ name                                                  
+ 7    >in @ '  swap >in !   dup >name 2-  context push  context ! '
+ 8    (patch ;                                                     
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

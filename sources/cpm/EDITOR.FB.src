@@ -1,0 +1,544 @@
+Screen 0 not modified     
+ 0 \ Full-Screen Editor                                  UH 02Nov86
+ 1                                                                 
+ 2 Dieses File enthaelt den Full-Screen Editor fuer die CP/M -     
+ 3 volksFORTH-Version.                                             
+ 4                                                                 
+ 5 Er enthaelt Line- und Chararcter-Stacks, Find&Replace-Funktion  
+ 6 sowie Unterstuetzung des Shadow-Screen-Konzepts, der view-      
+ 7 Funktion und des sichtbaren Laden von Screens (showload).       
+ 8                                                                 
+ 9 Durch die integrierte Tastaturtabelle (keytable) laesst sich die
+10 Kommandobelegung der Tasten auf einfache Art und Weise aendern. 
+11                                                                 
+12 Anregungen, Kritik und Verbesserungsvorschlaege bitte an:       
+13                        U. Hoffmann                              
+14                        Harmsstrasse 71                          
+15                        2300 Kiel                                
+Screen 1 not modified     
+ 0 \ Load Screen for the Editor             UH 03Nov86   UH 27Nov87
+ 1                                                                 
+ 2 Onlyforth    cr                                                 
+ 3                                                                 
+ 4  1 $1E  +thru                                                   
+ 5                                                                 
+ 6 Onlyforth                                                       
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ String primitves                                       27Nov87
+ 1                                                                 
+ 2 : delete   ( buffer size count -- )                             
+ 3    over umin dup >r -  2dup  over r@ +  -rot cmove              
+ 4    +  r> bl fill ;                                              
+ 5                                                                 
+ 6 : insert   ( string length buffer size -- )                     
+ 7    rot over umin dup >r -                                       
+ 8    over dup r@ +  rot cmove>   r> cmove  ;                      
+ 9                                                                 
+10 : replace   ( string length buffer size -- )  rot umin cmove ;  
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0 \ usefull definitions and Editor vocabulary           UH 27Nov87
+ 1                                                                 
+ 2 : blank ( addr len -- )   bl fill ;                             
+ 3                                                                 
+ 4 : ?enough ( n --)  depth 1- > abort" Not enough Parameters" ;   
+ 5                                                                 
+ 6 : ?abort( ( f -- )                                              
+ 7     IF [compile] .(  true abort" !" THEN  [compile] ( ;         
+ 8                                                                 
+ 9 Vocabulary Editor                                               
+10                                                                 
+11 ' Forth  | Alias F: immediate                                   
+12 ' Editor | Alias E: immediate                                   
+13                                                                 
+14 Editor also definitions                                         
+15                                                                 
+Screen 4 not modified     
+ 0 \ move cursor with position-checking                     23Nov86
+ 1                                                                 
+ 2 | : c  ( n --)   \ checks the cursor position                   
+ 3       r# @ +  dup 0 b/blk uwithin not                           
+ 4        Abort" There is a border!"  r# ! ;                       
+ 5                                                                 
+ 6 \\                                                              
+ 7                                                                 
+ 8 : c  ( n --)   \ goes thru the screens                          
+ 9    r# @ +  dup b/blk 1- >  IF  1 scr +!  THEN                   
+10    dup 0< IF  -1 scr +!  THEN  b/blk mod  r# ! ;                
+11                                                                 
+12 : c  ( n --)   \ moves cyclic thru the screen                   
+13    r# @ +  b/blk mod  r# ! ;                                    
+14                                                                 
+15                                                                 
+Screen 5 not modified     
+ 0 \ calculate addresses                                 UH 31Oct86
+ 1                                                                 
+ 2 | Code *line ( l -- adr )                                       
+ 3     H pop   H dad   H dad   H dad                               
+ 4     H dad   H dad   H dad   Hpush jmp   end-code                
+ 5                                                                 
+ 6 | Code /line ( n -- c l )                                       
+ 7    H pop   L A mov   $3F ani  A E mov  0 D mvi                  
+ 8    L A mov   ral   A L mov   H A mov   ral   A H mov            
+ 9    L A mov   ral   A L mov   H A mov   ral   A H mov            
+10    L A mov   ral   3 ani     H L mov   A H mov                  
+11    dpush jmp   end-code                                         
+12                                                                 
+13 \\                                                              
+14 | : *line      ( l -- adr )  c/l * ;                            
+15 | : /line      ( n -- c l )  c/l /mod ;                         
+Screen 6 not modified     
+ 0 \ calculate addresses                                 UH 01Nov86
+ 1                                                                 
+ 2 | : top        ( --     )  r# off ;                             
+ 3 | : cursor     ( -- n   )  r# @ ;                               
+ 4 | : 'start     ( -- adr )  scr @ block ;                        
+ 5 | : 'end       ( -- adr )  'start  b/blk + ;                    
+ 6 | : 'cursor    ( -- adr )  'start  cursor  + ;                  
+ 7 | : position   ( -- c l )  cursor  /line ;                      
+ 8 | : line#      ( -- l   )  position nip ;                       
+ 9 | : col#       ( -- c   )  position drop ;                      
+10 | : 'line      ( -- adr )  'start  line#  *line + ;             
+11 | : 'line-end  ( -- adr )  'line c/l + 1- ;                     
+12 | : #after     ( -- n   )  c/l col# - ;                         
+13 | : #remaining ( -- n   )  b/blk cursor - ;                     
+14 | : #end       ( -- n   )  b/blk line# *line - ;                
+15                                                                 
+Screen 7 not modified     
+ 0 \ move cursor directed                                UH 01Nov86
+ 1                                                                 
+ 2 | : curup      c/l negate c ;                                   
+ 3 | : curdown    c/l c ;                                          
+ 4 | : curleft    -1 c ;                                           
+ 5 | : curright   1 c ;                                            
+ 6                                                                 
+ 7 | : +tab  \ 1/4 line forth                                      
+ 8       cursor  $10 / 1+ $10 * cursor - c ;                       
+ 9                                                                 
+10 | : -tab  \ 1/8 line back                                       
+11       cursor  8 mod  negate  dup 0=  8 * +  c ;                 
+12                                                                 
+13 | : >""end   'start b/blk -trailing nip  b/blk 1- min  r# ! ;   
+14 | : <cr>   #after c ;                                           
+15                                                                 
+Screen 8 not modified     
+ 0 \ show border                                         UH 27Nov87
+ 1 &15 | Constant dx       1 | Constant dy                         
+ 2                                                                 
+ 3 | : horizontal ( row -- row' )                                  
+ 4      dup dx 1- at   c/l 2+  0 DO Ascii - emit LOOP 1+ ;         
+ 5                                                                 
+ 6 | : vertical ( row -- row' )                                    
+ 7      l/s 0 DO dup dx 1-    at Ascii | emit                      
+ 8               row dx c/l + at Ascii | emit    1+   LOOP ;       
+ 9                                                                 
+10 | : border  dy 1- horizontal vertical horizontal drop ;         
+11                                                                 
+12 | : edit-at ( -- )   position swap dy dx d+ at ;                
+13                                                                 
+14 Forth definitions                                               
+15 : updated?  ( -- f)   scr @ block  2- @  0< ;                   
+Screen 9 not modified     
+ 0 \ display screen                         UH 02Nov86   UH 27Nouho
+ 1 Editor definitions  | Variable isfile'        | Variable imode  
+ 2                                                                 
+ 3 | : .updated ( -- )  7 0 at                                     
+ 4       updated? IF 4 spaces ELSE ." not " THEN ." updated" ;     
+ 5                                                                 
+ 6 | : redisplay   ( line# -- )                                    
+ 7      dup dy +  dx at   *line 'start +  c/l type ;               
+ 8                                                                 
+ 9 | : .file ( 'file -- ) [ Dos ] .file  &14 col - 0 max spaces ;  
+10 | : .title   1 0 at isfile@ .file    3 0 at isfile' @ .file     
+11       5 0 at ." Scr# " scr @ 4 .r  .updated  &10 0 at           
+12       imode @ IF ." insert   " exit THEN ." overwrite" ;        
+13                                                                 
+14 | : .screen  l/s 0 DO I redisplay LOOP ;                        
+15 | : .all   .title .screen ;                                     
+Screen 10 not modified     
+ 0 \ check errors                                        UH 02Nov86
+ 1                                                                 
+ 2 | : ?bottom  ( -- )  'end  c/l -  c/l -trailing nip             
+ 3                       Abort" You would lose a line" ;           
+ 4                                                                 
+ 5 | : ?fit ( n -- )  'line c/l -trailing  nip + c/l >             
+ 6      IF line# redisplay                                         
+ 7         true Abort" You would lose a char" THEN ;               
+ 8                                                                 
+ 9 | : ?end    1 ?fit ;                                            
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 11 not modified     
+ 0 \ programmer's id                                     UH 02Nov86
+ 1                                                                 
+ 2 $12 | Constant id-len                                           
+ 3 Create id   id-len allot   id id-len erase                      
+ 4                                                                 
+ 5 | : stamp  ( -- )                                               
+ 6      id 1+ count  'start c/l + over - swap  cmove ;             
+ 7                                                                 
+ 8 | : ?stamp   ( -- )   updated? IF stamp THEN  ;                 
+ 9                                                                 
+10 | : get-id   ( -- )                                             
+11    id c@ ?exit  id on                                           
+12    cr ." Enter your ID : "  at?  $10 0 DO Ascii . emit LOOP  at 
+13    id id-len 2 /string expect  rvsoff  span @ id 1+ c! ;        
+14                                                                 
+15                                                                 
+Screen 12 not modified     
+ 0 \ update screen-display                               UH 02Dec86
+ 1                                                                 
+ 2 | : emptybuf    prev @  2+ dup on  4+ off ;                     
+ 3                                                                 
+ 4 | : undo  emptybuf  .all ;                                      
+ 5                                                                 
+ 6 | : modified   updated? ?exit  update .updated ;                
+ 7                                                                 
+ 8 | : linemodified   modified  line# redisplay ;                  
+ 9                                                                 
+10 | : screenmodified    modified                                  
+11      l/s line# ?DO I redisplay LOOP ;                           
+12                                                                 
+13 | : .modified ( -- )  dy l/s + 4+ 0 at  scr @ .                 
+14       updated? not IF  ." un"  THEN  ." modified"  ?stamp ;     
+15                                                                 
+Screen 13 not modified     
+ 0 \ leave editor                           UH 02Dec86   UH 23Feb88
+ 1 | Variable (pad   (pad off                                      
+ 2 | : memtop  ( -- adr)   sp@ $100 - ;                            
+ 3                                                                 
+ 4 | Create char  1 allot                                          
+ 5                                                                 
+ 6 ( | Variable imode ) imode off                                  
+ 7 | : setimode   imode on  .title ;                               
+ 8 | : clrimode   imode off .title ;                               
+ 9 | : flipimode ( -- )  imode @ 0= imode !  .title ;              
+10                                                                 
+11 | : done ( -- )                                                 
+12      ['] (quit is 'quit  ['] (error errorhandler !  quit ;      
+13                                                                 
+14 | : update-exit  ( -- )  .modified  done ;                      
+15 | : flushed-exit ( -- )  .modified  save-buffers  done ;        
+Screen 14 not modified     
+ 0 \ handle lines                                        UH 01Nov86
+ 1                                                                 
+ 2 | : (clear-line   'line c/l blank ;                             
+ 3 | : clear-line   (clear-line linemodified ;                     
+ 4                                                                 
+ 5 | : clear>   'cursor #after blank  linemodified ;               
+ 6                                                                 
+ 7 | : delete-line   'line #end c/l  delete screenmodified ;       
+ 8                                                                 
+ 9 | : backline   curup delete-line ;                              
+10                                                                 
+11 | : (insert-line                                                
+12       ?bottom  'line c/l over #end insert (clear-line ;         
+13                                                                 
+14 | : insert-line   (insert-line  screenmodified ;                
+15                                                                 
+Screen 15 not modified     
+ 0 \ handle characters                                   UH 01Nov86
+ 1                                                                 
+ 2 | : delete-char   'cursor #after 1 delete  linemodified ;       
+ 3                                                                 
+ 4 | : backspace   curleft  delete-char ;                          
+ 5                                                                 
+ 6 | : (insert-char   ?end  'cursor 1 over #after insert ;         
+ 7                                                                 
+ 8                                                                 
+ 9 | : insert-char   (insert-char  bl 'cursor c! linemodified ;    
+10                                                                 
+11 | : putchar  ( --)  char c@                                     
+12     imode @ IF (insert-char THEN                                
+13     'cursor c!  linemodified  curright ;                        
+14                                                                 
+15                                                                 
+Screen 16 not modified     
+ 0 \ stack lines                                         UH 31Oct86
+ 1                                                                 
+ 2 | Create lines 4 allot    \  { 2+pointer | 2base }              
+ 3 | : 'lines  ( -- adr)   lines 2@ + ;                            
+ 4                                                                 
+ 5 | : @line   'lines  memtop u> Abort" line buffer full"          
+ 6    'line 'lines c/l cmove  c/l lines +! ;                       
+ 7                                                                 
+ 8 | : copyline   @line curdown ;                                  
+ 9 | : line>buf   @line delete-line ;                              
+10                                                                 
+11 | : !line   c/l negate lines +!  'lines 'line c/l cmove ;       
+12                                                                 
+13 | : buf>line   lines @ 0= Abort" line buffer empty"             
+14      ?bottom    (insert-line  !line   screenmodified ;          
+15                                                                 
+Screen 17 not modified     
+ 0 \ stack characters                                    UH 01Nov86
+ 1                                                                 
+ 2 | Create chars 4 allot    \  { 2+pointer | 2base }              
+ 3 | : 'chars  ( -- adr)   chars 2@ + ;                            
+ 4                                                                 
+ 5 | : @char   'chars 1-  lines 2+ @  u> Abort" char buffer full"  
+ 6      'cursor c@ 'chars c!  1 chars +! ;                         
+ 7                                                                 
+ 8 | : copychar   @char curright ;                                 
+ 9 | : char>buf   @char delete-char ;                              
+10                                                                 
+11 | : !char   -1 chars +!  'chars c@  'cursor c! ;                
+12                                                                 
+13 | : buf>char   chars @ 0= Abort" char buffer empty"             
+14      ?end  (insert-char  !char  linemodified ;                  
+15                                                                 
+Screen 18 not modified     
+ 0 \ switch screens                         UH 03Nov86   UH 27Nov87
+ 1                                                                 
+ 2 | Variable r#'             r#'  off                             
+ 3 | Variable scr'            scr' off                             
+ 4 ( | Variable isfile' )     isfile@  isfile' !                   
+ 5                                                                 
+ 6 | : associate \ switch to alternate screen                      
+ 7      isfile' @ isfile@   isfile' ! isfile !                     
+ 8      scr' @ scr @ scr' ! scr !   r#' @ r# @ r#' ! r# ! ;        
+ 9                                                                 
+10 | : mark   isfile@ isfile' !  scr @ scr' !  r# @ r#' ! .title ; 
+11 | : n   ?stamp  1 scr +! .all ;                                 
+12 | : b   ?stamp -1 scr +! .all ;                                 
+13 | : a   ?stamp associate .all ;                                 
+14                                                                 
+15                                                                 
+Screen 19 not modified     
+ 0 \ shadow screens                                      UH 03Nov86
+ 1                                                                 
+ 2 Variable shadow   shadow off                                    
+ 3                                                                 
+ 4 | : (shadow   isfile@ IF capacity 2/ exit THEN  shadow @ ;      
+ 5                                                                 
+ 6 | : >shadow  ?stamp   \ switch to shadow screen                 
+ 7       (shadow dup  scr @  u> not IF negate THEN scr +! .all ;   
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 20 not modified     
+ 0 \ load and show screens                               UH 06Mar88
+ 1                                                                 
+ 2 ' name >body &10 + | Constant 'name                             
+ 3                                                                 
+ 4 | : showoff  ['] exit 'name ! curoff rvsoff  ;                  
+ 5                                                                 
+ 6 | : show ( -- )  blk @ 0= IF showoff exit THEN                  
+ 7      >in @ 1- r# !  curoff edit-at curon                        
+ 8      stop? IF showoff true Abort" Break! " THEN                 
+ 9      blk @  scr @ -                                             
+10      IF  blk @  scr ! rvsoff curoff .all rvson curon THEN ;     
+11                                                                 
+12 | : showload  ( -- )    ?stamp save-buffers                     
+13      ['] show 'name !  curon rvson                              
+14      ['] .status >body push  ['] noop is .status                
+15      scr @  scr push  scr off  r# push  r# @  (load  showoff ;  
+Screen 21 not modified     
+ 0 \ find strings                                        UH 01Nov86
+ 1                                                                 
+ 2 | Variable insert-buffer                                        
+ 3 | Variable find-buffer                                          
+ 4 | : 'insert ( -- addr )  insert-buffer @ ;                      
+ 5 | : 'find   ( -- addr )  find-buffer @ ;                        
+ 6                                                                 
+ 7 | : .buf ( addr -- )   count type ." |"  &80 col - spaces  ;    
+ 8                                                                 
+ 9 | : get ( addr -- )  >r at?  r@ .buf                            
+10     2dup at  r@ 1+ c/l expect  span @ ?dup IF r@ c! THEN        
+11     at r> .buf ;                                                
+12                                                                 
+13 | : get-buffers    dy l/s + 2+  dx 1-  2dup  at                 
+14        ." find:    |"  'find   get     swap 1+ swap 2- at       
+15      ." ? replace: |"  'insert get ;                            
+Screen 22 not modified     
+ 0 \ search for string                      UH 02Nov86   UH 27Nov87
+ 1                                                                 
+ 2 | : skip ( addr -- addr' )  'find c@ + ;                        
+ 3                                                                 
+ 4 | : find?  ( -- addr T | F )                                    
+ 5      'find count 'cursor #remaining "search ;                   
+ 6                                                                 
+ 7 | : "find ( -- r# scr )                                         
+ 8     find?  IF skip 'start -  scr @ exit THEN  ?stamp            
+ 9     capacity   scr @ 1+                                         
+10     ?DO 'find count                                             
+11          I   dup 5 5 at 4 .r   block  b/blk "search             
+12        IF skip I block -  I endloop exit THEN                   
+13        stop? Abort" Break! "                                    
+14     LOOP  true Abort" not found!" ;                             
+15                                                                 
+Screen 23 not modified     
+ 0 \ replace strings                        UH 03Nov86   UH 27Nov87
+ 1 | : replace? ( -- f )  dy l/s + 3+ dx 3 - at                    
+ 2       key dup #cr = IF line# redisplay true Abort" Break!" THEN 
+ 3       capital Ascii R = ;                                       
+ 4                                                                 
+ 5 | : "mark ( -- )   r# push                                      
+ 6      'find count dup negate c  edit-at  rvson type rvsoff ;     
+ 7                                                                 
+ 8 | : (replace  'insert c@  'find c@ - ?fit                       
+ 9       'find c@ negate c   'cursor #after  'find c@ delete       
+10       'insert count   'cursor #after  insert                    
+11       'insert c@ c   modified ;                                 
+12                                                                 
+13 | : "replace   get-buffers                                      
+14       BEGIN  "find  dup scr @ - swap scr ! IF .all THEN  r# !   
+15         "mark replace? IF (replace THEN line# redisplay REPEAT ;
+Screen 24 not modified     
+ 0 \ Control-Characters  'normal' CP/M                uho 08May2005
+ 1                                                                 
+ 2 Forth definitions                                               
+ 3                                                                 
+ 4 : Ctrl ( -- c )                                                 
+ 5    name 1+ c@  $1F and   state @ IF [compile] Literal THEN ;    
+ 6 immediate                                                       
+ 7                                                                 
+ 8 $7F Constant #del                                               
+ 9                                                                 
+10 Editor definitions                                              
+11                                                                 
+12 \ | : flipimode    imode @ 0= imode ! ;                         
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 25 not modified     
+ 0 \ Try a Screen-Editor 'normal' CP/M                   UH 29Nov86
+ 1                                                                 
+ 2 Create keytable                                                 
+ 3 Ctrl E c,       Ctrl S c,       Ctrl X c,       Ctrl D c,       
+ 4 Ctrl I c,       Ctrl J c,       Ctrl O c,       Ctrl K c,       
+ 5                                 Ctrl P c,       Ctrl L c,       
+ 6 Ctrl H c,       Ctrl H c,         #del c,       Ctrl G c,       
+ 7 Ctrl T c,                       Ctrl Y c,       Ctrl N c,       
+ 8 Ctrl V c,                                       Ctrl Z c,       
+ 9    #cr c,       Ctrl F c,       Ctrl A c,                       
+10                                 Ctrl \ c,       Ctrl U c,       
+11 Ctrl Q c,         #esc c,                       Ctrl W c,       
+12 Ctrl C c,       Ctrl R c,       Ctrl ] c,       Ctrl B c,       
+13                                                                 
+14                                                                 
+15 here keytable -  Constant #keys                                 
+Screen 26 not modified     
+ 0 \ Try a screen Editor                                 UH 29Nov86
+ 1                                                                 
+ 2 Create: actiontable                                             
+ 3 curup           curleft         curdown         curright        
+ 4 line>buf        char>buf        buf>line        buf>char        
+ 5                                 copyline        copychar        
+ 6 backspace       backspace       backspace       delete-char     
+ 7 insert-char                     delete-line     insert-line     
+ 8 flipimode                      ( clear-line )   clear>          
+ 9 <cr>            +tab            -tab                            
+10 ( top             >""end  )     "replace        undo            
+11 update-exit     flushed-exit  ( showload )      >shadow         
+12 n               b               a               mark ;          
+13                                                                 
+14                                                                 
+15 here actiontable -  2/ 1-   #keys -  ?abort( # of actions)      
+Screen 27 not modified     
+ 0 \ find keys                                           UH 01Nov86
+ 1                                                                 
+ 2 | Code findkey ( key -- addr/default )                          
+ 3      H pop   L A mov   keytable H lxi   #keys $100 * D lxi      
+ 4      [[ M cmp 0=                                                
+ 5         ?[ actiontable H lxi  0 D mvi   D dad   D dad           
+ 6            M E mov   H inx   M D mov   D push   next ]?         
+ 7         H inx   E inr   D dcr   0= ?]                           
+ 8      ' putchar H lxi   hpush jmp                                
+ 9   end-code                                                      
+10                                                                 
+11 \\                                                              
+12 | : findkey  ( key -- adr/default )                             
+13   #keys 0 DO  dup  keytable F: I + c@ =                         
+14      IF drop   E: actiontable  F: I 2* + @ endloop exit THEN    
+15   LOOP drop ['] putchar ;                                       
+Screen 28 not modified     
+ 0 \ allocate buffers                                    UH 01Nov86
+ 1                                                                 
+ 2 c/l 2* | Constant cstack-size                                   
+ 3                                                                 
+ 4 | : nextbuf ( adr -- adr' )   cstack-size + ;                   
+ 5                                                                 
+ 6 | : ?clearbuffer   pad (pad @ = ?exit                           
+ 7       pad     dup (pad !                                        
+ 8       nextbuf dup find-buffer   !   'find off                   
+ 9       nextbuf dup insert-buffer !   'insert off                 
+10       nextbuf dup 0 chars 2!                                    
+11       nextbuf     0 lines 2! ;                                  
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 29 not modified     
+ 0 \ enter and exit the editor, editor's loop            UH 02Nov86
+ 1 | Variable jingle  jingle on    | : bell  07 con! jingle off ;  
+ 2                                                                 
+ 3 | : clear-error                                                 
+ 4      jingle @ ?exit  dy l/s + 1+ dx  at c/l spaces jingle on ;  
+ 5                                                                 
+ 6 | : fullquit    BEGIN  ?clearbuffer edit-at  key dup char c!    
+ 7       findkey execute  clear-error REPEAT ;                     
+ 8                                                                 
+ 9 | : fullerror  ( string --) jingle @ IF bell THEN               
+10       dy l/s + 1+ dx $16 + at  rvson count type rvsoff          
+11       &80 col - spaces  scr @ capacity 1- min 0 max scr !       
+12       .title quit ;                                             
+13                                                                 
+14 | : install   ( -- )                                            
+15      ['] fullquit Is 'quit  ['] fullerror errorhandler !  ;     
+Screen 30 not modified     
+ 0 \ enter and exit the Editor                           UH 02Nov86
+ 1                                                                 
+ 2 Forth definitions                                               
+ 3                                                                 
+ 4 : v   ( -- )   E: 'start drop  get-id  install  ?clearbuffer    
+ 5                page curoff  border .all  quit ;                 
+ 6                                                                 
+ 7 : l   ( scr -- )   1 ?enough scr !  E: top  F: v ;              
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 31 not modified     
+ 0 \ savesystem                                       uho 09May2uho
+ 1                                                                 
+ 2 : savesystem    \ save image                                    
+ 3     E: id off  (pad off   savesystem ;                          
+ 4                                                                 
+ 5 | : >find  ?clearbuffer  >in push                               
+ 6       bl word count  'find 1+ place                             
+ 7       bl   'find 1+   dup >r   count   dup >r   + c!            
+ 8       r> 2+ 'find c!   bl r> c! ;                               
+ 9 | : %view  ( -- )  >find ' >name 4- @  (view                    
+10    ?dup 0= Abort" hand made"  scr !                             
+11    E: top curdown find? 0=                                      
+12    IF ." From Scr # " scr @ u. true Abort" wrong file" THEN     
+13    skip 'start - 1- r# ! ;                                      
+14 : view ( -- ) %view scr @ list ;                                
+15 : fix ( -- ) %view v ;                                          

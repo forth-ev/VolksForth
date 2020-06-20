@@ -1,0 +1,68 @@
+Screen 0 not modified     
+ 0 \\ Simple Files                                          11Nov86
+ 1                                                                 
+ 2 Wenn volksFORTH im Direktzugriff Disketten bearbeitet, ist es   
+ 3 trotzdem wuenschenswert eine Art File-Struktur zu besitzen.     
+ 4 Dieses File enthaelt eine einfache Implementation eines         
+ 5 Filesystems. Der/die Programmierer/in muss selbst die Direktory 
+ 6 auf dem laufenden halten: in ihr sind die Start-Bloecke des     
+ 7 entsprechenden Diskettenteils gespeichert.                      
+ 8 Sogar eine Hierarchie von Direktories laesst sich so relisieren.
+ 9                                                                 
+10 Vorgestellt wurde dieses FileSystem von Georg Rehfeld und auch  
+11 von ihm fuer volksFORTH implementiert (ultraFORTH auf dem C64). 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ simple files                                           12feb86
+ 1                                                                 
+ 2 \needs search   .( search missing) \\                           
+ 3                                                                 
+ 4 | Variable (dir    : dir  (dir @ ;   : root  0 (dir ! ;  root   
+ 5                                                                 
+ 6 | : read"  ( -- n)                                              
+ 7  Ascii " word  count  dup >r  dir block  b/blk  search          
+ 8  0= abort" not found"  r> +  >in push  >in !                    
+ 9  bl  dir block  b/blk  (word number drop ;                      
+10                                                                 
+11 : load"   read" dir + load ;    : dir"   read" (dir +! ;        
+12 : list"   read" dir + list ;                                    
+13                                                                 
+14 \ 1 +load       \ Only if file" is needed                       
+15                                                                 
+Screen 2 not modified     
+ 0 \ simple files                                           01feb86
+ 1                                                                 
+ 2 | : snap   ( n0 -- n1)   $20 /  3 max  $20 * ;                  
+ 3 : file"  ( n --)                                                
+ 4  Ascii " word  count  2dup  dir block b/blk  search             
+ 5  IF    + nip                                                    
+ 6  ELSE  drop  dir block  b/blk -trailing nip  snap $20 +         
+ 7        dup b/blk 1- > abort" directory full"                    
+ 8        2dup + >r  dir block + swap  cmove  r>                   
+ 9  THEN  snap $18 +  >r                                           
+10  dir - extend under dabs <# # # # #                             
+11  base @ $0A = IF  Ascii &  ELSE Ascii $  THEN hold              
+12  rot 0< IF  Ascii -  ELSE  bl  THEN hold #>                     
+13  r> dir block +  swap cmove update ;                            
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0 \ dir load"                                              11feb86
+ 1                                                                 
+ 2 \needs search   .( search missing) \\                           
+ 3                                                                 
+ 4 0 Constant dir                                                  
+ 5                                                                 
+ 6 : load"   ( -- )                                                
+ 7  Ascii " word count  dup >r  dir block b/blk search             
+ 8      0= abort" not found"   r> +                                
+ 9  >in @  blk @  rot >in !  dir blk !                             
+10  bl word number drop -rot  blk !  >in !  load ;                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

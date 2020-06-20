@@ -1,0 +1,51 @@
+Screen 0 not modified     
+ 0 \\ Double words                                          11Nov86
+ 1                                                                 
+ 2 Dieses File enthaelt Worte fuer 32-Bit Objekte.                 
+ 3                                                                 
+ 4 Im Kern bereits enthalten sind:                                 
+ 5                                                                 
+ 6    2@ 2! 2dup 2drop 2swap dnegate d+                            
+ 7                                                                 
+ 8 Hier werden definiert:                                          
+ 9                                                                 
+10    2Variable 2Constant 2over d*                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ 2over  2@  2! 2Variable 2Constant                   UH 30Oct86
+ 1                                                                 
+ 2 : 2Variable   Variable  2 allot ;                               
+ 3 : 2Constant   Create , ,  does>  2@ ;                           
+ 4                                                                 
+ 5 Code 2over   ( 32b1 32b2  -- 32b1 32b2 32b1 )  7 H lxi          
+ 6    SP dad    M D mov   H dcx   M E mov  D push                  
+ 7    H dcx     M D mov   H dcx   M E mov  D push Next   end-code  
+ 8 --> \\                                                          
+ 9 Code 2@   ( addr -- 32b )   H pop   H push                      
+10    H inx  H inx   M E mov   H inx   M D mov   H pop   D push    
+11    M E mov   H inx   M D mov  D push    Next   end-code         
+12                                                                 
+13 Code 2!   ( 32b addr -- )   H pop                               
+14    D pop    E M mov   H inx   D M mov   H inx                   
+15    D pop    E M mov   H inx   D M mov   Next   end-code         
+Screen 2 not modified     
+ 0 \ d* d-                                                  29Jun86
+ 1                                                                 
+ 2 : d*   ( d1 d2 -- d1*d2 )                                       
+ 3     rot  2over  rot  um*  2swap um* d+ 2swap um* d+ ;           
+ 4                                                                 
+ 5 : d-  ( d1 d2 -- d1-d2 ) dnegate d+ ;                           
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

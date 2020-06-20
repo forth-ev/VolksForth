@@ -1,0 +1,119 @@
+Screen 0 not modified     
+ 0 \\ Multitasker                                           11Nov86
+ 1                                                                 
+ 2 Dieses File enthaelt den Multitasker des volksFORTHs.           
+ 3 Er ist ein Round-Robin-Multitasker, d.h. jede Task behaelt      
+ 4 die Kontrolle ueber den Prozessor solange, bis sie sie          
+ 5 ausdruecklich abgibt.                                           
+ 6 Hintergrundtasks im volksFORTH koennen durch Semaphore geordnet 
+ 7 auf den Massenspeicher und auf den Drucker zugreifen.           
+ 8                                                                 
+ 9 In Verbindung mit dem Printer-Interface ist es moeglich         
+10 Files im Hintergrund auszudrucken. (SPOOL)                      
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ Multitasker Loadscreen                       27Jun86   20Nov87
+ 1                                                                 
+ 2 Onlyforth                                                       
+ 3                                                                 
+ 4 \needs multitask   1 +load                                      
+ 5                                                                 
+ 6 02 05 +thru    \ Tasker                                         
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ stop singletask multitask                   28Aug86    20Nov87
+ 1                                                                 
+ 2 Code stop   UP lhld   0 ( nop )  M mvi                          
+ 3 Label taskpause                                                 
+ 4    IP push   RP lhld   H push   UP lhld   6 D lxi   D dad   xchg
+ 5    H L mov   SP dad   xchg   E M mov   H inx   D M mov          
+ 6    UP lhld   H inx   pchl                                       
+ 7 end-code                                                        
+ 8                                                                 
+ 9 : singletask  [ ' pause @ ] Literal  ['] pause ! ;              
+10                                                                 
+11 : multitask   [ taskpause ] Literal  ['] pause ! ;              
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0 \ pass activate                                          28Aug86
+ 1                                                                 
+ 2 : pass   ( n0 ... nr-1 Taddr r -- )                             
+ 3  BEGIN  [ rot ( Trick !! ) ]                                    
+ 4   swap $F7 over c!        \ awake Task  ( rst 6 )               
+ 5   r> -rot                 \ Stack:  IP r addr                   
+ 6   8 + >r                  \ s0 of Task                          
+ 7   r@ 2+ @ swap            \ Stack:  IP r0 r                     
+ 8   2+ 2*                   \ bytes on Taskstack incl. r0 & IP    
+ 9   r@ @ over -             \ new SP                              
+10   dup r> 2- !             \ into Ssave                          
+11   swap bounds  ?DO  I !  2 +LOOP  ;  restrict                   
+12                                                                 
+13 : activate   ( Taddr -- )                                       
+14  0 [ -rot  ( Trick !! ) ]  REPEAT ; restrict                    
+15                                                                 
+Screen 4 not modified     
+ 0 \ sleep wake taskerror                         28Aug86   20Nov87
+ 1                                                                 
+ 2 : sleep   ( Taddr -- )    $00 ( nop   ) swap c! ;               
+ 3 : wake    ( Taddr -- )    $F7 ( rst 6 ) swap c! ;               
+ 4                                                                 
+ 5 | : taskerror   ( string -- )                                   
+ 6       standardi/o  singletask  ." Task error : " count type     
+ 7       multitask stop ;                                          
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 5 not modified     
+ 0 \ Task                                                   20Nov87
+ 1                                                                 
+ 2 : Task   ( rlen slen -- )                                       
+ 3    0 Constant   here 2- >r    \ addr of task constant           
+ 4    here  -rot                 \ here for Task dp                
+ 5    even allot even            \ allot dictionary area           
+ 6    here  r@ !                 \ set task constant addr          
+ 7    up@ here $100 cmove        \ init user area                  
+ 8    here dup    $C300 ,        \ nop-jmp opcode to sleep task    
+ 9    up@ 2+ dup @ ,  !          \ link task                       
+10    r> ,                       \ spare used for pointer to header
+11    dup  6 -   dup , ,         \ ssave and s0                    
+12    2dup + ,                   \ here + rlen = r0                
+13    rot ,                      \ dp                              
+14    under  +  dp ! 0 ,         \ allot rstack                    
+15    ['] taskerror  [ ' errorhandler >body c@ ] Literal rot + ! ; 
+Screen 6 not modified     
+ 0 \ rendezvous 's tasks                          27Jun86   20Nov87
+ 1                                                                 
+ 2 : rendezvous   ( semaphoraddr -- ) dup unlock  pause  lock ;    
+ 3                                                                 
+ 4 | : statesmart       state @ IF  [compile] Literal  THEN ;      
+ 5                                                                 
+ 6 : 's   ( Taddr -- adr.of.tasks.userarea )                       
+ 7          ' >body c@ +  statesmart ;  immediate                  
+ 8                                                                 
+ 9 : tasks   ( -- )  ." Main " cr up@ dup 2+ @                     
+10     BEGIN  2dup -  WHILE  dup  4+ @  body> >name .name          
+11        dup c@ 0= ( nop ) IF  ." sleeping"  THEN  cr             
+12        2+  @  REPEAT  2drop ;                                   
+13                                                                 
+14                                                                 
+15                                                                 

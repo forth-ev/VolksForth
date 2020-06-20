@@ -1,0 +1,15 @@
+VolksForth TODO
+
+ * english translation of Handbook
+ * update handbook
+ * sync VolksForth versions
+ * document meta compiling
+ * implement cross meta compiling
+ * port VolksForth Editor to GNU/Forth
+ * updated full screen Editor (Emacs Key Bindings)
+ * Forth 200x Standard Update
+ * implement POSTPONE
+ * implement VIS (VOCABULARIES, ITEMS, STICKY words)
+ * implement recognizders
+ * implement mwords (Martin Bitter)
+ * implement MARKER and CORNERSTONE

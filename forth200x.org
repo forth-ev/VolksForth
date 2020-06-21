@@ -1,0 +1,14 @@
+#+TITLE: Forth 200x Standard Adjustment
+#+DATE: <2020-06-21 Sun>
+
+* Resources
+ * Forth 200x Standard http://forth200x.org/
+ * ANS-Forth Kalus, Michael 91-3 Vergleich: ANS-Forth Core Word Set
+   und Forth-83 Required Word Set
+   https://wiki.forth-ev.de/lib/exe/fetch.php/vd-archiv:4d1991_3.pdf
+
+* Words to implement
+
+* Words implemented
+
+* Tests?

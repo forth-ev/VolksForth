@@ -1,9 +1,12 @@
 
+: \vf  [compile] \ ;
+
 : cells  2* ;
 
-: s"  [compile] " ; immediate
+: s"  [compile] " compile count ; immediate
 
 : [char]  [compile] ascii ; immediate
+: char  [compile] ascii ;
 
 : invert  not ;
 
@@ -21,4 +24,22 @@
     over IF r> 0< IF 1+ swap r> - swap ELSE rdrop THEN
     ELSE rdrop rdrop THEN ;
 
-: postpone  state @ IF [compile] [compile] ELSE compile THEN ; immediate
+: postpone  ' dup >name c@ $40 and
+    IF , ELSE [compile] compile compile , THEN ; immediate
+
+: align ;
+: aligned ;
+: cell+  2+ ;
+: char+  1+ ;
+: chars ;
+
+: 2@  dup 2+ @ swap @ ;
+: 2!  under ! 2+ ! ;
+
+: recurse  last @ name> , ; immediate
+
+: >number  ( ud1 c-addr1 u1 -- ud2 c-addr2 u2 )
+ BEGIN  dup 0= IF exit THEN
+ >r  count digit? WHILE accumulate r> 1- REPEAT 1- r> ;
+
+: accept  expect span @ ;

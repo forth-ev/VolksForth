@@ -40,7 +40,8 @@ void jumptable[0x40]() = {
 
 void nest() {
   rs[rp++] = ip;
-  ip = w + 2;
+  ip = w + 1;  // + 1 assuming direct threaded code where at core[w]
+  // is sitting the 1 byte virtual opcode for "next".
 }
 
 void unnest() {

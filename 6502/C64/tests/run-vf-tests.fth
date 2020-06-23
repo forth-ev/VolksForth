@@ -5,6 +5,6 @@ include ans-shim.fth
 
 include tester.fth
 
-1 verbose !
+\ 1 verbose !
 
 include core.fr

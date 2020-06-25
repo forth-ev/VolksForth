@@ -1,0 +1,5 @@
+Flag file:
+Build or test processes running in VICE signal that they are done
+by scratching this file's copy from the cbmfiles/ dir.
+Corresponding build bash scripts watch for the existence of this
+file in cbmfiles/ and terminate VICE after the file disappeared.

@@ -71,31 +71,40 @@ We recommend a Floppy Drive.
   vforth_1.d64 - Diskimage Disk 1 for Emulator usage
                  C64 volksForth Binary
                  C16 volksForth Binary
-                 Sourcecode 
+                 Sourcecode
   vforth_2.d64 - Diskimage Disk 2 for Emulator usage
                  complete volksForth 6502 C64/C16 Sourcecode
                  (can be compiled with Target Compiler)
   vforth_3.d64 - Diskimage Disk 3 for Emulator usage
-                 Assembler, Disassembler, Editor 
+                 Assembler, Disassembler, Editor
   vforth_4.d64 - Diskimage Disk 4 for Emulator usage
                  Grafic, Demos, Tools, Decompiler
-  tc38q.d64    - Sourcecode and Manual for Target Compiler 
+  tc38q.d64    - Sourcecode and Manual for Target Compiler
+  file-words.d64 - Some words to facilitate the pending transition
+                 from direct disk/d64 access blocks/screens to
+                 stream files as the primary sources from which
+                 C64 VolksForth is built.
 
   This version of volksForth is still using a traditional Forth-Block
-  filesystem on the Disks. The upcoming version 3.90 will have a ANSI-FORTH 
+  filesystem on the Disks. The upcoming version 3.90 will have a ANSI-FORTH
   compatible File-Interface to access normal Files on Disk. The Forth-Block
   routines will still be available as an optional package.
-  
+
 * Using volksFORTH in an Emulator
   * volksForth 3.81 6502 for C=64, C16 and Plus4 has been tested in these
     Emulators:
     * VICE  - http://www.viceteam.org/
-    * Frodo - http://frodo.cebix.net/ 
-    (with the good work of the VICE people we wouldn't be able to re-relase
-     this software) 
+    * Frodo - http://frodo.cebix.net/
+    (without the good work of the VICE people we wouldn't be able to re-relase
+     this software)
+
+* Automated build using VICE:
+  The Makefile and the build scripts in the emulator/ subdir require
+  the file format conversion tools from the tools/ subdir of
+  https://github.com/pzembrod/cc64 to be installed.
 
 * Website:
-  VolksForth is available ob SourceForge
+  VolksForth is available on SourceForge
   http://volksForth.sf.net
   and on the Website of Forth Gesellschaft (German Chapter of Forth Interst Group, FIG)
   http://www.forth-ev.de

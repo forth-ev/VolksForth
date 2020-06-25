@@ -1,0 +1,68 @@
+Screen 0 not modified     
+ 0 \\ ANSI Forth Shim for VolksForth                    cas 25jun20
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ ANS Forth Shim                                     cas 25jun20
+ 1                                                                 
+ 2 : cells  2* ;                                                   
+ 3 : cell+  2+ ;                                                   
+ 4 : cell 1 cells ;                                                
+ 5 : aligned ;                                                     
+ 6 : char+  1+ ;                                                   
+ 7 : chars ;                                                       
+ 8                                                                 
+ 9 : s" [compile] " compile count ; immediate                      
+10 : [char]  [compile] ascii ; immediate                           
+11 : char  [compile] ascii ;                                       
+12                                                                 
+13 1 3 +thru   .( ANS Forth Shim loaded ... ) cr                   
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ ANS Forth Shim                                     cas 25jun20
+ 1                                                                 
+ 2 : lshift  0 ?DO 2* LOOP ;                                       
+ 3 : rshift  0 ?DO 2/ 32767 and LOOP ;                             
+ 4 : s>d  extend ;                                                 
+ 5 : fm/mod  m/mod ;                                               
+ 6 : sm/rem  dup >r  2dup xor >r  m/mod                            
+ 7     over IF r> 0< IF 1+ swap r> - swap ELSE rdrop THEN          
+ 8     ELSE rdrop rdrop THEN ;                                     
+ 9                                                                 
+10 : postpone  ' dup >name c@ $40 and                              
+11     IF , ELSE [compile] compile compile , THEN ; immediate      
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 3 not modified     
+ 0 \ ANS Forth Shim                                     cas 25jun20
+ 1                                                                 
+ 2 : recurse  last @ name> , ; immediate                           
+ 3                                                                 
+ 4 : >number  ( ud1 c-addr1 u1 -- ud2 c-addr2 u2 )                 
+ 5  BEGIN  dup 0= IF exit THEN                                     
+ 6  >r  count digit? WHILE accumulate r> 1- REPEAT 1- r> ;         
+ 7                                                                 
+ 8 : accept  expect span @ ;                                       
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

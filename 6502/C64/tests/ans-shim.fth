@@ -1,6 +1,4 @@
 
-: \vf  [compile] \ ;
-
 : cells  2* ;
 
 : s"  [compile] " compile count ; immediate

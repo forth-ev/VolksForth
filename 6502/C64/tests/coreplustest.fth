@@ -173,12 +173,12 @@ T{ 3 0 ACK ->  5 }T
 T{ 2 4 ACK -> 11 }T
 
 \ ------------------------------------------------------------------------------
-TESTING multiple ELSE's in an IF statement
+\vf TESTING multiple ELSE's in an IF statement
 \ Discussed on comp.lang.forth and accepted as valid ANS Forth
 
-: MELSE IF 1 ELSE 2 ELSE 3 ELSE 4 ELSE 5 THEN ;
-T{ 0 MELSE -> 2 4 }T
-T{ -1 MELSE -> 1 3 5 }T
+\vf : MELSE IF 1 ELSE 2 ELSE 3 ELSE 4 ELSE 5 THEN ;
+\vf T{ 0 MELSE -> 2 4 }T
+\vf T{ -1 MELSE -> 1 3 5 }T
 
 \ ------------------------------------------------------------------------------
 TESTING manipulation of >IN in interpreter mode
@@ -225,33 +225,34 @@ TESTING number prefixes # $ % and 'c' character input
 
 VARIABLE OLD-BASE
 DECIMAL BASE @ OLD-BASE !
-T{ #1289 -> 1289 }T
-T{ #-1289 -> -1289 }T
+T{ &1289 -> 1289 }T  \ vf: s/#/&/
+T{ -&1289 -> -1289 }T  \ vf: s/#-/-&/
 T{ $12eF -> 4847 }T
-T{ $-12eF -> -4847 }T
+T{ -$12eF -> -4847 }T  \ vf: s/$-/-$/
 T{ %10010110 -> 150 }T
-T{ %-10010110 -> -150 }T
-T{ 'z' -> 122 }T
-T{ 'Z' -> 90 }T
+T{ -%10010110 -> -150 }T  \ vf: s/%-/-%/
+\vf T{ 'z' -> 122 }T
+\vf T{ 'Z' -> 90 }T
 \ Check BASE is unchanged
 T{ BASE @ OLD-BASE @ = -> <TRUE> }T
 
 \ Repeat in Hex mode
 16 OLD-BASE ! 16 BASE !
-T{ #1289 -> 509 }T
-T{ #-1289 -> -509 }T
+T{ &1289 -> 509 }T  \ vf: s/#/&/
+T{ -&1289 -> -509 }T  \ vf: s/#/&/
 T{ $12eF -> 12EF }T
-T{ $-12eF -> -12EF }T
+T{ -$12eF -> -12EF }T  \ vf: s/$-/-$/
 T{ %10010110 -> 96 }T
-T{ %-10010110 -> -96 }T
-T{ 'z' -> 7a }T
-T{ 'Z' -> 5a }T
+T{ -%10010110 -> -96 }T  \ vf: s/%-/-%/
+\vf T{ 'z' -> 7a }T
+\vf T{ 'Z' -> 5a }T
 \ Check BASE is unchanged
 T{ BASE @ OLD-BASE @ = -> <TRUE> }T   \ 2
 
 DECIMAL
 \ Check number prefixes in compile mode
-T{ : nmp  #8327 $-2cbe %011010111 ''' ; nmp -> 8327 -11454 215 39 }T
+\ vf: s/#/&/ s/$-/-$/ s/'''/ascii '/
+T{ : nmp  &8327 -$2cbe %011010111 ascii ' ; nmp -> 8327 -11454 215 39 }T
 
 \ ------------------------------------------------------------------------------
 TESTING definition names
@@ -282,11 +283,11 @@ CREATE NON-EXISTENT-WORD   \ Same as in exceptiontest.fth
 T{ NON-EXISTENT-WORD FIND -> NON-EXISTENT-WORD 0 }T
 
 \ ------------------------------------------------------------------------------
-TESTING IF ... BEGIN ... REPEAT (unstructured)
+\vf TESTING IF ... BEGIN ... REPEAT (unstructured)
 
-T{ : UNS1 DUP 0 > IF 9 SWAP BEGIN 1+ DUP 3 > IF EXIT THEN REPEAT ; -> }T
-T{ -6 UNS1 -> -6 }T
-T{  1 UNS1 -> 9 4 }T
+\vf T{ : UNS1 DUP 0 > IF 9 SWAP BEGIN 1+ DUP 3 > IF EXIT THEN REPEAT ; -> }T
+\vf T{ -6 UNS1 -> -6 }T
+\vf T{  1 UNS1 -> 9 4 }T
 
 \ ------------------------------------------------------------------------------
 TESTING DOES> doesn't cause a problem with a CREATEd address

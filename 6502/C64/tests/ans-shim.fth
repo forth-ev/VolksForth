@@ -43,3 +43,7 @@
  >r  count digit? WHILE accumulate r> 1- REPEAT 1- r> ;
 
 : accept  expect span @ ;
+
+: tuck  under ;
+
+: :noname  here  ['] tuck @ ,  0 ] ;

@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+test -n "$VICE" || VICE=x64
 emulatordir="$(realpath --relative-to="$PWD" "$(dirname "${BASH_SOURCE[0]}")")"
 basedir="$(realpath --relative-to="$PWD" "${emulatordir}/..")"
 
@@ -20,7 +21,7 @@ then
   warp="-warp"
 fi
 
-x64 \
+"$VICE" \
   -virtualdev \
   +truedrive \
   -drive8type 1541 \

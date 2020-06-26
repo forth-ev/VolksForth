@@ -22,8 +22,15 @@ run-devenv: emulator/devenv.T64
 run-testbase: emulator/testbase.T64
 	emulator/run-in-vice.sh testbase
 
-run-tests: emulator/testbase.T64 $(test_files_petscii)
+test: emulator/testbase.T64 $(test_files_petscii)
 	emulator/run-in-vice.sh testbase \
+	  "include run-vf-tests.fth\n"
+
+run-testbase16: emulator/testbase16.T64
+	VICE=xplus4 emulator/run-in-vice.sh testbase16
+
+test16: emulator/testbase.T64 $(test_files_petscii)
+	VICE=xplus4 emulator/run-in-vice.sh testbase16 \
 	  "include run-vf-tests.fth\n"
 
 
@@ -38,6 +45,10 @@ cbmfiles/devenv: emulator/run-in-vice.sh emulator/build-devenv.sh \
 cbmfiles/testbase: emulator/run-in-vice.sh emulator/build-testbase.sh \
     emulator/c64-volksforth83.T64 disks/file-words.d64
 	emulator/build-testbase.sh
+
+cbmfiles/testbase16: emulator/run-in-vice.sh emulator/build-testbase.sh \
+    emulator/c16-volksforth83.T64 disks/file-words.d64
+	emulator/build-testbase16.sh
 
 
 # Generic T64 tape image rule

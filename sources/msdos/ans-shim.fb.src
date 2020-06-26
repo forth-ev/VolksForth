@@ -46,7 +46,7 @@ Screen 2 not modified
 10 : postpone  ' dup >name c@ $40 and                              
 11     IF , ELSE [compile] compile compile , THEN ; immediate      
 12                                                                 
-13                                                                 
+13 ' endloop ALIAS unloop                                          
 14                                                                 
 15                                                                 
 Screen 3 not modified     
@@ -59,6 +59,23 @@ Screen 3 not modified
  6  >r  count digit? WHILE accumulate r> 1- REPEAT 1- r> ;         
  7                                                                 
  8 : accept  expect span @ ;                                       
+ 9                                                                 
+10 : invert  not ;                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 4 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
  9                                                                 
 10                                                                 
 11                                                                 

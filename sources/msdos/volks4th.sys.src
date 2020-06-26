@@ -26,8 +26,8 @@ Screen 1 not modified
  7   include tasker.fb                                             
  8   include timer.fb                                              
  9   include tools.fb                                              
-10   include editor.fb                                             
-11   include graphic.prn                                           
+10   include neditor.fb                                            
+11                                                                 
 12                                                                 
 13   warning on clear status on .status                            
 14   savesystem volks4th.com bell                                  

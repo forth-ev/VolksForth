@@ -14,7 +14,7 @@ def readToString(inFile):
     offset = 0
     while(offset < len(block)):
       # sys.stderr.write("block %d offset %d\n" % (blockNo, offset))
-      line = block[offset:offset+64].decode(encoding="latin_1")
+      line = block[offset:offset+64].decode(encoding="cp437")
       result.append(line.rstrip())
       offset += 64
     blockNo += 1

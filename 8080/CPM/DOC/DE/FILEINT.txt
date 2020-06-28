@@ -1,0 +1,527 @@
+.OP
+.HE Das Fileinterface  volksFORTH - CP/M 2.2                  Seite #
+
+                      Fileinterface f}r das volksFORTH83                      __________________________________
+                              auf CP/M Komputern                              __________________
+
+Wie geht es los?________________
+
+     Bevor  Sie das Glossar lesen,  sollten Sie diese kleine Einf}hrung  lesen 
+     und auf einer leeren Diskette die Beispiele ausprobieren.
+
+Wie erzeuge ich ein File, in das ich ein Programm eingeben kann?________________________________________________________________
+
+     Geben Sie bitte folgendes ein:
+          MAKEFILE test.scr
+     Das  File test.scr wird auf der Diskette erzeugt,  auf dem Sie das  Forth 
+     gebootet haben.
+     Als  n{chstes  sch{tzen Sie bitte ab,  wie lang Ihr Programm  etwa  wird. 
+     Beachten  Sie dabei bitte,  da~ der Screen 0 eines Files f}r Hinweise zur 
+     Handhabung  Ihres Programms und der Screen 1 f}r  einen  sog.  Loadscreen 
+     (das ist ein Screen,  der den Rest des File l{dt) reserviert sind. Wollen 
+     Sie also z.B. 3 Screens Programm eingeben, so mu~ das File 5 Screens lang 
+     sein; Sie geben also ein:
+          5 MORE
+     Fertig! Sie haben jetzt ein File, das die Screens 0..4 enth{lt. Geben Sie 
+     jetzt 
+          1 L
+     ein.  Sie  editieren jetzt den Screen 1 Ihres neuen Files  test.scr.  Sie 
+     k|nnen, falls der Platz nicht ausreicht, Ihr File sp{ter einfach mit MORE 
+     verl{ngern. Ein File kann leider nicht verk}rzt werden.
+
+Wie spreche ich ein bereits auf der Diskette vorhandenes File an?_________________________________________________________________
+
+     Das geht noch einfacher.  Geben Sie einfach den Filenamen  ein.  Reagiert 
+     das  System mit der Meldung "Haeh?",  so kennt das Forth dieses File noch 
+     nicht. Sie m}ssen in diesem Fall das Wort USE vor dem Filenamen eingeben, 
+     also z.B.
+          USE test.scr
+     Jetzt  k|nnen Sie wie oben beschrieben mit 1 L (oder einer anderen  Zahl) 
+     das File editieren, Das Wort USE erzeugt }brigens im Forthsystem das Wort 
+     TEST.SCR,  falls es noch nicht vorhanden war. Wissen Sie also nicht mehr, 
+     ob  Sie ein File schon benutzt haben,  so k|nnen Sie mit WORDS  nachsehen 
+     oder das Wort USE voranstellen.
+
+Wie erzeuge ich ein File auf einem vorgegebenem Laufwerk, z.B. A: ?___________________________________________________________________
+
+     Durch Voranstellen des Laufwerks etwa:                  
+          MAKEFILE a:test.scr
+     Oder durch Eingabe von
+          A:
+     Hierbei  wird A:  zum aktuellen Laufwerk gemacht.  Files ohne  Laufwerks
+     angabe werden immer auf dem aktuellen Laufwerk erzeugt.
+.PA
+
+0) Allgemeines______________
+
+Im  folgenden  wird  die  Benutzung  des  Fileinterfaces  beschrieben.  Dieses 
+Fileinterface benutzt die Files des CP/M.
+Benutzt man  ein File von Forth aus,  so wird es in Bl|cke zu  je  1024  Bytes 
+aufgeteilt,  die  in gewohnter Wiese anzusprechen sind.  Dies trifft auch  f}r 
+Files  zu,  die nicht vom Forth aus erzeugt wurden.  Als Konvention wird  vor
+geschlagen, da~ Files, die Forth-Screens, also Quelltexte, enthalten, mit .SCR 
+erweitert werden.  Files,  die Daten enthalten,  die nicht unmittelbar  lesbar 
+sind, sollten auf .BLK enden.
+
+Zum  Umschalten  vom  Filesystem auf Direktzugriff und umgekehrt gibt  es  das 
+Wort:
+
+DIRECT         ( -- ) "direct"
+     Schaltet auf Direktzugriff um. Auf den Filezugriff schalten wir durch das 
+     Nennen eines Filenamens.
+
+
+1) Die Laufwerkswahl____________________
+
+Files  werden immer auf dem aktuellen Laufwerk erzeugt,  solange der  Filename 
+nicht ausdr}cklich ein anderes Laufwerk vorsieht.  Als Betriebssystemname wird 
+dann  der vollst{ndige Filename eingetragen,  also mit eindeutig  festgelegtem 
+Laufwerk. 
+Zum [ndern des aktuellen Laufwerks stehen die folgenden Worte zur Verf}gung:
+
+A:             ( -- ) "a-colon"
+     Macht  Diskettenstation  A:   zum  aktuellen  Laufwerk  entsprechend  der 
+     Funktion im CCP. Siehe SETDRIVE.
+
+B:             ( -- ) "b-colon"
+     Macht  Diskettenstation  B:   zum  aktuellen  Laufwerk  entsprechend  der 
+     Funktion im CCP. Siehe SETDRIVE.
+
+SETDRIVE       ( n -- ) "setdrive"
+     Macht die Diskettenstation mit der Nummer n zum aktuellen Laufwerk. Hier
+     bei entspricht n=0 der Diskstation A, n=1 der Diskstation B usw. 
+
+Um sich den Inhalt einer Diskette anzusehen, gibt es die Worte:
+
+FILES          ( -- ) "files"
+     Listet  den Inhalt des aktuellen Laufwerks (siehe SETDRIVE) auf dem Bild
+     schirm  auf.  Dieses Wort,  zusammen mit dem Wort FILES"  entspricht  dem 
+     Kommando DIR des CCP. In anderen volksFORTH-Filesystemen wird DIR benutzt 
+     um Direktories umzuschalten (MS-DOS, GEM-DOS).
+
+FILES"         ( -- ) "files-quote"
+     Benutzt in der Form
+          FILES" cccc"
+     Listet  die  Files auf,  deren Name cccc ist.  Der String cccc  darf  die 
+     bekannten Wildcards ('?','*') sowie eine Laufwerksbezeichnung  enthalten. 
+     Wird kein Laufwerk angegeben, so werden die Files des aktuellen Laufwerks 
+     ausgegeben.
+
+
+.PA
+2) Files________
+
+Files  bestehen aus einem Forthname und einem Betriebssystemnamen,  die  nicht 
+}bereinstimmen m}ssen.
+Ist  das Forthwort,  unter dem ein File zugreifbar ist,  gemeint,  so wird  im 
+folgenden vom Forthfile gesprochen. Ist das File auf der Diskette gemeint, das 
+vom  CP/M-BDOS  verwaltet wird,  so wird vom DOS-File  gesprochen.  Durch  das 
+Nennen  des  Forthnamens wird das Forthfile (und das zugeh|rige DOS-File)  zum 
+aktuellen  File,  auf das sich alle Operationen wir LIST,  LOAD.  CONVEY  usw. 
+beziehen.  Beim Bekanntmachen des Files mit USE, MAKEFILE und ASSIGN u.a. wird 
+das  File  auf dem aktuellen Laufwerk gesucht,  wenn kein  Laufwerk  im  Namen 
+angegeben  wird.  Danach darf das aktuelle Laufwerk beliebig ge{ndert  werden, 
+ohne da~ das File dann auf einem anderen Laufwerk gesucht wird. Mit FORTHFILES 
+k|nnen  die  aktuellen Zuordnungen zwischen Forthfile und  DOS-File  angezeigt 
+werden.
+
+FILE           ( -- ) "file"
+     Wird in der Form:
+          FILE <name> 
+     benutzt.
+     Erzeugt ein Forthwort mit Name <name>.  Wird <name> sp{ter ausgef}hrt, so 
+     vermerkt  es  sich  als  aktuelles File.  Ebenso  vermerkt  es  sich  als 
+     FROMFILE,  was f}r CONVEY wichtig ist. Einem Forthfile wird mit MAKE oder 
+     ASSIGN ein DOS-File zugeordnet. 
+
+MAKE           ( -- ) "make"
+     Wird in der Form :
+          MAKE cccc
+     benutzt.  Erzeugt  ein  DOS-File mit Namen cccc auf dem  aktuellen  (oder 
+     angegebenem Laufwerk) und ordnet es dem aktuellen Forthfile zu.  Das File 
+     wird auch gleich ge|ffnet. Es hat die L{nge Null (siehe MORE).
+     Beispiel       FILE ausgabe                    
+                    ausgabe MAKE test.scr
+     erzeugt ein Forthwort AUSGABE und ein File mit dem Namen A:TEST.SCR.
+     (Angenommen A:  ist aktuelles Laufwerk.) Alle Operationen wie LOAD,  LIST 
+     usw.   beziehen  sich  nun auf den entsprechenden Screen  in  A:TEST.SCR. 
+     Beachten Sie bitte, da~ dieses File noch leer ist, und daher eine Fehler
+     bedingung besteht, wenn Zugriffsoperationen ausgef}hrt werden sollen.
+
+MAKEFILE       ( -- ) "makefile"
+     Wird in der folgender Form benutzt:
+          MAKEFILE <name>
+     Erzeugt  ein Forthfile mit dem Namen <NAME> und erzeugt abschlie~end  ein 
+     DOS-File  mit  demselben Namen  (und  eindeutiger  Laufwerksangabe).  Die 
+     folgende Sequenz w}rde genau dasselber bewirken:
+          FILE <name>
+          <name> MAKE <name>
+
+SAVEFILE       ( addr len -- ) "savefile"
+     Wird in der folgenden Form benutzt:
+          SAVEFILE <name>
+     Schreibt den String, der an der Adresse addr begint und die L{nge len hat 
+     als File mit dem Namen <name> auf die Diskette.
+
+KILLFILE       ( -- ) "killfile"
+     L|scht das aktuelle File.  Unsch|n, da dann das Forthfile noch existiert, 
+     das Dosfile aber gel|scht ist, soda~ es bei dem n{chsten Diskettenzugriff 
+     einen Fehler gibt, wenn nicht ein anderes File angew{hlt wird.
+.pa
+ASSIGN         ( -- ) "assign"
+     Wird in der Form
+          ASSIGN cccc
+     benutzt.  Ordnet  dem  aktuellen File das DOS-File mit Namen  cccc   (mit 
+     eindeutiger Laufwerksangabe) zu.  Eine Fehlerbedingung besteht,  wenn das 
+     File nicht gefunden werden kann.
+
+USE            ( -- ) "use"
+     Dieses Wort ist das wichtigste Wort zum Ausw{hlen von Files.     ____________________________________________________________
+
+     Es wird in der folgenden Form benutzt:
+          USE <name>
+     Dieses  Wort macht das File mit Namen <NAME> zum aktuellen File,  auf das 
+     sich LOAD, LIST usw. beziehen. Es erzeugt ein Forthfile mit Namen <NAME>, 
+     falls der Name noch nicht vorhanden war.  Anschlie~end wird das File  auf 
+     dem  aktuellen (oder angegebenem) Laufwerk gesucht.  Wird das File  nicht 
+     gefunden,  so  wird  eine  Fehlermeldung  ausgegeben.  Das  (automatisch) 
+     erzeugte  Forthfile  verbleibt  im Dictionary und  mu~  ggf.  mit  FORGET 
+     vergessen werden.
+
+CLOSE          ( -- ) "close"
+     Schlie~t das aktuelle File. Dabei wird das Inhaltsverzeichnis (Directory) 
+     der  Diskette  aktualisiert.  Es  werden die zu  diesem  File  geh|renden 
+     ge{nderten  Bl|cke auf Diskette zur}ckgeschrieben und alle zu diesem File 
+     geh|renden Bl|cke in den Block-Puffern gel|scht.
+
+OPEN           ( -- ) "open"
+     Offnet  das aktuelle File.  Eine Fehlerbedingung besteht,  wenn das  File 
+     nicht  gefunden  werden  kann.  Die Benutzung dieses Wortes  ist  in  den 
+     meisten  F{llen  }berfl}ssig,  da  Files automatisch  bei  einem  Zugriff 
+     ge|ffnet werden.
+
+EMPTYFILE      ( -- ) "emptyfile"
+     K}rzt das aktuelle File auf die L{nge null.
+
+FROM           ( -- ) "from"
+     Wird in der folgenden Form benutzt:
+          FROM <name>
+     <name> ist der Name eines Forthfile,  aus dem beim Aufruf von CONVEY  und 
+     COPY Bl|cke herauskopiert werden sollen.
+
+     Beispiel: filea   1 FROM fileb  3 COPY 
+
+     Kopiert den Block 1 aus FILEB auf den Block 3 von FILEA. 
+     Dieses Wort benutzt USE und das File auszuw{hlen. Das bedeutet, da~ FILEB 
+     automatisch  als  Forthfile angelegt wird,  wenn es noch nicht im  System 
+     vorhanden ist.
+.pa
+LOADFROM       ( n -- ) "loadfrom"
+     Wird in der folgenden Form benutzt:
+          LOADFROM <name>
+     <name> ist der Name eines Forthfiles, aus dem der Block n geladen wird.
+
+     Beispiel:      15 LOADFROM filea
+
+     L{dt den Block 15 aus FILEA.  Dieses Wort ist wichtig,  wenn w{hrend  des 
+     Ladens  eines  Files  Teile eines anderen Files  geladen  werden  sollen. 
+     Dieses Wort benutzt USE, um FILEA zu selektieren. Das bedeutet, da~ auto
+     matisch  ein Forthfile mit Namen FILEA erzeugt wird,  falls es im  System 
+     noch nicht vorhanden war. 
+     Beachten Sie bitte,  da~ dieses Wort nichts mit FROM oder FROMFILE zu tun 
+     hat, obwohl es {hnlich hei~t!
+
+INCLUDE        ( -- ) "include"
+     Wird in der folgenden Form benutzt:
+          INCLUDE <name>
+     <name> ist der Name eines Forthfiles, das vollst{ndig geladen wird. Dabei 
+     ist Voraussetzung,  da~ auf Screen 1 dieses Files Anweisungen stehen, die 
+     zum Laden aller Screens dieses Files f}hren. Siehe auch LOADFROM.
+
+CAPACITY       ( -- u ) "capacity"
+     u  ist  die  L{nge  des aktuellen Files in  Forth-Bl|cken  (1024  Bytes). 
+     Beachten  Sie bitte,  da~ die L{nge des Files um eins gr|~er ist als  die 
+     Nummer des letzten Blocks, da der Block 0 mitgez{hlt wird.
+
+FORTHFILES     ( -- ) "forthfiles"
+     Druckt  eine  Liste aller Forthfiles,  zusammen mit den Namen  der  zuge
+     h|rigen DOS-Files, deren L{nge und deren Status (ge|ffnet / geschlossen).
+
+FROMFILE       ( -- addr ) "fromfile"
+     Addr ist die Adresse einer Variablen,  die auf das Forth-File zeigt,  aus 
+     dem  COPY  und CONVEY Bl|cke lesen.  Siehe auch FROM.  Bei  Nennen  eines 
+     Forthfiles wird diese Variable gesetzt.
+
+LOADFILE       ( -- addr ) "loadfile"
+     Addr ist die Adresse einer Variablen,  die auf das Forthfile  zeigt,  das 
+     gerade geladen wird.  Diese Variable wird bei Aufruf von LOAD,  THRU usw. 
+     auf das aktuelle File gesetzt.
+
+ISFILE         ( -- addr ) "isfile"
+     Addr  ist  die Adresse einer Variablen,  die auf das  aktuelle  Forthfile 
+     zeigt. Sie wird bei Ausf}hrung eines Forthfiles gesetzt.
+
+FILE?          ( -- ) "file-question"
+     Druckt den Namen des aktuellen Forthfiles.
+
+MORE           ( n -- ) "more"
+     Verl{ngert  das  aktuelle File um n Screens.  Die Screens  werden  hinten 
+     angeh{ngt. Anschlie~end wird das File geschloseen.
+
+EOF            ( -- f) "end-of-file"
+     f ist ein Flag, das wahr ist, falls }ber das Ende des Files hinausgelesen 
+     wurde.  f ist falsch,  falls auf den zuletzt gelesenen Block noch weitere 
+     folgen.
+
+.PA
+3) Verschiedenes________________
+
+Beim  Vergessen  eines Forth-Files mit Hilfe von  FORGET,  EMPTY  usw.  werden 
+automatisch  alle Blockpuffer,  die aus diesem File stammen,  gel|scht,   und, 
+wenn  sie ge{ndert waren,  auf die Diskette zur}ckgeschrieben.  Das File  wird 
+anschlie~end geschlossen.
+
+Bei Verwendung von FLUSH werden alle Files geschlossen. FLUSH sollte VOR jedem 
+Diskettenwechsel  ausgef}hrt werden,  und zwar nicht nur,  um  die  ge{nderten 
+Bl|cke  zur}ckzuschreiebn,  sondern auch damit alle Files geschlossen  werden. 
+Sind  n{mlich Files gleichen Namens auf der neuen Diskette vorhanden,  so wird 
+sonst eine abweichende L{nge des neuen Files vom Forth nicht erkannt.
+Nach dem Diskettenwechsel verlangt CP/M das "einloggen" der neuen Diskette.
+Dies  geschieht mit DOS RESET.  Wenn dies vergessen wird,  so erh{lt man  nach 
+einem Schreibversuch auf die neue Diskette "BDOS-ERROR ON xx  R/O" und  landet 
+zu allem ]berflu~ im CCP. Warum?? Fragen Sie Digital Research!
+
+Bei Verwendung von VIEW wird automatisch das richtige File ge|ffnet.
+
+
+.PA
+4) CP/M 2.2. interne Worte des Filesystems (Implementation)
+
+     In  diesem  Abschnitt findet sich das Glossary f}r  die  Worte,  die  zur 
+     Implementation  des  Filesystems benutzt werden.  Da das Filesystem  noch 
+     recht  neu ist,  sind noch fast alle Namen sichtbar.  Das kann sich  aber 
+     {ndern, wenn klar ist, welche Worte man nicht mehr benutzt.
+     Im  Glossary wird oft von Forth-FCB (File-Control-Block) gesprochen.  Das 
+     sind  Speicherbereiche,  mit denen Files beschrieben  werden.  Auch  CP/M 
+     kennt  FCBs.  Die  CP/M  Filefunktionen erwarten alle einen  DOS-FCB  zur 
+     Beschreibung der Files. Die Worte, die diese Funktionen ausl|sen erwarten 
+     aber einen Forth-FCB,  die im volksFORTH-Filesystem }bliche  Beschreibung 
+     von Files.  Wenn die Gefahr der Verwechselung besteht,  so wird ausdr}ck
+     lich von Forth-FCBs und DOS-FCBs gesprochen. Allgemein ist mit der Angabe 
+     von  FCB  ein  Forth-FCB gemeint.  Seine Struktur ist aus  dem  Quelltext 
+     ersichtlich. (Befehlsfolge: DOS VIEW B/FCB) 
+
+!fcb           ( fcb -- ) "store-f-c-b"
+     Interpretiert  das als n{chstes in der Eingabe sthende Wort als  Filename 
+     und weist es dem fcb zu.
+
+!name          ( addr len fcb -- ) "store-name"
+     addr gibt die Anfangsadresse eines Strings an,  der die L{nge len hat und 
+     einen Filenamen enth{lt. Dieser Name wird in den fcb eingetragen.
+     Enth{lt er keine Laufwerksangabe,  so wird das aktuelle Laufwerk benutzt  
+     und in den FCB geschrieben.
+
+(capacity      ( forthfcb -- n ) "paren-capacity"
+     n  ist  die  Filegr|~e des durch forthfcb  beschrieben  Files  in  Forth-
+     Bl|cken.
+
+(close         ( fcb -- ) "paren-close"
+     Schlie~t  das  File,  das  durch  fcb  beschrieben  wird.  Schreibt  alle 
+     ver{nderten  Bl|cke dieses Files auf die Diskette zur}ck und l|scht  alle 
+     Bl|cke dieses Files in den Blockpuffern.
+
+(closefile     ( forthfcb -- f ) "paren-closefile"
+     Schlie~t das durch den Forth-FCB angegebene File. f=$FF bedeutet, da~ das 
+     File nicht gefunden werden konnte. (Siehe CP/M Operating System Manual)
+
+(createfile    ( forthfcb -- f ) "paren-createfile"
+     Erzeugt ein File,  das durch den angegebenen Forth-FCB beschrieben  wird. 
+     f=$FF  bedeutet,  da~ im Inhaltsverzeichnis der Diskette kein Platz  mehr 
+     ist. (Siehe CP/M Operating System Manual)
+
+(dir           ( addr len -- ) "paren-dir"
+     addr  ist  die  Anfangsadresse  eines Strings  der  L{nge  len,  der  ein 
+     Suchmuster  enth{lt.  (dir zeigt die Files an,  die auf dieses suchmuster 
+     passen. Siehe SEARCH0, SEARCHNEXT, FILES, FILES".
+    
+(file-read     ( forthfcb -- f ) "paren-file-read"
+     Liest den im Record-Feld des angegebenen Forth-FCB's bestimten Sektor  in 
+     den Sektorpuffer ein.  f<>0 bedeutet,  da~ Daten fehlen.
+     (Siehe CP/M Operating System Manual)
+
+(file-write    ( forthfcb -- f ) "paren-file-write"
+     Schreibt  den Sektorpuffer auf den im Record-Feld des angegebenen  Forth-
+     FCB's bestimten Sektor. f<>0 bedeutet, da~ die Diskette voll ist.
+     (Siehe CP/M Operating System Manual)
+.pa
+(killfile      ( forthfcb -- f ) "paren-killfile"
+     L|scht das durch den Forth-FCB angegebene File.  f=$FF bedeutet,  da~ das 
+     File nicht gefunden werden konnte. (Siehe CP/M Operating System Manual) 
+
+(makeview      ( -- n ) "paren-make-view"
+     n ist eine Zahl die aus dem momentanen Block (BLK) und dem aktuellen File 
+     (LOADFILE)  berechnet  wird.  Sie  wird  in  das  VIEW-Feld  einer  neuen 
+     Definition  geschrieben,  und dient dazu sp{ter mit VIEW den Definitions-
+     Ort zu bestimmen.
+      
+(open          ( fcb -- ) "paren-open"
+     \ffnet  das  durch den FCB angegebene File und tr{gt  dessen  L{nge  ein. 
+     Meldet einen Fehler, falls das File nicht gefunden werden konnte. 
+
+(openfile      ( forthfcb -- f ) "paren-open-file"
+     \ffnet das durch den Forth-FCB angegebene File.  f=$FF bedeutet,  da~ das 
+     File nicht gefunden werden konnte. (Siehe CP/M Operating System Manual)
+
+(read-seq      ( forthfcb -- f ) "paren-read-sequential"
+     Liest den n{chsten Sektor aus dem durch den Forth-FCB angegebene File  in 
+     den Sektorpuffer ein.  f<>0 bedeutet,  da~ keine Daten mehr zur Verf}gung 
+     stehen.
+     (Siehe CP/M Operating System Manual)
+
+(view          ( viewblk -- blk' ) "paren-view"
+     blk'  ist die relative Blocknummer zum Anfang des in viewblk  enthaltenen 
+     Files.  viewblock hat die Form:  fffffffbbbbbbbbb.  Wobei f Bits f}r  die 
+     Filenummer,  b Bits f}r den Block angeben.  Das File wird von (VIEW auto
+     matisch ge|ffnet.
+
+(write-seq     ( forthfcb -- f ) "paren-write-sequential"
+     Schreibt den n{chsten Sektor aus dem Sektorpuffer in das durch den Forth-
+     FCB  angegebene File.  f<>0 bedeutet,  da~ die Diskette voll ist.
+     (Siehe CP/M Operating System Manual)
+
+ .buffers      ( -- ) "dot-buffers"
+     Gibt  eine  Liste der Block-puffer aus,  die angibt,  welchen  Block  aus 
+     welchem File die Puffer enthalten, und ob sie als UPDATEd markiert sind.
+
+ .dosfile      ( fcb -- ) "dot-dosfile"
+     Gibt den Dos-Namen des durch fcb angegebenen Files aus.
+
+ .fcb          ( fcb -- ) "dot-f-c-b"
+     Gibt  den  Forth-Namen,  den  Dos-Namen,  die Filegr|~e  und  den  Status 
+     (ge|ffnet / geschlossen ) des durch fcb angegebenen Files aus.   
+
+ .file         ( fcb -- ) "dot-file"
+     Gibt den Forth-Namen des durch fcb angegebenen Files aus.
+
+b/fcb          ( -- n ) "bytes-per-f-c-b"
+     n gibt an, wieviele Bytes ein Forth-FCB belegt.
+ 
+b/rec          ( -- n ) "bytes-per-record"
+     n gibt an,  wieviele Bytes in die Sektoren passen, die vom Betriebssystem 
+     benutzt werden. Bei CP/M 2.2 sind dies 128 Bytes.
+.pa
+bdos           ( arg fun# -- res ) "bdos"
+     Veranla~t  einen Sprung ins BDOS.  fun# ist der Wert,  der ins C-Register 
+     geladen wird,  die Nummer der aufzurufenden Funktion.  arg ist der  Wert, 
+     der ins DE-Register geladen werden soll,  und res ist der Wert,  der  vom 
+     BDOS  im  A-Register  zur}ckgeliefert wird.  CP/M  BDOS-Aufrufe  sind  im 
+     Operating System Manual beschrieben.  
+
+createfile     ( fcb -- ) "createfile"
+     Erzeugt  ein  File,  da~  durch den FCB beschrieben  wird.  Meldet  einen 
+     Fehler, falls dies nicht m|glich ist.
+
+default-buffer ( -- addr ) "default-buffer"
+      addr ist die Adresse des Standard Sektorpuffers des BDOS.
+ 
+Dos            ( -- ) "dos"
+     Das  Vocabulary,  indem die meisten Definitionen des Filesystems  gemacht 
+     werden.
+
+dos-error?     ( n -- f ) "dos-error-question"
+     f  ist TRUE,  wenn n=$FF ist,  denn das ist das Kennzeichen des BDOS  f}r 
+     einen Fehler.
+
+drive          ( forthfcb -- addr ) "drive"
+     Berechnet  aus der Adresse eines Forth-FCBs die Adresse,  unter  der  das 
+     Laufwerk eingetragen ist. 
+
+extension      ( forthfcb -- addr ) "extension"
+     Berechnet  aus  der  Adresse eines Forth-FCBs die  Adresse,  an  der  die 
+     Extension beginnt.
+
+fcb0           ( -- addr ) "f-c-b-zero"
+     addr ist die Adresse, des vom CCP-benutzten Standard-File-Control-Blocks, 
+     so ver{ndert, da~ er einen Forth-FCB halten kann.
+
+file-link      ( -- addr ) "file-link"
+     addr ist die Adresse einer User-Variablen,  die auf den Anfang der Forth-
+     file-liste zeigt.
+
+file-r/w       ( buffer block fcb r/wf -- f ) "file-r-w"
+     Liest oder schreibt einen Forth-Block von der / auf die Diskette.
+     r/wf  gibt an,  ob gelesen (rw/f<>FALSE) oder  geschrieben  (rw/f=FALSE) 
+     werden soll. 
+     block ist die Nummer des Blocks, buffer die Adresse des Puffers. 
+     fcb  bestimmt,  ob ein File benutzt wird (fcb<>0  ist dann  die  Adresse 
+     eines FCB) oder ob im Direktzugriff gearbeitet werden soll (fcb=0).
+     f ist TRUE, falls ein Fehler aufgetreten ist. Vergleiche R/W.
+ 
+filename       ( forthfcb -- addr ) "filename"
+     Berechnet  aus  der  Adresse eines Forth-FCBs die  Adresse,  an  der  der 
+     Filename beginnt.
+
+filenamelen    ( -- n ) "filenamelen"
+     n gibt die L{nge der im Betriebssystem benutzten Filenamen an.  Bei  CP/M 
+     sind dies 11 Zeichen (8 Name + 3 Extension)  
+
+fileno         ( forthfcb -- addr ) "file-number"
+     Berechnet  aus  der  Adresse eines Forth-FCBs die  Adresse,  an  der  die 
+     Filenummer abgelegt ist.
+.pa
+filesize       ( forthfcb -- addr ) "filesize"
+     Berechnet  aus  der  Adresse eines Forth-FCBs die  Adresse,  an  der  die 
+     Filegr|~e (in Sectoren) abgelegt ist.
+
+in-range       ( block fcb -- ) "in-range"
+     Testet, ob der Forth-Block block in dem durch fcb angegebenen File liegt, 
+     und gibt eine Fehlermeldung aus, falls dies nicht der Fall ist.
+
+
+opened         ( forthfcb -- addr ) "opened"
+     Berechnet aus der Adresse eines Forth-FCBs die Adresse, an der  das open-
+     Flag abgelegt ist.
+
+read-seq       ( -- ) "read-sequential"
+     Liest den n{chsten Sektor aus dem aktuellen File in den Sektorpuffer  und 
+     liefert einen Fehler, falls dies nicht m|glich ist.
+ 
+rec/blk        ( -- n ) "bytes-per-record"
+     n  gibt an,  wieviele logische CP/M-Sectoren (128 Bytes) in einen  Forth-
+     Block  passen.  Nach dem Forth-83 Standard ist ein Forth-Block 1024 Bytes 
+     gro~, B/REC ist dann also 8.
+
+record         ( forthfcb -- addr ) "record"
+     Berechnet  aus  der  Adresse eines Forth-FCBs die  Adresse,  an  der  der 
+     Recordz{hler f}r Random-Access-Files beginnt.
+
+reset          ( -- ) "reset"
+     Initialisiert  das  Diskettensystem des BDOS.  Mu~ nach einem  Disketten
+     wechsel benutzt werden! (Siehe CP/M Operating System Manual)
+
+search0        ( forthfcb -- f ) "search-zero"
+     Sucht  im Inhaltsverzeichnis der Diskette nach dem ersten Vorkommen,  des 
+     durch den Forth-FCB angegebenen Files. f=$FF bedeutet, da~ das File nicht 
+     gefunden werden konnte.  
+     (Siehe CP/M Operating System Manual)
+      
+searchnext     ( forthfcb -- f ) "serach-next"
+     Sucht im Inhaltsverzeichnis der Diskette nach dem n{chsten Vorkommen, des 
+     durch den Forth-FCB angegebenen Files. f=$FF bedeutet, da~ das File nicht 
+     gefunden werden konnte.  
+     (Siehe CP/M Operating System Manual)
+
+setdma         ( dma -- ) "set-d-m-a"
+     dma ist die Adresse des Sektorpuffers, der beim n{chsten Diskettenzugriff 
+     benutzt werden soll (Siehe CP/M Operating System Manual)
+
+size           ( forthfcb -- ) "size"
+     Berechnet die Filegr|~e in dem durch den Forth-FCB beschriebenen File und 
+     tr{gt sie in das Feld record ein. (Siehe CP/M Operating System Manual)
+
+tab            ( -- ) "tab"
+     Geht auf die n{chste Tabulatorposition (alle 20 Spalten).
+
+write-seq      ( -- ) "write-sequential"
+     Schreibt  einen  Sektor  aus  dem Sektorpuffer als  n{chsten  Sektor  des 
+     aktuellen Files und meldet einen Fehler, falls dies nicht m|glich ist. 

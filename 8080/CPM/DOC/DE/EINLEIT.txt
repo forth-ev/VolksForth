@@ -1,0 +1,43 @@
+.op
+                           volksFORTH f}r CP/M 2.2
+                           _______________________
+
+
+Nach  den  Implementierungen von volksFORTH auf dem 6502 (C64) und  dem  68000 
+(Atari ST),  liegt hier nun die dritte Implementierung,  die auf dem 8080/Z80, 
+vor.  Sie st}tzt sich dabei auf das CP/M 2.2 Betriebssystem,  soda~ volksFORTH 
+damit auf einer gro~en Zahl von Mikrokomputersystemen zur Verf}gung steht.
+
+volksFORTH  ist  ein  public domain Produkt,  d.h.  volksFORTH  darf  beliebig 
+kopiert und weiterverbreitet werden, solange dies nicht kommerziell geschieht, 
+und das Urheberrecht der Autoren beachtet wird.
+
+Fragen, Kritik und Anregungen bitte an:
+
+                               Ulrich Hoffmann
+                               Harmsstra~e 71
+                               2300 Kiel 1
+
+
+
+
+
+
+Um  die  Verbreitung von FORTH allgemein k}mmert sich  die  FORTH-Gesellschaft 
+e.V.  In  ihrem Vereinsorgan dem Forth-Magazin  (Vierte-Dimension)  erscheinen 
+regelm{~ig Artikel }ber Forth, insbesondere }ber volksFORTH.
+
+Die Adresse der Forth-Gesellschaft e.V. lautet:
+
+                           Forth-Gesellschaft e.V.
+                           Friedensallee 92
+                           2000 Hamburg 50
+
+Neben  dem Forth-Magazin wird von der Forth-Gesellschaft der  Forth-Tree,  ein 
+Mailboxsystem,  unterhalten (040/3904204), das immer, au~er Dienstag von 18-20 
+Uhr, wo am Sorgentelefon Fragen gekl{rt werden k|nnen, in Betrieb ist. 
+Der  ebenfalls  angebotene Kopienservice bietet den Zugriff auf  eine  umfang
+reiche Forth-Bibliothek.
+
+
+                                        Ulrich Hoffmann, Ende November 1986

@@ -1,0 +1,73 @@
+#+Title: Der volksForth-8080-Assembler
+
+Die CP/M-Version von volksFORTH ist mit einem Assembler für den Intel
+8080 ausgestattet. Dieser Assembler kann aber auch unter den anderen
+Versionen geladen werden und so als Cross-Assembler arbeiten. Diese
+Beschreibung enthält kein vollständiges Glossar, da die Mnemonics des
+Assemblers den meisten Programmierern vertraut sein dürften. Sie dient
+als Ergänzung der Beschreibung des 6502-Assemblers im
+UltraForth83-Handbuch Seite 175ff.
+
+Eine genaue Darstellung der Funktionsweise findet sich in dem Artikel
+von John J. Cassady in den FORTH-Dimensions (Jahrgang III/6 Seite
+180f), an dessen Implementation sich die volksFORTH-Version anlehnt.
+
+Der 8080-Assmebler erlaubt strukturierte Programmierung. Er
+verwendet die gleichen Strukturelemente, wie der 6502-Assembler. Vor
+den Kontrollstrukturen sind folgende Condition Codes zulässig:
+
+#+begin_example
+   c0=    c0<>   cs   0=   0<>    pe   0<   0>=
+#+end_example
+
+Sie entsprechen den Flags im Processor Status Word des 8080. Neben den
+Kontrollstrukturen gibt es auch noch absoluten Sprünge (jc, jm, jmp,
+jnc, jnz, jp, jpe, jpo, jz).
+
+Beispiele für die Verwendung des 8080-Assemblers:
+
+| volksFORTH | Intel      |
+|------------+------------|
+| A xra      | xra A      |
+| A L mov    | mov L,A    |
+| 0 H mvi    | mvi H,0    |
+| H pop      | pop H      |
+| vector lxi | lxi vektor |
+| D dad      | dad D      |
+| ...        | ...        |
+
+
+Die Belegung der Forth-Register sieht folgendermaßen aus:
+
+| IP | im BC-Registerpaar    |
+| W  | im DE-Registerpaar    |
+| SP | im SP                 |
+| UP | im Speicher           |
+| RP | im Speicher           |
+
+Die beiden 8-Bit-Hälften von IP und W können auch getrennt
+angesprochen werden durch (IP und IP', bzw. W und W').
+
+Zum Ansprechen der 8080-Register dürfen die FORTH-Namen sowie die
+Intel Namen benutzt werden.
+
+Zusätzlich enthält das System noch mehrere Macros:
+
+ *  =R rpop= : Hole das 16-Bit-Register R (R<>H) vom Returnstack.
+ *  =R rpush= : Bringe das 16-Bit-Register R (R<>H) zum Returnstack.
+ *  =R1 R2 mvx= : Kopiere 16-Bit-Register R1 nach R2.
+ *  =Next= : Springe zum Address-Interpreter.
+ *  =;c:= : Schalte den Assembler ab und den Forth-Compiler an.
+
+Vordefinierte Labels sind:
+
+ * =Hpush= : Adresse der Routine, die das H-Register auf den Stack
+   bringt und dann zu Next springt.
+ * =Dpush= : Adresse der Routine, die das D- und H-Register auf den
+   Stack bringt und dann zu Next springt.
+ * =>Next= : Adresse des Address-Interpreters.
+ * =UP= : Adresse der Speicherzelle für den User-Pointer
+ * =RP= : Adresse der Speicherzelle für den Returnstackpointer
+ * =IPsave= : Adresse einer Hilfszelle um den IP zwischenzuspeichern
+
+Neue Labels können mit =>LABEL= und =LABEL= erzeugt werden, wie im 6502-Assembler.

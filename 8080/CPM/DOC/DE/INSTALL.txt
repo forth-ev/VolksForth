@@ -1,0 +1,106 @@
+.OP
+                              Wie fange ich an?
+                              -----------------
+
+In  diesem Text soll der Vorgang der Installation von volksFORTH an ein  CP/M-
+KomputerSystem (Bildschirm, Tastatur, Drucker) beschrieben werden.
+Auf der ausgelieferten Diskette finden sich folgende Files:
+
+ASS8080  SCR                  Der volksFORTH 8080-Assembler
+ASSTRAN  SCR                  Zum Laden des Assembler auf den Heap
+DISASS   SCR                  Ein Z80-Disassembler fuer volksFORTH
+DOUBLE   SCR                  Definitionsn fuer doppeltgenaue Zahlen
+EDITOR   SCR                  Der volksFORTH Full-Screen Editor
+FILEINT  SCR                  Das volksFORTH Fileinterface zu CP/M 2.2 
+HASHCASH SCR                  Ein schnelles Dictionary-Suchverfahren
+INSTALL  SCR                  Der Installer f}r die Editor-Befehlstasten 
+KERNEL   COM                  Der volksFORTH Kern (Terminal unabh{ngig)
+PORT8080 SCR                  Definitionen f}r 8080 Portzugriff 
+PORTZ80  SCR                  Definitionen f}r Z80 Protzugriff
+PRIMED   SCR                  Der primitivst Editor zum Installieren
+PRINTER  SCR                  Anpassung von volksFORTH an den Drucker
+RELOCATE SCR                  Das Utility-Wort BUFFERS
+SAVESYS  SCR                  Das Utility-Wort SAVESYSTEM 
+SEE      SCR                  Der automatische Decompiler
+SIMPFILE SCR                  Ein einfaches Filesystem f}r Direktzugriff
+SOURCE   SCR                  Der Quelltext des volksFORTH Kerns
+STARTUP  SCR                  Load-File, das aus KERNEL.COM VOLKS4TH.COM macht
+STRING   SCR                  Definitionen f}r Stringoperationen
+TASKER   SCR                  Der volksFORTH Multitasker 
+TERMINAL SCR                  Definitionen f}r das installierte Terminal 
+TIMES    SCR                  Die Utility-Worte OFTEN und TIMES
+TOOLS    SCR                  Der manuelle Decompiler, DUMP und der Tracer 
+VOLKS4TH COM                  Das volksFORTH Standard-System
+
+
+       ************************ A C H T U N G ***********************
+       *                                                            *
+       *      Bevor Sie irgendetwas mit dem System ausprobieren:    *
+       *    Machen Sie Sicherheitskopien von den Orginaldisketten.  *
+       *                                                            *
+       **************************************************************
+
+
+
+0) Drei wichtige Worte:  USE, LIST und LOAD
+
+     volksFORTH  bearbeitet  seine Programmtexte in sogenannten  Screen  Files 
+     (Nachname:  .SCR),  das  sind Files,  die in 1 kB gro~e Screens aufgeteit 
+     sind,  die wiederum in 16 Zeilen mit je 64 Zeichen strukturiert sind.  Um 
+     ein schon existentes File als aktuelles File anzuw{hlen wird das Wort USE 
+     <filename> benutzt.  (Beispiel:  USE TERMINAL.SCR, w{hlt TERMINAL.SCR als 
+     aktuelles File.) Um sich nun einen bestimmten Screen anzusehen, wird   nn 
+     LIST benutzt. (Beispiel: 1 LIST, zeigt Screen 1 des aktuellen Files.) 
+     Mit   nn LOAD   wird ein bestimmter Screen geladen:  Die Definitionen  in 
+     diesem  Screen werden in eine f}r den Komputer ausf}hrbare Form gebracht. 
+     (Beispiel: 1 LOAD, l{dt Screen 1 des aktuellen Files.)    
+     Per Konvention soll der Screen null eines jeden Files eine Erkl{rung  des 
+     Inhaltes  des  Files enthalten.  Wird Screen eins,  der sogenannte  LOAD-
+     Screen, geladen, so soll er das Laden der gesamten Definitionen des Files 
+     veranlassen.
+     Zeile Null eines jeden Screens soll Auskunft }ber den Inhalt des  Screens 
+     geben.  
+
+
+
+
+1) Die Anpassung von volksFORTH an den Komputer
+
+     Damit das volksFORTH in vollem Umfang benutzt werden kann,  ist  zun{chst 
+     eine  Installation erforderlich.  F}r Schneider-Komputer ist diese  schon 
+     von uns vorgenommen worden, soda~ es gleich richtig losgehen kann.
+     Die Anpassung an einen anderen Komputer beinhaltet:
+
+     a) Anpassung der Bildschirmfunktionen
+          In dem File TERMINAL.SCR werden die notwendigen Bildschirmfunktionen 
+          definiert. Diese m}ssen auf den neuen Bildschirm angepa~t werden.
+          Da der Editor erst nach erfolgreicher Anpassung benutzt werden kann, 
+          m}ssen diese Screens auf andere Art und Weise ge{ndert werden.
+          Dazu kann der Primitivst-Editor im File PRIMED.SCR benutzt werden.
+          Die  normalerweise zu benutzenden Escape-Sequenzen,  sind  dem  ent
+          sprechenden  Terminal-Handbuch  zu entnehmen.  Mit USE PRIMED.SCR  1 
+          LOAD  den  primitivst Editor laden.  (Screen  0  enth{lt  Anleitung, 
+          Screen  2 ein Beispiel).  Dann mit USE TERMINAL.SCR dieses File  zur 
+          Benutzung anw{hlen. PRIMED arbeitet dann auf diesem File. 
+
+     b) Anpassung der Editor-Befehlstasten 
+          Im File EDITOR.SCR gibt es eine Tabelle mit Namen KEYTABLE,  in  der 
+          die  Tasten  zu den in der Tabelle ACTIONTABLE definierten  Befehlen 
+          angegeben  werden.  Durch  [ndern der Tabelle  KEYTABLE  k|nnen  die 
+          Befehlstasten des Editors ver{ndert werden. 
+          Zum  einfachen  Anpassen des Editors gibt es das  File  INSTALL.SCR, 
+          indem   interaktiv   die  neuen  Befehlstasten   abgefragt   werden. 
+          (Achtung!: Der Sourcetext wird nicht mitge{ndert!!) 
+
+
+2) Die Anpassung von volksFORTH an den Drucker 
+
+     In  dem  File PRINTER.SCR wird die Ansteuerung des Druckers  (hier  Epson 
+     FX80) definiert.  Sollte kein Epson-kompatibler Drucker vorliegen, m}ssen 
+     auch hier die Escape-Sequenzen ge{ndert werden.(Siehe Druckerhandbuch!) 
+     Dies  sollte aber m|glichst erst dann geschehen,  wenn die restlichen An
+     passungen laufen!  
+
+
+
+

@@ -1,0 +1,93 @@
+.HE volksFORTH Editor f}r CP/M 2.2 Implementation                     Seite #
+.OP
+Der  f}r  die  CP/M  2.2 Version von volksFORTH  benutzte  Editor  enth{lt  im 
+wesentlichen  die  gleichen  Funktionen  wie  die des  Editors  auf  dem  C64, 
+beschrieben im Handbuch Seite 147ff. 
+Im  Gegensatz  zum  C64-Editor  benutzt  der  neue  Editor  das  Forth-Screen-
+Standardformat von 16 Zeilen a 64 Zeichen.
+Aufgerufen wird der Editor mit:     <screennummer> L    .
+Den zuletzt edititierten Screen erh{lt man mit: V   , und mit:  
+VIEW <name>  kann man sich ansehen, wo <name> definiert worden ist. 
+
+Die Tastenbelegung ist neu organisiert.  Im folgenden wird die  Tastenbelegung 
+f}r die allgemeine CP/M-Version und f}r die Schneider Version beschrieben. Mit 
+Hilfe  des  Files INSTALL.SCR k|nnen die Tasten neu  angepa~t  werden.  (Siehe 
+Installationshinweis: "Wie fange ich an?")
+
+Tastenbelegung f}r die allgemeine CP/M Version:
+
+Komando (siehe Handbuch S. 152ff)            Taste_______________________________________________________
+
+Cursor up                                    Control E
+Cursor left                                  Control S
+Cursor down                                  Control X
+Cursor right                                 Control D
+push-line                                    Control I
+push-char                                    Control J
+pull-line                                    Control O
+pull-char                                    Control K
+copy-line                                    Control P
+copy-char                                    Control L
+backspace                                    Control H
+backspace                                    delete
+delete-char                                  Control G
+insert-char                                  Control T
+delete-line                                  Control Y
+insert-line                                  Control N
+insert-mode-on insert-mode-off               Control V
+clear-to-right                               Control Z
+new-line                                     return
++tab                                         Control F
+-tab                                         Control A
+search                                       Control \ = Control \
+undo                                         Control U
+update-exit                                  Control Q
+flushed-exit                                 escape  
+shadow-screen                                Control W
+next-screen                                  Control C
+back-screen                                  Control R
+alter-screen                                 Control [ = Control [
+mark-alter-screen                            Control B
+
+.pa
+Tastenbelegung f}r die Schneider CP/M Version:
+
+Komando (siehe Handbuch S. 152ff)            Taste_______________________________________________________
+
+Cursor up                                    Pfeil nach oben
+Cursor left                                  Pfeil nach links
+Cursor down                                  Pfeil nach unten
+Cursor right                                 Pfeil nach rechts
+push-line                                    shift Pfeil nach oben
+push-char                                    shift Pfeil nach links
+pull-line                                    shift Pfeil nach unten
+pull-char                                    shift Pfeil nach rechts
+copy-line                                    Control Q
+copy-char                                    Control Z
+backspace                                    Control H
+backspace                                    delete
+delete-char                                  Control P (clr)
+insert-char                                  copy     
+delete-line                                  Control D
+insert-line                                  Control T
+insert-mode-on                               Control I
+overwrite-mode-on                            Control O
+eraser-line                                  Control C 
+clear-to-right                               Control E
+new-line                                     return
++tab                                         Control Pfeil nach rechts
+-tab                                         Control Pfeil nach links
+home                                         Control Pfeil noch oben
+to-end                                       Control Pfeil nach unten
+search                                       Control F
+undo                                         Control U
+update-exit                                  Control X
+flushed-exit                                 escape  
+show-load                                    Control L
+shadow-screen                                Control W
+next-screen                                  Control N
+back-screen                                  Control B
+alter-screen                                 Control A
+mark-alter-screen                            Control R
+
+

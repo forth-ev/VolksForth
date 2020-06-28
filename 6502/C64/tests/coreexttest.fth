@@ -8,7 +8,7 @@
 \ but WITHOUT ANY WARRANTY; without even the implied warranty of
 \ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-\ The tests are not claimed to be comprehensive or correct 
+\ The tests are not claimed to be comprehensive or correct
 
 \ ------------------------------------------------------------------------------
 \ Version 0.13 28 October 2015
@@ -34,7 +34,7 @@
 \                <> U> 0<> 0> NIP TUCK ROLL PICK 2>R 2R@ 2R>
 \                HEX WITHIN UNUSED AGAIN MARKER
 \             Added tests for:
-\                .R U.R ERASE PAD REFILL SOURCE-ID 
+\                .R U.R ERASE PAD REFILL SOURCE-ID
 \             Removed ABORT from NeverExecuted to enable Win32
 \             to continue after failure of RESTORE-INPUT.
 \             Removed max-intx which is no longer used.
@@ -308,7 +308,7 @@ T{ MAX-INT MAX-INT MAX-INT WITHIN -> FALSE }T
 TESTING UNUSED  (contributed by James Bowman & Peter Knaggs)
 
 VARIABLE UNUSED0
-T{ UNUSED DROP -> }T                  
+T{ UNUSED DROP -> }T
 T{ ALIGN UNUSED UNUSED0 ! 0 , UNUSED CELL+ UNUSED0 @ = -> TRUE }T
 T{ UNUSED UNUSED0 ! 0 C, UNUSED CHAR+ UNUSED0 @ =
          -> TRUE }T  \ aligned -> unaligned
@@ -321,18 +321,18 @@ T{ : AG0 701 BEGIN DUP 7 MOD 0= IF EXIT THEN 1+ AGAIN ; -> }T
 T{ AG0 -> 707 }T
 
 \ -----------------------------------------------------------------------------
-TESTING MARKER   (contributed by James Bowman)
+\vf TESTING MARKER   (contributed by James Bowman)
 
-T{ : MA? BL WORD FIND NIP 0<> ; -> }T
-T{ MARKER MA0 -> }T
-T{ : MA1 111 ; -> }T
-T{ MARKER MA2 -> }T
-T{ : MA1 222 ; -> }T
-T{ MA? MA0 MA? MA1 MA? MA2 -> TRUE TRUE TRUE }T
-T{ MA1 MA2 MA1 -> 222 111 }T
-T{ MA? MA0 MA? MA1 MA? MA2 -> TRUE TRUE FALSE }T
-T{ MA0 -> }T
-T{ MA? MA0 MA? MA1 MA? MA2 -> FALSE FALSE FALSE }T
+\vf T{ : MA? BL WORD FIND NIP 0<> ; -> }T
+\vf T{ MARKER MA0 -> }T
+\vf T{ : MA1 111 ; -> }T
+\vf T{ MARKER MA2 -> }T
+\vf T{ : MA1 222 ; -> }T
+\vf T{ MA? MA0 MA? MA1 MA? MA2 -> TRUE TRUE TRUE }T
+\vf T{ MA1 MA2 MA1 -> 222 111 }T
+\vf T{ MA? MA0 MA? MA1 MA? MA2 -> TRUE TRUE FALSE }T
+\vf T{ MA0 -> }T
+\vf T{ MA? MA0 MA? MA1 MA? MA2 -> FALSE FALSE FALSE }T
 
 \ -----------------------------------------------------------------------------
 TESTING ?DO
@@ -403,120 +403,120 @@ T{ 111 BUF:TEST ! 222 BUF:TEST CELL+ ! -> }T
 T{ BUF:TEST @ BUF:TEST CELL+ @ -> 111 222 }T
 
 \ -----------------------------------------------------------------------------
-TESTING VALUE TO
+\vf TESTING VALUE TO
 
-T{ 111 VALUE VAL1 -999 VALUE VAL2 -> }T
-T{ VAL1 -> 111 }T
-T{ VAL2 -> -999 }T
-T{ 222 TO VAL1 -> }T
-T{ VAL1 -> 222 }T
-T{ : VD1 VAL1 ; -> }T
-T{ VD1 -> 222 }T
-T{ : VD2 TO VAL2 ; -> }T
-T{ VAL2 -> -999 }T
-T{ -333 VD2 -> }T
-T{ VAL2 -> -333 }T
-T{ VAL1 -> 222 }T
-T{ 123 VALUE VAL3 IMMEDIATE VAL3 -> 123 }T
-T{ : VD3 VAL3 LITERAL ; VD3 -> 123 }T
+\vf T{ 111 VALUE VAL1 -999 VALUE VAL2 -> }T
+\vf T{ VAL1 -> 111 }T
+\vf T{ VAL2 -> -999 }T
+\vf T{ 222 TO VAL1 -> }T
+\vf T{ VAL1 -> 222 }T
+\vf T{ : VD1 VAL1 ; -> }T
+\vf T{ VD1 -> 222 }T
+\vf T{ : VD2 TO VAL2 ; -> }T
+\vf T{ VAL2 -> -999 }T
+\vf T{ -333 VD2 -> }T
+\vf T{ VAL2 -> -333 }T
+\vf T{ VAL1 -> 222 }T
+\vf T{ 123 VALUE VAL3 IMMEDIATE VAL3 -> 123 }T
+\vf T{ : VD3 VAL3 LITERAL ; VD3 -> 123 }T
 
 \ -----------------------------------------------------------------------------
-TESTING CASE OF ENDOF ENDCASE
+\vf TESTING CASE OF ENDOF ENDCASE
 
-: CS1 CASE 1 OF 111 ENDOF
-           2 OF 222 ENDOF
-           3 OF 333 ENDOF
-           >R 999 R>
-      ENDCASE
-;
+\vf : CS1 CASE 1 OF 111 ENDOF
+\vf            2 OF 222 ENDOF
+\vf            3 OF 333 ENDOF
+\vf            >R 999 R>
+\vf       ENDCASE
+\vf ;
 
-T{ 1 CS1 -> 111 }T
-T{ 2 CS1 -> 222 }T
-T{ 3 CS1 -> 333 }T
-T{ 4 CS1 -> 999 }T
+\vf T{ 1 CS1 -> 111 }T
+\vf T{ 2 CS1 -> 222 }T
+\vf T{ 3 CS1 -> 333 }T
+\vf T{ 4 CS1 -> 999 }T
 
 \ Nested CASE's
 
-: CS2 >R CASE -1 OF CASE R@ 1 OF 100 ENDOF
-                            2 OF 200 ENDOF
-                           >R -300 R>
-                    ENDCASE
-                 ENDOF
-              -2 OF CASE R@ 1 OF -99  ENDOF
-                            >R -199 R>
-                    ENDCASE
-                 ENDOF
-                 >R 299 R>
-         ENDCASE R> DROP
-;
+\vf : CS2 >R CASE -1 OF CASE R@ 1 OF 100 ENDOF
+\vf                             2 OF 200 ENDOF
+\vf                            >R -300 R>
+\vf                     ENDCASE
+\vf                  ENDOF
+\vf               -2 OF CASE R@ 1 OF -99  ENDOF
+\vf                             >R -199 R>
+\vf                     ENDCASE
+\vf                  ENDOF
+\vf                  >R 299 R>
+\vf          ENDCASE R> DROP
+\vf ;
 
-T{ -1 1 CS2 ->  100 }T
-T{ -1 2 CS2 ->  200 }T
-T{ -1 3 CS2 -> -300 }T
-T{ -2 1 CS2 -> -99  }T
-T{ -2 2 CS2 -> -199 }T
-T{  0 2 CS2 ->  299 }T
+\vf T{ -1 1 CS2 ->  100 }T
+\vf T{ -1 2 CS2 ->  200 }T
+\vf T{ -1 3 CS2 -> -300 }T
+\vf T{ -2 1 CS2 -> -99  }T
+\vf T{ -2 2 CS2 -> -199 }T
+\vf T{  0 2 CS2 ->  299 }T
 
 \ Boolean short circuiting using CASE
 
-: CS3  ( N1 -- N2 )
-   CASE 1- FALSE OF 11 ENDOF
-        1- FALSE OF 22 ENDOF
-        1- FALSE OF 33 ENDOF
-        44 SWAP
-   ENDCASE
-;
+\vf : CS3  ( N1 -- N2 )
+\vf    CASE 1- FALSE OF 11 ENDOF
+\vf         1- FALSE OF 22 ENDOF
+\vf         1- FALSE OF 33 ENDOF
+\vf         44 SWAP
+\vf    ENDCASE
+\vf ;
 
-T{ 1 CS3 -> 11 }T
-T{ 2 CS3 -> 22 }T
-T{ 3 CS3 -> 33 }T
-T{ 9 CS3 -> 44 }T
+\vf T{ 1 CS3 -> 11 }T
+\vf T{ 2 CS3 -> 22 }T
+\vf T{ 3 CS3 -> 33 }T
+\vf T{ 9 CS3 -> 44 }T
 
 \ Empty CASE statements with/without default
 
-T{ : CS4 CASE ENDCASE ; 1 CS4 -> }T
-T{ : CS5 CASE 2 SWAP ENDCASE ; 1 CS5 -> 2 }T
-T{ : CS6 CASE 1 OF ENDOF 2 ENDCASE ; 1 CS6 -> }T
-T{ : CS7 CASE 3 OF ENDOF 2 ENDCASE ; 1 CS7 -> 1 }T
+\vf T{ : CS4 CASE ENDCASE ; 1 CS4 -> }T
+\vf T{ : CS5 CASE 2 SWAP ENDCASE ; 1 CS5 -> 2 }T
+\vf T{ : CS6 CASE 1 OF ENDOF 2 ENDCASE ; 1 CS6 -> }T
+\vf T{ : CS7 CASE 3 OF ENDOF 2 ENDCASE ; 1 CS7 -> 1 }T
 
 \ -----------------------------------------------------------------------------
-TESTING :NONAME RECURSE
+\vf TESTING :NONAME RECURSE
 
-VARIABLE NN1
-VARIABLE NN2
-:NONAME 1234 ; NN1 !
-:NONAME 9876 ; NN2 !
-T{ NN1 @ EXECUTE -> 1234 }T
-T{ NN2 @ EXECUTE -> 9876 }T
+\vf VARIABLE NN1
+\vf VARIABLE NN2
+\vf :NONAME 1234 ; NN1 !
+\vf :NONAME 9876 ; NN2 !
+\vf T{ NN1 @ EXECUTE -> 1234 }T
+\vf T{ NN2 @ EXECUTE -> 9876 }T
 
-T{ :NONAME ( n -- 0,1,..n ) DUP IF DUP >R 1- RECURSE R> THEN ;
-   CONSTANT RN1 -> }T
-T{ 0 RN1 EXECUTE -> 0 }T
-T{ 4 RN1 EXECUTE -> 0 1 2 3 4 }T
+\vf T{ :NONAME ( n -- 0,1,..n ) DUP IF DUP >R 1- RECURSE R> THEN ;
+\vf    CONSTANT RN1 -> }T
+\vf T{ 0 RN1 EXECUTE -> 0 }T
+\vf T{ 4 RN1 EXECUTE -> 0 1 2 3 4 }T
 
-:NONAME  ( n -- n1 )    \ Multiple RECURSEs in one definition
-   1- DUP
-   CASE 0 OF EXIT ENDOF
-        1 OF 11 SWAP RECURSE ENDOF
-        2 OF 22 SWAP RECURSE ENDOF
-        3 OF 33 SWAP RECURSE ENDOF
-        DROP ABS RECURSE EXIT
-   ENDCASE
-; CONSTANT RN2
+\vf :NONAME  ( n -- n1 )    \ Multiple RECURSEs in one definition
+\vf    1- DUP
+\vf    CASE 0 OF EXIT ENDOF
+\vf         1 OF 11 SWAP RECURSE ENDOF
+\vf         2 OF 22 SWAP RECURSE ENDOF
+\vf         3 OF 33 SWAP RECURSE ENDOF
+\vf         DROP ABS RECURSE EXIT
+\vf    ENDCASE
+\vf ; CONSTANT RN2
 
-T{  1 RN2 EXECUTE -> 0 }T
-T{  2 RN2 EXECUTE -> 11 0 }T
-T{  4 RN2 EXECUTE -> 33 22 11 0 }T
-T{ 25 RN2 EXECUTE -> 33 22 11 0 }T
+\vf T{  1 RN2 EXECUTE -> 0 }T
+\vf T{  2 RN2 EXECUTE -> 11 0 }T
+\vf T{  4 RN2 EXECUTE -> 33 22 11 0 }T
+\vf T{ 25 RN2 EXECUTE -> 33 22 11 0 }T
 
 \ -----------------------------------------------------------------------------
-TESTING C"
+\vf TESTING C"
 
 T{ : CQ1 C" 123" ; -> }T
-T{ CQ1 COUNT EVALUATE -> 123 }T
+\vf T{ CQ1 COUNT EVALUATE -> 123 }T
 T{ : CQ2 C" " ; -> }T
-T{ CQ2 COUNT EVALUATE -> }T
-T{ : CQ3 C" 2345"COUNT EVALUATE ; CQ3 -> 2345 }T
+\vf T{ CQ2 COUNT EVALUATE -> }T
+\vf T{ : CQ3 C" 2345"COUNT EVALUATE ; CQ3 -> 2345 }T
 
 \ -----------------------------------------------------------------------------
 TESTING COMPILE,
@@ -529,23 +529,23 @@ T{ 123 AS1 -> 246 }T
 \ -----------------------------------------------------------------------------
 \ Cannot automatically test SAVE-INPUT and RESTORE-INPUT from a console source
 
-TESTING SAVE-INPUT and RESTORE-INPUT with a string source
+\vf TESTING SAVE-INPUT and RESTORE-INPUT with a string source
 
-VARIABLE SI_INC 0 SI_INC !
+\vf VARIABLE SI_INC 0 SI_INC !
 
-: SI1
-   SI_INC @ >IN +!
-   15 SI_INC !
-;
+\vf : SI1
+\vf    SI_INC @ >IN +!
+\vf    15 SI_INC !
+\vf ;
 
-: S$ S" SAVE-INPUT SI1 RESTORE-INPUT 12345" ;
+\vf : S$ S" SAVE-INPUT SI1 RESTORE-INPUT 12345" ;
 
-T{ S$ EVALUATE SI_INC @ -> 0 2345 15 }T
+\vf T{ S$ EVALUATE SI_INC @ -> 0 2345 15 }T
 
 \ -----------------------------------------------------------------------------
 TESTING .(
 
-CR CR .( Output from .() 
+CR CR .( Output from .()
 T{ CR .( You should see -9876: ) -9876 . -> }T
 T{ CR .( and again: ).( -9876)CR -> }T
 
@@ -584,7 +584,7 @@ T{ .R&U.R -> }T
 
 \ -----------------------------------------------------------------------------
 TESTING PAD ERASE
-\ Must handle different size characters i.e. 1 CHARS >= 1 
+\ Must handle different size characters i.e. 1 CHARS >= 1
 
 84 CONSTANT CHARS/PAD      \ Minimum size of PAD in chars
 CHARS/PAD CHARS CONSTANT AUS/PAD
@@ -593,7 +593,7 @@ CHARS/PAD CHARS CONSTANT AUS/PAD
    ?DO
       OVER I CHARS + C@ OVER <>
       IF 2DROP UNLOOP FALSE EXIT THEN
-   LOOP  
+   LOOP
    2DROP TRUE
 ;
 
@@ -620,42 +620,41 @@ BL WORD 12345678123456781234567812345678 DROP
 T{ PAD CHARS/PAD 0 CHECKPAD -> TRUE }T
 
 \ -----------------------------------------------------------------------------
-TESTING PARSE
+\vf TESTING PARSE
 
-T{ CHAR | PARSE 1234| DUP ROT ROT EVALUATE -> 4 1234 }T
-T{ CHAR ^ PARSE  23 45 ^ DUP ROT ROT EVALUATE -> 7 23 45 }T
-: PA1 [CHAR] $ PARSE DUP >R PAD SWAP CHARS MOVE PAD R> ;
-T{ PA1 3456
-   DUP ROT ROT EVALUATE -> 4 3456 }T
-T{ CHAR A PARSE A SWAP DROP -> 0 }T
-T{ CHAR Z PARSE
-   SWAP DROP -> 0 }T
-T{ CHAR " PARSE 4567 "DUP ROT ROT EVALUATE -> 5 4567 }T
- 
+\vf T{ CHAR | PARSE 1234| DUP ROT ROT EVALUATE -> 4 1234 }T
+\vf T{ CHAR ^ PARSE  23 45 ^ DUP ROT ROT EVALUATE -> 7 23 45 }T
+\vf : PA1 [CHAR] $ PARSE DUP >R PAD SWAP CHARS MOVE PAD R> ;
+\vf T{ PA1 3456
+\vf    DUP ROT ROT EVALUATE -> 4 3456 }T
+\vf T{ CHAR A PARSE A SWAP DROP -> 0 }T
+\vf T{ CHAR Z PARSE
+\vf    SWAP DROP -> 0 }T
+\vf T{ CHAR " PARSE 4567 "DUP ROT ROT EVALUATE -> 5 4567 }T
+
 \ -----------------------------------------------------------------------------
-TESTING PARSE-NAME  (Forth 2012)
+\vf TESTING PARSE-NAME  (Forth 2012)
 \ Adapted from the PARSE-NAME RfD tests
-
-T{ PARSE-NAME abcd  STR1  S= -> TRUE }T        \ No leading spaces
-T{ PARSE-NAME      abcde STR2 S= -> TRUE }T    \ Leading spaces
+\vf T{ PARSE-NAME abcd  STR1  S= -> TRUE }T        \ No leading spaces
+\vf T{ PARSE-NAME      abcde STR2 S= -> TRUE }T    \ Leading spaces
 
 \ Test empty parse area, new lines are necessary
-T{ PARSE-NAME
-  NIP -> 0 }T
+\vf T{ PARSE-NAME
+\vf   NIP -> 0 }T
 \ Empty parse area with spaces after PARSE-NAME
-T{ PARSE-NAME         
-  NIP -> 0 }T
+\vf T{ PARSE-NAME
+\vf   NIP -> 0 }T
 
-T{ : PARSE-NAME-TEST ( "name1" "name2" -- n )
-    PARSE-NAME PARSE-NAME S= ; -> }T
-T{ PARSE-NAME-TEST abcd abcd  -> TRUE }T
-T{ PARSE-NAME-TEST abcd   abcd  -> TRUE }T  \ Leading spaces
-T{ PARSE-NAME-TEST abcde abcdf -> FALSE }T
-T{ PARSE-NAME-TEST abcdf abcde -> FALSE }T
-T{ PARSE-NAME-TEST abcde abcde
-   -> TRUE }T         \ Parse to end of line
-T{ PARSE-NAME-TEST abcde           abcde         
-   -> TRUE }T         \ Leading and trailing spaces
+\vf T{ : PARSE-NAME-TEST ( "name1" "name2" -- n )
+\vf     PARSE-NAME PARSE-NAME S= ; -> }T
+\vf T{ PARSE-NAME-TEST abcd abcd  -> TRUE }T
+\vf T{ PARSE-NAME-TEST abcd   abcd  -> TRUE }T  \ Leading spaces
+\vf T{ PARSE-NAME-TEST abcde abcdf -> FALSE }T
+\vf T{ PARSE-NAME-TEST abcdf abcde -> FALSE }T
+\vf T{ PARSE-NAME-TEST abcde abcde
+\vf    -> TRUE }T         \ Parse to end of line
+\vf T{ PARSE-NAME-TEST abcde           abcde
+\vf    -> TRUE }T         \ Leading and trailing spaces
 
 \ -----------------------------------------------------------------------------
 TESTING DEFER DEFER@ DEFER! IS ACTION-OF (Forth 2012)
@@ -704,63 +703,63 @@ T{ : HLD HOLDS ; -> }T
 T{ 0 0 <#  HTEST HLD #> HTEST S= -> TRUE }T
 
 \ -----------------------------------------------------------------------------
-TESTING REFILL SOURCE-ID
+\vf TESTING REFILL SOURCE-ID
 \ REFILL and SOURCE-ID from the user input device can't be tested from a file,
 \ can only be tested from a string via EVALUATE
 
-T{ : RF1  S" REFILL" EVALUATE ; RF1 -> FALSE }T
-T{ : SID1  S" SOURCE-ID" EVALUATE ; SID1 -> -1 }T
+\vf T{ : RF1  S" REFILL" EVALUATE ; RF1 -> FALSE }T
+\vf T{ : SID1  S" SOURCE-ID" EVALUATE ; SID1 -> -1 }T
 
 \ ------------------------------------------------------------------------------
-TESTING S\"  (Forth 2012 compilation mode)
+\vf TESTING S\"  (Forth 2012 compilation mode)
 \ Extended the Forth 200X RfD tests
 \ Note this tests the Core Ext definition of S\" which has unedfined
 \ interpretation semantics. S\" in interpretation mode is tested in the tests on
 \ the File-Access word set
 
-T{ : SSQ1 S\" abc" S" abc" S= ; -> }T  \ No escapes
-T{ SSQ1 -> TRUE }T
-T{ : SSQ2 S\" " ; SSQ2 SWAP DROP -> 0 }T    \ Empty string
+\vf T{ : SSQ1 S\" abc" S" abc" S= ; -> }T  \ No escapes
+\vf T{ SSQ1 -> TRUE }T
+\vf T{ : SSQ2 S\" " ; SSQ2 SWAP DROP -> 0 }T    \ Empty string
 
-T{ : SSQ3 S\" \a\b\e\f\l\m\q\r\t\v\x0F0\x1Fa\xaBx\z\"\\" ; -> }T
-T{ SSQ3 SWAP DROP          ->  20 }T    \ String length
-T{ SSQ3 DROP            C@ ->   7 }T    \ \a   BEL  Bell
-T{ SSQ3 DROP  1 CHARS + C@ ->   8 }T    \ \b   BS   Backspace
-T{ SSQ3 DROP  2 CHARS + C@ ->  27 }T    \ \e   ESC  Escape
-T{ SSQ3 DROP  3 CHARS + C@ ->  12 }T    \ \f   FF   Form feed
-T{ SSQ3 DROP  4 CHARS + C@ ->  10 }T    \ \l   LF   Line feed
-T{ SSQ3 DROP  5 CHARS + C@ ->  13 }T    \ \m        CR of CR/LF pair
-T{ SSQ3 DROP  6 CHARS + C@ ->  10 }T    \           LF of CR/LF pair
-T{ SSQ3 DROP  7 CHARS + C@ ->  34 }T    \ \q   "    Double Quote
-T{ SSQ3 DROP  8 CHARS + C@ ->  13 }T    \ \r   CR   Carriage Return
-T{ SSQ3 DROP  9 CHARS + C@ ->   9 }T    \ \t   TAB  Horizontal Tab
-T{ SSQ3 DROP 10 CHARS + C@ ->  11 }T    \ \v   VT   Vertical Tab
-T{ SSQ3 DROP 11 CHARS + C@ ->  15 }T    \ \x0F      Given Char
-T{ SSQ3 DROP 12 CHARS + C@ ->  48 }T    \ 0    0    Digit follow on
-T{ SSQ3 DROP 13 CHARS + C@ ->  31 }T    \ \x1F      Given Char
-T{ SSQ3 DROP 14 CHARS + C@ ->  97 }T    \ a    a    Hex follow on
-T{ SSQ3 DROP 15 CHARS + C@ -> 171 }T    \ \xaB      Insensitive Given Char
-T{ SSQ3 DROP 16 CHARS + C@ -> 120 }T    \ x    x    Non hex follow on
-T{ SSQ3 DROP 17 CHARS + C@ ->   0 }T    \ \z   NUL  No Character
-T{ SSQ3 DROP 18 CHARS + C@ ->  34 }T    \ \"   "    Double Quote
-T{ SSQ3 DROP 19 CHARS + C@ ->  92 }T    \ \\   \    Back Slash
+\vf T{ : SSQ3 S\" \a\b\e\f\l\m\q\r\t\v\x0F0\x1Fa\xaBx\z\"\\" ; -> }T
+\vf T{ SSQ3 SWAP DROP          ->  20 }T    \ String length
+\vf T{ SSQ3 DROP            C@ ->   7 }T    \ \a   BEL  Bell
+\vf T{ SSQ3 DROP  1 CHARS + C@ ->   8 }T    \ \b   BS   Backspace
+\vf T{ SSQ3 DROP  2 CHARS + C@ ->  27 }T    \ \e   ESC  Escape
+\vf T{ SSQ3 DROP  3 CHARS + C@ ->  12 }T    \ \f   FF   Form feed
+\vf T{ SSQ3 DROP  4 CHARS + C@ ->  10 }T    \ \l   LF   Line feed
+\vf T{ SSQ3 DROP  5 CHARS + C@ ->  13 }T    \ \m        CR of CR/LF pair
+\vf T{ SSQ3 DROP  6 CHARS + C@ ->  10 }T    \           LF of CR/LF pair
+\vf T{ SSQ3 DROP  7 CHARS + C@ ->  34 }T    \ \q   "    Double Quote
+\vf T{ SSQ3 DROP  8 CHARS + C@ ->  13 }T    \ \r   CR   Carriage Return
+\vf T{ SSQ3 DROP  9 CHARS + C@ ->   9 }T    \ \t   TAB  Horizontal Tab
+\vf T{ SSQ3 DROP 10 CHARS + C@ ->  11 }T    \ \v   VT   Vertical Tab
+\vf T{ SSQ3 DROP 11 CHARS + C@ ->  15 }T    \ \x0F      Given Char
+\vf T{ SSQ3 DROP 12 CHARS + C@ ->  48 }T    \ 0    0    Digit follow on
+\vf T{ SSQ3 DROP 13 CHARS + C@ ->  31 }T    \ \x1F      Given Char
+\vf T{ SSQ3 DROP 14 CHARS + C@ ->  97 }T    \ a    a    Hex follow on
+\vf T{ SSQ3 DROP 15 CHARS + C@ -> 171 }T    \ \xaB      Insensitive Given Char
+\vf T{ SSQ3 DROP 16 CHARS + C@ -> 120 }T    \ x    x    Non hex follow on
+\vf T{ SSQ3 DROP 17 CHARS + C@ ->   0 }T    \ \z   NUL  No Character
+\vf T{ SSQ3 DROP 18 CHARS + C@ ->  34 }T    \ \"   "    Double Quote
+\vf T{ SSQ3 DROP 19 CHARS + C@ ->  92 }T    \ \\   \    Back Slash
 
 \ The above does not test \n as this is a system dependent value.
 \ Check it displays a new line
-CR .( The next test should display:)
-CR .( One line...)
-CR .( another line)
-T{ : SSQ4 S\" \nOne line...\nanotherLine\n" type ; SSQ4 -> }T
+\vf CR .( The next test should display:)
+\vf CR .( One line...)
+\vf CR .( another line)
+\vf T{ : SSQ4 S\" \nOne line...\nanotherLine\n" type ; SSQ4 -> }T
 
 \ Test bare escapable characters appear as themselves
-T{ : SSQ5 S\" abeflmnqrtvxz" S" abeflmnqrtvxz" S= ; SSQ5 -> TRUE }T
+\vf T{ : SSQ5 S\" abeflmnqrtvxz" S" abeflmnqrtvxz" S= ; SSQ5 -> TRUE }T
 
-T{ : SSQ6 S\" a\""2DROP 1111 ; SSQ6 -> 1111 }T \ Parsing behaviour
+\vf T{ : SSQ6 S\" a\""2DROP 1111 ; SSQ6 -> 1111 }T \ Parsing behaviour
 
-T{ : SSQ7  S\" 111 : SSQ8 s\\\" 222\" EVALUATE ; SSQ8 333" EVALUATE ; -> }T
-T{ SSQ7 -> 111 222 333 }T
-T{ : SSQ9  S\" 11 : SSQ10 s\\\" \\x32\\x32\" EVALUATE ; SSQ10 33" EVALUATE ; -> }T
-T{ SSQ9 -> 11 22 33 }T
+\vf T{ : SSQ7  S\" 111 : SSQ8 s\\\" 222\" EVALUATE ; SSQ8 333" EVALUATE ; -> }T
+\vf T{ SSQ7 -> 111 222 333 }T
+\vf T{ : SSQ9  S\" 11 : SSQ10 s\\\" \\x32\\x32\" EVALUATE ; SSQ10 33" EVALUATE ; -> }T
+\vf T{ SSQ9 -> 11 22 33 }T
 
 \ -----------------------------------------------------------------------------
 CORE-EXT-ERRORS SET-ERROR-COUNT

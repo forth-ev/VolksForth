@@ -8,7 +8,7 @@
 \ but WITHOUT ANY WARRANTY; without even the implied warranty of
 \ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-\ The tests are not claimed to be comprehensive or correct 
+\ The tests are not claimed to be comprehensive or correct
 \ ------------------------------------------------------------------------------
 \ Version 0.13  Assumptions and dependencies changed
 \         0.12  1 August 2015 test D< acts on MS cells of double word
@@ -57,29 +57,30 @@ T{ : RDL2 -4. ; RDL2 -> -4 -1 }T
 
 VARIABLE OLD-DBASE
 DECIMAL BASE @ OLD-DBASE !
-T{ #12346789. -> 12346789. }T
-T{ #-12346789. -> -12346789. }T
+T{ &12346789. -> 12346789. }T  \ vf: s/#/&/
+T{ -&12346789. -> -12346789. }T  \ vf: s/#-/-&/
 T{ $12aBcDeF. -> 313249263. }T
-T{ $-12AbCdEf. -> -313249263. }T
+T{ -$12AbCdEf. -> -313249263. }T  \ vf: s/$-/-$/
 T{ %10010110. -> 150. }T
-T{ %-10010110. -> -150. }T
+T{ -%10010110. -> -150. }T  \ vf: s/%-/-%/
 \ Check BASE is unchanged
 T{ BASE @ OLD-DBASE @ = -> <TRUE> }T
 
 \ Repeat in Hex mode
 16 OLD-DBASE ! 16 BASE !
-T{ #12346789. -> BC65A5. }T
-T{ #-12346789. -> -BC65A5. }T
+T{ &12346789. -> BC65A5. }T  \ vf: s/#/&/
+T{ -&12346789. -> -BC65A5. }T  \ vf: s/#-/-&/
 T{ $12aBcDeF. -> 12AbCdeF. }T
-T{ $-12AbCdEf. -> -12ABCDef. }T
+T{ -$12AbCdEf. -> -12ABCDef. }T  \ vf: s/$-/-$/
 T{ %10010110. -> 96. }T
-T{ %-10010110. -> -96. }T
+T{ -%10010110. -> -96. }T  \ vf: s/%-/-%/
 \ Check BASE is unchanged
 T{ BASE @ OLD-DBASE @ = -> <TRUE> }T   \ 2
 
 DECIMAL
 \ Check number prefixes in compile mode
-T{ : dnmp  #8327. $-2cbe. %011010111. ; dnmp -> 8327. -11454. 215. }T
+\ vf: s/#/&/ s/$-/-$/
+T{ : dnmp  &8327. -$2cbe. %011010111. ; dnmp -> 8327. -11454. 215. }T
 
 \ ------------------------------------------------------------------------------
 TESTING 2CONSTANT
@@ -235,7 +236,7 @@ T{ MAX-2INT -1. D< -> FALSE }T
 T{ MAX-2INT MIN-2INT D< -> FALSE }T
 T{ MAX-2INT 2DUP -1. D+ D< -> FALSE }T
 T{ MIN-2INT 2DUP  1. D+ D< -> TRUE  }T
-T{ MAX-INTD S>D 2DUP 1. D+ D< -> TRUE }T \ Ensure D< acts on MS cells 
+T{ MAX-INTD S>D 2DUP 1. D+ D< -> TRUE }T \ Ensure D< acts on MS cells
 
 T{ -1. -1. D= -> TRUE  }T
 T{ -1.  0. D= -> FALSE }T
@@ -354,49 +355,49 @@ T{ LO-2INT  -1 M+ -> LO-2INT  -1. D+ }T
 
 : ?FLOORED [ -3 2 / -2 = ] LITERAL IF 1. D- THEN ;
 
-T{  5.  7 11 M*/ ->  3. }T
-T{  5. -7 11 M*/ -> -3. ?FLOORED }T    \ FLOORED -4.
-T{ -5.  7 11 M*/ -> -3. ?FLOORED }T    \ FLOORED -4.
-T{ -5. -7 11 M*/ ->  3. }T
-T{ MAX-2INT  8 16 M*/ -> HI-2INT }T
-T{ MAX-2INT -8 16 M*/ -> HI-2INT DNEGATE ?FLOORED }T  \ FLOORED SUBTRACT 1
-T{ MIN-2INT  8 16 M*/ -> LO-2INT }T
-T{ MIN-2INT -8 16 M*/ -> LO-2INT DNEGATE }T
-T{ MAX-2INT MAX-INTD MAX-INTD M*/ -> MAX-2INT }T
-T{ MAX-2INT MAX-INTD 2/ MAX-INTD M*/ -> MAX-INTD 1- HI-2INT NIP }T
-T{ MIN-2INT LO-2INT NIP 1+ DUP 1- NEGATE M*/ -> 0 MAX-INTD 1- }T
-T{ MIN-2INT LO-2INT NIP 1- MAX-INTD M*/ -> MIN-INTD 3 + HI-2INT NIP 2 + }T
-T{ MAX-2INT LO-2INT NIP DUP NEGATE M*/ -> MAX-2INT DNEGATE }T
-T{ MIN-2INT MAX-INTD DUP M*/ -> MIN-2INT }T
+\vf T{  5.  7 11 M*/ ->  3. }T
+\vf T{  5. -7 11 M*/ -> -3. ?FLOORED }T    \ FLOORED -4.
+\vf T{ -5.  7 11 M*/ -> -3. ?FLOORED }T    \ FLOORED -4.
+\vf T{ -5. -7 11 M*/ ->  3. }T
+\vf T{ MAX-2INT  8 16 M*/ -> HI-2INT }T
+\vf T{ MAX-2INT -8 16 M*/ -> HI-2INT DNEGATE ?FLOORED }T  \ FLOORED SUBTRACT 1
+\vf T{ MIN-2INT  8 16 M*/ -> LO-2INT }T
+\vf T{ MIN-2INT -8 16 M*/ -> LO-2INT DNEGATE }T
+\vf T{ MAX-2INT MAX-INTD MAX-INTD M*/ -> MAX-2INT }T
+\vf T{ MAX-2INT MAX-INTD 2/ MAX-INTD M*/ -> MAX-INTD 1- HI-2INT NIP }T
+\vf T{ MIN-2INT LO-2INT NIP 1+ DUP 1- NEGATE M*/ -> 0 MAX-INTD 1- }T
+\vf T{ MIN-2INT LO-2INT NIP 1- MAX-INTD M*/ -> MIN-INTD 3 + HI-2INT NIP 2 + }T
+\vf T{ MAX-2INT LO-2INT NIP DUP NEGATE M*/ -> MAX-2INT DNEGATE }T
+\vf T{ MIN-2INT MAX-INTD DUP M*/ -> MIN-2INT }T
 
 \ ------------------------------------------------------------------------------
-TESTING D. D.R
+\vf TESTING D. D.R
 
 \ Create some large double numbers
-MAX-2INT 71 73 M*/ 2CONSTANT DBL1
-MIN-2INT 73 79 M*/ 2CONSTANT DBL2
+\vf MAX-2INT 71 73 M*/ 2CONSTANT DBL1
+\vf MIN-2INT 73 79 M*/ 2CONSTANT DBL2
 
-: D>ASCII  ( D -- CADDR U )
-   DUP >R <# DABS #S R> SIGN #>    ( -- CADDR1 U )
-   HERE SWAP 2DUP 2>R CHARS DUP ALLOT MOVE 2R>
-;
+\vf : D>ASCII  ( D -- CADDR U )
+\vf    DUP >R <# DABS #S R> SIGN #>    ( -- CADDR1 U )
+\vf    HERE SWAP 2DUP 2>R CHARS DUP ALLOT MOVE 2R>
+\vf ;
 
-DBL1 D>ASCII 2CONSTANT "DBL1"
-DBL2 D>ASCII 2CONSTANT "DBL2"
+\vf DBL1 D>ASCII 2CONSTANT "DBL1"
+\vf DBL2 D>ASCII 2CONSTANT "DBL2"
 
-: DOUBLEOUTPUT
-   CR ." You should see lines duplicated:" CR
-   5 SPACES "DBL1" TYPE CR
-   5 SPACES DBL1 D. CR
-   8 SPACES "DBL1" DUP >R TYPE CR
-   5 SPACES DBL1 R> 3 + D.R CR
-   5 SPACES "DBL2" TYPE CR
-   5 SPACES DBL2 D. CR
-   10 SPACES "DBL2" DUP >R TYPE CR
-   5 SPACES DBL2 R> 5 + D.R CR
-;
+\vf : DOUBLEOUTPUT
+\vf    CR ." You should see lines duplicated:" CR
+\vf    5 SPACES "DBL1" TYPE CR
+\vf    5 SPACES DBL1 D. CR
+\vf    8 SPACES "DBL1" DUP >R TYPE CR
+\vf    5 SPACES DBL1 R> 3 + D.R CR
+\vf    5 SPACES "DBL2" TYPE CR
+\vf    5 SPACES DBL2 D. CR
+\vf    10 SPACES "DBL2" DUP >R TYPE CR
+\vf    5 SPACES DBL2 R> 5 + D.R CR
+\vf ;
 
-T{ DOUBLEOUTPUT -> }T
+\vf T{ DOUBLEOUTPUT -> }T
 
 \ ------------------------------------------------------------------------------
 TESTING 2ROT DU< (Double Number extension words)
@@ -404,30 +405,30 @@ TESTING 2ROT DU< (Double Number extension words)
 T{ 1. 2. 3. 2ROT -> 2. 3. 1. }T
 T{ MAX-2INT MIN-2INT 1. 2ROT -> MIN-2INT 1. MAX-2INT }T
 
-T{  1.  1. DU< -> FALSE }T
-T{  1. -1. DU< -> TRUE  }T
-T{ -1.  1. DU< -> FALSE }T
-T{ -1. -2. DU< -> FALSE }T
-T{ 0 1   1. DU< -> FALSE }T
-T{ 1.  0 1  DU< -> TRUE  }T
-T{ 0 -1 1 -2 DU< -> FALSE }T
-T{ 1 -2 0 -1 DU< -> TRUE  }T
+\vf T{  1.  1. DU< -> FALSE }T
+\vf T{  1. -1. DU< -> TRUE  }T
+\vf T{ -1.  1. DU< -> FALSE }T
+\vf T{ -1. -2. DU< -> FALSE }T
+\vf T{ 0 1   1. DU< -> FALSE }T
+\vf T{ 1.  0 1  DU< -> TRUE  }T
+\vf T{ 0 -1 1 -2 DU< -> FALSE }T
+\vf T{ 1 -2 0 -1 DU< -> TRUE  }T
 
-T{ MAX-2INT HI-2INT  DU< -> FALSE }T
-T{ HI-2INT  MAX-2INT DU< -> TRUE  }T
-T{ MAX-2INT MIN-2INT DU< -> TRUE }T
-T{ MIN-2INT MAX-2INT DU< -> FALSE }T
-T{ MIN-2INT LO-2INT  DU< -> TRUE }T
+\vf T{ MAX-2INT HI-2INT  DU< -> FALSE }T
+\vf T{ HI-2INT  MAX-2INT DU< -> TRUE  }T
+\vf T{ MAX-2INT MIN-2INT DU< -> TRUE }T
+\vf T{ MIN-2INT MAX-2INT DU< -> FALSE }T
+\vf T{ MIN-2INT LO-2INT  DU< -> TRUE }T
 
 \ ------------------------------------------------------------------------------
-TESTING 2VALUE
+\vf TESTING 2VALUE
 
-T{ 1111 2222 2VALUE 2VAL -> }T
-T{ 2VAL -> 1111 2222 }T
-T{ 3333 4444 TO 2VAL -> }T
-T{ 2VAL -> 3333 4444 }T
-T{ : TO-2VAL TO 2VAL ; 5555 6666 TO-2VAL -> }T
-T{ 2VAL -> 5555 6666 }T
+\vf T{ 1111 2222 2VALUE 2VAL -> }T
+\vf T{ 2VAL -> 1111 2222 }T
+\vf T{ 3333 4444 TO 2VAL -> }T
+\vf T{ 2VAL -> 3333 4444 }T
+\vf T{ : TO-2VAL TO 2VAL ; 5555 6666 TO-2VAL -> }T
+\vf T{ 2VAL -> 5555 6666 }T
 
 \ ------------------------------------------------------------------------------
 

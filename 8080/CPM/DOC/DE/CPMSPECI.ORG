@@ -72,27 +72,22 @@
    =drv= an. =>DRIVE= berechnet daraus, unter welcher Blocknummer
    dieser Block beim momentanen Stand von =OFFSET= erreicht werden
    kann (=block'=). In gewisser Weise Umkehrung von =/DRIVE=.
+ * =?drive-error ( f -- )= "question-drive-error" - Ist =f= = FALSE,
+   so wird "beyond capacity" als Fehlermeldung ausgegeben.
+ * =?drive ( n -- n )= "question-drive" - Überprüft, ob das Laufwerk
+   =n= existiert, und gibt "beyond capacity" als Fehlermeldung aus,
+   wenn dies nicht der Fall ist.
+ * =b/blk ( -- b/blk )= "bytes-per-block" - Eine Konstante die angibt,
+   wieviele Bytes in einen Forth-Block passen. Nach dem Forth-83
+   Standard ist =B/BLK= = &1024.
+ * =bios ( -- addr )= "bios" - Adresse eines 8080-Unterprogramms, das
+   einen Sprung ins BIOS ausführt. Das Low-Byte der Einsprungadresse
+   steht dabei in =HL=. Wird von =con!=, =(key?=, =getkey= und
+   =read/write= benutzt.
+ * =blk/drv ( -- #blk )= "blocks-per-drive" - =#blk= gibt die
+   Kapazität des aktuellen Laufwerks (bestimmt durch =OFFSET=) in
+   Forth-Blöcken (1kB) an. Siehe =(BLK/DRV=.
 
-?drive-error   ( f -- ) "question-drive-error"
-          Ist f=FALSE, so wird "beyond capacity" als Fehlermeldung ausgegeben.
-
-?drive         ( n -- n ) "question-drive"
-          ]berprüft,  ob das Laufwerk n existiert,  und gibt "beyond capacity"
-          als Fehlermeldung aus, wenn dies nicht der Fall ist.
-
-b/blk          ( -- b/blk ) "bytes-per-block"
-          Eine  Konstante  die  angibt,  wieviele Bytes in  einen  Forth-Block
-          passen. Nach dem Forth-83 Standard ist B/BLK = &1024.
-
-bios           ( -- addr )  "bios"
-          Adresse  eines 8080-Unterprogramms,  das einen Sprung ins BIOS  aus
-          führt. Das Low-Byte der Einsprungadresse steht dabei in HL. Wird von
-          con!, (key?, getkey und read/write benutzt.
-
-blk/drv        ( -- #blk ) "blocks-per-drive"
-          #blk  gibt  die Kapazität des aktuellen  Laufwerks  (bestimmt  durch
-          OFFSET) in Forth-Blöcken (1kB) an. Siehe (BLK/DRV.
-.PA
 con!           ( 8b -- )  "con-store"
           Gibt  8b auf die CONsole (Bildschirm) aus.  Ascii-Werte < $20 werden
           als Steuercodes interpretiert.

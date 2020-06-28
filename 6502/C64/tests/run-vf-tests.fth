@@ -3,6 +3,8 @@
 
 include ans-shim.fth
 
+include prelimtest.fth
+
 include tester.fth
 
 \ 1 verbose !
@@ -10,3 +12,10 @@ include tester.fth
 include core.fr
 
 include coreplustest.fth
+
+include utilities.fth
+include errorreport.fth
+
+include coreexttest.fth
+
+REPORT-ERRORS

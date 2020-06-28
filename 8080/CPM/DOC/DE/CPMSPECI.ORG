@@ -13,40 +13,36 @@
    gibt an wieviele Forth-Blöcke (1kB) auf dem Laufwerk =drv= sind.
    Ist =blocks=0=, dann existiert dieses Laufwerk nicht. Siehe
    =BLK/DRV=.
+ * =(cr ( -- )= "paren-c-r" - Setzt den Cursor in die erste Spalte der
+   nächsten Zeile. =PAUSE= wird ausgeführt.
+ * =(decode ( addr pos1 key --- addr pos2 )= "paren-decode" - Wertet
+   =key= aus. =key= wird in der Speicherzelle =addr+pos1= abgelegt und
+   als Echo auf dem Bildschirm ausgegeben. Die Variable =SPAN= und
+   =pos1= werden inkrementiert. Folgende Tasten werden besonders
+   behandelt:
+    - =Control-S= und =Control-D= beeinflussen nur =pos1= und den
+      Cursor.
+    - =Ctrl-G= löscht das Zeichen unter dem Cursor und dekrementiert
+      =SPAN=.
+    - Backspace (=Control-H=) und Delete (=$7F=) löschen das Zeichen
+      links vom Cursor und dekrementieren =pos1= und =SPAN=.
+    - =Control T= fügt an der Cursorposition ein Leerzeichen ein.
+      =SPAN= wird inkrementiert.
+    - =Return= positioniert den Cursor auf das letzte Zeichen.
+   Vergleiche =INPUT:= und =(EXPECT=.
+ * =(del ( -- )= "paren-del" - Löscht ein Zeichen links vom Cursor.
+   Benutzt dabei =CURLEFT=. Vergleiche auch =DEL=.
+ * =(emit ( 8b -- )= "paren-emit" - Gib =8b= auf dem Bildschirm aus.
+   Ein =PAUSE= wird ausgeführt. Alle Werte werden als Zeichen
+   ausgegeben. Steuercodes sind nicht möglich, d.h. alle Werte < $20
+   werden als Punkt "." ausgegeben. Vergleiche =CON!= und =EMIT=.
+ * =(expect ( addr len -- )= "paren-expect" - Erwartet =len= Zeichen
+   vom Eingabegerät, die ab =addr= im Speicher abgelegt werden. Ein
+   Echo der Zeichen wird ausgegeben. =Return= beendet die Eingabe
+   vorzeitig. Ein abschließendes Leerzeichen wird immer ausgegeben.
+   Die Länge der Zeichenkette wird in der Variablen =SPAN= übergeben.
+   Vergleiche =EXPECT=.
 
-(cr            ( -- ) "paren-c-r"
-          Setzt den Cursor in die erste Spalte der n{chsten Zeile.  PAUSE wird
-          ausgeführt.
-
-(decode        ( addr pos1 key --- addr pos2 ) "paren-decode"
-          Wertet key aus. key wird in der Speicherzelle addr+pos1 abgelegt und
-          als Echo auf dem Bildschirm ausgegeben.  Die Variable SPAN und  pos1
-          werden  inkrementiert.  Folgende Tasten werden besonders  behandelt:
-          Control-S und Control-D beeinflussen nur pos1 und den Cursor. Ctrl-G
-          l|scht   das  Zeichen  unter  dem  Cursor  und  dekrementiert  SPAN.
-          Backspace (Control-H) und Delete ($7F) l|schen das Zeichen links vom
-          Cursor  und  dekrementieren pos1 und SPAN.  Control T  fügt  an  der
-          Cursorposition ein Leerzeichen ein.  SPAN wird inkrementiert. Return
-          positioniert  den Cursor auf das letzte Zeichen.
-          Vergleiche INPUT: und (EXPECT.
-
-(del           ( -- ) "paren-del"
-          L|scht ein Zeichen links vom Cursor. Benutzt dabei CURLEFT.
-          Vergleiche auch DEL.
-
-(emit          ( 8b -- ) "paren-emit"
-          Gib 8b auf dem Bildschirm aus. Ein PAUSE wird ausgeführt. Alle Werte
-          werden als Zeichen ausgegeben.  Steuercodes sind nicht m|glich, d.h.
-          alle Werte < $20 werden als Punkt "." ausgegeben.
-          Vergleiche CON! und EMIT.
-
-(expect        ( addr len -- ) "paren-expect"
-          Erwartet  len  Zeichen  vom Eingabeger{t,  die ab addr  im  Speicher
-          abgelegt werden.  Ein Echo der Zeichne wird ausgegeben.  Return  be
-          endet  die  Eingabe vorzeitig.  Ein abschlie~endes Leerzeichen  wird
-          immer ausgegeben.  Die L{nge der Zeichenkette wird in der  Variablen
-          SPAN übergeben. Vergleiche EXPECT.
-.PA
 (key           ( -- char ) "paren-key"
           Wartet  auf  einen Tastendruck.  W{hrend der  Wartezeit  wird  PAUSE
           ausgeführt.  Die  untersten 7 Bit von char enthalten den  Ascii-Code
@@ -247,5 +243,3 @@ Terminal:      ( -- ) "terminal-colon"
 
 trk!           ( trk -- ) "track-store"
           trk ist die beim n{chsten Diskettenzugriff zu verwendende Spur.
-
- 

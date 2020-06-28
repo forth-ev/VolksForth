@@ -3,6 +3,8 @@
 
 include ans-shim.fth
 
+include prelimtest.fth
+
 include tester.fth
 
 \ 1 verbose !

@@ -104,7 +104,7 @@ VARIABLE #ERRS 0 #ERRS !
  ~ removing any unreported underflow
  DEPTH 0< 0= 1+ >IN +! ~ 0 0 >IN ! Remove any underflow
  DEPTH 0= 1+ >IN +! ~ Y !  0 >IN ! Empty the stack
- DEPTH 0= ?T~ Error #14: data stack not emptied 
+ DEPTH 0= ?T~ Error #14: data stack not emptied
 
  4 -5 SWAP 4 = SWAP -5 = = ?T~ Error #15: testing SWAP
  111 222 333 444
@@ -161,7 +161,7 @@ TST5 45 = ?~ Error #44: testing I
 TST6 5 = ?~ Error #45: testing LEAVE
 : TST7  ( -- n1 n2 ) 123 >R 234 R> ;
 TST7 NEGATE + 111 = ?~ Error #46: testing >R R>
-: TST8  ( -- ch )  [CHAR] A ;
+: TST8  ( -- ch )  [CHAR] a ;  \ vf: s/A/a/
 TST8 65 = ?~ Error #47: testing [CHAR]
 : TST9  ( -- )  [CHAR] s [CHAR] s [CHAR] a [CHAR] P 4 0 DO EMIT LOOP ;
 TST9 .MSG(  #22: testing EMIT) CR
@@ -185,7 +185,7 @@ VARIABLE TIMM1 0 TIMM1 !
 ?DEFINED SWAP ?~ Error #50: testing FIND ?DEFINED
 ?DEFINED <<no-such-word-hopefully>> 0= ?~ Error #51 testing FIND ?DEFINED
 
-?DEFINED \ ?~ : \ ~ ; IMMEDIATE 
+?DEFINED \ ?~ : \ ~ ; IMMEDIATE
 \ Error #52: testing \
 : TIMM4  \ Error #53: testing \ is IMMEDIATE
 ;

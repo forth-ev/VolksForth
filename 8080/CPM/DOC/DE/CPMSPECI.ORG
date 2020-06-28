@@ -42,44 +42,36 @@
    vorzeitig. Ein abschließendes Leerzeichen wird immer ausgegeben.
    Die Länge der Zeichenkette wird in der Variablen =SPAN= übergeben.
    Vergleiche =EXPECT=.
-
-(key           ( -- char ) "paren-key"
-          Wartet  auf  einen Tastendruck.  W{hrend der  Wartezeit  wird  PAUSE
-          ausgeführt.  Die  untersten 7 Bit von char enthalten den  Ascii-Code
-          der  gedrückten  Taste.   Steuerzeichen  werden  nicht  ausgewertet,
-          sondern unver{ndert abgeliefert. Vergleiche KEY.
-
-(key?          ( -- flag ) "paren-key-question"
-          flag  ist  TRUE,  wenn  eine  Taste  gedrückt  wurde,  sonst  false.
-          Vergleiche auch KEY?.
-
-(page          ( -- ) "paren-page"
-          L|scht  den Bildschirm,  positioniert den Cursor in die linke  obere
-          Ecke und setzt OUT auf null. Siehe auch LOCATE und PAGE.
-
-(r/w           ( adr blk file r/wf -- flag ) "paren-r-w"
-          Ist r/wf<>FALSE,  wird der Forth-Block mit der absoluten Blocknummer
-          blk von der Diskette gelesen. Ist r/wf=FALSE so wird er geschrieben.
-          adr gibt die Addresse des Block-Puffers an.  file mu~ null sein,  da
-          (r/w den Zugriff auf Files nicht unterstützt. flag ist TRUE wenn ein
-          Diskettenfehler vorlag.
-
-(type          ( addr len -- ) "paren-type"
-          Gibt den String,  der im Speicher bei addr beginnt und die L{nge len
-          hat,  auf dem Blidschirm aus.  Genau ein PAUSE wird nach der Ausgabe
-          ausgführt. Vergleiche TYPE, OUTPUT: und (EMIT.
-
-/drive         ( blk -- blk' drv ) "per-drive"
-          blk   gibt  die  absolute  Nummer  eines  Forth-Blocks  an.   /DRIVE
-          berechnet,  auf  welchem Laufwerk (drv) dieser Block zu finden  ist,
-          und  welche  relative  Blocknummer  (blk')  er  zum  Anfang   dieses
-          Laufwerks hat.  Siehe DRV?, >DRIVE.
-
->drive         ( blk drv -- block' ) "to-drive"
-          blk  gibt die relative Blocknummer eine Forth-Blocks  bezüglich  des
-          Anfangs von Laufwerk drv an.  >DRIVE berechnet daraus, unter welcher
-          Blocknummer  dieser Block beim momentanen Stand von OFFSET  erreicht
-          werden kann (block'). In gewisser Weise Umkehrung von /DRIVE.
+ * =(key ( -- char )= "paren-key" - Wartet auf einen Tastendruck.
+   Während der Wartezeit wird =PAUSE= ausgeführt. Die untersten 7 Bit
+   von =char= enthalten den Ascii-Code der gedrückten Taste.
+   Steuerzeichen werden nicht ausgewertet, sondern unverändert
+   abgeliefert. Vergleiche =KEY=.
+ * =(key? ( -- flag )= "paren-key-question" - =flag= ist =TRUE=, wenn
+   eine Taste gedrückt wurde, sonst false. Vergleiche auch =KEY?=.
+ * =(page ( -- )= "paren-page" - Löscht den Bildschirm, positioniert
+   den Cursor in die linke obere Ecke und setzt =OUT= auf null. Siehe
+   auch =LOCATE= und =PAGE=.
+ * =(r/w ( adr blk file r/wf -- flag )= "paren-r-w" - Ist =r/wf= !=
+   FALSE, wird der Forth-Block mit der absoluten Blocknummer =blk= von
+   der Diskette gelesen. Ist =r/wf= = FALSE so wird er geschrieben.
+   =adr= gibt die Addresse des Block-Puffers an. =file= muß null sein,
+   da =(r/w= den Zugriff auf Files nicht unterstützt. =flag= ist
+   =TRUE= wenn ein Diskettenfehler vorlag.
+ * =(type ( addr len -- )= "paren-type" - Gibt den String, der im
+   Speicher bei =addr= beginnt und die Länge =len= hat, auf dem
+   Blidschirm aus. Genau ein =PAUSE= wird nach der Ausgabe ausgeführt.
+   Vergleiche =TYPE=, =OUTPUT:= und =(EMIT=.
+ * =/drive ( blk -- blk' drv )= "per-drive" - =blk= gibt die absolute
+   Nummer eines Forth-Blocks an. =/DRIVE= berechnet, auf welchem
+   Laufwerk (=drv=) dieser Block zu finden ist, und welche relative
+   Blocknummer (=blk'=) er zum Anfang dieses Laufwerks hat. Siehe
+   =DRV?=, =>DRIVE=.
+ * =>drive ( blk drv -- block' )= "to-drive" - =blk= gibt die relative
+   Blocknummer eine Forth-Blocks bezüglich des Anfangs von Laufwerk
+   =drv= an. =>DRIVE= berechnet daraus, unter welcher Blocknummer
+   dieser Block beim momentanen Stand von =OFFSET= erreicht werden
+   kann (=block'=). In gewisser Weise Umkehrung von =/DRIVE=.
 
 ?drive-error   ( f -- ) "question-drive-error"
           Ist f=FALSE, so wird "beyond capacity" als Fehlermeldung ausgegeben.
@@ -98,8 +90,8 @@ bios           ( -- addr )  "bios"
           con!, (key?, getkey und read/write benutzt.
 
 blk/drv        ( -- #blk ) "blocks-per-drive"
-          #blk  gibt  die Kapazit{t des aktuellen  Laufwerks  (bestimmt  durch
-          OFFSET) in Forth-Bl|cken (1kB) an. Siehe (BLK/DRV.
+          #blk  gibt  die Kapazität des aktuellen  Laufwerks  (bestimmt  durch
+          OFFSET) in Forth-Blöcken (1kB) an. Siehe (BLK/DRV.
 .PA
 con!           ( 8b -- )  "con-store"
           Gibt  8b auf die CONsole (Bildschirm) aus.  Ascii-Werte < $20 werden
@@ -120,24 +112,24 @@ currite        ( -- ) "cur-right"
           Terminalfunktionen.
 
 dark           ( -- ) "dark"
-          L|scht den Bildschirm. Eine der vordefinierten Terminalfunktionen.
+          Löscht den Bildschirm. Eine der vordefinierten Terminalfunktionen.
 
 display        ( -- ) "display"
           Ein  mit OUTPUT:  definiertes Wort,  das den Bildschirm als Ausgabe
-          ger{t anw{hlt,  wenn es ausgeführt wird.  Die Worte EMIT,  CR, TYPE,
+          gerät anwählt,  wenn es ausgeführt wird.  Die Worte EMIT,  CR, TYPE,
           DEL, PAGE, AT, und AT? beziehen sich dann auf das aktuelle Terminal.
           Siehe TERMINAL:.
 
 dma!           ( addr -- ) "d-m-a-store"
-          addr  ist die Adresse des Diskettenpuffers,  der beim n{chsten  Dis
+          addr  ist die Adresse des Diskettenpuffers,  der beim nächsten  Dis
           kettenzugriff verwendet werden soll.
 
 drive          ( n -- ) "drive"
-          W{hlt n als aktuelles Laufwerk an. [ndert OFFSET entsprechend.
+          Wählt n als aktuelles Laufwerk an. [ndert OFFSET entsprechend.
           Siehe BLK/DRV.
 
 drv!           ( drv f -- dph ) "drive-store"
-          drv  ist  die Nummer des Diskettenlaufwerks,  das als n{chstes  ver
+          drv  ist  die Nummer des Diskettenlaufwerks,  das als nächstes  ver
           wendet  werden soll.  f=0 gibt an,  ob es sich um den erste  Zugriff
           nach  einem  CP/M Warmstart handelt.  dph ist die Adresse  des  CP/M
           Disk-Parameter-Headders. (Siehe CP/M Operating System Manual)
@@ -150,26 +142,26 @@ drv?           ( blk -- drv ) "drive-question"
           Siehe /DRIVE, >DRIVE.
 
 drv0           ( -- ) "drive-zero"
-          W{hlt Laufwerk 0 (A) als aktuelles Laufwerk für R/W an.  Siehe DRIVE
+          Wählt Laufwerk 0 (A) als aktuelles Laufwerk für R/W an.  Siehe DRIVE
           und >DRIVE.
 
 drv1           ( -- ) "drive-one"
-          W{hlt Laufwerk 1 (B) als aktuelles Laufwerk für R/W an.  Siehe DRIVE
+          Wählt Laufwerk 1 (B) als aktuelles Laufwerk für R/W an.  Siehe DRIVE
           und >DRIVE.
 
 drvinit        ( -- ) "drive-init"
           Initialisiert das volksFORTH-Disk-System.
           Die  im Komputer-System vorhandenen Laufwerke werden der Reihe  nach
-          selektiert  und  deren  Kapazit{t  berechnet.  Dann  wird  das  CP/M
+          selektiert  und  deren  Kapazität  berechnet.  Dann  wird  das  CP/M
           default-Laufwerk selektiert.
 dumb           ( -- ) "dumb"
           Ein  mit TERMINAL:  definiertes Wort,  das ein ignorantes  Terminal
-          anw{hlt,  wenn es ausgeführt wird.  CURON, CUROFF, CURLEFT, CURRITE,
+          anwählt,  wenn es ausgeführt wird.  CURON, CUROFF, CURLEFT, CURRITE,
           RVSON,  RVSOFF,  DARK und LOCATE haben dann keine Wirkung. Mit ihnen
           auch  die  sie benutzenden Worte  (PAGE,  (AT,  (DEL.  Wenn  DISPLAY
           eingeschaltet ist, sind also auch PAGE, AT und DEL wirkungslos.
-          DUMB  ist als aktuelles Terminal angew{hlt,  bis  die  Installierung
-          eines leistungsf{higeren Terminals abgeschlossen ist.
+          DUMB  ist als aktuelles Terminal angewählt,  bis  die  Installierung
+          eines leistungsfähigeren Terminals abgeschlossen ist.
 
 getkey         ( -- char ) "getkey"
           die  unteren  7  Bit von char enthalten den Ascii-Code  des  letzten
@@ -178,7 +170,7 @@ getkey         ( -- char ) "getkey"
 
 home           ( -- ) "home"
           Der  Kopf des momentan selektierte Diskettenlaufwerks wird auf  Spur
-          null  gefahren.  Spur  null wird als  n{chste  Spur  angew{hlt,  die
+          null  gefahren.  Spur  null wird als  nächste  Spur  angewählt,  die
           verwendet werden soll. Siehe TRK!, DRV!.
 
 index          ( from to -- ) "index"
@@ -189,8 +181,8 @@ index          ( from to -- ) "index"
           chararkterisieren.
 
 keyboard       ( -- ) "keyboard"
-          Ein mit INPUT:  definiertes Wort,  das die Tastatur als Eingabeger{t
-          anw{hlt.  Die Worte KEY,  KEY?,  DECODE und EXPECT beziehen sich nun
+          Ein mit INPUT:  definiertes Wort,  das die Tastatur als Eingabegerät
+          anwählt.  Die Worte KEY,  KEY?,  DECODE und EXPECT beziehen sich nun
           auf die Tastatur. Siehe (KEY, (KEY? (DECODE, (EXPECT.
 
 locate         ( row col -- ) "locate"
@@ -200,13 +192,13 @@ locate         ( row col -- ) "locate"
 
 out            ( -- addr ) "out"
           Adresse  einer  Variablen,  die die Anzahl der ausgegebenen  Zeichen
-          enth{lt.
+          enthält.
 
 read/write     ( r/wf sponti -- f ) "read-write"
           Bewirkt  das  physikalische  Lesen  (r/wf  =  FALSE)  und  Schreiben
           (r/wf=TRUE) eines Sektors (=128 Bytes) von der/auf die Diskette. Das
           Laufwerk,  die Spur , der Sektor sowie der Sektor-Puffer sind vorher
-          mit DRV!, TRK!, SEC! und DMA! gew{hlt worden.
+          mit DRV!, TRK!, SEC! und DMA! gewählt worden.
           sponti  gibt  an,  ob  beim Schreiben unmittelbar auf  die  Diskette
           geschrieben  werden  soll (sponti=TRUE) oder,  ob  der  geschriebene
           Sektor im BIOS zwischengepuffert werden darf (sponti=FALSE).
@@ -220,7 +212,7 @@ rvson          ( -- ) "reverse-on"
           Terminalfunktionen.
 
 sec!           ( sec -- ) "sec-store"
-          sec ist der beim n{chsten Diskettenzugriff zu verwendende Sektor.
+          sec ist der beim nächsten Diskettenzugriff zu verwendende Sektor.
 .PA
 Term:          ( offset -- offset' ) "term-colon"
           Ein definierendes Wort für Terminalfunktionen.  Wird benutzt um  die
@@ -235,11 +227,11 @@ Terminal:      ( -- ) "terminal-colon"
                newRVSON newRVSOFF newDARK    newLOACTE ;
           TERMINAL: erzeugt einen Kopf für <name> im Dictionary und kompiliert
           einen  Vektor von Zeigern auf Worte die für die Ausführung von  Ter
-          minalfunktionen  zust{ndig sind.  Wird <name> ausgeführt,  so werden
+          minalfunktionen  zuständig sind.  Wird <name> ausgeführt,  so werden
           die  Terminalfunktionen  von  <name>  zu  den  aktuellen   Terminal
           funktionen gemacht,  das Terminal <name> ist damit aktiv.  Terminal
           funktionen werden von AT, PAGE, DEL ausgeführt, wenn die Ausgabe auf
           DISPLAY geschaltet ist. Siehe OUTPUT:, DISPLAY, DUMB.
 
 trk!           ( trk -- ) "track-store"
-          trk ist die beim n{chsten Diskettenzugriff zu verwendende Spur.
+          trk ist die beim nächsten Diskettenzugriff zu verwendende Spur.

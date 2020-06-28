@@ -12,7 +12,7 @@ Eine genaue Darstellung der Funktionsweise findet sich in dem Artikel
 von John J. Cassady in den FORTH-Dimensions (Jahrgang III/6 Seite
 180f), an dessen Implementation sich die volksFORTH-Version anlehnt.
 
-Der 8080-Assmebler erlaubt strukturierte Programmierung. Er
+Der 8080-Assembler erlaubt strukturierte Programmierung. Er
 verwendet die gleichen Strukturelemente, wie der 6502-Assembler. Vor
 den Kontrollstrukturen sind folgende Condition Codes zulässig:
 

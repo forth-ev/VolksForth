@@ -2,6 +2,9 @@
 set -e
 
 test -n "$VICE" || VICE=x64
+test -n "$DISK9" || DISK9=empty
+test -n "$DISK10" || DISK10=empty
+test -n "$DISK11" || DISK11=empty
 emulatordir="$(realpath --relative-to="$PWD" "$(dirname "${BASH_SOURCE[0]}")")"
 basedir="$(realpath --relative-to="$PWD" "${emulatordir}/..")"
 
@@ -29,9 +32,9 @@ fi
   -drive10type 1541 \
   -drive11type 1541 \
   -fs8 "${basedir}/cbmfiles" \
-  -9 "${basedir}/disks/vforth4_1.d64" \
-  -10 "${basedir}/disks/vforth4_3.d64" \
-  -11 "${basedir}/disks/file-words.d64" \
+  -9 "${basedir}/disks/${DISK9}.d64" \
+  -10 "${basedir}/disks/${DISK10}.d64" \
+  -11 "${basedir}/disks/${DISK11}.d64" \
   -symkeymap "${emulatordir}/x11_sym_vf_de.vkm" \
   -keymap 2 \
   $autostart \

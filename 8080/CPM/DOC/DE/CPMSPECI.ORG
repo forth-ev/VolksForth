@@ -1,29 +1,18 @@
 #+Title: CP/M 2.2 - spezifische Worte
 
- * =#bs            ( -- n )= "number-backspace"
-          n ist der Ascii-Wert für Backspace.
-
- * =#cr            ( -- n )= "number-c-r"
-          n ist der Ascii-Wert für Carriage-Return.
-
-#esc           ( -- n ) "number-escape"
-          n ist der Ascii-Wert für Escape.
-
-#lf            ( -- n ) "number-linefeed"
-          n ist der Ascii-Wert für Linefeed.
-
-(at            ( row col -- ) "paren-at"
-          Positioniert den Cursor in die Zeile row,  Spalte col und setzt OUT.
-          Benutzt dabei LOCATE. Siehe auch AT.
-
-(at?           ( -- row col ) "paren-at-question"
-          row ist die aktuelle Zeilennummer, col die aktuelle Spaltennummer.
-          Vergleiche AT?
-
-(blk/drv       ( drv -- blocks ) "paren-blocks-per-drive"
-          blocks  gibt  an wieviele Forth-Bl|cke (1kB) auf  dem  Laufwerk  drv
-          sind.  Ist  blocks=0,  dann existiert dieses Laufwerk  nicht.
-          Siehe BLK/DRV.
+ * =#bs            ( -- n )= "number-backspace" - =n= ist der Ascii-Wert für Backspace.
+ * =#cr            ( -- n )= "number-c-r" - =n= ist der Ascii-Wert für Carriage-Return.
+ * =#esc           ( -- n )= "number-escape" - =n= ist der Ascii-Wert für Escape.
+ * =#lf            ( -- n )= "number-linefeed" - =n= ist der Ascii-Wert für Linefeed.
+ * =(at ( row col -- )= "paren-at" - Positioniert den Cursor in die
+   Zeile =row=, Spalte =col= und setzt =OUT=. Benutzt dabei =LOCATE=.
+   Siehe auch =AT=.
+ * =(at? ( -- row col )= "paren-at-question" - =row= ist die aktuelle
+   Zeilennummer, =col= die aktuelle Spaltennummer. Vergleiche =AT?=
+ * =(blk/drv ( drv -- blocks )= "paren-blocks-per-drive" - =blocks=
+   gibt an wieviele Forth-Blöcke (1kB) auf dem Laufwerk =drv= sind.
+   Ist =blocks=0=, dann existiert dieses Laufwerk nicht. Siehe
+   =BLK/DRV=.
 
 (cr            ( -- ) "paren-c-r"
           Setzt den Cursor in die erste Spalte der n{chsten Zeile.  PAUSE wird

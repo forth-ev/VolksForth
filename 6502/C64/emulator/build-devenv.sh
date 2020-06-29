@@ -13,4 +13,5 @@ rm -f "${basedir}/cbmfiles/devenv"
 keybuf="2 drive 19 load\n47 load\n1 drive 26 load\n3 drive 10 load\n\
 savesystem devenv\ndos s0:notdone\n"
 
-"${emulatordir}/run-in-vice.sh" "c64-volksforth83" "${keybuf}"
+DISK9=vforth4_1 DISK10=vforth4_3 DISK11=file-words \
+  "${emulatordir}/run-in-vice.sh" "c64-volksforth83" "${keybuf}"

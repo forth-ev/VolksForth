@@ -75,3 +75,27 @@
 
  : HOLDS ( addr u -- )
    BEGIN DUP WHILE 1- 2DUP + C@ HOLD REPEAT 2DROP ;
+
+: 2Variable  ( --)   Create 4 allot ;
+             ( -- adr)
+
+: 2Constant  ( d --)   Create , ,
+  Does> ( -- d)   2@ ;
+
+: 2literal  swap [compile] literal [compile] literal ;
+immediate restrict
+
+: d-  dnegate d+ ;
+: d0<  0. d< ;
+: d2*  2dup d+ ;
+: d2/  dup 1 and -rot 2/ >r
+  1 rshift  swap IF $8000 or THEN r> ;
+
+: dmax  2over 2over d< IF 2swap THEN 2drop ;
+: dmin  2over 2over 2swap d< IF 2swap THEN 2drop ;
+
+: d>s  drop ;
+
+: m+  extend d+ ;
+
+: 2rot  5 roll 5 roll ;

@@ -18,4 +18,6 @@ include errorreport.fth
 
 include coreexttest.fth
 
+include doubletest.fth
+
 REPORT-ERRORS

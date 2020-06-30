@@ -1,4 +1,8 @@
 
+include logtofile.fth
+
+logopen" test.log"
+
 : \vf  [compile] \ ; immediate
 
 include ans-shim.fth
@@ -21,3 +25,5 @@ include coreexttest.fth
 include doubletest.fth
 
 REPORT-ERRORS
+
+logclose

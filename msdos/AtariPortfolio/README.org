@@ -1,0 +1,22 @@
+#+Title: VolksForth MS-DOS for Atari Portfolio
+
+The Atari Portfolio is a portable, MS-DOS compatible palmtop computer
+released by Atari in 1989
+(https://en.wikipedia.org/wiki/Atari_Portfolio).
+
+The Portfolio uses an Intel 80C88 CPU running at 4.9152 MHz and runs
+"DIP Operating System 2.11" (DIP DOS), an operating system mostly
+compatible to MS-DOS 2.11, but with some DOS 2.xx functionality
+lacking and some internal data structures more compatible with DOS
+3.xx. It has 128 KB of RAM and 256 KB of ROM which contains the OS and
+built-in applications. The on-board RAM is divided between system
+memory and local storage (the C: drive). The LCD is monochrome without
+backlight and had 240×64 pixels or 40 characters × 8 lines.
+
+* Files:
+
+ * =pofo.fb= - Atari Portfolio System Enhancements
+ * =pofo.vid= - Atari Portfolio Video Driver (for 40x8 line display)
+ * =pofo.sys= - load file to generate a full VolksForth for the Atari Portfolio
+ * =kernel.com= - Vanilla VolksForth Kernel
+ * =pofo4th.com= - VolksForth for Atari Portfolio

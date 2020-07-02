@@ -34,6 +34,17 @@ run-testbase16: emulator/testbase16.T64
 	VICE=xplus4 emulator/run-in-vice.sh testbase16
 
 
+# Targetcompiler targets
+
+cbmfiles/tcbase: emulator/testbase.T64 emulator/build-tcbase.sh \
+    disks/vforth4_2.d64  disks/tc38q.d64 cbmfiles/mk-tcbase.fth
+	emulator/build-tcbase.sh
+
+cbmfiles/vf83-c64: emulator/tcbase.T64 emulator/build-c64forth.sh \
+    disks/vforth4_2.d64  disks/tc38q.d64 cbmfiles/mk-c64forth.fth
+	emulator/build-c64forth.sh
+
+
 # Core test targets
 
 test-c64.result: emulator/testbase.T64 $(test_files_petscii) \
@@ -77,6 +88,9 @@ emulator/%.T64: cbmfiles/%
 
 
 # Generic rule for populating cbmfiles/ with PETSCII text files
+
+cbmfiles/%.fth: src/%.fth
+	ascii2petscii $< $@
 
 cbmfiles/%.fth: tests/%.fth
 	ascii2petscii $< $@

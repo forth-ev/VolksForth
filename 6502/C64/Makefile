@@ -15,7 +15,7 @@ vf_blk_fth: $(vf_blk_fth_files)
 
 
 clean:
-	rm -f cbmfiles/*.fr cbmfiles/%.fth *.log *.result
+	rm -f cbmfiles/*.fr cbmfiles/*.fth cbmfiles/*.log *.log *.result
 
 
 # Convenience targets

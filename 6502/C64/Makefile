@@ -14,7 +14,15 @@ test_files_petscii = $(patsubst tests/%, cbmfiles/%, $(test_files))
 vf_blk_fth: $(vf_blk_fth_files)
 
 
+clean:
+	rm -f cbmfiles/*.fr cbmfiles/*.fth cbmfiles/*.log *.log *.result
+
+
 # Convenience targets
+
+test: test-c64.result test-c16.result
+
+test64: test-c64.result
 
 run-devenv: emulator/devenv.T64
 	emulator/run-in-vice.sh devenv
@@ -22,16 +30,27 @@ run-devenv: emulator/devenv.T64
 run-testbase: emulator/testbase.T64
 	emulator/run-in-vice.sh testbase
 
-test: emulator/testbase.T64 $(test_files_petscii)
-	emulator/run-in-vice.sh testbase \
-	  "include run-vf-tests.fth\n"
-
 run-testbase16: emulator/testbase16.T64
 	VICE=xplus4 emulator/run-in-vice.sh testbase16
 
-test16: emulator/testbase.T64 $(test_files_petscii)
+
+# Core test targets
+
+test-c64.result: emulator/testbase.T64 $(test_files_petscii) \
+    emulator/run-in-vice.sh tests/evaluate-test.sh tests/test-c64.golden
+	rm -f test-c64.log test-c64.result
+	emulator/run-in-vice.sh testbase \
+	  "include run-vf-tests.fth\n1234567890\ndos s0:notdone\n"
+	petscii2ascii cbmfiles/test.log test-c64.log
+	tests/evaluate-test.sh test-c64
+
+test-c16.result: emulator/testbase16.T64 $(test_files_petscii) \
+    emulator/run-in-vice.sh tests/evaluate-test.sh tests/test-c16.golden
+	rm -f test-c16.log test-c16.result
 	VICE=xplus4 emulator/run-in-vice.sh testbase16 \
-	  "include run-vf-tests.fth\n"
+	  "include run-vf-tests.fth\n1234567890\ndos s0:notdone\n"
+	petscii2ascii cbmfiles/test.log test-c16.log
+	tests/evaluate-test.sh test-c16
 
 
 # Rules for building Forth binaries on top of the plain vanilla

@@ -1,4 +1,8 @@
 
+include logtofile.fth
+
+logopen" test.log"
+
 : \vf  [compile] \ ; immediate
 
 include ans-shim.fth
@@ -13,11 +17,16 @@ include core.fr
 
 include coreplustest.fth
 
-include utilities.fth
-include errorreport.fth
+\ The C16 VolksForth has LIMIT at $8000.
+\ More tests than up to here fill the dictionary.
 
-include coreexttest.fth
+(64 include utilities.fth C)
+(64 include errorreport.fth C)
 
-include doubletest.fth
+(64 include coreexttest.fth C)
 
-REPORT-ERRORS
+(64 include doubletest.fth C)
+
+(64 REPORT-ERRORS C)
+
+logclose

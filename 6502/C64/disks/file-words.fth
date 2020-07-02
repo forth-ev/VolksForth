@@ -281,7 +281,7 @@
 
 \ *** Block No. 10, Hexblock a
 
-\ include loadscreen           14jun20pz
+\ include loadscreen           30jun20pz
 
 
   : i/o-status?  $90 c@ ;
@@ -300,9 +300,9 @@
   1 4 +thru
 
 
+  : .filename  2dup cr type ;
 
-
-
+  ' .filename IS on-fload
 
 
 
@@ -337,16 +337,16 @@
 
 \ *** Block No. 12, Hexblock c
 
-\   fload-open  fload-close    09jun20pz
+\   fload-open  fload-close    30jun20pz
 
 | : i/o-status?abort  i/o-status? IF cr
    fload-dev @ dos-error abort THEN ;
 
+  defer on-fload  ' noop is on-fload
 | : fload-open ( addr c -- )
- fload-dev @
+ on-fload  fload-dev @
  fload-2nd @ 1- dup fload-2nd !
- busopen
- 2dup cr type bustype
+ busopen bustype
  " ,s,r" count bustype busoff
  i/o-status?abort ;
 

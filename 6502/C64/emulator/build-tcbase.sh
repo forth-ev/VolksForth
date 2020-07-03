@@ -10,4 +10,4 @@ keybuf="2 drive 4 load\ninclude mk-tcbase.fth\n\
 savesystem tcbase\ndos s0:notdone\n"
 
 DISK9=vforth4_2 DISK10=tc38q "${emulatordir}/run-in-vice.sh" \
-  "testbase" "${keybuf}"
+  "c64-testbase" "${keybuf}"

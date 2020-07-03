@@ -3,6 +3,9 @@
 # the file format conversion tools from the tools/ subdir of
 # https://github.com/pzembrod/cc64 to be installed.
 
+# VERSION=volksforth83
+VERSION=vf-latest
+
 vf_blk_d64_files = $(wildcard disks/*.d64)
 vf_blk_fth_files = $(patsubst %.d64, %.fth, $(vf_blk_d64_files))
 
@@ -16,6 +19,7 @@ vf_blk_fth: $(vf_blk_fth_files)
 
 clean:
 	rm -f cbmfiles/*.fr cbmfiles/*.fth cbmfiles/*.log *.log *.result
+	rm -f cbmfiles/c??-testbase
 
 
 # Convenience targets
@@ -36,29 +40,35 @@ run-testbase16: emulator/testbase16.T64
 
 # Targetcompiler targets
 
-cbmfiles/tcbase: emulator/testbase.T64 emulator/build-tcbase.sh \
+cbmfiles/tcbase: emulator/c64-testbase.T64 emulator/build-tcbase.sh \
     disks/vforth4_2.d64  disks/tc38q.d64 cbmfiles/mk-tcbase.fth
 	emulator/build-tcbase.sh
 
-cbmfiles/vf83-c64: emulator/tcbase.T64 emulator/build-c64forth.sh \
+cbmfiles/c64-vf-latest: emulator/tcbase.T64 emulator/build-c64forth.sh \
     disks/vforth4_2.d64  disks/tc38q.d64 cbmfiles/mk-c64forth.fth
 	emulator/build-c64forth.sh
 
+# Temp stopgap to fit c16 into default use of VERSION=vf-latest
+# until we have a proper c16 targetcompiler rule.
+# Missing part: Moving the target machine definition from vforth4_2.d64
+# screen 9 to somewhere more flexible. Likely two .fth files.
+cbmfiles/c16-vf-latest: cbmfiles/c16-volksforth83
+	cp $< $@
 
 # Core test targets
 
-test-c64.result: emulator/testbase.T64 $(test_files_petscii) \
+test-c64.result: emulator/c64-testbase.T64 $(test_files_petscii) \
     emulator/run-in-vice.sh tests/evaluate-test.sh tests/test-c64.golden
 	rm -f test-c64.log test-c64.result
-	emulator/run-in-vice.sh testbase \
+	emulator/run-in-vice.sh c64-testbase \
 	  "include run-vf-tests.fth\n1234567890\ndos s0:notdone\n"
 	petscii2ascii cbmfiles/test.log test-c64.log
 	tests/evaluate-test.sh test-c64
 
-test-c16.result: emulator/testbase16.T64 $(test_files_petscii) \
+test-c16.result: emulator/c16-testbase.T64 $(test_files_petscii) \
     emulator/run-in-vice.sh tests/evaluate-test.sh tests/test-c16.golden
 	rm -f test-c16.log test-c16.result
-	VICE=xplus4 emulator/run-in-vice.sh testbase16 \
+	VICE=xplus4 emulator/run-in-vice.sh c16-testbase \
 	  "include run-vf-tests.fth\n1234567890\ndos s0:notdone\n"
 	petscii2ascii cbmfiles/test.log test-c16.log
 	tests/evaluate-test.sh test-c16
@@ -72,13 +82,13 @@ cbmfiles/devenv: emulator/run-in-vice.sh emulator/build-devenv.sh \
      disks/vforth4_1.d64  disks/vforth4_3.d64  disks/file-words.d64
 	emulator/build-devenv.sh
 
-cbmfiles/testbase: emulator/run-in-vice.sh emulator/build-testbase.sh \
-    emulator/c64-volksforth83.T64 disks/file-words.d64
-	emulator/build-testbase.sh
+cbmfiles/c64-testbase: emulator/run-in-vice.sh emulator/build-testbase.sh \
+    emulator/c64-$(VERSION).T64 disks/file-words.d64
+	emulator/build-testbase.sh c64 $(VERSION)
 
-cbmfiles/testbase16: emulator/run-in-vice.sh emulator/build-testbase.sh \
-    emulator/c16-volksforth83.T64 disks/file-words.d64
-	emulator/build-testbase16.sh
+cbmfiles/c16-testbase: emulator/run-in-vice.sh emulator/build-testbase.sh \
+    emulator/c16-$(VERSION).T64 disks/file-words.d64
+	VICE=xplus4 emulator/build-testbase.sh c16 $(VERSION)
 
 
 # Generic T64 tape image rule

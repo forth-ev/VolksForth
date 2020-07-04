@@ -28,6 +28,12 @@ test: test-c64.result test-c16.result
 
 test64: test-c64.result
 
+# Temporary bincmp target while the old and the new binaries are still
+# expected to be binary identical.
+bincmp:
+	cmp cbmfiles/c64-vf-latest cbmfiles/c64-volksforth83
+	cmp cbmfiles/c16-vf-latest cbmfiles/c16-volksforth83
+
 run-devenv: emulator/devenv.T64
 	emulator/run-in-vice.sh devenv
 

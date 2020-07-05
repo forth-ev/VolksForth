@@ -51,7 +51,7 @@ cbmfiles/tcbase: emulator/c64-testbase.T64 emulator/build-tcbase.sh \
 	emulator/build-tcbase.sh
 
 cbmfiles/c64-vf-latest: emulator/tcbase.T64 emulator/build-c64forth.sh \
-    disks/vforth4_2.d64  disks/tc38q.d64 cbmfiles/mk-c64forth.fth
+    disks/vforth4_2.d64 disks/tc38q.d64 cbmfiles/vf-c64-main.fth
 	emulator/build-c64forth.sh
 
 # Temp stopgap to fit c16 into default use of VERSION=vf-latest

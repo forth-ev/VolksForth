@@ -48,8 +48,8 @@ run-testbase16: emulator/testbase16.T64
 
 # Targetcompiler targets
 
-cbmfiles/tcbase: emulator/c64-testbase.T64 emulator/build-tcbase.sh \
-    disks/tc38q.d64 cbmfiles/tc-base.fth
+cbmfiles/tcbase: emulator/c64-volksforth83.T64 emulator/build-tcbase.sh \
+    disks/tc38q.d64 disks/file-words.d64 cbmfiles/tc-base.fth
 	emulator/build-tcbase.sh
 
 cbmfiles/c64-vf-latest: emulator/tcbase.T64 emulator/build-vf.sh \
@@ -99,8 +99,8 @@ cbmfiles/c64-testbase: emulator/run-in-vice.sh emulator/build-testbase.sh \
 	emulator/build-testbase.sh c64 $(VERSION)
 
 cbmfiles/c16-testbase: emulator/run-in-vice.sh emulator/build-testbase.sh \
-    emulator/c16-$(VERSION).T64 disks/file-words.d64
-	VICE=xplus4 emulator/build-testbase.sh c16 $(VERSION)
+    emulator/c16p-$(VERSION).T64 disks/file-words.d64
+	VICE=xplus4 emulator/build-testbase.sh c16p $(VERSION)
 
 
 # Generic T64 tape image rule

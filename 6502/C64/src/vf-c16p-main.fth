@@ -20,15 +20,24 @@ cr .( Host is: )
        : )     ; immediate
        : (C    ; immediate
 
-       : (C64  ; immediate
-\      : (C16  ; immediate
-\      : (C16+ ; immediate
+\      : (C64  ; immediate
+       : (C16  ; immediate
+       : (C16+ ; immediate
 \      : (C16- ; immediate
 
-\      : (C64  [compile] ( ; immediate
-       : (C16  [compile] ( ; immediate
-       : (C16+ [compile] ( ; immediate
+       : (C64  [compile] ( ; immediate
+\      : (C16  [compile] ( ; immediate
+\      : (C16+ [compile] ( ; immediate
        : (C16- [compile] ( ; immediate
+
+\ *** Block No. 10, Hexblock a
+
+\ load/remove  JSR-Macros    clv14.4.87)
+
+Assembler also definitions
+
+\needs C16+Jsr          8 load
+' C16+Jsr Is Jsr .( JSR Is:C16+  )
 
 
 include vf-main.fth

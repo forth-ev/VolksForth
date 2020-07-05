@@ -8,6 +8,8 @@ VERSION=vf-latest
 
 vf_blk_d64_files = $(wildcard disks/*.d64)
 vf_blk_fth_files = $(patsubst %.d64, %.fth, $(vf_blk_d64_files))
+vf_fth_files = $(wildcard src/vf-*.fth)
+vf_fth_files_petscii = $(patsubst src/%, cbmfiles/%, $(vf_fth_files))
 
 test_files = $(wildcard tests/*.f*)
 test_files_petscii = $(patsubst tests/%, cbmfiles/%, $(test_files))
@@ -32,7 +34,7 @@ test64: test-c64.result
 # expected to be binary identical.
 bincmp:
 	cmp cbmfiles/c64-vf-latest cbmfiles/c64-volksforth83
-	cmp cbmfiles/c16-vf-latest cbmfiles/c16-volksforth83
+	cmp cbmfiles/c16p-vf-latest cbmfiles/c16-volksforth83
 
 run-devenv: emulator/devenv.T64
 	emulator/run-in-vice.sh devenv
@@ -50,16 +52,18 @@ cbmfiles/tcbase: emulator/c64-testbase.T64 emulator/build-tcbase.sh \
     disks/tc38q.d64 cbmfiles/tc-base.fth
 	emulator/build-tcbase.sh
 
-cbmfiles/c64-vf-latest: emulator/tcbase.T64 emulator/build-c64forth.sh \
-    disks/vforth4_2.d64 disks/tc38q.d64 cbmfiles/vf-c64-main.fth
-	emulator/build-c64forth.sh
+cbmfiles/c64-vf-latest: emulator/tcbase.T64 emulator/build-vf.sh \
+    disks/vforth4_2.d64 disks/tc38q.d64 $(vf_fth_files_petscii)
+	emulator/build-vf.sh vf-c64-main.fth c64-vf-latest
 
-# Temp stopgap to fit c16 into default use of VERSION=vf-latest
-# until we have a proper c16 targetcompiler rule.
-# Missing part: Moving the target machine definition from vforth4_2.d64
-# screen 9 to somewhere more flexible. Likely two .fth files.
-cbmfiles/c16-vf-latest: cbmfiles/c16-volksforth83
-	cp $< $@
+cbmfiles/c16-vf-latest: emulator/tcbase.T64 emulator/build-vf.sh \
+    disks/vforth4_2.d64 disks/tc38q.d64 $(vf_fth_files_petscii)
+	emulator/build-vf.sh vf-c16-main.fth c16-vf-latest
+
+cbmfiles/c16p-vf-latest: emulator/tcbase.T64 emulator/build-vf.sh \
+    disks/vforth4_2.d64 disks/tc38q.d64 $(vf_fth_files_petscii)
+	emulator/build-vf.sh vf-c16p-main.fth c16p-vf-latest
+
 
 # Core test targets
 

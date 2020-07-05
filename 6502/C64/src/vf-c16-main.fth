@@ -20,15 +20,15 @@ cr .( Host is: )
        : )     ; immediate
        : (C    ; immediate
 
-       : (C64  ; immediate
-\      : (C16  ; immediate
+\      : (C64  ; immediate
+       : (C16  ; immediate
 \      : (C16+ ; immediate
-\      : (C16- ; immediate
+       : (C16- ; immediate
 
-\      : (C64  [compile] ( ; immediate
-       : (C16  [compile] ( ; immediate
+       : (C64  [compile] ( ; immediate
+\      : (C16  [compile] ( ; immediate
        : (C16+ [compile] ( ; immediate
-       : (C16- [compile] ( ; immediate
+\      : (C16- [compile] ( ; immediate
 
 
 include vf-main.fth

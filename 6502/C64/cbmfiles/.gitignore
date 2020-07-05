@@ -1,3 +1,5 @@
 *.fth
 core.fr
 notdone
+c64-testbase
+c16-testbase

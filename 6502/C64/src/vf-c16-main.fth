@@ -6,8 +6,9 @@ hex
 1 drive
 
 Onlyforth hex
-  c    load   \ clear memory and
-  d e  thru   \ clr labels  .status
+\ clear memory and clr labels  .status
+include vf-tc-prep.fth
+
 
 \ *** Block No. 9, Hexblock 9
 

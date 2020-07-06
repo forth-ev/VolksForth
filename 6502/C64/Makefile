@@ -99,8 +99,8 @@ cbmfiles/c64-testbase: emulator/run-in-vice.sh emulator/build-testbase.sh \
 	emulator/build-testbase.sh c64 $(VERSION)
 
 cbmfiles/c16-testbase: emulator/run-in-vice.sh emulator/build-testbase.sh \
-    emulator/c16p-$(VERSION).T64 disks/file-words.d64
-	VICE=xplus4 emulator/build-testbase.sh c16p $(VERSION)
+    emulator/c16-$(VERSION).T64 disks/file-words.d64
+	VICE=xplus4 emulator/build-testbase.sh c16 $(VERSION)
 
 
 # Generic T64 tape image rule

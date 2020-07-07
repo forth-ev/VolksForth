@@ -1,5 +1,7 @@
 
-: edit  list ;
+\ loadfile for the resident part of the target compiler.
+
+' list alias edit
 
 : .blk  ( -)
  blk @ ?dup IF  ."  Blk " u. ?cr  THEN ;

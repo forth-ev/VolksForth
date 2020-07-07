@@ -8,6 +8,8 @@ VERSION=vf-latest
 
 vf_blk_d64_files = $(wildcard disks/*.d64)
 vf_blk_fth_files = $(patsubst %.d64, %.fth, $(vf_blk_d64_files))
+vf_fth_files = $(wildcard src/vf-*.fth)
+vf_fth_files_petscii = $(patsubst src/%, cbmfiles/%, $(vf_fth_files))
 
 test_files = $(wildcard tests/*.f*)
 test_files_petscii = $(patsubst tests/%, cbmfiles/%, $(test_files))
@@ -28,6 +30,12 @@ test: test-c64.result test-c16.result
 
 test64: test-c64.result
 
+# Temporary bincmp target while the old and the new binaries are still
+# expected to be binary identical.
+bincmp: cbmfiles/c64-vf-latest cbmfiles/c16-vf-latest
+	cmp cbmfiles/c64-vf-latest cbmfiles/c64-volksforth83
+	cmp cbmfiles/c16-vf-latest cbmfiles/c16-volksforth83
+
 run-devenv: emulator/devenv.T64
 	emulator/run-in-vice.sh devenv
 
@@ -40,20 +48,24 @@ run-testbase16: emulator/testbase16.T64
 
 # Targetcompiler targets
 
-cbmfiles/tcbase: emulator/c64-testbase.T64 emulator/build-tcbase.sh \
-    disks/vforth4_2.d64  disks/tc38q.d64 cbmfiles/mk-tcbase.fth
+cbmfiles/tcbase: emulator/c64-volksforth83.T64 emulator/build-tcbase.sh \
+    disks/tc38q.d64 disks/file-words.d64 cbmfiles/tc-base.fth
 	emulator/build-tcbase.sh
 
-cbmfiles/c64-vf-latest: emulator/tcbase.T64 emulator/build-c64forth.sh \
-    disks/vforth4_2.d64  disks/tc38q.d64 cbmfiles/mk-c64forth.fth
-	emulator/build-c64forth.sh
+cbmfiles/c64-vf-latest: emulator/tcbase.T64 emulator/build-vf.sh \
+    disks/vforth4_2.d64 disks/tc38q.d64 $(vf_fth_files_petscii)
+	emulator/build-vf.sh vf-c64-main.fth c64-vf-latest
 
-# Temp stopgap to fit c16 into default use of VERSION=vf-latest
-# until we have a proper c16 targetcompiler rule.
-# Missing part: Moving the target machine definition from vforth4_2.d64
-# screen 9 to somewhere more flexible. Likely two .fth files.
-cbmfiles/c16-vf-latest: cbmfiles/c16-volksforth83
-	cp $< $@
+# C16 with 64 kB RAM or Plus4 - called (C16+ in the sources.
+cbmfiles/c16-vf-latest: emulator/tcbase.T64 emulator/build-vf.sh \
+    disks/vforth4_2.d64 disks/tc38q.d64 $(vf_fth_files_petscii)
+	emulator/build-vf.sh vf-c16-main.fth c16-vf-latest
+
+# C16 with 32 kB RAM - called (C16- in the sources.
+cbmfiles/c16-vf-32k: emulator/tcbase.T64 emulator/build-vf.sh \
+    disks/vforth4_2.d64 disks/tc38q.d64 $(vf_fth_files_petscii)
+	emulator/build-vf.sh vf-c16-32k.fth c16-vf-32k
+
 
 # Core test targets
 

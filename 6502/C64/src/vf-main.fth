@@ -8,7 +8,7 @@ Onlyforth
 
 Target definitions   here!
 
-$10 $7D thru
+include vf-blk-10-7d.fth
 
 Assembler nonrelocate
 

@@ -58,3 +58,18 @@ forget delete Onlyforth
   THEN ;
 
 ' status is .status
+
+variable current-page   0 current-page !
+
+: fthpage  ( page# -- )
+  dup current-page !
+  ." page " u.
+  ." here "  here u.
+  ." there " there u.
+  ." heap "  heap u.  cr ;
+
+: blk-or-page@  ( -- blk#/page# )
+  blk @ ?dup ?exit
+  current-page @ ;
+
+' blk-or-page@ is blk@

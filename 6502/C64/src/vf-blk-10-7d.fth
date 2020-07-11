@@ -1,462 +1,13 @@
 
-\ *** Block No. 0, Hexblock 0
-
-\\ Directory volksFORTH 2of4   26oct87re
-
-.                    0
-..                   0
-misc               $08
-C64/C16            $09
-System             $0F
-C64interface       $7d
-C16init            $94
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 1, Hexblock 1
-
-\\ Content volksFORTH 2of4     26oct87re
-
-Directory            0
-Content              1
-misc               $08
-C64 or  C16        $09
-System             $0F
-C64/C16interface   $7d
-                   $95-a9 free
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 2, Hexblock 2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 3, Hexblock 3
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 4, Hexblock 4
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 5, Hexblock 5
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 6, Hexblock 6
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 7, Hexblock 7
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 8, Hexblock 8
-
-\ ram rom jsr NormJsr f.C16+ clv12.4.87)
-
-
-Assembler also definitions
-
-(c16+ \ C16+Macros for Bankswitching
-
-: ram $ff3f sta ;   : rom $ff3e sta ;
-
-' Jsr Alias NormJsr   Defer Jsr
-
-: C16+Jsr dup $c000 u>
- IF rom NormJsr ram ELSE NormJsr THEN ;
-
-' C16+Jsr Is Jsr
-)
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 9, Hexblock 9
-
-\ Target-Machine              clv06dec88
-
-Onlyforth
-
-
-cr .( Host is: )
-    (64  .( C64) C)
-    (16  .( C16) C)
-
-       : )     ; immediate
-       : (C    ; immediate
-
-       : (C64  ; immediate
-\      : (C16  ; immediate
-\      : (C16+ ; immediate
-\      : (C16- ; immediate
-
-\      : (C64  [compile] ( ; immediate
-       : (C16  [compile] ( ; immediate
-       : (C16+ [compile] ( ; immediate
-       : (C16- [compile] ( ; immediate
-
-
-
-
-
-\ *** Block No. 10, Hexblock a
-
-\ load/remove  JSR-Macros    clv14.4.87)
-
-Assembler also definitions
-
-(C16+ \needs C16+Jsr          -2 +load )
-(C16+ ' C16+Jsr Is Jsr .( JSR Is:C16+  )
-(C16+ \\ skips rest of screen
-
-\ all other platforms don't need
-\ macros, so we skip the rest:
-\
-
-\needs C16+Jsr \\
-
-\ if macro exist, redefine it:
-
-' NormJsr Is Jsr .( JSR Is:Norm )
-
-
-
-
-
-
-
-
-
-\ *** Block No. 11, Hexblock b
-
-cr .( Target is: ) \         clv14.4.87)
-
-
-(C    .( CBM )
-(C64  .( C64 )
-(C16  .( C16 with )
-(C16+ .( 64kb )
-(C16- .( 32kb )
-
-cr .( Target is not: )
-
-(C    \ )      .( CBM, )
-(C64  \ )      .( C64, )
-(C16  \ )      .( C16, )
-(C16+ \ )      .( C16+64kb, )
-(C16- \ )      .( C16-32kb, )
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 12, Hexblock c
-
-\ ramfill                             3:
-
-Onlyforth
-
-Code ramfill   ( adr n 8b -)
- sei  34 # lda  1 sta
- 3 # lda setup jsr
- N 3 + ldx txa  N 2+ ora 0<>
-  ?[ N lda 0 # ldy
-    [[ 0 # cpx 0<>
-      ?[[ [[ N 4 + )Y sta iny 0= ?]
-          N 5 + inc dex ]]?
-   N 2+ ldx 0<> ?[
-   [[ N 4 + )Y sta iny N 2+ cpy CS ?] ]?
-  ]?
- 36 # lda  1 sta cli
- 0 # ldx 1 # ldy Next jmp
-end-code
-
-$C000 $4000 (16 $300 - C)  0 ramfill
-
-forget ramfill
-
-
-
-
-\ *** Block No. 13, Hexblock d
-
-( Deleting Assembler Labels bp27jun85we)
-
-: delete   Assembler name find
- IF  >name count $1F and
-   bounds ?DO $1F I c! LOOP
- ELSE  count type space THEN ;
-
-delete setup     delete xyNext
-delete Puta      delete SP
-delete Pop       delete Next
-delete N         delete UP
-delete Poptwo    delete W
-delete IP        delete RP
-delete Push      delete Push0A
-delete PushA     delete ;c:
-
-forget delete Onlyforth
-
-
-
-
-
-
-
-
-
-\ *** Block No. 14, Hexblock e
-
-( Definition for  .status     28jun85we)
-
-: status
- blk @ ?dup IF
-  ."  blk " u.
-  ." here "  here u.
-  ." there " there u.
-  ." heap "  heap u.  cr
-  THEN ;
-
-' status is .status
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 15, Hexblock f
-
-\ C64    Forth loadscreen     clv14oct87
-
-Onlyforth hex
-  -3    +load   \ clear memory and
-  -2 -1 +thru   \ clr labels  .status
-  -6 -4 +thru   \ Target-Machine
-Onlyforth
-
-(C64 $801 ) (C16 $1001 ) dup displace !
-
-Target definitions   here!
-
-$1 $6E +thru
-
-Assembler nonrelocate
-
-.unresolved
-
-' .blk is .status
-
-    -4 +load    \ Print Target-Machine
-
-cr .( save-target volksforth83)
-91 con! ( Cursor up) quit
-
-
 \ *** Block No. 16, Hexblock 10
+10 fthpage
 
 \ FORTH Preamble and ID       clv06aug87
 
-(C64  $D c, $8 c, $A c, 00 c, 9E c,
-28 c, 32 c, 30 c, 36 c, 34 c, 29 c,
-00 c, 00 c, 00 c, 00 c, ) \ SYS(2064)
-(C16  $D c, 10 c, $A c, 00 c, 9E c,
-28 c, 34 c, 31 c, 31 c, 32 c, 29 c,
-00 c, 00 c, 00 c, 00 c, ) \ SYS(4112)
+(C64  $D c, $8 c, $A c, 00 c, 9E c, 28 c, 32 c, 30 c, )
+(C64  36 c, 34 c, 29 c, 00 c, 00 c, 00 c, 00 c, ) \ SYS(2064)
+(C16  $D c, 10 c, $A c, 00 c, 9E c, 28 c, 34 c, 31 c, )
+(C16  31 c, 32 c, 29 c, 00 c, 00 c, 00 c, 00 c, ) \ SYS(4112)
 
 Assembler
   nop  0 jmp  here 2- >label >cold
@@ -476,6 +27,7 @@ Create logo
 
 
 \ *** Block No. 17, Hexblock 11
+11 fthpage
 
 ( Zero page Variables & Next  03apr85bp)
 
@@ -491,19 +43,8 @@ Create logo
      W 8 + >label N
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 \ *** Block No. 18, Hexblock 12
+12 fthpage
 
 ( Next, moved into Zero page  08apr85bp)
 
@@ -526,12 +67,8 @@ Code end-trace  ( Patch Next for trace )
  Next jmp   end-code
 
 
-
-
-
-
-
 \ *** Block No. 19, Hexblock 13
+13 fthpage
 
 \ ;c:  noop                    02nov87re
 
@@ -560,6 +97,7 @@ Code noop   Next here 2- !  end-code
 
 
 \ *** Block No. 20, Hexblock 14
+14 fthpage
 
 \ User variables              clv14oct87
 
@@ -588,6 +126,7 @@ User udp
 
 
 \ *** Block No. 21, Hexblock 15
+15 fthpage
 
 ( manipulate system pointers  29jan85bp)
 
@@ -616,6 +155,7 @@ end-code restrict
 
 
 \ *** Block No. 22, Hexblock 16
+16 fthpage
 
 ( manipulate returnstack   16feb85bp/ks)
 
@@ -644,6 +184,7 @@ Label (nrdrop    clc  RP adc  RP sta
 
 
 \ *** Block No. 23, Hexblock 17
+17 fthpage
 
 \ r@ rdrop  exit  ?exit       clv12jul87
 
@@ -672,6 +213,7 @@ end-code
 
 
 \ *** Block No. 24, Hexblock 18
+18 fthpage
 
 ( execute  perform            08apr85bp)
 
@@ -700,6 +242,7 @@ Code execute  ( addr --)
 
 
 \ *** Block No. 25, Hexblock 19
+19 fthpage
 
 ( c@   c! ctoggle             10jan85bp)
 
@@ -728,6 +271,7 @@ Label (2drop
 
 
 \ *** Block No. 26, Hexblock 1a
+1a fthpage
 
 ( @ ! +!                      08apr85bp)
 
@@ -756,6 +300,7 @@ Code +!  ( n addr --)
 
 
 \ *** Block No. 27, Hexblock 1b
+1b fthpage
 
 ( drop swap                   24may84ks)
 
@@ -784,6 +329,7 @@ Code swap  ( 16b1 16b2 -- 16b2 16b1 )
 
 
 \ *** Block No. 28, Hexblock 1c
+1c fthpage
 
 ( dup  ?dup                   08may85bp)
 
@@ -799,19 +345,14 @@ Code ?dup     ( 16b -- 16b 16b / false)
  ' dup @ jmp end-code
 
 
-\\ : ?dup   ( 16b -- 16b 16b / false)
-    dup  IF  dup  THEN ;
-
-   : dup    Sp@  @  ;
-
-
-
-
-
-
+\   : ?dup   ( 16b -- 16b 16b / false)
+\    dup  IF  dup  THEN ;
+\
+\   : dup    Sp@  @  ;
 
 
 \ *** Block No. 29, Hexblock 1d
+1d fthpage
 
 ( over rot                    13jun84ks)
 
@@ -834,12 +375,13 @@ Code rot
  N 1+ lda  SP )Y sta
  1 # ldy  Next jmp   end-code
 
-\\ : rot   >r swap r> swap ;
-   : over  >r dup r> swap ;
+\   : rot   >r swap r> swap ;
+\   : over  >r dup r> swap ;
 
 
 
 \ *** Block No. 30, Hexblock 1e
+1e fthpage
 
 ( -rot nip under pick roll    24dec83ks)
 
@@ -859,15 +401,13 @@ Code rot
  dup >r pick sp@ dup 2+ r> 1+ 2* cmove>
  drop ;
 
-\\ : -roll ( n --)
- >r dup sp@  dup 2+ dup 2+ swap
- r@ 2* cmove r> 1+ 2* + ! ;
-
-
-
+\  : -roll ( n --)
+\ >r dup sp@  dup 2+ dup 2+ swap
+\ r@ 2* cmove r> 1+ 2* + ! ;
 
 
 \ *** Block No. 31, Hexblock 1f
+1f fthpage
 
 ( double word stack manip.    21apr83ks)
 
@@ -896,6 +436,7 @@ Code 2drop ( 32b -- )
 
 
 \ *** Block No. 32, Hexblock 20
+20 fthpage
 
 ( + and or xor                08apr85bp)
 
@@ -924,6 +465,7 @@ Code xor   ( 16b1 16b2 -- 16b3)
 
 
 \ *** Block No. 33, Hexblock 21
+21 fthpage
 
 ( -  not  negate              24dec83ks)
 
@@ -952,6 +494,7 @@ Code negate   ( n1 -- n2 )
 
 
 \ *** Block No. 34, Hexblock 22
+22 fthpage
 
 ( dnegate setup d+            14jun84ks)
 
@@ -980,6 +523,7 @@ Code d+      ( d1 d2 -- d3)
 
 
 \ *** Block No. 35, Hexblock 23
+23 fthpage
 
 ( 1+ 2+ 3+    1- 2-           08apr85bp)
 
@@ -1008,6 +552,7 @@ Code 2-   ( n1 -- n2)
  clc (1- bcc  end-code
 
 \ *** Block No. 36, Hexblock 24
+24 fthpage
 
 ( number Constants            24dec83ks)
 
@@ -1036,6 +581,7 @@ Code 2-   ( n1 -- n2)
 
 
 \ *** Block No. 37, Hexblock 25
+25 fthpage
 
 ( words for number literals   24may84ks)
 
@@ -1057,13 +603,12 @@ Label (bump   IP 2inc
 immediate restrict
 
 
-\\ : lit     r> dup 2+ >r  @  ;
-   : clit    r> dup 1+ >r  c@ ;
-
-
+\  : lit     r> dup 2+ >r  @  ;
+\  : clit    r> dup 1+ >r  c@ ;
 
 
 \ *** Block No. 38, Hexblock 26
+26 fthpage
 
 ( comparision code words      13jun84ks)
 
@@ -1092,6 +637,7 @@ Code uwithin  ( u1 [low up[  -- flag)
 
 
 \ *** Block No. 39, Hexblock 27
+27 fthpage
 
 ( comparision code words      13jun84ks)
 
@@ -1120,6 +666,7 @@ Code u<   ( u1 u2 -- flag)
 
 
 \ *** Block No. 40, Hexblock 28
+28 fthpage
 
 ( comparision words           24dec83ks)
 
@@ -1148,6 +695,7 @@ Code u<   ( u1 u2 -- flag)
 
 
 \ *** Block No. 41, Hexblock 29
+29 fthpage
 
 ( min max umax umin extend dabs abs  ks)
 
@@ -1176,6 +724,7 @@ Code u<   ( u1 u2 -- flag)
  extend IF   negate THEN ;
 
 \ *** Block No. 42, Hexblock 2a
+2a fthpage
 
 \ loop primitives              02nov87re
 
@@ -1195,15 +744,12 @@ Code u<   ( u1 u2 -- flag)
 Code endloop  ( -- )
  6 # lda (nrdrop jmp   end-code restrict
 
-\\ dodo puts  "index | limit |
- adr.of.DO"  on return-stack
-
-
-
-
+\  dodo puts  "index | limit |
+\ adr.of.DO"  on return-stack
 
 
 \ *** Block No. 43, Hexblock 2b
+2b fthpage
 
 \ (loop (+loop                 02nov87re
 
@@ -1232,6 +778,7 @@ Code (+loop  ( n -- )
 
 
 \ *** Block No. 44, Hexblock 2c
+2c fthpage
 
 ( loop indices                08apr85bp)
 
@@ -1260,6 +807,7 @@ Code J  ( -- n)
 
 
 \ *** Block No. 45, Hexblock 2d
+2d fthpage
 
 \ branching                    02nov87re
 
@@ -1276,18 +824,15 @@ Code ?branch  ( flag -- )
 end-code   restrict
 
 
+\   : branch   r> dup @ + >r ; restrict
 
-\\  : branch   r> dup @ + >r ; restrict
-
-    : ?branch  ( flag -- )
-     0= r> over not over 2+  and -rot
-     dup @ + and or >r ;       restrict
-
-
-
+\   : ?branch  ( flag -- )
+\    0= r> over not over 2+  and -rot
+\    dup @ + and or >r ;       restrict
 
 
 \ *** Block No. 46, Hexblock 2e
+2e fthpage
 
 ( resolve loops and branches  03feb85bp)
 
@@ -1316,6 +861,7 @@ end-code   restrict
 
 
 \ *** Block No. 47, Hexblock 2f
+2f fthpage
 
 ( case?                       04may85bp)
 
@@ -1335,15 +881,13 @@ Code case?
  txa  Push0A jmp   end-code
 
 
-
-\\ : case?
- ( 16b1 16b2 -- 16b1 false / true )
- over = dup  IF  nip  THEN ;
-
-
+\  : case?
+\ ( 16b1 16b2 -- 16b1 false / true )
+\ over = dup  IF  nip  THEN ;
 
 
 \ *** Block No. 48, Hexblock 30
+30 fthpage
 
 ( Branching                   03feb85bp)
 
@@ -1372,6 +916,7 @@ Code case?
          (reptil ; immediate restrict
 
 \ *** Block No. 49, Hexblock 31
+31 fthpage
 
 ( Loops                    29jan85ks/bp)
 
@@ -1392,14 +937,12 @@ Code case?
 : LEAVE  endloop r> 2- dup @ + >r ;
          restrict
 
-\\ Returnstack: calladr | index
-                  limit | adr of DO
-
-
-
+\   Returnstack: calladr | index
+\                  limit | adr of DO
 
 
 \ *** Block No. 50, Hexblock 32
+32 fthpage
 
 ( um*                      bp/ks13.2.85)
 
@@ -1421,13 +964,14 @@ Code um*  ( u1 u2 -- ud)
  Next jmp   end-code
 
 
-\\ : um*   ( u1 u2 -- ud3)
- >r 0 0 0 r>  $10 0
-  DO  dup 2/ >r  1 and IF 2over d+ THEN
-      >r >r 2dup d+ r> r> r>  LOOP
- drop 2swap 2drop ;
+\  : um*   ( u1 u2 -- ud3)
+\  >r 0 0 0 r>  $10 0
+\  DO  dup 2/ >r  1 and IF 2over d+ THEN
+\      >r >r 2dup d+ r> r> r>  LOOP
+\ drop 2swap 2drop ;
 
 \ *** Block No. 51, Hexblock 33
+33 fthpage
 
 ( m* 2*                       04jul84ks)
 
@@ -1456,6 +1000,7 @@ Code 2*  ( n1 -- n2)
 
 
 \ *** Block No. 52, Hexblock 34
+34 fthpage
 
 ( um/mod                      04jul84ks)
 
@@ -1484,6 +1029,7 @@ Code um/mod  ( ud u -- urem uquot)
  Puta jmp    end-code
 
 \ *** Block No. 53, Hexblock 35
+35 fthpage
 
 ( 2/ m/mod                    24dec83ks)
 
@@ -1512,6 +1058,7 @@ Code 2/  ( n1 -- n2)
 
 
 \ *** Block No. 54, Hexblock 36
+36 fthpage
 
 ( /mod / mod */mod */ u/mod  ud/mod  ks)
 
@@ -1540,6 +1087,7 @@ Code 2/  ( n1 -- n2)
 
 
 \ *** Block No. 55, Hexblock 37
+37 fthpage
 
 ( cmove cmove> (cmove>       bp 08apr85)
 
@@ -1568,6 +1116,7 @@ Label (cmove>
 
 
 \ *** Block No. 56, Hexblock 38
+38 fthpage
 
 ( place count  erase       16feb85bp/ks)
 
@@ -1596,6 +1145,7 @@ Code count ( addr -- addr+1 len)
 
 
 \ *** Block No. 57, Hexblock 39
+39 fthpage
 
 ( fill                        11jun85bp)
 
@@ -1610,20 +1160,13 @@ Code fill  ( addr quan 8b -- )
  Next jmp   end-code
 
 
-\\
-: fill  ( addr quan 8b --)   swap ?dup
-       IF  >r over c! dup 1+ r> 1- cmove
-  exit  THEN  2drop  ;
-
-
-
-
-
-
-
+\ : fill  ( addr quan 8b --)   swap ?dup
+\        IF  >r over c! dup 1+ r> 1- cmove
+\   exit  THEN  2drop  ;
 
 
 \ *** Block No. 58, Hexblock 3a
+3a fthpage
 
 ( here Pad allot , c, compile 24dec83ks)
 
@@ -1652,6 +1195,7 @@ Code fill  ( addr quan 8b -- )
 
 
 \ *** Block No. 59, Hexblock 3b
+3b fthpage
 
 ( input strings               24dec83ks)
 
@@ -1680,6 +1224,7 @@ Variable span   0 span !
 
 
 \ *** Block No. 60, Hexblock 3c
+3c fthpage
 
 ( scan skip /string           12oct84bp)
 
@@ -1708,6 +1253,7 @@ Variable span   0 span !
 
 
 \ *** Block No. 61, Hexblock 3d
+3d fthpage
 
 \ capital                     clv06aug87
 
@@ -1725,17 +1271,17 @@ Code capital  ( char -- char' )
  SP X) lda  (capital jsr  SP X) sta
  Next jmp    end-code
 
-\\ The new (capital does:
+\  The new (capital does:
 
-No  00-40,5b-60,7b-c1-da-dc-ff no change
-==    -@ , [-@ ,  -A -Z -| -      ..
+\ No  00-40,5b-60,7b-c1-da-dc-ff no change
+\ ==    -@ , [-@ ,  -A -Z -| -      ..
 
-No  41-5a,61-7a        changes to:c1-da
-==   a-z , A-Z                     A-Z
-
+\ No  41-5a,61-7a        changes to:c1-da
+\ ==   a-z , A-Z                     A-Z
 
 
 \ *** Block No. 62, Hexblock 3e
+3e fthpage
 
 \ capitalize                  clv06aug87
 
@@ -1746,24 +1292,25 @@ Code capitalize  ( string -- string )
    iny N )Y lda  (capital jsr  N )Y sta
  ]]   end-code
 
-\\ : capitalize  ( string -- string )
- dup  count  bounds
-  ?DO  I c@  capital  I c!  THEN  LOOP ;
+\ : capitalize  ( string -- string )
+\  dup  count  bounds
+\   ?DO  I c@  capital  I c!  THEN  LOOP ;
 
-\\ capital ( char -- char )
-   Ascii a  Ascii z 1+  uwithin
-   IF  I c@  [ Ascii a  Ascii A - ]
- Literal -  ;
+\ capital ( char -- char )
+\    Ascii a  Ascii z 1+  uwithin
+\    IF  I c@  [ Ascii a  Ascii A - ]
+\  Literal -  ;
 
-\\ Label (capital  \ for Ascii only
- Ascii a # cmp
- CS ?[  Ascii z  1+ # cmp
-    CC ?[      sec
-           Ascii a Ascii A - # sbc
-  ]? ]?  rts  end-code
+\ Label (capital  \ for Ascii only
+\  Ascii a # cmp
+\  CS ?[  Ascii z  1+ # cmp
+\     CC ?[      sec
+\            Ascii a Ascii A - # sbc
+\   ]? ]?  rts  end-code
 
 
 \ *** Block No. 63, Hexblock 3f
+3f fthpage
 
 ( (word                       08apr85bp)
 
@@ -1792,6 +1339,7 @@ Code capitalize  ( string -- string )
 
 
 \ *** Block No. 64, Hexblock 40
+40 fthpage
 
 ( (word                       08apr85bp)
 
@@ -1820,6 +1368,7 @@ Code capitalize  ( string -- string )
 
 
 \ *** Block No. 65, Hexblock 41
+41 fthpage
 
 ( (word                       08apr85bp)
 
@@ -1848,6 +1397,7 @@ Code capitalize  ( string -- string )
 
 
 \ *** Block No. 66, Hexblock 42
+42 fthpage
 
 ( source word parse name      08apr85bp)
 
@@ -1865,17 +1415,16 @@ Code capitalize  ( string -- string )
  bl word  capitalize  exit  ;
 
 
-\\
-: word  ( char -- addr)        >r
- source  over swap  >in @  /string
- r@ skip  over  swap  r> scan
- >r  rot over swap  - r> 0<> -  >in !
- over - here place  bl here count + c!
- here ;
-
+\ : word  ( char -- addr)        >r
+\  source  over swap  >in @  /string
+\  r@ skip  over  swap  r> scan
+\  >r  rot over swap  - r> 0<> -  >in !
+\  over - here place  bl here count + c!
+\  here ;
 
 
 \ *** Block No. 67, Hexblock 43
+43 fthpage
 
 \ state Ascii ,"  ("  "        02nov87re
 
@@ -1904,6 +1453,7 @@ Variable state    0 state !
 
 
 \ *** Block No. 68, Hexblock 44
+44 fthpage
 
 ( ." ( .( \ \\ hex decimal    08sep84ks)
 
@@ -1932,6 +1482,7 @@ Variable state    0 state !
 
 
 \ *** Block No. 69, Hexblock 45
+45 fthpage
 
 ( number conv.:  digit?  accumulate  ks)
 
@@ -1960,6 +1511,7 @@ Variable state    0 state !
  1-  count ;
 
 \ *** Block No. 70, Hexblock 46
+46 fthpage
 
 ( ?nonum ?num fixbase?        13feb85ks)
 
@@ -1988,6 +1540,7 @@ Variable dpl   -1 dpl !
 
 
 \ *** Block No. 71, Hexblock 47
+47 fthpage
 
 ( number? number 'number  01oct87clv/re)
 
@@ -2016,6 +1569,7 @@ Defer 'number?     ' number? Is 'number?
 
 
 \ *** Block No. 72, Hexblock 48
+48 fthpage
 
 ( hide reveal immediate restrict     ks)
 
@@ -2044,6 +1598,7 @@ Variable last     0 last !
 
 
 \ *** Block No. 73, Hexblock 49
+49 fthpage
 
 ( clearstack hallot heap heap?11feb85bp)
 
@@ -2072,6 +1627,7 @@ Code clearstack
 
 
 \ *** Block No. 74, Hexblock 4a
+4a fthpage
 
 ( Does>  ;                 30dec84ks/bp)
 
@@ -2100,6 +1656,7 @@ Label docreate
 
 
 \ *** Block No. 75, Hexblock 4b
+4b fthpage
 
 ( 6502-align  ?head  |        08sep84bp)
 
@@ -2128,6 +1685,7 @@ Variable ?head    0 ?head !
 
 
 \ *** Block No. 76, Hexblock 4c
+4c fthpage
 
 ( warning   Create            30dec84bp)
 
@@ -2156,6 +1714,7 @@ Variable warning  0 warning !
 
 
 \ *** Block No. 77, Hexblock 4d
+4d fthpage
 
 ( nfa?                        30dec84bp)
 
@@ -2179,11 +1738,12 @@ Variable warning  0 warning !
       N 1+ lda  N 5 + cmp  0= ?]
  ' 2+ @ jmp       end-code
 
-\\ vocabthread=0 that is empty Vocabul-
- ary in nfa? is not allowed
+\ vocabthread=0 that is empty Vocabul-
+\ ary in nfa? is not allowed
 
 
 \ *** Block No. 78, Hexblock 4e
+4e fthpage
 
 ( >name name> >body .name     03feb85bp)
 
@@ -2212,6 +1772,7 @@ Variable warning  0 warning !
 
 
 \ *** Block No. 79, Hexblock 4f
+4f fthpage
 
 \ : ; Constant Variable       clv16jul87
 
@@ -2240,6 +1801,7 @@ Variable warning  0 warning !
 
 
 \ *** Block No. 80, Hexblock 50
+50 fthpage
 
 ( uallot User Alias        10jan85ks/bp)
 
@@ -2268,6 +1830,7 @@ Variable warning  0 warning !
 
 
 \ *** Block No. 81, Hexblock 51
+51 fthpage
 
 ( voc-link vp current context also   bp)
 
@@ -2296,13 +1859,11 @@ Variable current
 
 
 \ *** Block No. 82, Hexblock 52
+52 fthpage
 
 (  Vocabulary Forth Only Forth-83 ks/bp)
 
-: Vocabulary
- Create  0 , 0 ,
- here voc-link @ ,  voc-link !
- Does>  context ! ;
+: Vocabulary  Create  0 , 0 ,  here voc-link @ ,  voc-link !  Does>  context ! ;
 
 \ Name | Code | Thread | Coldthread |
 \ Voc-link
@@ -2324,6 +1885,7 @@ Vocabulary Only
 
 
 \ *** Block No. 83, Hexblock 53
+53 fthpage
 
 ( definitions order words  13jan84bp/ks)
 
@@ -2352,11 +1914,12 @@ Vocabulary Only
 
 
 \ *** Block No. 84, Hexblock 54
+54 fthpage
 
 ( (find                       08apr85bp)
 
-Code (find  ( string thread
-       -- string false / namefield true)
+Code (find
+( string thread -- string false / namefield true)
  3 # ldy [[ SP )Y lda N ,Y sta dey 0< ?]
  N 2+ X) lda $1F # and N 4 + sta
 
@@ -2380,6 +1943,7 @@ Label findloop   0 # ldy
 
 
 \ *** Block No. 85, Hexblock 55
+55 fthpage
 
 ( found                       29jan85bp)
 
@@ -2400,14 +1964,15 @@ Label findloop   0 # ldy
  txa  1 # ldy  SP )Y sta
  Next jmp  end-code
 
-\\ | : found  ( nfa -- cfa n )
-      dup   c@ >r   (name>
-            r@ $20 and  IF @ THEN
-        -1  r@ $80 and  IF 1- THEN
-            r> $40 and  IF negate THEN ;
+\ | : found  ( nfa -- cfa n )
+\       dup   c@ >r   (name>
+\             r@ $20 and  IF @ THEN
+\         -1  r@ $80 and  IF 1- THEN
+\             r> $40 and  IF negate THEN ;
 
 
 \ *** Block No. 86, Hexblock 56
+56 fthpage
 
 ( find  ' [']                 13jan85bp)
 
@@ -2436,6 +2001,7 @@ Label findloop   0 # ldy
 
 
 \ *** Block No. 87, Hexblock 57
+57 fthpage
 
 ( >interpret                  28feb85bp)
 
@@ -2448,22 +2014,12 @@ Variable >interpret
 
 jump  ' >interpret !
 
-\\ make Variable >interpret to special
-   Defer
-
-
-
-
-
-
-
-
-
-
-
+\ make Variable >interpret to special
+\    Defer
 
 
 \ *** Block No. 88, Hexblock 58
+58 fthpage
 
 ( interpret interactive   01oct87clv/re)
 
@@ -2492,6 +2048,7 @@ Defer  notfound
 
 
 \ *** Block No. 89, Hexblock 59
+59 fthpage
 
 ( compiling [ ]           01oct87clv/re)
 
@@ -2520,6 +2077,7 @@ Defer  notfound
 
 
 \ *** Block No. 90, Hexblock 5a
+5a fthpage
 
 \ perfom  Defer Is             02nov87re
 
@@ -2548,6 +2106,7 @@ Defer  notfound
 
 
 \ *** Block No. 91, Hexblock 5b
+5b fthpage
 
 ( ?stack                  01oct87clv/re)
 
@@ -2571,11 +2130,12 @@ Code ?stack
  1 # ldy  CS ?[  Next jmp ]?
  ;c: true Abort" stack empty" ;
 
-\\ : ?stack
- sp@  here - $100 u< IF stackfull THEN
- sp@  s0 @ u> Abort" stack empty" ;
+\ : ?stack
+\  sp@  here - $100 u< IF stackfull THEN
+\  sp@  s0 @ u> Abort" stack empty" ;
 
 \ *** Block No. 92, Hexblock 5c
+5c fthpage
 
 ( .status push load           08sep84ks)
 
@@ -2604,6 +2164,7 @@ Defer .status    ' noop Is .status
 
 
 \ *** Block No. 93, Hexblock 5d
+5d fthpage
 
 ( +load thru +thru --> rdepth depth  ks)
 
@@ -2632,6 +2193,7 @@ Defer .status    ' noop Is .status
 
 
 \ *** Block No. 94, Hexblock 5e
+5e fthpage
 
 ( quit (quit abort            07jun85bp)
 
@@ -2660,6 +2222,7 @@ Defer 'abort   ' noop Is 'abort
 
 
 \ *** Block No. 95, Hexblock 5f
+5f fthpage
 
 \ (error Abort" Error"         02nov87re
 
@@ -2688,6 +2251,7 @@ Variable scr 1 scr !  Variable r# 0 r# !
  ," ; immediate  restrict
 
 \ *** Block No. 96, Hexblock 60
+60 fthpage
 
 ( -trailing                   08apr85bp)
 
@@ -2707,15 +2271,8 @@ Label (-trail
  tya Push0A jmp   end-code
 
 
-
-
-
-
-
-
-
-
 \ *** Block No. 97, Hexblock 61
+61 fthpage
 
 ( space spaces             29jan85ks/bp)
 
@@ -2724,26 +2281,14 @@ Label (-trail
 : spaces  ( u --)  0  ?DO space LOOP ;
 
 
-\\
-: -trailing  ( addr n1 -- addr n2)
- 2dup  bounds
-    ?DO 2dup + 1- c@ bl -
-      IF LEAVE THEN  1- LOOP  ;
-
-
-
-
-
-
-
-
-
-
-
-
+\ : -trailing  ( addr n1 -- addr n2)
+\  2dup  bounds
+\     ?DO 2dup + 1- c@ bl -
+\       IF LEAVE THEN  1- LOOP  ;
 
 
 \ *** Block No. 98, Hexblock 62
+62 fthpage
 
 ( hold <# #> sign # #s        24dec83ks)
 
@@ -2772,6 +2317,7 @@ Label (-trail
 
 
 \ *** Block No. 99, Hexblock 63
+63 fthpage
 
 ( print numbers               24dec83ks)
 
@@ -2800,6 +2346,7 @@ Label (-trail
 
 
 \ *** Block No. 100, Hexblock 64
+64 fthpage
 
 \ .s list c/l l/s             clv4:jul87
 
@@ -2828,6 +2375,7 @@ Label (-trail
 
 
 \ *** Block No. 101, Hexblock 65
+65 fthpage
 
 ( multitasker primitives      bp03nov85)
 
@@ -2856,6 +2404,7 @@ end-code
 
 
 \ *** Block No. 102, Hexblock 66
+66 fthpage
 
 ( buffer mechanism            15dec83ks)
 
@@ -2868,22 +2417,23 @@ Variable buffers  0 buffers !
 0408 Constant b/buf
         \ Physical Size
 
-\\ Structure of Buffer:
- 0 : link
- 2 : file
- 4 : blocknr
- 6 : statusflags
- 8 : Data .. 1 KB ..
+\ Structure of Buffer:
+\  0 : link
+\  2 : file
+\  4 : blocknr
+\  6 : statusflags
+\  8 : Data .. 1 KB ..
 
-Statusflag bits: 15   1 -> updated
+\ Statusflag bits: 15   1 -> updated
 
-file = -1 empty buffer
-     = 0 no fcb , direct access
-     = else  adr of fcb
-     ( system   dependent )
+\ file = -1 empty buffer
+\      = 0 no fcb , direct access
+\      = else  adr of fcb
+\      ( system   dependent )
 
 
 \ *** Block No. 103, Hexblock 67
+67 fthpage
 
 ( search for blocks in memory 11jun85bp)
 
@@ -2912,6 +2462,7 @@ Label thisbuffer?        2 # ldy
 
 
 \ *** Block No. 104, Hexblock 68
+68 fthpage
 
 (   "                         11jun85bp)
 
@@ -2940,34 +2491,30 @@ Label blockfound     SP 2inc
 
 
 \ *** Block No. 105, Hexblock 69
+69 fthpage
 
 \ (core?                       23sep85bp
 
-\\
+\ | : this?   ( blk file bufadr -- flag )
+\    dup 4+ @  swap 2+ @  d= ;
 
-| : this?   ( blk file bufadr -- flag )
-   dup 4+ @  swap 2+ @  d= ;
-
-| : (core?
-   ( blk file -- dataaddr / blk file )
-  BEGIN  over offset @ + over  prev @
-    this? IF rdrop 2drop prev @ 8 + exit
-          THEN
-    2dup >r offset @ + >r prev @
-    BEGIN  dup @ ?dup
-       0= IF rdrop rdrop drop exit THEN
-      dup r> r> 2dup >r >r  rot this? 0=
-    WHILE  nip  REPEAT
-    dup @ rot !  prev @ over !  prev !
-    rdrop rdrop
-  REPEAT ;
-
-
-
-
+\ | : (core?
+\    ( blk file -- dataaddr / blk file )
+\   BEGIN  over offset @ + over  prev @
+\     this? IF rdrop 2drop prev @ 8 + exit
+\           THEN
+\     2dup >r offset @ + >r prev @
+\     BEGIN  dup @ ?dup
+\        0= IF rdrop rdrop drop exit THEN
+\       dup r> r> 2dup >r >r  rot this? 0=
+\     WHILE  nip  REPEAT
+\     dup @ rot !  prev @ over !  prev !
+\     rdrop rdrop
+\   REPEAT ;
 
 
 \ *** Block No. 106, Hexblock 6a
+6a fthpage
 
 ( (diskerr                    11jun85bp)
 
@@ -2996,6 +2543,7 @@ Defer r/w
 
 
 \ *** Block No. 107, Hexblock 6b
+6b fthpage
 
 ( backup emptybuf readblk     11jun85bp)
 
@@ -3024,6 +2572,7 @@ Defer r/w
 
 
 \ *** Block No. 108, Hexblock 6c
+6c fthpage
 
 ( take mark updates? full? core?     bp)
 
@@ -3052,6 +2601,7 @@ Defer r/w
 
 
 \ *** Block No. 109, Hexblock 6d
+6d fthpage
 
 ( block & buffer manipulation 11jun85bp)
 
@@ -3080,6 +2630,7 @@ Defer r/w
 
 
 \ *** Block No. 110, Hexblock 6e
+6e fthpage
 
 ( block & buffer manipulation 09sep84ks)
 
@@ -3108,6 +2659,7 @@ Defer r/w
 
 
 \ *** Block No. 111, Hexblock 6f
+6f fthpage
 
 ( moving blocks               15dec83ks)
 
@@ -3136,6 +2688,7 @@ Defer r/w
 
 
 \ *** Block No. 112, Hexblock 70
+70 fthpage
 
 \ Allocating buffers          clv12jul87
 
@@ -3164,6 +2717,7 @@ E400 Constant limit     Variable first
 
 
 \ *** Block No. 113, Hexblock 71
+71 fthpage
 
 ( endpoints of forget      04jan85bp/ks)
 
@@ -3192,6 +2746,7 @@ E400 Constant limit     Variable first
 
 
 \ *** Block No. 114, Hexblock 72
+72 fthpage
 
 \ remove                       23jul85we
 
@@ -3220,6 +2775,7 @@ E400 Constant limit     Variable first
 
 
 \ *** Block No. 115, Hexblock 73
+73 fthpage
 
 ( remove-     forget-words    29apr85bp)
 
@@ -3248,6 +2804,7 @@ Defer custom-remove
 
 
 \ *** Block No. 116, Hexblock 74
+74 fthpage
 
 ( deleting words from dict.   13jan83ks)
 
@@ -3276,6 +2833,7 @@ Defer custom-remove
 
 
 \ *** Block No. 117, Hexblock 75
+75 fthpage
 
 \ save bye stop? ?cr         clv2:jull87
 
@@ -3304,14 +2862,13 @@ Defer custom-remove
 
 
 \ *** Block No. 118, Hexblock 76
+76 fthpage
 
 ( in/output structure         02mar85bp)
 
-| : Out:  Create dup c,  2+
-          Does> c@ output @ +  perform ;
+| : Out:  Create dup c,  2+  Does> c@ output @ +  perform ;
 
-  : Output:  Create:
-             Does>  output ! ;
+  : Output:  Create:  Does>  output ! ;
 
 0  Out: emit   Out: cr     Out: type
    Out: del    Out: page   Out: at
@@ -3321,17 +2878,16 @@ drop
 : row   ( -- row)  at? drop ;
 : col   ( -- col)  at? nip ;
 
-| : In:    Create dup c, 2+
-           Does> c@ input @ + perform ;
+| : In:    Create dup c, 2+  Does> c@ input @ + perform ;
 
-  : Input:  Create:
-            Does> input ! ;
+  : Input:  Create:  Does> input ! ;
 
 0  In: key   In: key?   In: decode
    In: expect
 drop
 
 \ *** Block No. 119, Hexblock 77
+77 fthpage
 
 ( Alias  only definitionen    29jan85bp)
 
@@ -3360,6 +2916,7 @@ Host Target
 
 
 \ *** Block No. 120, Hexblock 78
+78 fthpage
 
 \ 'cold                   01oct87clv/re)
 
@@ -3388,6 +2945,7 @@ Defer 'restart  ' noop Is 'restart
 
 
 \ *** Block No. 121, Hexblock 79
+79 fthpage
 
 \ forth-init              01oct87clv/re)
 
@@ -3416,6 +2974,7 @@ Label donothing rts
 
 
 \ *** Block No. 122, Hexblock 7a
+7a fthpage
 
 \ cold restart                 06nov87re
 
@@ -3444,11 +3003,12 @@ Label xyNext
 
 
 \ *** Block No. 123, Hexblock 7b
+7b fthpage
 
 \ System-Loadscreen       01oct87clv/re)
 
- 3 $18 +thru          \ CBM-Interface
-(c16+    19 +load )   \ c16init RamIRQ
+ $7E $93 thru          \ CBM-Interface
+(c16+    $94 load )    \ c16init RamIRQ
 
 
 Host  ' Transient 8 + @
@@ -3472,6 +3032,7 @@ Forth also definitions
 
 
 \ *** Block No. 124, Hexblock 7c
+7c fthpage
 
 ( System dependent Constants      bp/ks)
 
@@ -3500,16 +3061,15 @@ xyNext Constant xyNext
 (drop  Constant Pop
 
 \ *** Block No. 125, Hexblock 7d
+7d fthpage
 
 \ System patchup              clv06aug87
 
 Forth definitions
 
-(C64  C000 ' limit >body !
-      7B00 s0 !  7F00 r0 ! )
+(C64  C000 ' limit >body !  7B00 s0 !  7F00 r0 ! )
 
-(C16  8000 ' limit >body !
-      7700 s0 !  7b00 r0 ! )
+(C16  8000 ' limit >body !  7700 s0 !  7b00 r0 ! )
 
 \ (C16+ fd00 ' limit >body !
 \       7B00 s0 !  7F00 r0 ! )
@@ -3520,1241 +3080,3 @@ here dp !
 Host  Tudp @          Target  udp !
 Host  Tvoc-link @     Target  voc-link !
 Host  move-threads
-
-
-
-
-
-
-
-\ *** Block No. 126, Hexblock 7e
-
-\ CBM-Labels                   05nov87re
-
-$FFA5 >label ACPTR
-$FFC6 >label CHKIN
-$FFC9 >label CHKOUT
-$FFD2 >label CHROUT
-$FF81 >label CINT
-$FFA8 >label CIOUT
-$FFC3 >label CLOSE
-$FFCC >label CLRCHN
-$FFE4 >label GETIN
-$FF84 >label IOINIT
-$FFB1 >label LISTEN
-$FFC0 >label OPEN
-$FFF0 >label PLOT
-$FF8A >label RESTOR
-$FF93 >label SECOND
-$FFE1 >label STOP
-$FFB4 >label TALK
-$FF96 >label TKSA
-$FFEA >label UDTIM
-$FFAE >label UNLSN
-$FFAB >label UNTLK
-$FFCF >label CHRIN
-$FF99 >label MEMTOP
-
-\ *** Block No. 127, Hexblock 7f
-
-\ C64-Labels                 clv13.4.87)
-
-(C64
-
-0E716 >label ConOut
-  09d >label MsgFlg
-  09a >label OutDev
-  099 >label  InDev
-0d020 >label BrdCol
-0d021 >label BkgCol
- 0286 >label PenCol
-  0ae >label PrgEnd
-  0c1 >label IOBeg
-  0d4 >label CurFlg
-  0d8 >label InsCnt
- 028a >label KeyRep
-
-
-
-
-
-)
-
-
-
-
-\ *** Block No. 128, Hexblock 80
-
-\ C16-Labels                 clv13.4.87)
-
-(C16
-
-0ff4c >label ConOut
-  09a >label MsgFlg
-  099 >label OutDev
-  098 >label  InDev
-0ff19 >label BrdCol
-0ff15 >label BkgCol
- 0540 >label PenCol
-  09d >label PrgEnd
-  0b2 >label IOBeg
-  0cb >label CurFlg
-  0cf >label InsCnt
- 0540 >label KeyRep
-
-
-
-
- 055d >label PKeys
-)
-
-
-
-
-\ *** Block No. 129, Hexblock 81
-
-\ c64key? getkey              clv12jul87
-
-Code c64key? ( -- flag)
-(C64  0C6 lda            ( )
-(c16  0ef lda  055d ora  ( )
- 0<> ?[  0FF # lda  ]? pha
- Push jmp  end-code
-
-Code getkey  ( -- 8b)
-(C64 0C6 lda  0<>
- ?[  sei  0277 ldy
-  [[  0277 1+ ,X lda  0277 ,X sta  inx
-      0C6 cpx  0= ?]
-  0C6 dec  tya  cli  0A0 # cmp
-  0= ?[  bl # lda  ]?
- ]? ( )
-(C16 0ebdd jsr
-  0A0 # cmp 0= ?[  bl # lda  ]? ( )
- Push0A jmp   end-code
-
-
-
-
-
-
-
-\ *** Block No. 130, Hexblock 82
-
-( curon curoff               clv12.4.87)
-
-(C16  Code curon \ --
-0ca lda clc 0c8 adc 0ff0d sta
-0c9 lda     0 # adc 0b # sbc 0ff0c sta
-next jmp end-code
-
-Code curoff \ --
-0ff # lda ff0c sta 0ff0d sta Next jmp
-end-code )
-
-(C16 \\ )
-
-Code curon   ( --)
- 0D3 ldy  0D1 )Y lda  0CE sta  0CC stx
- xyNext jmp   end-code
-
-Code curoff   ( --)
- iny  0CC sty  0CD sty  0CF stx
- 0CE lda  0D3 ldy  0D1 )Y sta
- 1 # ldy  Next jmp   end-code
-
-
-
-
-
-\ *** Block No. 131, Hexblock 83
-
-( #bs #cr ..keyboard         clv12.4.87)
-
-
-: c64key  ( -- 8b)
- curon BEGIN pause c64key?  UNTIL
- curoff getkey ;
-
-14 Constant #bs   0D Constant #cr
-
-: c64decode
- ( addr cnt1 key -- addr cnt2)
-  #bs case?  IF  dup  IF del 1- THEN
-                            exit  THEN
-  #cr case?  IF  dup span ! exit THEN
-  >r  2dup +  r@ swap c!  r> emit  1+ ;
-
-: c64expect ( addr len1 -- )
- span !  0
- BEGIN  dup span @  u<
- WHILE  key  decode
- REPEAT 2drop space ;
-
-Input: keyboard   [ here input ! ]
- c64key c64key? c64decode c64expect ;
-
-
-\ *** Block No. 132, Hexblock 84
-
-( con! printable?            clv11.4.87)
-
-Code con!  ( 8b --)   SP X) lda
-Label (con!     ConOut jsr    SP 2inc
-Label (con!end  CurFlg stx InsCnt stx
- 1 # ldy ;c:  pause ;
-
-Label (printable?   \ for CBM-Code !
-                    \ CS is printable
-  80 # cmp  CC ?[   bl # cmp  rts  ]?
- 0E0 # cmp  CC ?[  0C0 # cmp  rts  ]?
- clc  rts  end-code
-
-Code printable? ( 8b -- 8b flag)
- SP X) lda  (printable? jsr CS ?[ dex ]?
- txa  PushA jmp     end-code
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 133, Hexblock 85
-
-( emit cr del page at at?    clv11.4.87)
-
-Code c64emit  ( 8b -- )
- SP X) lda  (printable? jsr
-    CC ?[  Ascii . # lda ]?
- (con! jmp   end-code
-
-: c64cr     #cr con! ;
-
-: c64del    9D con!  space  9D con! ;
-
-: c64page   93 con! ;
-
-Code c64at  ( row col --)
- 2 # lda  Setup jsr
- N 2+ ldx  N ldy  clc  PLOT jsr
-(C16 \ ) 0D3 ldy  0D1 )Y lda   0CE sta
- xyNext jmp  end-code
-
-Code c64at?  ( -- row col)
- SP 2dec txa  SP )Y sta
- sec  PLOT jsr
- 28 # cpy  tya  CS ?[ 28 # sbc ]?
- pha  txa  0 # ldx  SP X) sta  pla
- Push0A jmp  end-code
-
-\ *** Block No. 134, Hexblock 86
-
-( type display (bye          clv11.4.87)
-
-Code  c64type  ( adr len -- )
- 2 # lda  Setup jsr  0 # ldy
-  [[  N cpy  0<>
-  ?[[  N 2+ )Y lda  (printable? jsr
-         CC ?[  Ascii . # lda  ]?
- ConOut jsr  iny  ]]?
- (con!end jmp   end-code
-
-Output: display   [ here output ! ]
- c64emit c64cr c64type c64del c64page
- c64at c64at? ;
-
-(C64  | Create (bye  $FCE2  here 2- ! )
-
-(C16- | Create (bye  $FF52  here 2- ! )
-
-(C16+ | CODE   (bye  rom $FF52 jmp
-                             end-code )
-
-
-
-
-
-
-\ *** Block No. 135, Hexblock 87
-
-\ b/blk drive >drive drvinit  clv14:2x87
-
-400 Constant b/blk
-
-0AA Constant blk/drv
-
-Variable (drv    0 (drv !
-
-| : disk ( -- dev.no )   (drv @ 8 + ;
-
-: drive  ( drv# -- )
- blk/drv *  offset ! ;
-
-: >drive ( block drv# -- block' )
- blk/drv * +   offset @ - ;
-
-: drv?    ( block -- drv# )
- offset @ + blk/drv / ;
-
-: drvinit  noop ;
-
-
-
-
-
-
-\ *** Block No. 136, Hexblock 88
-
-( i/o busoff                  10may85we)
-
-Variable i/o  0 i/o !  \ Semaphore
-
-Code busoff  ( --)   CLRCHN jsr
-Label unlocki/o  1 # ldy  0 # ldx
- ;c:  i/o unlock ;
-
-Label nodevice     0 # ldx  1 # ldy
- ;c:  busoff   buffers unlock
-      true Abort" no device" ;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 137, Hexblock 89
-
-\ ?device                     clv12jul87
-
-Label (?dev
- 90 stx (C16 $ae sta ( ) LISTEN jsr
-        \ because of error in OS
- 60 # lda  SECOND jsr  UNLSN jsr
- 90 lda  0<> ?[ pla pla nodevice jmp ]?
- rts    end-code
-
- Code (?device  ( dev --)
- SP X) lda  (?dev jsr  SP 2inc
- unlocki/o jmp  end-code
-
-: ?device  ( dev -- )
- i/o lock  (?device ;
-
- Code (busout  ( dev 2nd -- )
- MsgFlg stx  2 # lda  Setup jsr
- N 2+ lda  (?dev jsr
- N 2+ lda  LISTEN jsr
- N lda  60 # ora SECOND jsr
- N 2+ ldx  OutDev stx
- xyNext jmp  end-code
-
-
-
-\ *** Block No. 138, Hexblock 8a
-
-\ busout/open/close/in        clv12jul87
-
-: busout    ( dev 2nd -- )
- i/o lock (busout ;
-
-: busopen   ( dev 2nd -- )
- 0F0 or busout ;
-
-: busclose  ( dev 2nd -- )
- 0E0 or busout busoff ;
-
- Code (busin  ( dev 2nd -- )
- MsgFlg stx  2 # lda  Setup jsr
- N 2+ lda  (?dev jsr
- N 2+ lda  TALK jsr
- N lda  60 # ora (C16 $ad sta ( )
- TKSA jsr
-\ because of error in old C16 OS
- N 2+ ldx  InDev stx
- xyNext jmp end-code
-
-: busin  ( dev 2nd -- )
- i/o lock  (busin ;
-
-
-
-\ *** Block No. 139, Hexblock 8b
-
-( bus-!/type/@/input derror?  24feb85re)
-
-Code bus!  ( 8b --)
- SP X) lda  CIOUT jsr  (xydrop jmp
- end-code
-
-: bustype  ( adr n --)
- bounds  ?DO  I c@ bus!  LOOP pause ;
-
-Code bus@  ( -- 8b)
- ACPTR jsr Push0A jmp  end-code
-
-: businput  ( adr n --)
- bounds  ?DO  bus@ I c! LOOP pause ;
-
-: derror?  ( -- flag )
- disk $F busin bus@  dup Ascii 0 -
-  IF  BEGIN emit bus@ dup #cr =  UNTIL
-  0= cr  THEN   0=  busoff ;
-
-
-
-
-
-
-
-\ *** Block No. 140, Hexblock 8c
-
-( s#>s+t  x,x                 28may85re)
-
-165 | Constant 1.t
-1EA | Constant 2.t
-256 | Constant 3.t
-
-| : (s#>s+t ( sector# -- sect track)
-      dup 1.t u< IF 15 /mod exit THEN
- 3 +  dup 2.t u< IF 1.t - 13 /mod 11 +
-                            exit THEN
-      dup 3.t u< IF 2.t - 12 /mod 18 +
-                            exit THEN
- 3.t - 11 /mod 1E + ;
-
-| : s#>t+s  ( sector# -- track sect )
- (s#>s+t  1+ swap ;
-
-| : x,x ( sect track -- adr count)
- base push  decimal
- 0 <# #s drop Ascii , hold #s #> ;
-
-
-
-
-
-
-\ *** Block No. 141, Hexblock 8d
-
-( readsector writesector      28may85re)
-
-100 | Constant b/sek
-
-: readsector  ( adr tra# sect# -- flag)
- disk 0F busout
- " u1:13,0," count   bustype
- x,x bustype busoff pause
- derror? ?exit
- disk 0D busin b/sek businput busoff
- false ;
-
-: writesector  ( adr tra# sect# -- flag)
- rot disk 0F busout
- " b-p:13,0" count bustype busoff
- disk 0D busout b/sek bustype busoff
- disk 0F busout
- " u2:13,0," count  bustype
- x,x bustype busoff pause  derror? ;
-
-
-
-
-
-
-
-\ *** Block No. 142, Hexblock 8e
-
-( 1541r/w                     28may85re)
-
-: diskopen  ( -- flag)
- disk 0D busopen  Ascii # bus! busoff
- derror? ;
-
-: diskclose ( -- )
- disk 0D busclose  busoff ;
-
-: 1541r/w  ( adr blk file r/wf -- flag)
- swap Abort" no file"
- -rot  blk/drv /mod  dup (drv ! 3 u>
- IF . ." beyond capacity" nip exit  THEN
- diskopen  IF  drop nip exit  THEN
- 0 swap   2* 2* 4 bounds
- DO  drop  2dup I rot
-     IF    s#>t+s readsector
-     ELSE  s#>t+s writesector THEN
-     >r b/sek + r> dup  IF  LEAVE  THEN
- LOOP   -rot  2drop  diskclose  ;
-
-' 1541r/w  Is   r/w
-
-
-
-
-\ *** Block No. 143, Hexblock 8f
-
-\ index findex ink-pot         05nov87re
-
-: index ( from to --)
- 1+ swap DO
-   cr  I 2 .r  I block 1+  25  type
-   stop?  IF LEAVE THEN  LOOP ;
-
-: findex ( from to --)
- diskopen  IF  2drop  exit  THEN
- 1+ swap DO  cr  I 2 .r
-   pad dup I 2* 2* s#>t+s readsector
-   >r 1+ 25 type
-   r> stop? or IF LEAVE THEN
- LOOP  diskclose  ;
-
-Create ink-pot
-    \ border bkgnd pen  0
-(C64  6 c,   6 c,  3 c, 0 c,   \ Forth
-     0E c,   6 c,  3 c, 0 c,   \ Edi
-      6 c,   6 c,  3 c, 0 c, ) \ User
-(C16 f6 c, 0f6 c, 03 c, 0 c,   \ Forth
-    0eE c, 0f6 c, 03 c, 0 c,   \ Edi
-    0f6 c, 0f6 c, 03 c, 0 c, ) \ User
-
-
-
-\ *** Block No. 144, Hexblock 90
-
-\ restore                      05nov87re
-
-(C16 \\ )
-
-Label asave 0 c,    Label 1save 0 c,
-
-Label continue
- pha  1save lda  1 sta  pla  rti
-
-Label restore   sei  asave sta
- continue $100 /mod
- # lda pha  # lda pha  php  \ for RTI
- asave lda pha  txa pha  tya pha
- 1 lda 1save sta
- $36 # lda   1 sta  \ Basic off ROM on
- $7F # lda  $DD0D sta
- $DD0D ldy  0< ?[
-Label 6526-NMI $FE72 jmp  ]?
- UDTIM jsr STOP jsr  \ RUN/STOP ?
- 6526-NMI bne        \ not >>-->
- ' restart @ jmp  end-code
-
-
-
-
-
-\ *** Block No. 145, Hexblock 91
-
-\ C64:Init                     06nov87re
-(C16 \\ )
-
-: init-system   $FF40 dup $C0 cmove
- [ restore ] Literal  dup
- $FFFA ! $318 ! ;  \ NMI-Vector to RAM
-
-Label first-init
- sei cld
- IOINIT jsr  CINT jsr  RESTOR jsr
-  \ init. and set I/O-Vectors
- $36 # lda   01 sta        \ Basic off
- ink-pot    lda BrdCol sta \ border
- ink-pot 1+ lda BkgCol sta \ backgrnd
- ink-pot 2+ lda PenCol sta \ pen
-$80 # lda KeyRep sta  \ repeat all keys
-$17 # lda  $D018 sta  \ low/upp +
-  0 # lda  $D01A sta  \ VIC-IRQ off
-$1B # lda  $D011 sta  \ Textmode on
-  4 # lda   $288 sta  \ low screen
- cli rts end-code
-first-init dup bootsystem 1+ !
-               warmboot   1+ !
-Code c64init first-init jsr
- xyNext jmp end-code
-
-\ *** Block No. 146, Hexblock 92
-
-\ C16:Init                01oct87clv/re)
-
-(C64 \\ )
-
-Code init-system $F7 # ldx  txs
- xyNext jmp end-code
-
-$fcb3 >label IRQ   \ normal IRQ
-$fffe >label >IRQ  \ 6502-Ptr to IRQ
-
-\ selfmodifying code:
-Label RAMIRQ       \ the new IRQ
-   rom RAMIRQ $15 + sta RAMIRQ $17 + stx
-(  +9) RAMIRQ $1b + $100 u/mod # lda pha
-                               # lda pha
-(  +f) tsx $103 ,x lda pha   \ flags
-( +14) 0 # lda 0 # ldx IRQ jmp
-( +1b) ram rti end-code
-
-
-
-
-
-
-
-
-\ *** Block No. 147, Hexblock 93
-
-\ C16:..Init              01oct87clv/re)
-
-(C64 \\ )
-
-Label first-init
-   \ will be called in ROM first time
-   \ later called from RAM
- sei rom
- RAMIRQ $100 u/mod    \ new IRQ
-   # lda >IRQ 1+ sta  \ .. install
-   # lda >IRQ sta
- $FF84 normJsr  $FF8A normJsr
-    \ CIAs init. and set I/O-Vectors
- ink-pot    lda BrdCol sta \ border
- ink-pot 1+ lda BkgCol sta \ backgrnd
- ink-pot 2+ lda PenCol sta \ pen
- $80 # lda KeyRep sta \ repeat all keys
- $FF13 lda 04 # ora $FF13 sta \ low/upp
- ram cli rts end-code
-
-first-init dup bootsystem 1+ !
-               warmboot   1+ !
-
-Code c64init first-init jsr
- xyNext jmp end-code
-
-\ *** Block No. 148, Hexblock 94
-
-\ C16-Pushkeys C64-like   01oct87clv/re)
-
-
-(C16
-
-Label InitPKs \ Pushkeys: Daten
-00 c, 00 c,  \ curr. numb Char, currPtr
-01 c, 01 c, 01 c, 01 c, \ StrLength
-01 c, 01 c, 01 c, 01 c, \   "
-
-85 c, 86 c, 87 c, 89 c, \ Content
-8a c, 8b c, 8c c, 88 c, \   "
-
-
-here InitPKs - >label InitPKlen
-
-
-Code C64fkeys \ Pushkeys a la C64
-  InitPKlen # ldx
-  [[ dex  0>= ?[[
-    InitPKs ,X lda PKeys ,x sta ]]?
-  xyNext jmp end-code
-
-)
-
-
-\ *** Block No. 149, Hexblock 95
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 150, Hexblock 96
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 151, Hexblock 97
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 152, Hexblock 98
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 153, Hexblock 99
-
-( restart param.-passing     clv12.4.87)
-
-Code restart       here >restart !
- ' (restart >body 100 u/mod
- # lda  pha  # lda pha
- warmboot jmp   end-code
-
-\ Code for parameter-passing to Forth
-
-
-      03 18 +thru     \ CBM-Interface
-(c16+ 19 1a +thru )   \ c16init RamIRQ
-
-Host  ' Transient 8 + @
-  Transient  Forth  Context @ 6 + !
-Target     \ kotz wuerg !
-
-Forth also definitions
-         : )     ; immediate
-(C64     : (C64  ; immediate )
-(C16     : (C16  ; immediate )
-(C64 \ ) : (C64  [compile] ( ; immediate
-(C16 \ ) : (C16  [compile] ( ; immediate
-: forth-83 ;  \ last word in Dictionary
-
-
-\ *** Block No. 154, Hexblock 9a
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 155, Hexblock 9b
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 156, Hexblock 9c
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 157, Hexblock 9d
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 158, Hexblock 9e
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 159, Hexblock 9f
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 160, Hexblock a0
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 161, Hexblock a1
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 162, Hexblock a2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 163, Hexblock a3
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 164, Hexblock a4
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 165, Hexblock a5
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 166, Hexblock a6
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 167, Hexblock a7
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 168, Hexblock a8
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 169, Hexblock a9
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

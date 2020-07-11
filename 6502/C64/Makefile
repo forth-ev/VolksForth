@@ -30,11 +30,15 @@ test: test-c64.result test-c16.result
 
 test64: test-c64.result
 
+debug-64: emulator/tcbase.T64 emulator/build-vf.sh \
+    disks/vforth4_2.d64 disks/tc38q.d64 $(vf_fth_files_petscii)
+	emulator/build-vf.sh vf-c64-main.fth
+
 # Temporary bincmp target while the old and the new binaries are still
 # expected to be binary identical.
 bincmp: cbmfiles/c64-vf-latest cbmfiles/c16-vf-latest
-	cmp cbmfiles/c64-vf-latest cbmfiles/c64-volksforth83
-	cmp cbmfiles/c16-vf-latest cbmfiles/c16-volksforth83
+	cmp -b -l cbmfiles/c64-vf-latest cbmfiles/c64-volksforth83
+	cmp -b -l cbmfiles/c16-vf-latest cbmfiles/c16-volksforth83
 
 run-devenv: emulator/devenv.T64
 	emulator/run-in-vice.sh devenv

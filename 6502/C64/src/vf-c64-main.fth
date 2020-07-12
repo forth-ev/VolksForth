@@ -4,7 +4,6 @@ hex
 \ load transient part of target compiler
 2 drive 27 30 thru
 
-1 drive
 
 Onlyforth hex
 

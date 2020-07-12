@@ -449,12 +449,15 @@ Code cSave ( f t+1 Name Nlen dev--err)
 
 \ *** Block No. 16, Hexblock 10
 
-\ Target compiler loadscr     clv14oct87
+\ Target compiler loadscr      11jul20pz
 \ Idea and first Implementation by ks/bp
 \ Implemented on 6502  by ks/bp
 \ volksFORTH83-Version by bp/we
 
 Onlyforth hex
+: (blk@  blk @ ;
+Defer blk@  ' (blk@ is blk@
+
 \needs (16   .( ?! (16 (64 ?! C) quit
 Assembler \needs nonrelocate 5 load
 Assembler nonrelocate
@@ -470,9 +473,6 @@ Vocabulary Defining
 14 16 +thru   \ Redefinitions
 clear
 \ hex 17 20 +thru   \ predefinitions
-
-
-
 
 
 \ *** Block No. 17, Hexblock 11
@@ -785,7 +785,7 @@ Forth definitions
 
 \ *** Block No. 28, Hexblock 1c
 
-\ compiling names into targ. bp27jun85we
+\ compiling names into targ.   11jul20pz
 
 : (theader
  ?thead @  IF 1 ?thead +!
@@ -794,7 +794,7 @@ Forth definitions
  dup c@ 1 020 uwithin not
                   abort" inval. Tname"
  dup  c@ 5 +  there +  6502-talign
- blk @  T , H
+ blk@  T , H
  there tlatest dup @  T , H !
  there dup tlast !  over
  c@ 1+ dup  T allot cmove H  ;

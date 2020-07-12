@@ -2,17 +2,12 @@
 
 include vf-pr-target.fth
 
-Onlyforth
+include vf-sys-indep.fth
 
-(C64 $801 ) (C16 $1001 ) dup displace !
+$7E $93 thru          \ CBM-Interface
+(c16+    $94 load )    \ c16init RamIRQ
 
-Target definitions   here!
-
-$10 $7D thru
-
-Assembler nonrelocate
-
-.unresolved
+include vf-finalize.fth
 
 ' .blk is .status
 

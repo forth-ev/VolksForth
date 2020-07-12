@@ -13,9 +13,10 @@ basedir="$(realpath --relative-to="$PWD" "${emulatordir}/..")"
 source="$1"
 target="$2"
 
-rm -f "${basedir}/cbmfiles/${target}"
+test -n "$target" && rm -f "${basedir}/cbmfiles/${target}"
 
 keybuf="include ${source}\nsave-target ${target}\ndos s0:notdone\n"
+test -z "$target" && keybuf="include ${source}\n"
 
 DISK9=vforth4_2 DISK10=tc38q "${emulatordir}/run-in-vice.sh" \
   "tcbase" "${keybuf}"

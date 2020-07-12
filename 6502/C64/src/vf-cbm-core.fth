@@ -1,40 +1,4 @@
-\ The main and mostly system independent part of CBM VolkForth
-
-\ Initial part of load screen
-
-Onlyforth
-
-(C64 $801 ) (C16 $1001 ) dup displace !
-
-Target definitions   here!
-
-
-\ *** Block No. 16, Hexblock 10
-10 fthpage
-
-\ FORTH Preamble and ID       clv06aug87
-
-(C64  $D c, $8 c, $A c, 00 c, 9E c, 28 c, 32 c, 30 c, )
-(C64  36 c, 34 c, 29 c, 00 c, 00 c, 00 c, 00 c, ) \ SYS(2064)
-(C16  $D c, 10 c, $A c, 00 c, 9E c, 28 c, 34 c, 31 c, )
-(C16  31 c, 32 c, 29 c, 00 c, 00 c, 00 c, 00 c, ) \ SYS(4112)
-
-Assembler
-  nop  0 jmp  here 2- >label >cold
-  nop  0 jmp  here 2- >label >restart
-
-here dup origin!
-\ Here are coldstart- and Uservariables
-\
-0 jmp  0 jsr  here 2- >label >wake
- end-code
-$100 allot
-
-Create logo
- (C64  ," volksFORTH-83 3.80.1-C64  " )
- (C16+ ," volksFORTH-83 3.80.1-C16+ " )
- (C16- ," volksFORTH-83 3.80.1-C16- " )
-
+\ The system independent part of CBM VolkForth
 
 \ *** Block No. 17, Hexblock 11
 11 fthpage

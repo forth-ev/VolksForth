@@ -74,3 +74,9 @@ here dp !
 Host  Tudp @          Target  udp !
 Host  Tvoc-link @     Target  voc-link !
 Host  move-threads
+
+\ Final part of loadscreen
+
+Assembler nonrelocate
+
+.unresolved

@@ -1,3 +1,13 @@
+\ The main and mostly system independent part of CBM VolkForth
+
+\ Initial part of load screen
+
+Onlyforth
+
+(C64 $801 ) (C16 $1001 ) dup displace !
+
+Target definitions   here!
+
 
 \ *** Block No. 16, Hexblock 10
 10 fthpage

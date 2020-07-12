@@ -8,7 +8,12 @@ Onlyforth
 
 Target definitions   here!
 
-include vf-blk-10-7d.fth
+include vf-sys-indep.fth
+
+$7E $93 thru          \ CBM-Interface
+(c16+    $94 load )    \ c16init RamIRQ
+
+include vf-finalize.fth
 
 Assembler nonrelocate
 

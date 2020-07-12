@@ -28,7 +28,7 @@ include vf-pr-target.fth
 
 \ The actual volksForth sources
 include vf-sys-indep.fth
-$7E $93 thru          \ CBM-Interface
+include vf-sys-c64.fth
 include vf-finalize.fth
 
 include vf-pr-target.fth

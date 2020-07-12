@@ -4,7 +4,6 @@ hex
 \ load transient part of target compiler
 2 drive 27 30 thru
 
-1 drive
 
 Onlyforth hex
 
@@ -28,7 +27,7 @@ include vf-pr-target.fth
 
 \ The actual volksForth sources
 include vf-sys-indep.fth
-$7E $93 thru          \ CBM-Interface
+include vf-sys-c16.fth
 include vf-finalize.fth
 
 include vf-pr-target.fth

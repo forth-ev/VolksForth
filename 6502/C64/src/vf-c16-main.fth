@@ -4,7 +4,6 @@ hex
 \ load transient part of target compiler
 2 drive 27 30 thru
 
-1 drive
 
 Onlyforth hex
 
@@ -27,15 +26,11 @@ cr .( Host is: )
 include vf-pr-target.fth
 
 \ The actual volksForth sources
-\ including some initial C16 tweaks
+\ including an initial C16+ tweak
 
-Assembler also definitions
-\needs C16+Jsr          8 load
-' C16+Jsr Is Jsr
-
+include vf-c16+jsr.fth
 include vf-sys-indep.fth
-$7E $93 thru          \ CBM-Interface
-(c16+    $94 load )    \ c16init RamIRQ
+include vf-sys-c16.fth
 include vf-finalize.fth
 
 include vf-pr-target.fth

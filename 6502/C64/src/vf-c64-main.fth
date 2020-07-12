@@ -26,7 +26,7 @@ cr .( Host is: )
 include vf-pr-target.fth
 
 \ The actual volksForth sources
-include vf-sys-indep.fth
+include vf-cbm-core.fth
 include vf-sys-c64.fth
 include vf-finalize.fth
 

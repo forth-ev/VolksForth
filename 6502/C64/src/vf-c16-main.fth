@@ -1,44 +1,38 @@
 
 hex
 
+\ load transient part of target compiler
 2 drive 27 30 thru
 
-1 drive
 
 Onlyforth hex
+
 \ clear memory and clr labels  .status
 include vf-tc-prep.fth
 
-
-\ *** Block No. 9, Hexblock 9
-
-\ Target-Machine              clv06dec88
-
+\ Host and target settings and display
 cr .( Host is: )
     (64  .( C64) C)
     (16  .( C16) C)
 
-       : )     ; immediate
-       : (C    ; immediate
+: )     ; immediate
+: (C    ; immediate
 
-\      : (C64  ; immediate
-       : (C16  ; immediate
-       : (C16+ ; immediate
-\      : (C16- ; immediate
+: (C16  ; immediate
+: (C16+ ; immediate
+: (C64  [compile] ( ; immediate
+: (C16- [compile] ( ; immediate
+\ ) - just to unconfuse my editor
+include vf-pr-target.fth
 
-       : (C64  [compile] ( ; immediate
-\      : (C16  [compile] ( ; immediate
-\      : (C16+ [compile] ( ; immediate
-       : (C16- [compile] ( ; immediate
+\ The actual volksForth sources
+\ including an initial C16+ tweak
 
-\ *** Block No. 10, Hexblock a
+include vf-c16+jsr.fth
+include vf-head-c16.fth
+include vf-cbm-core.fth
+include vf-sys-c16.fth
+include vf-finalize.fth
 
-\ load/remove  JSR-Macros    clv14.4.87)
-
-Assembler also definitions
-
-\needs C16+Jsr          8 load
-' C16+Jsr Is Jsr .( JSR Is:C16+  )
-
-
-include vf-main.fth
+include vf-pr-target.fth
+quit

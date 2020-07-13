@@ -18,5 +18,5 @@ test -n "$target" && rm -f "${basedir}/cbmfiles/${target}"
 keybuf="include ${source}\nsave-target ${target}\ndos s0:notdone\n"
 test -z "$target" && keybuf="include ${source}\n"
 
-DISK9=vforth4_2 DISK10=tc38q "${emulatordir}/run-in-vice.sh" \
+DISK10=tc38q "${emulatordir}/run-in-vice.sh" \
   "tcbase" "${keybuf}"

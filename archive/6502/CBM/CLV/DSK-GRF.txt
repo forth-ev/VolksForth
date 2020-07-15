@@ -1,0 +1,5177 @@
+                              clv06jan87 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ Directory forth11.4.87      clv22feb88 
+                                         
+search numbers      02-03                
+Stacksicherheit     04                   
+thrubf/thruba       05-07                
+dir / files         08-09                
+ frei               10                   
+search words        11                   
+backup restore      12-14                
+ frei               12-19                
+laufzeit            20-27                
+ frei               28                   
+c16grafik           29-31                
+Hardcopy            32-33                
+                                         
+Basic-Space         34-84                
+                                         
+Basic-Space        119-169               
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ search numbers..            clv13oct87 
+                                         
+Defer action  ' noop Is action           
+Defer .st     ' noop Is .st              
+                                         
+: search                                 
+BEGIN >in @ r# !                         
+      name dup c@ WHILE                  
+      action REPEAT ;                    
+                                         
+                                         
+: sload   ( blk --)                      
+ blk push  blk !                         
+ >in push  >in off                       
+ .st search ;                            
+                                         
+: sdisk BEGIN scr @ sload                
+   1 scr +! REPEAT ;                     
+                                         
+-->                                      
+                                         
+$1 $2 $3 4. 3, %0110                     
+HEX hex deCImal DEciMAL                  
+1 3 5 7 ab c, $ffff ffff -1 -$1          
+                                        
+\ ..search numbers            clv13oct87 
+                                         
+: $= ( st st--f)                         
+ dup c@ 1+ bounds                        
+ DO count I c@ -                         
+   IF drop false leave THEN LOOP ;       
+: warn ." !!!" key drop ;                
+: noprefix?  ( string--flag)             
+ 1+ c@ dup Ascii $ = over Ascii % = or   
+ swap Ascii & = or not ;                 
+: s# ( string--)                         
+ dup  " HEX"     $=                      
+ over " DECIMAL" $= or                   
+ IF count type warn r                    
+ ELSE dup number? dup                    
+ 0= IF  drop drop drop exit THEN         
+ 0> IF 2drop  count type space           
+          ." double" warn r              
+    ELSE over count type space &9 u>     
+     IF  noprefix? IF r THEN             
+     ELSE drop THEN THEN THEN ;          
+                                         
+' s#   Is action                         
+\\ : N: Create Does> 2- >name .name ;    
+N: (16 N: (64 N: C)                     
+\ Test-Kontrolle             clv04may87) 
+                                         
+\needs Tcontrol  Vocabulary tcontrol     
+                                         
+tcontrol also definitions                
+                                         
+:  LOOP compile ?stack [compile]  LOOP ; 
+         immediate restrict              
+: +LOOP compile ?stack [compile] +LOOP ; 
+         immediate restrict              
+: UNTIL compile ?stack [compile] UNTIL ; 
+         immediate restrict              
+: REPEAT compile ?stack [compile] REPEAT 
+;        immediate restrict              
+\ : :    : compile ?stack ;              
+                                         
+  : tc; cr ." --"R> 2- >name .name  .s ; 
+  : :    : cr last @ .name               
+         Does> dup >R ['] tc; 2+ >R >R   
+         cr R@ 2- >name .name .s         
+         ;                               
+                                         
+                                         
+                                         
+                                        
+\ s#>s+t  x,x                 clv06jan87 
+                                         
+base @  hex                              
+165 | Constant 1.t                       
+1EA | Constant 2.t                       
+256 | Constant 3.t                       
+                                         
+| : (s#>s+t ( sector# -- sect track)     
+      dup 1.t u< IF 15 /mod exit THEN    
+ 3 +  dup 2.t u< IF 1.t - 13 /mod 11 +   
+                            exit THEN    
+      dup 3.t u< IF 2.t - 12 /mod 18 +   
+                            exit THEN    
+ 3.t - 11 /mod 1E + ;                    
+                                         
+| : s#>t+s  ( sector# -- track sect )    
+ (s#>s+t  1+ swap ;                      
+                                         
+| : x,x ( sect track -- adr count)       
+ base push  decimal                      
+ 0 <# #s drop Ascii , hold #s #> ;       
+                                         
+                                         
+                                         
+-->                                     
+\                             clv10oct87 
+                                         
+\ Variable (drv    0 (drv !              
+                                         
+: disk ( --dev#) (drv @ 8 + ;            
+                                         
+-->                                      
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ thrubf thruba               clv06jan87 
+                                         
+: diskdo ( tra# sec# string-- flag)      
+ disk 0f busout                          
+ count 2dup type bustype                 
+ x,x 2dup type cr bustype busoff pause   
+ derror? abort" diskerror" ;             
+                                         
+: bamallot  ( blk -- flag)               
+ diskopen abort" disopenerror"           
+ ." blk:" dup . cr  2* 2* 4 bounds       
+ DO I s#>t+s " b-a:0,"  diskdo LOOP      
+ diskclose ;                             
+                                         
+: bamfree  ( blk -- flag)                
+ diskopen abort" disopenerror"           
+ ." blk:" dup . cr  2* 2* 4 bounds       
+ DO I s#>t+s " b-f:0,"  diskdo LOOP      
+ diskclose ;                             
+: x ( [from to] -- last+1 first)         
+ 2dup > IF swap THEN 1+ swap ;           
+: thrubf x ?do ?stack I bamfree  loop ;  
+: thruba x ?do ?stack I bamallot loop ;  
+                                         
+base !                                  
+\ Directory Test              clv26sep87 
+                                         
+: readdir  cr                            
+." Directory wird nach blk $8888 gelesen 
+"                                        
+  diskopen                               
+  $8888 buffer     $400 0 fill           
+  $8888 block        &18 0 readsector    
+  $8888 block $100 + &18 1 readsector    
+  $8888 block $200 + &18 2 readsector    
+  $8888 block $300 + &18 3 readsector    
+  cr ." und kann bei Adresse"            
+  $8888 block u.                         
+  ." bearbeitet werden"                  
+  diskclose                              
+;                                        
+                                         
+                                         
+\ readdir funktioniert                   
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ files                       clv06jan88 
+                                         
+| : skp  bus@ drop bus@ drop ;           
+| : wrd  bus@ bus@ $100 * + . ;          
+| : str                                  
+    BEGIN bus@ ?dup WHILE emit REPEAT ;  
+                                         
+: files \ Filename kann folgen           
+ (drv @ 8 +                              
+ dup 0 busopen                           
+ " $0:" count  bustype                   
+ bl parse bustype                        
+ " *" count bustype                      
+ busoff derror? ?exit                    
+ dup 0 busin                             
+                                         
+ skp skp \ Sector,Zeilenlink             
+ BEGIN cr wrd str skp $90 c@ UNTIL       
+                                         
+ dup 0 busclose derror? ?exit ;          
+                                         
+                                         
+                                         
+                                         
+                                        
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ search words                clv24oct87 
+                                         
+' words 26 + Constant cccc \ schweinkram 
+                                         
+Variable ssss                            
+                                         
+: nnnn ( adr--)                          
+  dup 1+ c@ ssss @ =                     
+  IF .name ELSE drop THEN ;              
+                                         
+: gggg                                   
+  cccc    push   ['] nnnn cccc    !      
+  cccc 2+ push   ['] noop cccc 2+ !      
+  $100 0                                 
+  DO cr ." Char: " I dup . space emit cr 
+     I ssss ! words LOOP ;               
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ backuptape..                clv22feb88 
+\ restore macht DISK ID MISMATCH         
+                                         
+$165 | Constant 1.t                      
+$1EA | Constant 2.t                      
+$256 | Constant 3.t                      
+                                         
+                                         
+| : (s#>s+t ( sector# -- sect track)     
+      dup 1.t u< IF $15 /mod exit THEN   
+( 3+) dup 2.t u< IF 1.t - $13 /mod $11 + 
+                            exit THEN    
+      dup 3.t u< IF 2.t - $12 /mod $18 + 
+                            exit THEN    
+                    3.t - $11 /mod $1E + 
+ ;                                       
+                                         
+                                         
+| : s#>t+s  ( sector# -- track sect )    
+ (s#>s+t  1+ swap ;                      
+                                         
+-->                                      
+\ debug sec>tape  backup                 
+                                         
+                                        
+\ ..backuptape                clv22feb88 
+                                         
+$100 Constant seclen                     
+&7   Constant tapeDev                    
+Create baknam $11 allot                  
+: up $91 con! ;  : dev8 0 (drv ! ;       
+                                         
+| : ?e ( flag--)                         
+  ?dup IF diskclose                      
+          abort" disk error" THEN ;      
+| : ?t ( flag--) abort" tape error" ;    
+                                         
+: sec>tape ( adr--)                      
+  dup 2+ over @ s#>t+s                   
+  dev8 readsector ?e                     
+  seclen 2+ over + baknam count tapeDev  
+  csave ?t ;                             
+: tape>sec ( adr--)                      
+  dup @ swap                             
+  dup 0.0 tapeDev cload ?t \ Ladefehler  
+  seclen - 2- over - ?t \ Laenge falsch  
+  swap over @ - ?t \ falscher Sektor     
+  dup @ s#>t+s dev8 writesector ?e ;     
+-->                                      
+                                        
+\ backup restore              clv22feb88 
+                                         
+                                         
+                                         
+Defer copywhat                           
+                                         
+: copyall ( cfa--) Is copywhat           
+ pad dup $110 + sp@ u> abort" no room"   
+ cr ." enter Disk & Tape" key drop cr    
+ cr ." **BackupName:***" cr              
+ baknam 1+ $10 expect  span @ baknam c!  
+ dev8 diskopen ?e                        
+ base push decimal      0 &682           
+ DO I . I s#>t+s . . cr up               
+    I over !                             
+    dup copywhat     -1 +LOOP drop ;     
+                                         
+: backup  ['] sec>tape copyall ;         
+: restore ['] tape>sec copyall ;         
+                                         
+\\                                       
+: t 0 &682                               
+  DO I . I s#>t+s . . cr                 
+     stop? IF leave THEN -1 +LOOP ;      
+                                        
+                              clv08dec87 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                              clv06jan87 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                              clv06jan87 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                              clv29jan88 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ Laufzeit                    clv29jan88 
+                                         
+\ aus VD 2/87                            
+                                         
+\needs Code .( ??! CODE !??) quit        
+                                         
+$a4 Constant timer \ High,Low !!!        
+                                         
+Code gettimer                            
+sp 2dec timer    lda sp )y sta           
+        timer 1+ lda sp x) sta           
+next jmp  end-code                       
+                                         
+: tinit ;                                
+                                         
+&60 Constant ticks/sec                   
+&13 Constant maxbar                      
+&40 Constant cols                        
+                                         
+   1 6 +thru                             
+\    7 +load \ Beispiel                  
+                                         
+                                         
+                                         
+                                        
+\ Laufzeit                    clv29jan88 
+                                         
+\ aus VD 2/87                            
+                                         
+\needs Code .( ??! CODE !??) quit        
+                                         
+$a4 Constant timer \ High,Low !!!        
+                                         
+Code gettimer                            
+sp 2dec timer    lda sp )y sta           
+        timer 1+ lda sp x) sta           
+next jmp  end-code                       
+                                         
+: tinit ;                                
+                                         
+&60 Constant ticks/sec                   
+&13 Constant maxbar                      
+&40 Constant cols                        
+                                         
+   1 6 +thru                             
+\    7 +load \ Beispiel                  
+                                         
+                                         
+                                         
+                                        
+\ new #uses #ticks names      clv29jan88 
+                                         
+: Array  Create 2* allot                 
+         does> swap 2* + ;               
+                                         
+$7f Constant #words                      
+                                         
+Variable #entries  #entries off          
+                                         
+#words Array #uses                       
+#words Array #ticks                      
+#words Array names                       
+                                         
+: new #words 2*  0 #uses over erase      
+      0 #ticks swap erase tinit ;        
+                                         
+new                                      
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ msec getmaxtimme drawbar    clv29jan88 
+                                         
+: u*/-d ( u1 u2 u3--udqout)              
+  >r um* r> ud/mod rot drop ;            
+                                         
+: msec ( u--ud) &1000 ticks/sec u*/-d ;  
+                                         
+: .msec ( ud n --)                       
+  -rot <# # # # Ascii . hold #s #>       
+  rot over max  over - spaces type ;     
+                                         
+: getmaxtime ( --u)                      
+  0 #entries @ 0                         
+  ?DO I #ticks @ umax LOOP ;             
+                                         
+                                         
+: drawbar ( umax u --)                   
+  maxbar rot u*/-d drop                  
+  0 ?DO Ascii # emit LOOP ;              
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ .table                      clv29jan88 
+                                         
+: tab ( n--)                             
+  col - dup 0< IF cols + THEN spaces ;   
+                                         
+: .header cr cr                          
+     ." volksFORTH83 statistic analysis" 
+  cr ." ===============================" 
+  cr ." Name" &10 tab ." #uses"          
+              &16 tab ." sum [sec]"      
+              &26 tab ." Bar diag" cr ;  
+                                         
+: .entry ( max n --)                     
+  dup #uses @ 0= IF 2drop exit THEN      
+  cr  base push decimal                  
+  dup names @ .name                      
+       &10 tab dup #uses  @ 5 u.r        
+       &16 tab dup #ticks @ msec 7 .msec 
+       &26 tab     #ticks @ drawbar ;    
+                                         
+: .table .header getmaxtime #entries @ 0 
+  ?DO dup I .entry stop? IF leave THEN   
+      LOOP drop cr ;                     
+                                         
+                                        
+\ l, start ende               clv29jan88 
+                                         
+: l, ( adr--) , ;                        
+                                         
+\\                                       
+: start gettimer                         
+       1 r> dup 2+ >r @ +!               
+  negate r> dup 2+ >r @ +! ;             
+                                         
+: ende  gettimer r> dup 2+ >r @ +! ;     
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ start ende fuer 6502        clv29jan88 
+                                         
+Code start sei \ No timer interrupt      
+  N IP 2dup x) lda sta )y lda 1+ sta     
+  clc                                    
+  N x) lda          1 # adc  N x) sta    
+  N )y lda          0 # adc  N )y sta    
+  IP 2inc                                
+  N IP 2dup x) lda sta )y lda 1+ sta     
+  sec                                    
+  N x) lda    timer 1+ sbc   N x) sta    
+  N )y lda    timer    sbc   N )y sta    
+  IP 2inc cli next jmp                   
+                                         
+Code ende  sei \ No timer interrupt      
+  N IP 2dup x) lda sta )y lda 1+ sta     
+  clc                                    
+  N x) lda timer 1+ adc N x) sta         
+  N )y lda timer    adc N )y sta         
+  IP 2inc cli next jmp                   
+                                         
+                                         
+                                         
+                                         
+                                        
+\ compiler-changes            clv29jan88 
+                                         
+: newentry  last @ #entries @ names !    
+  1 #entries +! #entries @ #words =      
+  abort" table full" ;                   
+                                         
+: old:  : ;                              
+: ;old [compile] ; ; immediate restrict  
+                                         
+old: :    : compile start                
+     #entries @ dup #uses l, #ticks l,   
+     ;old                                
+old: exit   compile ende                 
+     #entries @ #ticks l,                
+     compile exit                        
+     ;old immediate restrict             
+old: ?exit [compile] IF                  
+           [compile] exit [compile] THEN 
+     ;old immediate restrict             
+old: ;    compile ende                   
+  #entries @ #ticks l, newentry          
+  [compile] ;  ; immediate restrict      
+                                         
+                                         
+                                        
+\ Laufzeit Test               clv29jan88 
+                                         
+: 2*  2* ;                               
+: dup+ dup + ;                           
+: two* 2 * ;                             
+: t2*  &234   &1000 0                    
+  DO dup 2*   drop                       
+     dup dup+ drop                       
+     dup two* drop LOOP drop ;           
+                                         
+: tt2* &10 0 DO t2* LOOP ;               
+                                         
+new tt2* .table                          
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                              clv06jan87 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ c16grafik-1                 clv06jan88 
+\ farbe.. unten=>kein flimmern im rom    
+\              =>text faerbt grafik      
+: gr ( mode--) \ t=0,hr=20,mc=a0         
+ dup 83 c!     \ splitscreen: +40        
+IF                                       
+ 08 7fb c! \ anfadr text                 
+ ff06 c@ 20 or ff06 c! \ bitsp.frei      
+ ff07 c@ ef and  \ multicolor            
+ 83 c@ 80 > IF 10 or THEN ff07 c!        
+ ff12 c@ c3 and 30 or ff12 c! \ bitmap   
+ ff14 c@  7 and 08 or     ff14 c!        
+ELSE                                     
+ 08 7fb c! \ anfadr text                 
+ ff06 c@ df and  ff06 c! \ bitsp         
+ ff07 c@ ef and  ff07 c! \ multicolor    
+ ff12 c@ c2 and  4 or     ff12 c!        
+ ff14 c@  7 and 08 or     ff14 c!        
+THEN ;                                   
+: e 0800 400 f1 fill 0c00 400 01 fill    
+    c000 2000 0 fill ;                   
+: t c000 2000 bounds                     
+  DO 01 I ! 10 +LOOP ;                   
+: test 20 gr e t 6000 0 DO LOOP e        
+ 0 gr ;  test                           
+\ c16grafik-2                 clv06jan88 
+                                         
+hex                                      
+: gr ( mode--) \ t=0,hr=20,mc=a0         
+ dup 83 c!     \ splitscreen: +40        
+IF                                       
+ e0 7fb c! \ anfadr text                 
+ ff06 c@ 20 or ff06 c! \ bitsp.frei      
+ ff07 c@ ef and  \ multicolor            
+ 83 c@ 80 > IF 10 or THEN ff07 c!        
+ ff12 c@ c3 and 30 or ff12 c! \ bitmap   
+ ff14 c@  7 and e0 or     ff14 c!        
+ELSE                                     
+ 08 7fb c! \ anfadr text                 
+ ff06 c@ df and  ff06 c! \ bitsp         
+ ff07 c@ ef and  ff07 c! \ multicolor    
+ ff12 c@ c2 and  4 or     ff12 c!        
+ ff14 c@  7 and 08 or     ff14 c!        
+THEN ;                                   
+                                         
+                                         
+-->                                      
+                                         
+                                         
+                                        
+\ ..c16grafik-2               clv06jan88 
+                                         
+: .. BEGIN ." laber " stop? abort" .."   
+                REPEAT ;                 
+                                         
+Code sei sei next jmp end-code           
+Code cli cli next jmp end-code           
+                                         
+: e e000 400 f1 fill e400 400 01 fill    
+    c000 2000 0 fill ;                   
+: t c000 2000 bounds                     
+  DO 01 I ! 10 +LOOP ;                   
+                                         
+.( ohne ROM-Routinen) key drop           
+: test limit $c000 u> abort" no room"    
+ sei 60 gr e t                           
+ 6000 0 DO LOOP e                        
+ cli 0 gr ;  test                        
+                                         
+.( mit  ROM-Routinen) key drop           
+: test2 limit $c000 u> abort" no room"   
+ sei 60 gr e t                           
+ 100 0 DO ." hallo " LOOP                
+ e cli 0 gr ;  test2                     
+                                        
+\ Hardcopy                   clv11.4.87) 
+                                         
+\needs scr>cbm .( ??! scr>cbm ??!) quit  
+                                         
+| 0c00  Constant screen                  
+| &1000 Constant b/s                     
+| &40   Constant b/l                     
+                                         
+: hc  ( --) \ Hardcopy des Bildschirms   
+ screen b/s bounds printer               
+ DO stop? abort" user break"             
+    I c@ scr>cbm emit                    
+ LOOP cr display     ;                   
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ Hardcopy to Ctrl+P         clv11.4.87) 
+                                         
+\ Installieren von HC auf Ctrl+P         
+                                         
+                                         
+input @ 4 + @                            
+ | Alias olddecode                       
+                                         
+| : pdecode ( key#--key#)                
+ dup 10 = IF hc THEN   \ ctrl+p - hc     
+ olddecode ;   \ zu altem decode         
+                                         
+| create hcinput     8 allot             
+ input @ here 8 - 8 cmove                
+' pdecode  ' hcinput >body 4 + !         
+                                         
+                                         
+: hcin hcinput input ! ;                 
+                                         
+hcin  .( Hardcopy now on CTRL+P)         
+                                         
+                                         
+                                         
+                                         
+                                        
+∞к∞Ћk∞∞$+Oa2b OЋk1b OO
+ и€∞$s „kЙ(RESTORE"+3$sb ∞X'OХk
+хГ$h$s єkHRESTORE"+ф Ek$$y+<ij   
+C64FKEYS+шkч]RВ$a юkDEVICEZ) a 
+€l	COMMODORE+Д#l$a )lFLOPPY+R#l
+$b alSETNAME+RЂђRѓ$+RRЃђ…
+…Ѕl$+#l
+PUSHAy+P{ ЖjPUSH0Ay+Z{ Фj
+PUSHy+Ё{ £jRPy+ { ∞jUPy+ { їjSPy+ 
+{ FjIPy+ { QjNy+$ { |jPUTAy+ { жjWy
++ { уjSETUPy+Ы{ эjNEXTy+	 { kXYNEXT
+y+ca{ kPOPTWOy+Љ{ 'kPOPy+}p –jc\IF+
+V#Р.Ѕb Ѓ$h$@ bkTAPEс,"s"sВjZ)OO
+$r \kЕSTORE+OsАкRЃђ$c wlBLOAD
++БlRЭR≤|iѕl$c РlBSAVE+БlRЭR
+≤≤iѕl$c ЃlBLOAD:+…•#ЅlШlEkbuh$c L
+lBSAVE:+…•#ЅlґlEkbuh$d йl	SUPERTAPE
++R#lч#m_$%mН>€ ;mН?€Ґ †l	 l}ml)o©
+5Н.©mН/©8Н0©mН1† є]mH R€I Pх`  *** s
+upertape clv 2/10  *** ЕУ© ЕР•ЃIрlpр
+ЇЖZ г∞HЎ•Уh© ЕУ `с Нг Op ƒг лp©µНH©* xn
+†√ Jл† є2 R€HјPх†€HDЂрН?€±ѓН>€Y2роI?р
+к≠b)Pq ЎгlЯm»ЕУ Йс•іЕ_•µЕ`•≠р
+≠cЕ_≠dЕ
+`≠e≈_ЕЅ≠f≈`Е¬©oНH≠b0©µНHН?€©E xnl1
+n© ,©,©,©,©,©Н>€h ∞г Ўг¶Z»Ъ¶_§`Ix`Е
+yҐ  ыnIPщҐ† ыnИPъIPлJPс† ыnИPъIрфE
+yрIEрTl4n© Е]Е^† ыnИPъЕ€•]Е√•^Еƒ ыn ы
+n•УP•€С_ ыn ыn•€Q_ри ыn ыnж_Pж` ыn ыnЕ
+€•`E¬PC•_EЅPљ•€E√P† ыnИPъEƒPа рl:nl4n
+`©,	€ры•)ExрЕx∆w•wж]Pж^•)ExршЕx
+ Zp•w`•ЃIр	8)Pl§сЇЖZ Po г∞дЎ ƒг Нг 
+Op•≠Нb•≤Нc•≥Нd8•Эе≤Нe•Юе≥Нf© НgНhН
+iНjН€©2Е_©Е`Е¬©kЕЅ©€ЕY©ЎЕXН€©Н	€©
+* >p Op$≠©ЎЕY©4ЕXН€•≤Е_•≥Е`•ЭЕЅ•ЮЕ¬©EН
+?€ >p Opl1n† © Щ2HјРш† ДАДХDЂр.Ш™Н?€±ѓН
+>€I.P!ј∞"$А0FА†Щ2HДХј∞
+идЂ∞К®lиo`§Х
+l p† є*pH R€I Pхl=n? filename invalid hҐ
+@© Зp ЙpJPх» Зp Йp† Д]Д^±_ Зpж_Pж` Йp•_
+EЅPм•`E¬Pж¶^•] Зp ЙpК Зp ЙplЗpЕw†fwР•
+YНH©,	€ры Zp•iЕ∞©,	€ры Zp•iЕИPR
+`•]… Е]•^… Е^•XНHИPљ`Ґ † JPэИPъ`≠HН€© 
+Н€©Н	€`©2Е_©Е`Е¬©kЕЅ`*** ende st **1
+?¶p	RF?`pП!к¶pлђ$+¶pZ)јtapeFORTH8
+3.4th  © ЕР ƒг Нг©2Е_©Е`Е¬©kЕЅl∞ЕyҐ  “
+IPщҐ† “ИPъIPлJPс† “ИPъIрфEyр G
+и©l~Ж© Е]Е^† “ИPъЕ€•]Е√•^Еƒ ѕ•€С_ ѕ 
+ѕж_Pж` ѕЕ€•`E¬PZ•_EЅPT•€E√Pґ† “ИPъEƒ
+P™`*** fn-ende *     Z)ј        mOg348
+ “©,	€ры•)ExрЕx∆w•wж]Pж^•)Exр
+шЕx †•w`©µН€© Н€©Н	€`©* √≠cЕ_≠dЕ`
+≠e≈_ЕЅ≠f≈`Е¬©E √ GиlЊЛ**p2-ende***   
+                                       
+               e m
+SAVEBOOTER+#lk5l'q*
+ Ѕlлq* ч]sВч]АлqТњґl	lEkbooter$
+f ±rMSGON+R@RЪђ$f хrMSGOFF+R R
+Ъђ$f sMSGALL+RјRЪђ$  гkRAMDISKс
+,ЦxЦx…kv 9sCMB>7BIT+АRАJb $АRAR
+џ„ЉR|1|b R`1  RА1Rщ$v
+ ms7BIT>CBM+АRА#b $АRЅR{„ЉR
+№1|b R`њ$+Љђл$+±C3∆ њ$w Х
+sEXPAND+Љ∞бsЅ€)€$ г€ТАRхb R
+1Ws  †sMsИ€„€O1$+•b' RАф∞•b
+	 RњMsO…:€ R€MsИ€„€$x еsCOMPRES
+S+Љ∞бsЅ€…")€$€ г€ТC31b л  
+&tг€ТxsMs…И€„€&tO1$    RDy+ ! ҐtR
+DFIRSTZ)  ! ≠tRDLIMITy+ э+Јtк$+Kt1K
+tm$! љtRD?+KtЅq$! гt?RD+йtqEk
+
+noRamdisk $+KtАmкњ$+Акњ		$
++	к$+		$! хt	BLOCKLOOP+∞KtАu1
+b …$щ_•b $u ёX%]аЖ \
+^CPY%]јЖ …^LDX%]ҐЦ ÷^LDY%]†О Г^
+STY%]АМ Р^JSR%]А Э^JMP%]@АД ™^BI
+T%] Д“+Є=€
+[а3out of range \	 Ј^[
+[“+X \	 б^?]“+!X #…B^!\	 о^?[“+!
+X °!\	 _?[[“+
+_Л\	 _]?“+X фJД
+
+ Л;¬ ф#…B^Лд\	 (_][“+X #Љ∞
+P…Ё”¬S€сq m"…°>Щ1ЁД ГД
+
+ sА¬ sА¬І€У\“+?$
+@…\.*Т
+НЕЙЖКЯЛЗИМЭСУФ	€.*ss'sis
+iuЅp>o>oЂrґrџrжrЪo–oУpЌp;qrщoppo&o|nњ
+nћnћnћnлnЎnћnЉopo^oЂpµp•n0v© S§$ИHєљuI€
+рE&PфШ
+®єдuhєеul“+4mдВ6
+А°…€ J€є€\
+“+4m2°q#н]\.*  .*P‘.*F‘.*Љ‘.*∞‘.*§
+‘.*Ш‘.*≥ћ йчBпЛD\1   CPUSH“+пz
+фP≥ф#…ЄBn {¬PP\“+
+rэ {bTcн1С4
+п!щ//Ѓ€э 9\1 С¬RANGE“+«¬чЄ√¬;#Є"
+/\…Дт€n«¬;\√©€Н—¬Н“¬°Е±Е•…
+ЕРж≠Ѕ¬Е≠¬¬Еl .*√\•…ЕРж≠—¬р
+з≠Ќ¬P•M≈¬•н∆¬РV•jРbjy
+Рb
+kРb
+
+Рbjyф…\- zy	EDIDECODE“+
+Н@Д
+ mч?
+dтa@Д< mч√yЄQ!"[Д АQ!"£€№€ й
+ч%JFlЛд#J€є€ЄQ!;dЄmд
+.vЧА
+vА\- Кy	EDIEXPECT“+€wQ!;°ЄQ!"Д
+ 
+ѓ?I?¬о€ёС4\-  zEDIBOARDЮ?La[aЦyz\“+
+Uj/В6Є2;Иd2Иdчэe\€ !y
+S ы\“+}Є#
+№"й…Д
+ А¬м€ё;\ s≈RELOCATE“
++Л≠чйч%7чa;[а3buffers?Єи / ч
+а3stack?ф0"
+@ча3rstack?@:$>№
+ч≠
+
+ч;Єs∆}#"≠#;
+…≠
+ч;
+a\ „∆
+BYTES.MORE“+}≠…чB"}…В∆\
+ «BUFFERS“+%7$a;B"…Л…«\\5 
+ [чJч!=["
+1Д =["
+1
+UД
+ !¬ !—[\ ]ADC%]`ќ Щ]AND%] ќ 
+¶]CMP%]јќ ≥]EOR%]@ќ ј]LDA%]†ќ M]
+ORA%] ќ Z]SBC%]аќ з]STA%]Аћ ф]A
+SL%] ^DEC%]A ^INC%]б ^LSR
+%]a (^ROL%]! 5^ROR%]Ѕ b^STX%]
+Б o^CPd?m"PШ5йd?X #PFsW?Q!"Ё
+Д X №д_'Аm;d?m"PШ5{bйd? ma"
+еlЕ ?…W?Q!"ЁД  m;d? mltйd?&ma"
+еlЕ ?…W?Q!"ЁД &m;d?&mltЁpIqd?\
+“+сrА mlЩ3"О3"Ј9чшcЩ3"…3kЩД °¬
+
+ О3"Ј9…Щ3;Еr\“+ґrА#tuЩ3"Д' ѓ?Є
+
+r…Д RsЁД  d <ЅCODE“+A)X ЄЕ;
+2Ѕ\ \Ѕ>LABEL“+X »)A)ю'Л!Zi(А(Љ1i
+(X Z…А(ZDА(~'"ћ 
+1ч;L;л(lј("
+1$"Д ^\ ’ЅLABEL“+X ~Ѕ2Ѕ\ 
+ЅROM“
++X 
+	ч/ А[а3not here/>€ъ]\ вЅRAM
+“+/?€ъ]\ ¬SYS“+иЅ£^¬\/ NЅTOOLSv-6
+∆6∆гl0 ¬WCMP“+фS]Єє]Л#S]F1ЩД
+	 ѓ$not ѓ$changedЄZ1Д м9Є
+1
+
+…Д ѓ$, saved
+1Д€ ѓ$	, loading?О3
+"Щ3"Јw\, <xL“+Щ3чcx\, TxR“+О3"cx\
+, дx+L“+О3"чXx\, фxV“+;/©*ЁД Z…
+"\, yVIEW“+yЁД Xx¬ ѓ$from key
+board\“+,m"0mJч\, ФvCURLIN“+
+Рb
+
+a≈TRACE'“+;/Є'≈Ч√\“+є>ЄZШ5ѓ$:\
+“+Є"
+Ш5\“+ЄJPД5\“+
+$ ?…°Ё§4\
+6 ≈S“+ ≈С4З≈Z§4Єћ #?ЄJч#У≈\6 ¶≈
+N“+ ≈Џ≈F§4Є"©*+aУ≈\6 J≈K“+ ≈Џ≈aУ
+≈\7 и≈D“+йЛ ≈P§4Л°…€
+ З≈#J€є€Z§4
+z#?У≈\7 ъ≈C“+Љю≈\7 (∆B“+ ≈Џ≈Є"фч
+
+Ш5aУ≈NOPу[к √\PHAу[h ќ\PHPу[
+ ў\PLAу[» Д\PLPу[( П\RTIу[@ Ъ\RTS
+у[` •\SECу[8 ∞\SEDу[ш ї\SEIу[Ў F\
+TAXу[™ Q\TAYу[® |\TSXу[Ї з\TXAу[К 
+т\TXSу[Ъ э\TYAу[Ш ]M/CPU“+A)!!л(l
+ј(Є#"
+А1Д	 
+=[[ф/ €1•[•[Д —
+[Уа3invalidJ=["Д ЄД .?«dтa@
+Д
+ ЄQ!;dІ"Є %Д АPйчЛдп?
+#dА\" ≈sDIGITSЮ?La[a—slb\“+ m"°…€
+
+ жaРbJ€є€°&m"°…€
+ ЎnJ€є€Є”&ml+nЛ
+ЇmґrА\“+#?
+<?еl« ?…§4\“+2ƒl∞qo
+?IpЉ°d?ѓ$replace with: o?&mlt°°d?ѓ
+$>     search: o? mlt°Fй`BCS“+°_
+у^\
+ \`BVS“+е_у^\ ћ`2INC“+ЄS]\Fќ[
+Я]Єъ]Ц_
+_Л#!^-_\ №`2DEC“+ЄS]ґ\Fќ[
+н]Єъ]°_
+_Л#^-_\ •`WINC“+Є!^ђ_
+_Л
+#!^-_\ N`WDEC“+ЄS]ђ_
+_ф#^-_^\ 
+л`;C:“+Д£^[Х0°~';°\ ≈z	ASSEMBLER“
++?j—[\ &Ѕe;CODE“+)/э€э Ъ+/ю€э 2Ѕ\
+сrЉ°d?н1ЕrУaА\* љs(LOAD“+Є!2Є!;
+ЁЩ”D!2D!;н1щ/\* ДwSHOWLOAD“+О32О3
+чЩ32/>w*w;Мw.w\“+iчЄJ4mдЄ#J<
+mдaJ8mд\“+ZSw
+УРbсrАmчѓ?Єmд°
+.vЧАvЁДм€°°d?–oАmе°Sw°/кд\
++ ђwEDIT“+KiО3;§q€wхw
+°d?сqѓ$Scr є5
+ѓ$Drv є5Є	"ч"/ƒd/#?"@Д +Jф
+"ч"/ƒd/8"@Д
+ +"/ƒd"/lј…Д
+
+ "Pчd©*+ѓ$can't be DEBUGged33\5 X
+¬NEST“+”¬""/ƒАЋ¬е\5 CƒUNNEST“+√¬е
+«¬ч\55 ёƒENDLOOP“+”¬"Zч√¬;\5 цƒ%U
+NBUG√5 ≈(DEBUG“+/ƒа¬Ћ¬чѕ¬е„¬ч8¬ƒ\
+5 0¬DEBUG“+;/'≈\5 
+  `[#s[s[  [,
+Xs[ ÷[,Ys[ А[X)s[ К[)Ys[ Ф[)s
+[“+Д =["
+=[;Љ=["
+1ЁД °…
+€
+ ЄчJ€є€ф#"1Щ\ Ю[CPU“+A)!л(lј
+(J!—[\ е[BRKу[   \CLCу[ \CLDу[
+X \CLIу[x !\CLVу[Є ,\DEXу[J 7\DE
+Yу[И b\INXу[и m\INYу[H x\€≠2iН@©
+АН@≠€	Н€ nixlcaТ _i(BSAVEіiкк©≤¶Э§ЮН
+>€ X€Н?€∞© lP©€lPТ ©i(BLOADёiкк© ¶≤§≥
+Н>€ U€Н?€lEiН>€НО©h©hЇљh© Ґ l≥ьН?
+€@8Н>€ Щ€О;М;†єтiЩ Ич©Н€€© Ню€Н?€`Џ
+ Sia)+$Џ 9jd(C16+$Џ cjd(C64+Л$$Џ pj
+FORTH-83+${ _j	ASSEMBLERс,!—!—-{   
+^ЛX ф#…B^Лд\	 q_]]“+∞^\	 ‘_]]
+?“+∞^-_\
+ Б_CSњ+Р 
+ С_CCњ+∞ 
+ Ь_0=њ+P
+ 
+ І_0<>њ+р 
+ ≤_0<њ+ 
+ Њ_0>=њ+0 
+ I_
+VSњ+p 
+ U_VCњ+– 
+ а_NOT“+
+ n\
+ л_BE
+Q“+Є_у^\
+ ь_BMI“+O_у^\
+ `BNE“+ђ_у^\
+
+ `BPL“+C_у^\
+ ,`BCC“+Ц_у^\
+ <`BVC“
++Z_у^\
+ lvЉqv°qvЉqv\“+ЄУ…Д »v
+Щ\( wq(PAD.*  “+и ЄЫv;еl3чЄ ma;
+еlчЄ&ma;еlчЄm;еl3ч€m;maч€ma
+ч/кpћ P ma"Dп m;/qћ 
+1P&
+ma"Dп&m;\“+и Ыv"…”Яv\њ+#$“+/
+d*w;Ёpіa\“+D!"ЁЩД .wdЄ!"«Щ3;Ё
+pіaIpО3"ф…Д О3;M…¬•н ¬∞Jl«√ОЌ¬О—¬
+О“¬•НЅ¬•Н¬¬ ЖЋ¬"Д" Ћ¬чп«¬2√¬2ЄЕ
+а¬„¬2Љ„¬[P.√P2ф2ЕЄ”¬;?„¬
+"§4ЄZШ5"Є
+Ш5С4©*+
+ ?…°Ё§4W51
+$2D!2Є!2/(32/Ї/2o!2Ё!o!"Щ¬B2≥
+B;/є¬г0(333\ ƒ©√Е©4Е©lЕl	 “+Є"/
+ћ+"@Д +d/ѓ?"@Д +JAVESYSTEM
+“+О32ЉО3;Щ32Щ3ч'qЄ2чЫvЄ2чe>
+
+F–e°к#эeС$,p,wћ эeЧd
+Fze≠
+…Є/
+ ПЛбeбeX ф…izЧd
+FИe°d;yfа3
+sav
+e-error\ ъjEND-CODE“+D,Е"D,;\ шz
+INDEX.*		А	ААААА ААААААА,.*
+  [MODE:“+A)!л(lј(J=[;\ c[.As[
+	≠€	Н€Н?€x`У +iC64INIT¶i `ilha  
+ЕЖЗЙКЛМИФ ЪiC64FKEYSMiҐJ0	љђiЭ]lOi
+lha{ јic(64“+$ћ Ща3
+C) missing"/C)…Д
+г€\{ аibC)“+\{ jc(16“+\{ jFORTH-83
+“+\№ "j	ASSEMBLERv-b¬b¬А-№   PUSHAњ+№
+ ijPUSH0Aњ+№ wjPUSHњ+№ ∆jRPњ+ № ”
+jUPњ+ № 	
+3г0(3ЏdЦ@/.";/†г0ћ3
+Ў3\†є9Щ Ич≠ …Е≠!… Е†±ЕH±Е
+†
+±ЕH±ЕҐ †КБС`Џ Л@COLDa `i≠ …
+Е$≠!… Е%† єС$HPш Њ@ Ж9i—@\Џ ъ@RESTA
+RT9a `i Њ@ Ж9iЪ@\Ґ †l	 Б -aC64KEY?]a•
+п]р©€hlБ qaGETKEY„aН>€ ЁлН?€I†P© l
+В ћaCURONХa•J≈HН	
+Э иPсl“lПmШ SЖ&≠
+>Е'Ґ† ±& ўlС$Hј(РфJр
+© С$ @mlЬml“lЉm© 
+SИD$Pl“l±( КlС&HPпUmШ SЖ&≠>Е'Ґ†'±$ К
+lQ&р©€lИп @mJPзКl“+;еl3…\nКh≠
+>ln•JI(КР©'≈Hh•I… l-n•J≈Hh•I… l
+“+n/јчеlq4 Щm"\“++nnнlч«…
+m"Щ1\“+mJРb°\“+tnЁ”У	FFЩdН>€ L
+€Н?€†Ґ  ЖИdј6\Ґ † ЖЧd7ј6Уа3	no dev
+ice\ЖРЕЃН>€ ±€Н?€©`Н>€ У€Н?€Н>€ Ѓ€Н?€•Рр
+»»lѓd`щd° Ld•…ЕРжlҐdЙ Оd?DEVICE“
++ИdН6чd\$eЖЪ© S•& Ld•&Н>€ ±€Н?€•$	`Н>€
+ У€Н?€¶&ЖЩlhaК eBUSOUT“+ИdН6"e\К qeBU
+SOPEN“+
+рze\К ∆eBUSCLOSE“+
+аzeЧd
+	mp: Ip
+§4z?
+d?'qa
+W?ЁpQ!"'q#д
+\“+'qJ”¬q\“+nи еl3Dnеl3
+†® \“+
+и nеl3D\“+Ј9Е"\“+УaВ6ї?Дъ€іa\“+О
+3"Z"чdПЛ\“+o?∞qIp°°d?сqѓ$Scr #
+ є5ѓ$Drv є5О3"WqЩД	 ѓ$not ѓ$updated
+ЉЉd?/кpћ #?F§4/qћ 
+1#?Ёpd?бqIq°
+\“+o?Леl	 INDEX“+#Л…€! ?%FД5%Ј9#
+
+%#?°>Д ДJ€є€\П КhFINDEX“+CgД ёd
+#Л…€1 ?%FД5и Є%33оf&gP#
+%#?п
+°>Д ДJ€є€еg\Р њhINK-POT.*цц оц 
+цц Т iINIT-SYSTEM;iҐчЪlhaН>€НviОxi©ih©
+\hЇљh©Ґ l≥ьН?€@ЎН>€©iН€€©aНю€ Д€ К€≠i
+Н€≠iН€≠iН@©АН@	ј(;\÷ П?KEY~? 
+÷ ©?KEY?~?÷ і?DECODE~?÷ ј?EXPECT~?„
+   SEAL“+°/Џ-+;\„ |?$ONLYЏ-„ у?%FOR
+TH…-„ ю?%WORDS	.„ 
+@$ALSOе,„ @+DEFINITIO
+NSњ-“+%"ЄЕ"фZ…;"ЁЩДк€\“+°
+7;;#;;H;\Ў N?'COLDI0†“+1@q@£-Ќ@:?
+ћ #??Ъ@\Ў ≈@'RESTARTI0†“+/	–	@`Е*)
+I РI@Р)$*	@`©.` [lCBM>SCR∞l° КlБ
+l	  §lSCR>CBMHl° ўlБl	  ЉlEDITORv-2
+z2zejњ+( њ+ њ+и   SHADOW.*u .* .*  .
+* .*€€.* .*-»  .*}»  .* Ё«.* »њ+H њ+
+J њ+€њ+;њ+€•$…)Е$Рж%•&…(Е&Рж'`ymШ 
+SЖ&≠>Е'Ґ†'±$ КlС&Иц @mJPо≠;Э Э 	Э 
+	 ¬cC64TYPE§c© S† D$р±& µb∞©.Н>€ l€
+Н?€HlЂcl®bЖ ШcDISPLAYы>оbcҐcc5chcЋc\и
+cН>€lr€З JcB/BLKњ+ З рcBLK/DRVњ+™ З юc
+(DRV.*  “+d"
+ч\З dDRIVE“+d$Z;
+\З (d>DRIVE“+d$чZ"…\З >dDRV?“+
+Z"чdh\З ydDRVINIT“+†\И –dI/O.* 
+ И ВdBUSO	§€ma[€mlчnеlD\“+€ma"
+ЩЁ”ЪoЄ”ўp\“+mе°\“+mч°\ Tl
+RVSON“+
+Рb\ ApRVSOFF“+
+ТРb\ Tp*
+**ULTRAFORTH83***	  иprFORTH-GESELLSCHAF
+T“+%\ уlSTAMP$.*  clv18nov87      “+'
+q#ћ nеlчф…ЛЇm°\ qGETSTAMP“+
+2{b'qе?ѓ$your sta	gэeЧdd
+zeС$u2:1
+3,0,ћ эeшfэeЧdВ6yf\О ]gDISKOPEN“+d
+–
+e
+#бeЧdyf\О Єg	DISKCLOSE“+d
+ИeЧd\О 
+Yg1541R/W“+Ла3no filezd6Єd;P[Д
+€ є5ѓ$beyond capacity dCgД А d°
+Л33Z£€…€. Ай%Д
+ оf&g¬ оfЋgP
+gчпЄД ДJ€є€zёеg\П фg	“+ї?Д Е
+>Е>°\’ Щ>?CR“+ ?6
+
+…[Д ?\“+A)Є
+!aл(lј(Jф"чї\÷ ≥>OUTPUT:“+r+л(l
+ј(ф;\÷ л>EMITZ> ÷ ?CRZ>÷ ?TYPEZ>
+÷ ?DELZ>÷ (?PAGEZ>÷ 3?ATZ>
+÷ ??AT
+?Z>÷ i?ROW“+o?А\÷ t?COL“+o? \“+A)Є
+!aл(lј(J"чї\÷ ƒ?INPUT:“+r+л(l
+	(•()P€•…ЕРж†•'С•&ИСИlЙ•$%P
+•…ЕРж†lМ°&A*р®†±Щ$ Иш•$PF%F$ж
+&Pж'l?k )k2!иkШ S†±С$Ищ†lф бk2
+@l°Е$±Е%•8йЕ∞F†±$СИщlha ьk	2V
+ARIABLE“+A)Zэ \ $l	2CONSTANT“+A)!!л(
+lј(l\ <lUNLINK“+°°/ожk\Ґ †l	 Е*
+)?*$*	А	€Н?€•…ЕРжЖKЖO† ЖВ6\I
+А∞I `Iа∞Iј``Д Йb
+PRINTABLE?Vb° µbРJК
+lЕ GbC64EMITрb° µb∞©.lФbЕ дbC64CR“+
+тaРb\Е юbC64DEL“+
+ЭРbС4
+ЭРb\Е cC64
+PAGE“+
+УРb\Е +cC64ATjc© S¶&§$Н>€ р€
+Н?€lhaЕ @cC64AT?Ќc•8йЕ∞FКС8Н>€ р€Н
+?€ј(ШРй(hКҐ Б»lЖ		јчЄPф…Dпеl
+?4® °\“+:nЙЁ”nЄеlчnнlчф…тpo\
+“+|nЄ”
+Рb\“+mlч#€m" nK[Є”+
+nJmlчдЉma[\“+KoЁ”|n\“+KoЁ”
+Љo\“+ma"ЩЁ”ЎnЄ”Уma[mlчJ+
+nд\“+€mlч n[Є”n€mlчеlDеl€ma[
+\“+;pЁ”њn\“+;pЁ”–o\“+еl	
+v“+ЄЗf
+Д	 
+6dPчЄЛfД Зf…
+6
+чd
+ЄПfД Лf…
+6
+чdПf…
+6
+ч
+\“+Уf#Л\“+ж2t%°|4e5А
+,E4e5н4\њ+
+ Н of
+READSECTOR“+d
+zeС$u1:13,0,ћ эe
+шfэeЧdВ6yf”d
+Neg7fЧd°\Н gWRITESE
+CTOR“+d
+zeС$b-p:13,0ћ эeЧdd
+ze
+#$чЩ3;\“+Щ3"Єеl#xеl……шc«Kе
+l#6Лd?\“+ƒl
+—r\“+ЂrО3"Ј9SmД ;qА
+О3"Ј9НmJ9
+\“+ґr
+\“+џr
+\“
++О3"Ј9wmmчƒlЕr°\“+ґrАЉО3[сr\“+ґr
+АУО3[сr\“+ґrАьl"Єсq [ЙД §О3[
+сr\“+ґrА m"О3" m;О3;сr\" q	DIGDE
+CODE“+жa@	~jSPњ+ № ЙjIPњ+ № ФjNњ+$
+ № ЯjPUTAњ+ № ©jWњ+ № ґjSETUPњ+S№ ј
+jNEXTњ+	 № NjXYNEXTњ+ha№ џjPOPTWOњ+ф 
+№ кjPOPњ+Э. 3j.BLK“+D!"ЁД ѓ$ Blk 
+H5є>\ k(SEARCH5k†±Щ$ Иш•()р…•$%р
+√°&A*р•$PF%F$ж&Pж'lek†є$ СИшж&Pж'ж
+*Pж+•$PF%F$•(PF)F	€•I… йН€l	 В Лa
+CUROFFґa©€Н€Н€l	 Г ЂaC64KEY“+УaВ6[aДъ
+€іa’a\Г Ca#BSњ+ Г аa#CRњ+ Г мa	C64DE
+CODE“+жa@Д ЄД .?«dтa@Д
+ ЄQ!;d
+PйчЛдп?#\Г шa	C64EXPECT“+Q!;
+°ЄQ!"Д
+ ѓ?I?¬о€ёС4\Г @bKEYBOARD
+Ю?La[ablb\Д –bCON!Тb°Н>€ l	nеlч«
+J?4…Й1:nЙ1Є”
+ФРb\“+tnЁ”m"Д
+ ЎnЁ”ћn\“+m"Щz?йlЕ[1Є”
+Рb\
+“+tnЄ”
+Рb\“+nнlq4 нl«Kеl6Лd?°
+\“+°
+
+°…€ А|nЄД ДJ€є€\“+
+°…
+€ 
+ЭРbJ€є€°\“+z?°d?ƒlmчњn\“+nеl?
+4® °\“++nеl ?…?4® °\“+nЄеlчЛn/
+	\ЧeЖЪ© S•& Ld•&Н>€ і€Н?€•$	`Е≠Н>€ Ц€
+Н?€¶&ЖШlhaК }eBUSIN“+ИdН6Хe\Л FeBUS!гe
+°Н>€ ®€Н?€lЩЛ ZeBUSTYPE“+£€№€ %JбeJ
+€є€В6\Л уeBUS@fН>€ •€Н?€lЛ fBUSINP
+UT“+£€№€ f%дJ€є€В6\Л ,fDERROR?“+d
+
+NefЄ
+0…Д ?fЄтa…Дф€Щ?ЩЧd\
+њ+≈њ+књ+
+"≥a…\] ђ2DEPTH“+;Є"
+Л…\“+1$"Д ѓ$
+ compilingdѓ$ ok\
+^ G2(QUIT“+н1?п!щ/я2¬ф€\^ 3'QUITI0
+
+3^ 3QUIT“+B"B0&3\^ ,3STANDARDI/O
+“+/*фZD\^ c3'ABORTI0†^ Ѕ3ABORT“+
+,(√ 3q333\_ –3SCR.* _ И3R#.*  _ Ф3(
+ERROR“+q3С4X +ћ #?С
+і,""!$JЄЉ
+ 
+ѓЙа3invalid nameX ~';#э И)^)"Д Љ
+^)[Є)!Ю(
+ Z')L;¬ &)Аі'°!л(lя
+(3*°Е(±Е)•…ЕРж°Е&±Е'&PlМ±&С
+Е%°&БЕ$%Pl	 •$…Е$Рж%°$h8)≈$Е$Рж%»
+) р
+±$h°$Е$»Е%•$E(P∞•%E)P™lcn Є)>NAME“+
+%"ЄД йZ…Л1*ЁД zё
+;\≈ Ж6
+UNLOCK“+ЄН6ч\»8йЕ»й Е©lБ†±ЕH±Е
+†°Е±Е•…ЕРжҐlР∆ Ј6FILE<,∆ 
+ 7PREV.*шш.*  ∆ 7B/BUFњ+†±(Y" PHј
+Pф`:7†±Щ$ Иш†±≈&Е&H±≈'Е'≠7Е(≠7Е)
+ )7P•…ЕРж†©≈(Б•)… Сlf•(Е*•)Е
++°*Е(†±*Е)(Pl	  )7Pв°(Б*†±(С*≠7Б(≠
+
+"і,;\“+"Е©*+\s ±-ORDER“+R,…€ %
+K-/ю€ы€є€F§4і,K-\s Y-WORDS“+D,""Є
+°>Щ1Д є>Єa+С4¬ж€А\t .(FIND;.†
+±Щ$ Иш°&)Е(† ±$™H±$Е%Ж$$P†Ґ lМH±$
+)E(Pа©≈$Е)© ≈%Е*§(±&Q)PKИPч†•*СИ•)С
+ИҐ lЙЦ.°Е$±Е%°$Е&)8≈$Е$Рж%•&) P	•$Б
+•%lB.°$Б±
+йh:J€є€¬ п°№€ йh:ЉЉ
+хJ€є€м9ё\ѕ 8:COPY“+Љ÷:\ѕ T:CONVEY“
++Л#FН…Є<Йа3nein÷:\– е:LIMITњ+ 
+э– ;FIRST.* №– ;ALLOTBUFFER“+#;"B"
+…%7a”%7§#;[#;"Є{87"ф;7;\–
+ );
+FREEBUFFER“+#;";%7…Д. #;"!87Є
+"#;"…Д "¬о€#
+ ±EH±е†Рl	  Ж
+Уа3stack empty\\ Х1.STATUSI0k.*пп
+;\\ г1ДPUSH“+пЛЄP"Pс1PP\\ э1L
+OAD“+ЁЩ”D!2D!;Є!2Є!чн1щ/\] 2+LO
+AD“+D!"ч#2\] c2THRU“+#Л…€
+ %#2J€є€
+\] y2+THRU“+#Л…€
+ %k2J€є€\] ÷2c-->“
++ЉD![Є!чн1\] Ф2RDEPTH“+B
+;""Л;
+%7#;[\– Ћ;ALL-BUFFERS“+#;"7;#;"…Дт
+€\“+J
+ 1\“+к*№#ЛФ(\“+А(%"P
+п"ЁД^ ЄPZ…Pп"Pф«ЄЛ
+aк*1Д. Ф(ДZ€a|;Д фaз;Д
+ aS*aр¬ґ€9¬Ь€\Ќ<†±Щ$ Иш†±…
+Е*H±… Е+†°$Е,±$Е-,р5•,E*•-е+Р•,E&•-
+
+√ §5.“+€©5\√ µ5U.“+°©5\ƒ C5.S“+;
+Є"ф…
+ €£€№€ %"H5Fы€є€\ƒ R5C/
+Lњ+) ƒ ю5L/Sњ+ ƒ 
+6LIST“+О3;ѓ$Scr О3
+"ЄdxH5ѓ$Dr `dє56°…€. °>Д Д?%F
+Д5С4О3"Ј9%6$ч6«q4#?J€є€?\≈ 6P
+AUSE	 ≈ Џ6LOCK“+Є"}…Д АdЄ"Д 
+В6¬ф€}Л
++Ц,Є"чa\“+Ц,aD,\q Ї,A
+LSO“+Ц,"
+
+-ъ3Vocabulary stack fullD,"
+FЦ,[D,;\q ё,TOSS“+/ю€Ц,[\r €-
+VO
+CABULARY“+A)°!°!X %"!%;л(lј(D,;
+\r /-FORTHv-)«)«  r Ѕ-ONLYД-!@!@ѕ-л(lј
+(°Ц,;D,;е,\r ”-	ONLYFORTH“+Џ-…-е,њ-\
+s Ч-DEFINITIONS“+D,
+\Ќ Ь9BLOCK“+Н9}9\
+ќ ѓ9UPDATE“+
+А7"z#д\ќ A9SAVE-BU
+FFERS“+7Н69ЁД !8¬ф€7ј6\ќ Ё9EMPTY
+-BUFFERS“+7Н67"ЁД
+ Є{8¬т€7ј6\ќ 
+:FLUSH“+м9:\“+ЄН9n9Д 7"{8,9Д м9
+Z"чЛЈ9ЕЕ;J9\“+м9Pфчф[Pй
+п1Д$ хп°№€ У/ю€х
+“+A)/•0
+!л(†±hH±Е»Е†l z µ0(IS“+пЄaP"
+;\“+"/I/"ф…Л/Є/"…Йа3not de
+ferred\z Ё0bIS“+;/Єу0+1$"Д
+ 6!г0!d
+;\.* “+O2
+ -а3tight stacke1JЩД У
+e1дУа3dictionary fullѓ$still full \
+[ "1?STACK†1†8•сH•сP	† Жh1\Оg1†
+
+е'l≤<•(E,•)е-∞°,Б$±,С$lG<•,Е$•-Е%lЙ<lЭ
+“+%"ЁД ЄPZ…Ћ<п¬к€\“+}#Є"
+}…Д( й"ЛX ѓД Є"#"ф;«¬ "
+¬N€ё\“+%Ћ<R,…€  й%"zѓД
+ /Ћ-%
+;/ю€ы€є€йі,"zѓД
+ /Ћ-і,;\” Ї;CU
+STOM-REMOVEI0†“+фл<'=M<{=А(Л…i(L;°
+~';\‘ Ћ=
++и Е\¬ Ы4HOLD“+Уі4[і4"д
+\¬ Њ4<#“+і4і4;\¬ W4#>“+ёі4"і4ф…
+\¬ и4SIGN“+ГД 
+-E4\¬ €4#“+ж"§
+
+	фUД 
+Зч
+0чE4\¬ 5#S“+5йў
+Дш€\√ @5D.R“+z№)€|4e55н4фЁф…
+§4#?\√ u5.R“+Л€[5\√ 5U.R“+°Л[
+5\√ Т5D.“+°[5С4\
+F†±БH±†Сl	 
+o ђ+VARIABLE“+A)Fэ \p |+UALLOT“+Є0"
+ч
+€[а3Userarea full0"Л0[\p у+
+USER“+A)Fь+!л(•8йЕ∞F†±≈БКH≈†
+Сl	 p ),ALIAS“+A)~'"ЄJ
+ 1Д /ю€
+э ¬ 
+ Z'S*;\q ],VP.* №-Ћ-Ћ-:¬aj   
+ q С,CURRENT.*Ћ-q ™,CONTEXT“
+	Љ8Д 
+ѓ$read 8¬Y€п\“+7Є"Д "Єa"У…
+Дк€7Н6Є!8\“+aPй;Z"чa;п
+tч7ј6\“+7"ЄД Єz"ГДо€\“+7"
+Є"ЩДц€z"Г\ћ 8CORE?“+87ё°\Ќ 
+f9(BUFFER“+87H8о8¬ш€\Ќ z9(BLOCK“+87H8
+Й8о8¬ц€\П9†±hH±lЌ ‘9BUFFER“+Н9ƒ9
+
+
+/NOTFOUNDI0я/x Њ/NO.EXTENSIONS“+ъ3Ha
+eh?\x O/	INTERPRET“+Є/\ “+Ю1$х.ЁД Љ
+1Д ЧЄ/а3compile onlyГ/”p'ЩД I/Є
+/\“+Ю1$х.ЁД <Д ЧЄ/!Є/Г/”p'ЁД
+ <Д Л^^¬ I/Є/\y н/a[“+/ 0г0Ї/1
+$ч\y {0]“+/;0г0Ї/1$е\“+Уа3Crash\
+z С0DEFER	CLEAR“+X Є}=L;\‘ °=(F
+ORGET“+ЄФ(а3	is symbolщ;=\‘ ї=FORGET“
++;/Є/$"а3	protected©*ЄФ(Д к*¬ 
+ЕЕE=\‘ я=EMPTY“+/$"}=/2"0;\
+’ >SAVE“+X }=%"ЄЕЕ"фЕ;"ЁЩ
+Дк€}≠/ D\’ >>BYE“+м9жc\“+ѓ?P…
+Д У9\’ „>STOP?
+4є>D!"ЁД О3;Є!
+"Щ3;33\_ Я3З(ABORT"“+Ў$ЛД P,(пї
+dА\“+Ў$ЛД їdА\_ V3FABORT"“+6
+!а3\$\_ 4FERROR"“+6!ъ3\$\` %4BLњ+  ` 
+:4	-TRAILINGs4Ш S°Е&±≈%Е'§$РИ±&I р
+HPж%Шh•%lШPкF'F%дШlЅ e4SPACE“+?4?
+\Ѕ Й4SPACES“+°№€ С4J€є€\“
+d¬а€ \
+“+ћ 
+1ч\n °*NAME>“+ЄS*ЛJ
+ 1Д
+ "\n в*>BODY“+a\n +.NAME“+ЁД Є
+Ф(Д ѓ$|ћ 
+1#?¬ ѓ$???С4\o +CR
+EATE:“+A)Х'і,"D,;Х0°\o h+:“+r+л(•8й
+Е∞F•Б•С•…ЕК≈Еl	 o »+A;“+°э
+6!\0і'\o Ц+CONSTANT“+A)!л(•8йЕ∞
+
+7С(•(Н7•)Н7l√7  7(DISKERR“+ѓ$error
+ !  r to retry ѓ?Є
+r…Л
+R…Йа3abo
+rted\  A7DISKERRI0L7  8R/WI0юg“+Єz"
+ГДj aЄ"#Д3 2ф2q3Єzфa"F
+Н"°8Д ѓ$write 8¬џ€
+Афt#А\
+“+aЄеtч\“+Є{82ф2q3PфZ"ч
+ф
+чz
+$С•8йЕ∞F•&H
+0Шi€®HШБ
+©€$К†Сl	 v 1.FIND“+D,Є"фЕ"…Д
+ Е№"9.Д  Ф.dфЦ,a[Д
+ ЛЕ¬ё€ 
+°\v о.'“+$х.Ща3Haeh?\v 7/I[COMPIL
+E]“+;/!\v o/C[']“+;/^\v ≈/NULLSTRING
+?“+ЄJЩЄД  \H±…ЕH±… Е†l	 w 
+’/
+>INTERPRETХ/ 0x Ђ$ аOFF“+°Л;\%
+ сДCLIT•8йЕ∞F°БКСжPжl	 % 
+ГLIT1•8йЕ∞F±С°Б•…ЕРжl	 % 
+)GLITERAL“+Є/ €1Д
+ 6!/!d6!
+!\&
+ t0<Е±©€$КСl & ~0=Ы°риPй& Ф
+UWITHIN±© S†°E$±е%∞
+°E&±е'∞љlМ
+' •<W°Е$±Е%•…ЕРж•%q\: Q P
+AD“+X 
+bч\: в ALLOT“+L[\: х ,“+X 
+;Fэ \: !C,“+X дЉэ \: !ЗCOMPILE“+
+пЄaP"!\; ,!#TIB.* ; h!>TIB.*`!s
+avesystem @:*>body ! cold                
+                                      ; u
+!>IN.* ; ≤!BLK.*  ; Њ!SPAN.* ; J!T
+E“+X …!\. Ё?PAIRS“+…а3unstructur
+ed\I h©€lh© ™•8йЕ∞FК†С»Ґ l /
+ фCASE?b© S•$AP	•%QPlЙКl0 8BI
+F“+6!Д¶Љ\0 \DTHEN“+=€Љэљ\0 ѕDEL
+SE“+Љэ6!¬¶ЛљУ\0 ДEBEGIN“+UF\0
+ °EWHILE“+FэF6!Д¶/ю€H\“+иЄ/ю€
+…Д
+ Аљк#ё\d L$b.(“+
+)к##?\d Ё$a
+\“+Є!"6h#6$Є!;\d п$b\\“+шcЄ!;\d
+ %\NEEDS“+$х. Д у$\d %HEX“+
+ж
+;\d 7%DECIMAL“+
+
+ж;\e j%DIGIT?“+
+
+0…Є
+	[Д 
+З…Є
+	[Д ж"ф[Ё
+”А°\e Ѕ%
+ACCUMULATE“+ЛPЛж"ЮА
+ж"Юхп\e †%CON D+ч© SH±≈&С
+H±≈'С°≈$Б†±≈%Сl	 # р1+%©Ѕ∞l
+ Б±… Сl	 # 2+c©Pа# <3+p©PSv
+©PM\©PG# i1-…8°йРl Б±й Сl	 #
+ ¬2-ЗРа$ АTRUEњ+€€$ МFALSEњ+  $ Щ
+"-1У$ І!0°$ ∞1њ+ $ Є2њ+ $ B3њ
++ $ L4њ+ $ VON“+УЛ;\мж)ж'lL7
+ ЉCMOVE>ф© S•%≈'Е'•%≈)Е)ж%§$РИ±(
+С&ШPшF'F)F%Pр†l	 7 йMOVE“+PйД п
+тdпD\8 % PLACE“+фPф#п, д\8
+ f COUNTќ °Е$…Б±Е%… С•8йЕ∞FlT
+8 ƒ ERASE“+°® \9 П FILL™ © SИ•$¶'р
+
+С(HPыж)JPц¶&рС(HJPъ†l	 : ° HERE“+L"
+
+С•Б°…ЕК—Е©≈hК≈l“+п~'"к
+*;\j М(EDOES>“+6!л(
+l!6!ј(\“+Є
+€1
+
+€……\“+X 
+€1
+€…Д ЄЄ#X ф…#
+тЉ~'[Љэ \k ы(?HEAD.*  k v)|“+^)"”
+У^);\l ƒ)WARNING.*  “+Д)"”~'"і,"
+9. Д С4~'"+ѓ$exists є>\l Џ)CREATE
+“+X D!"!Е†l	 + B€Ж(+LOOPэ€°ЅБ±
+—С q•…ЕРж(Dl	 , т€БI'† •8йЕ
+∞F±HH—БИ±HH—†Сl	 , !БJs†PR-
+ mЖBRANCHƒ•ЅЕ$•—Е•$Еl	 - yЗ?BRA
+NCHЖ°•…ЕРж(рKld. Џ>MARK“+X 
+°!\. Ю>RESOLVE“+X ф…Л;\. ≤<MA
+RK“+X \. M<RESOLVD“+µ#е"\b Q#PARSE
+“+Pµ#Є!"‘"фЛп"Pф…Єпl…Є![\b
+ в#NAME“+?4X#B"d\c $STATE.*  c )$eAS
+CII“+?4X##J1$"Д ^\c 7$,"“+
+"к#X 
+ф#э n \c w$Д"LIT“+пп№ћ чPP\c —$
+В("“+Ў$\c М$A"“+6!С$\$\d Щ$Г(."“+Ў$ћ #?
+\d ©$B."“+6!ѓ$\$\d ї$a(“+
+)в+щH°
+—СИ±†—СlЩ  уORH°СИ±†С
+lЩ  AND3H°1СИ±†1СlЩ  +XOR
+pH°qСИ±†qСlЩ! h-ЋH±8бСH±†
+с†СlЩ! ≈NOTЛКбБКсСl	 ! ГNE
+GATE¶8∞г" ЫDNEGATEЈH8КсСHКсСКбБ
+†КсСl	 
+™®И±Щ$ ИшК≈ЕРжҐ †`" Ђ
++ЄP=€фГД №чЛ«ГД §фД 
+ЛчЛ«9\5 X2/±
+± С° l 6 
+/MOD“+P€па\6 //“+6 \6 dMOD“+
+6А\6 r*/MOD“+Pрпа\6 ¬*/“+  
+\6 ЎU/MOD“+°Л«\6 ЗUD/MOD“+P°
+«пЛP«п\7 ЫCMOVEF© SИD$P	F%†
+l	 ±(С&HPRSIVE“+і'\“+В'Д №Jфд
+А\h H'	IMMEDIATE“+
+@Z'\h т'RESTRICT“
++
+АZ'\i 	(
+CLEARSTACK.(†±ЕH±Е†l	 
+i (HALLOT“+Є"ф…Л;aЄ…ЄЄ;F
+Нф…, ,(Є;\i @(HEAP“+Є"z\i ў(H
+EAP?“+А(}ѓ\“+ЄX ф…Єi(А(ЛDА(ф…~
+'[і'\•8йЕ∞F•UMAX“+йµ\) й
+UMIN“+й[µ\) ьEXTEND“+ЄГ\) €DA
+BS“+€Д µ\) "€ABS“+€Д §\“+9пa
+ЄPPЛPP\* 7€Г(DO“+ф…i€\* √€Д(
+?DO“+ф…ЁД i€пЄ"чPА\* ’€BOUND
+S“+фчЛ\* Ъ€ЗENDLOOPї€©l+ ѓ€Е(LOOPL
+€©ЅБР±… СРl	 †±ЕИ± H±$ Ж"С$
+lQ"з"Ж*†±Щ$ Иш†≠Ї!≈&Е&≠ї!≈'Е'8•$нЇ!Е
+$•%нї!Е%∞°НЇ!±Нї!lў#†•$%р=°&QPж&P
+ж'•$PF%F$l$#•&Е(•'Е)°&Qж&Pж'•$PF%F$(
+рж*•$%Pв8†•&сНЇ!H•'сНї!©≈ЕРж†
+±БЕ$H±†СЕ%И•*С$±(HF*ч© С$†l	 b µ"
+SOURCE“+D!"ЁД Ј9шcdЁ!o!"\b ђ#WOR
+	•8йЕ∞F†±БH±†Сl	  нROT†
+±Е%†±†С†±Е$•%С†•$СH±Е%°С†±
+Б•%С†l	  -ROT“+\ sNIP“+Л
+А\ ƒUNDER“+Лф\ ‘PICK“+#3;ч
+"\ ЖROLL“+ЄPН;Єaп#3тА\ 
+Э2SWAP“+Pп\ ј2DROPф V2DUP
+“+фф\  
+%Бl	 3 ШM*“+ЄГЄPД §
+ЛЄГД
+ §пЙPЮпД µ\3 л*“+ЮА
+\3  2*5°
+Б±*Сl	 “+Уа3division 
+overflow\4 .UM/MOD…°Е)±Е(•…ЕРж
+°Е%±Е$H±Е'H±Е&Ґ∆*8•%е)®•$е(∞&*РЕ
+$Д%&'&&&%&$JPя†∆$∆%Р Жb\•&СH•%СH•$
+С†•'l 5 ^M/MOD“2Єћ Љ&;&е°P°
+°н%&ч%
+-@Д 9УPн%&ч%o&Д ж;
+н%&ч% %Щ&≠%®&н%)&ч% %ЩДр€&Ф&Щ&&ч
+н%)&ч%¬T€\g B&'NUMBER?I0L&g e'NUMBER
+“+p'ЁЩа3?ГД €\h v'LAST.*  “+~'"
+Ё\h „'HIDE“+В'Д Е"і,";\h О'REV
+EAL“+В'Д
+ Еі,";\h Ђ'IRECU0Х°E$±
+е%lЗ' QU<°Е$±Е%•…ЕРж°E$±е%
+∞lЙlМ( э>“+ЛU\( )0>“+§Г\( 7
+0<>“+ЩЙ\( fU>“+Л\( v=“+…Щ\
+( ≈D0=“+Щ\( ”D=“+µхў\( ГD<“
++й…Д -  ¬ ё\“+9Д ЛА\
+) ФMIN“+й-µ\) EMAX“+йUµ\) W
+IB“+\!"\; W!QUERY“+Ё!
+pW?Q!"o!;Є!
+чD!ч\< з!SCAN“+PЄД€ фJ…Д «
+Л#Л¬д€9\< "SKIP“+PЄД€ фJ…
+Д «Л#Л¬д€9\< ;"/STRING“+ф€ф
+чz…\IaРI{∞I¬Р)яI[∞	А`=  "CAPITA
+L©"° Ж"Бl	 > Э"
+CAPITALIZED"°Е$±Е%°$Е
+&ИD&P†l	¬о€\0 ≥FREPEAT“+Fэ6!¬Q
+\0 нEUNTIL“+Fэ6!ДQ\1 BDO“+6!…€¶
+P\1 C?DO“+6!№€¶P\1 1DLOOP“+Pэ6!
+J€6!є€љ\1 eE+LOOP“+Pэ6!ы€6!є€љ\1 `
+ЕLEAVE“+є€пЕЄ"чP\2 №UM*†±Е$°
+Е%HЖ&Ж'Ґ'&&&%&$Р±≈'Е'H±И≈&Е&Рж%Pж
+$JP|•'СH•&С†•$С•VERT“+#ћ  %Д ≠%¬
+ф€«\“+Љ&"Щ\“+ћ УЉ&[\“+«ћ \f M%
+DPL.*€€“+Д 9ёА9°\“+Д  9АпД
+ µА&"#Ё”АУ\“+
+&@Д	 
+
+Уd
+
+$@Д	 
+Уd
+H@Д	 
+Уd
+%@Д 
+FУd°\“+
+,ф…Л
+.…\“+&"У…”
+Љ&[\.*  g &NUMBER?“+жр
+≠cЕ_≠d
+Е`≠e≈_ЕЅ≠f≈`Е¬©oНH≠b0©µНHН?€©E €–
+l≠– њ—Р  њ—Р l, t–G----.*g726e У“†
+fwР•YНH©,	€ры С–•iЕ∞©,	€ры С–•i
+ЕlT“•]… Е]•^… Е^•XНHИPЊ`hҐ@©Еw Р“JPц»
+Еw Р“† Д]Д^±_Еw У“ж_Pж` У“•_EЅPк•`E¬Pд•]
+¶^Еw Р“КЕw Р“lР“© †Щ2ИPъ§ЂН?€И0±ѓЩ2l
+/…RD“+5…Ща3
+no Ramdisk\“+э»F…;\
+ k…ADR“+F#…\ ”…DATA“+ў…Zч\“+Z#…\
+ Г…BEHIND“+Ф…Zч\“+Z…[\ Ю…BLK#
+“+
+…\ љ…ID“+
+…\“+Ф…
+#…шc…Z…
+[а3Ramdisk full\“+Ф…≈…Ё…\“+ЁЩ”D…"
+Ф…a;ZчЄФ…;±…Ф…ч\“+ў…"ЄЩ”Z…
+\ O…DEL ѓDestination-Diskѓ?А?м’"ЁД
+ PЛ«фпчо:¬ …€ %Ј9АJ9J€є€м9\
+ ї’COPYDISK“+FН…м’;#ф…Є<Йа3R
+ANGE ERROR!р’6ЁД ЛP°…€ Єр’ф’р’ч
+J€є€пЁД ф’¬ А\Щ3;|z4ѕ|zчp`4ѕp`ч
+e>Єѕ"
+…Д ‘‘d≠
+…X +––\ D‘A
+UTOLOAD.*   ’TAPE+;рC»€\  ЌRDN
+EW“+bЌЛbЌЛй/ …[а3range!фр»ф;Ќ
+Л…
+…;(Ќ°°Iћ\“+Д ѓ$error \ p
+ЌRDCHECK“+Ґћp…Є"Є°шc
+чѓЙФЌчЄ
+?H5Є"ЄPШ5С4Д+ Єa"dПЉШ5ѓ$:FШ5
+ЄZч
+€#?°>”¬ђ€Ф……ФЌ\ SН>€©А Р€© Е
+Р•$8йНd∞JОd¶$§%© Ї€¶(§)•&	
+ Ю(4
+112)    кlaкl9al„ J6 „ „ {k«  
+ Vc?z®3>
+¬                                       
+                                         
+                                         
+                                         
+                                        
+ ^† Q–ИPъЕ€•]Е√•^Еƒ Q– Q–•УP•€С_ Q– Q–
+•€Q_ри Q– Q–ж_Pж` Q– Q–Е€•`E¬PC•_EЅPљ•€
+E√р	•Р	`ЕРl∞–† Q–ИPъEƒPла р©ЕРlґ–`ЕУ© 
+ЕР•ЃIрlpрЇЖZ г∞иЎ•Уh© ЕУ `с Нг Ґ– ƒг В
+–©µНH©* €–†√ Jл† є2 R€HјPх†€HDЂр(Н?€±ѓ
+Н>€Y2роI?рк≠b)р©АЕРl≥– ЎгlR—lь—»ЕУ Йс
+•іЕ_•µЕ`•≠!??ѓ$Aber ohne Handbuch?ѓ
+$und die Hilfe der?ѓ$FORTH-Gesellschaf
+t?ѓ$bleibt FORTH ein ADVENTURE!?\ &»
+MEMTOPњ+ э Ї»RAMDISKv-    ƒ   (RD.*
+   Ё»PLENњ+1  й»ADR>“+г»"…\ ц»>A
+DR“+г»"ч\ 	…ADR@“+…"…\ …RD?“+
+г»"ЄЄ"р»…1\ INIT“+??ѓ$	Tape2.
+00 т”/0ћг08Љ0d&’"Д &’ч¬–\ ,’BAM
+ALLOCATE“+Cg”и 
+°&gЩД и Zч
+МЧ и
+ 
+°ЋgАеg
+
+zeС$i0ћ эeЧd\ …’
+FOR
+MATDISK“+
+
+zeС$n0:ћ эe°к#эeЧdyf”„’
+\.*ї’њ+ “+?ѓ$Insert Source-Diskѓ?А?
+£€й…€ %Ј9АJ€є€?ѓ$Insert 3no file
+Л” / шc…Д€ ЩД К…¬ К…ЛшcD¬$ ЩД
+ l  К…шcУЋкЋ¬ ЄК…Л/ hЋћ°\ 'ћ.
+RD“+г»"H5p…АФ…H5
+#…H5T…ћ #?\ ЬћID!
+“+
+ T…дT…ћ ?4® 
+€€T…Pчn С$RD.ћ T…#
+ЛD\ CћID"“+
+"к#Iћ\ ыћRDUSE“+г»;
+\ ЌRDDEL“+p…"ЄF…;Z…;Ф…ч\“
+                                 .*ult
+raFORTH-83 3.80-C16+ Н€€±Е≠€€Е•…Е∞
+ћ€€ж∞щ   	END-TRACE≈©•Е©Е©…Е©Еl
+	  wRECOVER.*»Е»Е•PFFl“+ ЏNOO
+P	  ЩORIGINњ+ §S0<, ≥R0<,
+ љ
+DP<, GOFFSET<, QBASE<, яOUT
+PUT<, лRAMDISK“+p…І…T…ћ –\ 6–LOA
+DRAMDISK“+5…ЩД
+ bЌC»xЌp…С$RD.ћ фѕА\©
+Е`Е¬©2Е_©kЕЅ`≠HН€© Н€©Н	€`Ґ † JPэИPъ
+`© ,©,©,©,©Н>€h ∞г Ўг¶Z»Ъ¶_§`Ix`©,	
+€ры•)ExрЕx∆w•wж]Pж^•)ExршЕx С–•w
+`ЕyҐ  Q–IPщҐ† Q–ИPъIPлJPс† Q–ИPъIрф
+EyрIEрT©ЕРl∞–© Е]Е"
+Ш5\“+ЄJPД5
+\“+
+$ ?…°Ё§4\6 п∆S“+;«С4x«Z§4Єћ 
+#?ЄJч#ƒ«\6 „«N“+;«k«F§4Є"©*+aƒ
+«\6 Ы«K“+;«k«aƒ«\7 є«D“+йЛ;«P§4Л
+°…€
+ x«#J€є€Z§4z#?ƒ«\7 K«C“+ЉO«\7
+ щ«B“+;«k«Є"фч
+Ш5aƒ«\
+ $«HELP“+
+PН¬?ѓ$Probier' ruhig weiter}“\“+и 
+
+?4® ‘
+€и ЛDЗ“ћ и 
+
+чЛDи 
+\
+2 '‘STSAVSYS“+Єѕ4ѕЉЄѕ;-‘9‘–
+Єѕ;≠
+
+…-‘А‘–-‘ X +––\ …‘c\IF“+$х.ЩД
+ у$А\ ™‘
+SAVESYSTEM“+О34ѕЉО3;Щ34ѕ°
+Щ3;|z4ѕ|zчp`4ѕp`чe>Єѕ"
+…Д ‘‘d≠
+
+…X +––\ D‘AUTOLOAD.*   ’TAPE
+DjЋ Ћ±()®™© С&ИыH8К≈&Е&Рж'l’Ћ я С
+&ж&Pж'ж(Pж)F$PNF%PJl0Ћ ?ЋCOMPRESSХЋ 
+Ћ±(I PиPJКС&ж&Pж'ҐАlLЋаА0hКС&ж&Pж'Ґ
+» L С&ж&Pж'ж(Pж)F$PBF%PЊаА0	КС&ж&Pж'l0
+Ћ“+К…№ч«ЄJ
+[Д
+ й[Дл€#Л… \
+“+№чшc…?4® \ ИЋRAMR/W“+FНЩ Д
+ юg¬x ЛаINPUT<, щERRORHANDLER<,
+ VOC-LINK<, €UDP<,€ *SP@=•Е$
+•Е%Ґ$•8йЕ∞FµСµ Ґ l  5SP!«°™
+±ЕЖҐ l	  _UP@Ґlg „ГUP!ОҐ±Х
+И±Х Ґ †•…ЕРжl	  ЖRP@µҐlg 
+≠ГRP!DҐlР ЉВ>RR•8йЕ∞F°Б±С
+lЭ KВR>с•8йЕ∞
+P ѕPP\“+пµ2Д
+ п ѕ…Д пп;¬и€P\ ,ѕЙ(RESTORE"“
++Ў$ЛД P,(пjѕїdА\ ќѕHRESTORE"“
++6!Џѕ\$\ ШѕDEVICE.*  ѓѕ	COMMODORE“+Љ
+Єѕ;\ ЊѕFLOPPY“+
+Єѕ;\ VѕBLOAD“+
+Єѕ"{ќZќЏѕload\ мѕBSAVE“+Єѕ"¬ќZќЏѕs
+ave\ 	–N"“+
+"к#\ &–SAVEF°Б±
+С©≈ЕРжl	  кR@•8йЕ∞F±С°
+l  ЕRDROP 1EXITf°Е±Еl =
+UNNEST^°Е±Еl s?EXIT’°•
+…ЕРж(PЊl	  ЋEXECUTEЩ°Е±Е•…
+ЕРжl  НPERFORM“+"Ч\ ±C@L°Е
+$±Е%© С°$l  EC!ж°Е$±Е%H±Б$И•
+.”Н>€`•ЃIр	8)Pl§сЇЖZ ” г∞дЎ ƒг Н
+г Ґ–•≠Нb•≤Нc•≥Нd8•Эе≤Нe•Юе≥Нf© НgНh
+НiНjН€©Е`Е¬©2Е_©kЕЅ©€ЕY©ЎЕXН€©Н	€©
+* X“ Ґ–$≠©ЎЕY©4ЕXН€•≤Е_•≥Е`•ЭЕЅ•ЮЕ¬Н?€
+©E X“ Ґ–l≠–2 “	SUPERTAPE“+
+Єѕ;/∞—/.
+;/=”/0;ѓ$ST2.20 \“+Є!4ѕ+–\2 ж”B
+TL“+/В–/ETE“+ў…Є"№чў…І…ф…D§±…
+\ c SEARCH“+p…Є"чЄ"Д йa"…Д
+и€≈…D…;\“+d\ I»BINARY“+ЄZ"чЩ 
+”ЄЈ9АJ9l  шc \IА`IјРIа∞…†`)`I`
+∞`й†` £ C>7с ° L l  й 7>CЋ° я l
+ © S•&Е*•'Е+ИҐ•$P•%P»»© ll/Ћж%`8•&
+е*h•'е+l ы EXPAN…ЕРжl	  яCTO
+GGLE“+№JnЛд\€ @$°Е$±Е%±$С°$l
+ € !=°Е$±Е%H±Б$H±†С$lф€ 7+!]
+°Е$±Е%H±Ѕ$Б$H±†—$lo vDROPЭ ў
+SWAPН±™†±Е$КС•$†СHҐ ±Е$°СИ•$l
+  ДDUPЇ•8йЕ∞F†±†СH±Иl  ≤
+?DUPя°Pl	 lЇ VOVERц љ€¶*§+`∞
+© h•Р)њН?€l ІЌCSAVEƒќ© ќ©, X€liќ 
+zќCLOAD}ќ© ќ©  U€hШhКh† •8йЕ∞F»С
+H»С»(liќ ”ќ.ERR±ќ°0™JН>€ tЖИH±$) 
+R€(фН?€lha ®ќDERR?“+ЄД ?ЄH5ѓќѓ$e
+rrorЄ
+€1
+…Йd"У-1Д yfd"°
+Ёd;\.*пп;\ RќЕSTORE“+пЛЄP"
+п?#dА\" €]DIGITSЮ?La[a&]lb\“+V
+v"°…€
+ жaРbJ€є€°|v"°…€
+ -xJ€є€Є”
+|vЈuаwЛ–wЋ\А\“+#?
+<?Ыv« ?…§4\“+
+2€v≈[o?~zЉ°d?ѓ$replace with: o?|vЈuC]
+°°d?ѓ$>     search: o?VvЈuC]°Fйd?Fv
+"PШ5йd?X #P{]W?Q!"ЁД X №д_'АF
+v;d?Fv"P+X 
+	ч/ А[а3not here/>€
+Жp\ ќtRAM“+/?€Жp\ ШtSYS“+‘t/qЮt\.
+ zt.BLK“+D!"ЁД ѓ$ Blk H5є>\ Љt(S
+EARCHлt†±Щ$ Иш•()р…•$%р√°&A*р•$PF%
+F$ж&Pж'lыt†є$ СИшж&Pж'ж*Pж+•$PF%F$
+•(PF)F(•()P€•…ЕРж†•'С•&ИСИlЙ•
+$%P•…ЕРж†lМщ/\* 9ЅSHOWLOAD“+
+О32О3чЩ32/у`я`;aЅг`\“+iчЄJкvдЄ
+#JтvдaJоvд\“+ZИЅ
+УРb¶\АBvчѓ?Є
+Њvд°г_Ч5`ЁДм€°°d?%yАBvе°ИЅ°/
+кд\+ ЅЅEDIT“+KiО3;y[O`™Ѕ
+°d?¶[ѓ$
+Scr є5ѓ$Drv є5ЄF1ЩД	 ѓ$not ѓ$chan
+gedЄZ1Д м9Є
+1
+…Д”!x\“+
+Bv"Щz?ЯvЕ[1Є”
+Рb\“+	xЄ”
+Рb\
+“+Aw£vq4 £v«KЫv6Лd?°\“+°
+
+°…€
+ АСxЄД ДJ€є€\“+
+°…€ 
+ЭРbJ€є€°
+\“+z?°d?€vЇvч‘x\“+KwЫv?4® °\“+аwЫv 
+?…?4® °\“+KwЄЫvчЛAw/јчЄPф…D
+пЫv?4® °\“+пwЙЁ”KwЄЫvчAw£vчф…
+ <ƒчп8ƒ24ƒ2ЄЕ±ƒhƒ2Љhƒ[P ≈P
+2ф2ЕЄdƒ;?hƒ"§4ЄZШ5"Є
+Ш5С4
+©*+
+ ?…°Ё§4W51$2D!2Є!2/(32/Ї/
+2o!2Ё!o!" ƒB2≥B;/Кƒг0(333\т≈©≈Е
+©Е©lЕl	 “+Є"/ћ+"@Д +d/ѓ?"@
+Д +J"ч"∆d/#?"@Д +Jф"
+ч"∆d/ &\\“+`\О3"Ј9ЙwД рzАО3"
+Ј9cwJ9
+\“+Ћ\
+\“+Р\
+\“+О3"
+Ј9wЇvч€v:\°\“+Ћ\АЉО3[¶\\“+Ћ\АУ
+О3[¶\\“+Ћ\А≤v"Є¶[ [ЙД §О3[¶\\
+“+Ћ\Аґv"О3"ґv;О3;¶\\" ґz	DIGDECODE
+“+жa@Д ЄД .?«dтa@Д
+ ЄQ!;dІ"Є
+ %Д АPйчЛдzsWDEC“+Є_p8rЦqф
+#†pєq†p\ „s;C:“+Д/qПmХ0°~';°\ ќ
+l	ASSEMBLER“+?jэm\ ≤se;CODE“+)/э€э Ъ+
+/ю€э Њs\ HsCODE“+A)X ЄЕ;Њs\ иs>
+LABEL“+X »)A)ю'Л!Zi(А(Љ1i(X Z…А(Z
+DА(~'"ћ 
+1ч;L;л(lј("1$"Д ^\
+ tLABEL“+X 
+tЊs\ ЦsROM“Ыv3чЄ
+Vva;ЫvчЄ|va;ЫvчЄJv;Ыv3чPv;Jva
+чPvaч/Яzћ PVva"DпVv;/Єzћ 
+
+1P|va"Dп|v;\“+и p`"…”t`\њ+
+#$“+/dя`;Тzіa\“+D!"ЁЩД г`dЄ!"«
+Щ3;Тzіa~zО3"ф…Д О3;¶\Љ°d?н1:\Уa
+А\* “](LOAD“+Є!2Є!;ЁЩ”D!2D!;н1
+v“w© SИD$Pl(v±( @vС&HPпЛwШ SЖ&≠>Е'
+Ґ†'±$ @vQ&р©€lИп цvJPзКl“+;Ыv3…
+\CwКh≠>lMw•JI(КР©'≈Hh•I… lвw•J≈Hh
+•I… l“+Aw/јчЫvq4 ЩBv"\“+аwAw£v
+ч«…Bv"Щ1\“+ЊvJРb°\“+	xЁ”УKwЫ
+vч«J?4…Й1пwЙ1Є”
+ФРb\“+	xЁ”Ї
+v"Д -xЁBпЛD\1   CPUSH“+пzф
+P≥ф#…ЄBn lƒPP\“+
+rэ {bTcн1С4п!
+щ//Ѓ€э 9\1 ¬ƒRANGE“+8ƒчЄ4ƒ;#Є"/
+\…Дт€n8ƒ;\Wƒ©€НbƒНcƒ°Е±Е•…Е
+Рж≠2ƒЕ≠3ƒЕl 2.*Uƒ\•…ЕРж≠bƒрж
+≠>ƒP•M6ƒ•н7ƒРU•M:ƒ•н;ƒ∞Il9≈О>ƒОbƒОcƒ
+•Н2ƒ•Н3ƒ Ж<ƒ"Д"Awи Ыv3DAwЫv3
+†
+® \“+и AwЫv3D\“+Ј9Е"\“+УaВ6ї?Дъ€і
+a\“+О3"Z"чdПЛ\“+o?≈[~z°°d?¶[ѓ$
+Scr # є5ѓ$Drv є5О3"М[ЩД	 ѓ$not ѓ$u
+pdatedЉЉd?/Яzћ #?F§4/Єzћ 
+1#?Тzd?
+Ц[~[°\“+o?ЛЫv#$чЩ3;\“+Щ3"ЄЫv#x
+Ыv……шc«KЫv#6Лd?\“+€v
+NOT“+
+ 
+n\
+ „rBEQ“+drq\
+ ИrBMI“+[rq\
+ Шr
+BNE“+8rq\
+ ®rBPL“+orq\
+ ЄrBCC“+"rq
+\
+ HrBVC“+∆rq\
+ XrBCS“+-rq\
+ иrBV
+S“+—rq\ шr2INC“+Є_pЭnFъm+pЄЖp"rЦqЛ
+#≠pєq\ s2DEC“+Є_pboFъmўpЄЖp-rЦqЛ
+#†pєq\ 1sWINC“+Є≠p8rЦqЛ#≠pєq\ 
+І€У\“+?$
+@…\.*ТНЕЙЖКЯЛ
+ЗИМЭСУФ	€.*Љ\L\|\ю\ю^zуxуx`\Ћ\Р\
+Ы\oy%yhz"zрzЇ[ЃyЇyFyЉxџxСx‘x!x!x!x†x-x!x—
+yyy`z zzxе_© S§$ИHє“_I€рE&PфШ
+®єЩ_hє
+Ъ_l“+кvдВ6
+А°…€ J€є€\“+кv2°`Љ
+`°`Љ`\“+ЄУ…Д `Щ\( [(PAD.* 
+ “+и Єp`; zvSCR>CBM~v° /vБl	  “vE
+DITORv-и√и√ejњ+( њ+ њ+и   SHADOW.*u .
+* .*  .*h .*€€.* .*A„  .*Ў  .* —„.* 
+Щ„њ+H њ+J њ+€њ+;њ+€•$…)Е$Рж%•&…(Е&Р
+ж'`wШ SЖ&≠>Е'Ґ†'±$ @vС&Иц цvJPо≠;Э
+ Э 	Э 
+Э иPсl(vewШ SЖ&≠>Е'Ґ† ±& /vС$
+Hј(РфJр
+© С$ цvlrwl(	Їvч?dтa@Д< Їvч
+√ЄQ!"[Д АQ!"£€№€ йч%J№vЛд
+#J€є€ЄQ!;dЄЊvд
+г_Ч5`А\- @√	EDI
+EXPECT“+O`Q!;°ЄQ!"Д
+ ѓ?I?¬о€ёС4\
+- ґ√EDIBOARDЮ?La[al√B√\/ V¬TOOLSv-»
+»Щv0 ™tWCMP“+ф_pЄepЛ#_p#ўp\.*Ќ’.*ў
+’.*Ь’.*  .*  .*Й’.*  .*≥ћ йч
+“+Їvч°
+\ КvRVSON“+
+Рb\ ÷zRVSOFF“+
+ТРb\
+ Йz***ULTRAFORTH83***	  ЭzrFORTH-GESEL
+LSCHAFT“+%\ ©vSTAMP$.*  clv17nov87   
+   “+|z#ћ AwЫvчф…Л–w°\ SzGETSTAM
+P“+2{b|zе?ѓ$your stamp: ~z
+§4z?
+
+d?|za
+W?ТzQ!"|z#д\“+|zJ”[\“+
+8"@Д
+ +"∆d"/lј…Д
+ "Pчd©
+*+ѓ$can't be DEBUGged33\5 ©ƒNEST“+dƒ"
+"∆А<ƒе\5 Х∆UNNEST“+4ƒе8ƒч\5 ∞∆
+ENDLOOP“+dƒ"Zч4ƒ;\5 G∆%UNBUG√5 г∆(
+DEBUG“+∆±ƒ<ƒч@ƒеhƒч	ƒр≈\5 ƒDEBUG“+
+;/ш∆\5 «TRACE'“+;/Єш∆Ч√\“+є>ЄZШ5
+ѓ$:\“+ЄШ5{bйd?Vva"ЫvЕ ?…W?Q!"
+ЁД Vv;d?VvЈuC]йd?|va"ЫvЕ ?…W?Q!"
+ЁД |v;d?|vЈuC]Тz~[d?\“+¶\АVvЈuЩ3"
+О3"Ј9чшcЩ3"…йtЩД °¬
+ О3"Ј9…Щ3;
+:\\“+Ћ\АX]B^Щ3"Д' ѓ?Є
+r…Д З]ЁД
+  dP…Ё”¬S€¶[ Fv"…°>Щ1ЁД 
+ГД
+ Љ\А¬ L\А¬°&A*р®†±Щ$ Иш•$
+PF%F$ж&Pж'lхt яt2!ЮuШ S†±С$Ищ†lф
+ Чu2@єu°Е$±Е%•8йЕ∞F†±$СИщlha
+ ≤u	2VARIABLE“+A)Zэ \ Zu	2CONSTANT“+A
+)!!л(lј(Јu\ тuUNLINK“+°°/оЬu\Ґ 
+†l	 Е*)?*$*	А–	@`Е*)I РI@Р)$*	
+@`©.` vCBM>SCR∆v° @vБl	  ѓ$, sav
+ed
+1Д€ ѓ$	, loading?О3"Щ3"ћЅ\, сЅ
+L“+Щ3чшЅ\, Й¬R“+О3"шЅ\, Щ¬+L“+О3"
+чН¬\, ©¬V“+;/©*ЁД Z…"\, Љ¬VIEW
+“+ј¬ЁД Н¬¬ ѓ$from keyboard\,“+вv"
+жvJч\, i`CURLIN“+
+Рb
+jРb √
+Рb
+k
+Рb
+Рb √ф…\- √	EDIDECODE“+
+Н@Д
+ 
+тy\“+СxЄ”
+Рb\“+JvЈuч#Pv"µwK
+[Є”аwJJvЈuчдЉJva[\“+АyЁ”Сx\“
++АyЁ”—y\“+Jva"ЩЁ”-xЄ”УJva[Jv
+ЈuчJаwд\“+PvЈuчµw[Є”KwPvЈuчЫvDЫ
+vPva[\“+рyЁ”‘x\“+рyЁ”%y\“+Ыv§Pv
+a[PvЈuчKwЫvD\“+Pva"ЩЁ”oyЄ”.z\
+“+Їvе°\INDEX“+#Л…€! ?%FД5%Ј9#
+
+%#?°>Д ДJ€є€\П КhFINDEX“+CgД ёd
+#Л…€1 ?%FД5и Є%33оf&gP#
+%#?п
+°>Д ДJ€є€еg\Р њhINK-POT.*цц оц 
+цц Т iINIT-SYSTEM;iҐчЪlhaН>€НviОxi©ih©
+\hЇљh©)Ґ l≥ьН?€@ЎН>€©iН€€©aНю€ Д€ К€≠i
+Н€≠iН€≠iН@©АН@ј(;\÷ П?KEY~? 
+÷ ©?KEY?~?÷ і?DECODE~?÷ ј?EXPECT~?„
+   SEAL“+°/Џ-+;\„ |?$ONLYЏ-„ у?%FOR
+TH…-„ ю?%WORDS	.„ 
+@$ALSOе,„ @+DEFINITIO
+NSњ-“+%"ЄЕ"фZ…;"ЁЩДк€\“+°
+7;;#;;H;\Ў N?'COLDI0†“+1@q@£-Ќ@:?
+ћ #??Ъ@\Ў ≈@'RESTARTI0Ўl“+/moоkTAPE
+INIT°0dоkFLOPPY?ѓ$Type 'help' to get 
+help?ѓ$Type '64kb' to use 64kb\“+/ Р/
+ Ф/ јНk…-С$CODE
+P3k…-С$EDITOR
+P
+3k…-С$DEBUG
+/P3k…-С$HELP
+
+Љ3k…-С$T
+APEINIT
+Z3k/†г0ѕ@/Ўlг0Ш@оkEDITORоk
+EDIBOARDЉО3;°Щ3;e>/ Џ/р{/ АНk\
+ ¬cC64TYPE§c© S† D$р±& µb∞©.Н>€ l€
+Н?€HlЂcl®bЖ ШcDISPLAYы>оbcҐcc5chcЋc\и
+cН>€lr€З JcB/BLKњ+ З рcBLK/DRVњ+™ З юc
+(DRV.*  “+d"
+ч\З dDRIVE“+d$Z;
+\З (d>DRIVE“+d$чZ"…\З >dDRV?“+
+Z"чdh\З ydDRVINIT“+†\И –dI/O.* 
+ И ВdBUSO ”pSTA±oАћ АpASL±o 
+НpDEC±oA ЪpINC±oб ІpLSR±oa іp
+ROL±o! ApROR±oЅ NpSTX±oБ џpC
+PX±oаЖ иpCPY±oјЖ хpLDX±oҐЦ qLDY
+±o†О qSTY±oАМ qJSR±oА )qJMP±o
+@АД 6qBIT±o Д“+Є=€
+[а3out of rang
+e \	 cq[[“+X \	 Ќ gэeЧdd
+zeС$u2:1
+3,0,ћ эeшfэeЧdВ6yf\О ]gDISKOPEN“+d
+–
+e
+#бeЧdyf\О Єg	DISKCLOSE“+d
+ИeЧd\О 
+Yg1541R/W“+Ла3no filezd6Єd;P[Д
+€ є5ѓ$beyond capacity dCgД А d°
+Л33Z£€…€. Ай%Д
+ оf&g¬ оfЋgP
+gчпЄД ДJ€є€zёеg\П фg“+ї?Д Е
+>Е>°\’ Щ>?CR“+ ?6
+
+…[Д ?\“+A)Є
+!aл(lј(Jф"чї\÷ ≥>OUTPUT:“+r+л(l
+ј(ф;\÷ л>EMITZ> ÷ ?CRZ>÷ ?TYPEZ>
+÷ ?DELZ>÷ (?PAGEZ>÷ 3?ATZ>
+÷ ??AT
+?Z>÷ i?ROW“+o?А\÷ t?COL“+o? \“+A)Є
+!aл(lј(J"чї\÷ ƒ?INPUT:“+r+л(l
+???\“+Є;…FН≠
+
+ч"…1PН≠
+
+ч"…1Д
+ АААd/;+;≠
+
+ч;Є
+
+ч≠#;≠
+ч;a\“+Ў$B"х.Д Ч¬ 
+ћ #?ѓ$ unsatisfied33\“+6!оk\$\ 3j64K
+B“+/3"/ э…ЁД ?H5ѓ$	too smalld;
+/ э…Д / А/ Д/ эНk\ #lC16DEMO“+
+?ѓ$c16-De€Н?€•…ЕРжЖKЖO† ЖВ6\I
+А∞I `Iа∞Iј``Д Йb
+PRINTABLE?Vb° µbРJК
+lЕ GbC64EMITрb° µb∞©.lФbЕ дbC64CR“+
+тaРb\Е юbC64DEL“+
+ЭРbС4
+ЭРb\Е cC64
+PAGE“+
+УРb\Е +cC64ATjc© S¶&§$Н>€ р€
+Н?€lhaЕ @cC64AT?Ќc•8йЕ∞FКС8Н>€ р€Н
+?€ј(ШРй(hКҐ Б»lЖoTXAnК ~oTXSnЪ
+ ЙoTYAnШ ФoM/CPU“+A)!!л(lј(Є#"
+
+А1Д	 
+Im[ф/ €11n1nД эmУа3inv
+alidJIm"ІmчJч!Im"
+1Д Im"
+1
+
+UД !¬ !эm\ ЯoADC±o`ќ %pA
+ND±o ќ 2pCMP±oјќ ?pEOR±o@ќ lpLDA
+±o†ќ ypORA±o ќ ∆pSBC±oаќv“+ЄЗf
+Д	 
+6dPчЄЛfД Зf…
+6
+чd
+ЄПfД Лf…
+6
+чdПf…
+6
+ч
+\“+Уf#Л\“+ж2t%°|4e5А
+,E4e5н4\њ+
+ Н of
+READSECTOR“+d
+zeС$u1:13,0,ћ эe
+шfэeЧdВ6yf”d
+Neg7fЧd°\Н gWRITESE
+CTOR“+d
+zeС$b-p:13,0ћ эeЧdd
+ze
+CLEAR“+X Є}=L;\‘ °=(FORGET“+ЄФ
+(а3	is symbolщ;=\‘ ї=FORGET“+;/Є/$"
+а3	protected©*ЄФ(Д к*¬ ЕЕE=\‘ 
+я=EMPTY“+/$"}=/2"0;\’ >SAVE
+“+X }=%"ЄЕЕ"фЕ;"ЁЩДк€}≠/
+ D\’ >>BYE“+м9жc\“+ѓ?P…Д У9\
+’ „>STOP?~jSPњ+ № ЙjIPњ+ № ФjNњ+$
+ № ЯjPUTAњ+ № ©jWњ+ № ґjSETUPњ+S№ ј
+jNEXTњ+	 № NjXYNEXTњ+ha№ џjPOPTWOњ+ф 
+№ кjPOPњ+Э“+?B"Єх. №ЩД	 ѓ$not ѓ$
+found: ћ #?\.* “+FНkД
+ АААdЄ/
+k"…Д @:ѓ$	 Insert #Єє5ѓ?АЄ/k;Аѓ$
+ scr#Єє5?#2kЩъ3€•I… йН€l	 В Лa
+CUROFFґa©€Н€Н€l	 Г ЂaC64KEY“+УaВ6[aДъ
+€іa’a\Г Ca#BSњ+ Г аa#CRњ+ Г мa	C64DE
+CODE“+жa@Д ЄД .?«dтa@Д
+ ЄQ!;d
+PйчЛдп?#\Г шa	C64EXPECT“+Q!;
+°ЄQ!"Д
+ ѓ?I?¬о€ёС4\Г @bKEYBOARD
+Ю?La[ablb\Д –bCON!Тb°Н>€ l	(J!эm\
+ —nBRKn  МnCLCn ЧnCLDnX ҐnCLI
+nx ≠nCLVnЄ ЄnDEXnJ CnDEYnИ Nn
+INXnи YnINYnH дnNOPnк пnPHAnh 
+ъnPHPn oPLAn» oPLPn( oRTIn
+@ &oRTSn` 1oSECn8 <oSEDnш goSE
+InЎ roTAXn™ ]oTAYn® »oTSXnЇ ”
+
+\ЧeЖЪ© S•& Ld•&Н>€ і€Н?€•$	`Е≠Н>€ Ц€
+Н?€¶&ЖШlhaК }eBUSIN“+ИdН6Хe\Л FeBUS!гe
+°Н>€ ®€Н?€lЩЛ ZeBUSTYPE“+£€№€ %JбeJ
+€є€В6\Л уeBUS@fН>€ •€Н?€lЛ fBUSINP
+UT“+£€№€ f%дJ€є€В6\Л ,fDERROR?“+d
+
+NefЄ
+0…Д ?fЄтa…Дф€Щ?ЩЧd\
+њ+≈њ+књ+q?]“+!X #…nq!\	 Џq?[“+
+!X °!\	 Сq?[[“+ЦqЛ\	 §q]?“+X фJ
+Д
+ Л;¬ ф#…nqЛд\	 іq][“+X #Љ
+<qЛX ф#…nqЛд\	 Ёq]]“+<q\	  r]]?
+“+<qєq\
+ rCSњ+Р 
+ rCCњ+∞ 
+ (r0=њ+P 
+
+ 3r0<>њ+р 
+ >r0<њ+ 
+ jr0>=њ+0 
+ urV
+Sњ+p 
+ ЅrVCњ+– 
+ ћr≠€	Н€Н?€x`У +iC
+64INIT¶i `ilha  ЕЖЗЙКЛМИФ ЪiC64F
+KEYSMiҐJ0	љђiЭ]lOilha{ јic(64“+$ћ Ща3
+
+C) missing"/C)…Дг€\{ аibC)“+\{ jc
+(16“+\{ jFORTH-83“+\№ "j	ASSEMBLERv-
+ƒƒА-№   PUSHAњ+№ ijPUSH0Aњ+№ wjPU
+SHњ+№ ∆jRPњ+ № ”jUPњ+ № 
+3г0(3Џd
+Ц@/.";/†г0ћ3Ў3\†є9Щ Ич≠ …
+Е≠!… Е†±ЕH±Е†
+±ЕH±ЕҐ †КБС`
+Џ Л@COLDa `i≠ …Е$≠!… Е%† єС$HPш Њ
+@ Ж9i—@\Џ ъ@RESTART9a `i Њ@ Ж9iЪ@\Ґ 
+†l	 Б -aC64KEY?]a•п]р©€hlБ qaGETK
+EY„aН>€ ЁлН?€I†P© lВ ћaCURONХa•J≈HН
+ ъjEND-CODE“+D,Е"D,;\ ДmINDEX.*	
+	А	ААААА ААААААА,.*  ЯmM
+ODE:“+A)!л(lј(JIm;\ Om.Aяm  мm#яm
+яm цm,Xяm n,Yяm nX)яm n)Y
+яm  n)яm“+Д Im"
+Im;ЉIm"
+1
+ЁД °…€
+ ЄчJ€є€ф#"1Щ\ *nCPU
+“+A)!л(lјFFЩdН>€ L€Н?€†Ґ  ЖИdј6\Ґ †
+ ЖЧd7ј6Уа3	no device\ЖРЕЃН>€ ±€Н?€©`
+Н>€ У€Н?€Н>€ Ѓ€Н?€•Рр»»lѓd`щd° Ld•…Е
+РжlҐdЙ Оd?DEVICE“+ИdН6чd\$eЖЪ© S•&
+ Ld•&Н>€ ±€Н?€•$	`Н>€ У€Н?€¶&ЖЩlhaК eBU
+SOUT“+ИdН6"e\К qeBUSOPEN“+
+рze\К ∆e
+BUSCLOSE“+
+аzeЧd #mOm1000xlist///
+/xpoke 152,0 e$≥±"" Й 2030 4† 8 :
+О ]ЄП umleiten der standardeingabe –B
+Л f$≤"" І Н200 АLЕ"file:";f$ ШVЯ 8,8
+,2,f$™",seq,r" §аЧ 152,8 ™кА    А QH
+ П einlesen des filenamens бR Е"file:";f
+$ з| О €РП programam sicher
+ Щ" 
+1 - make file" - Щ" 2 - list file" f 
+Щ" 3 - execute file" ƒ# Щ" 4 - save this
+ program" П( Е e:С e Н 1000,2000,3000,  
+    400,500 Х2 А ≥H П einlesen des file
+namens CR Е"file:";f$ I| О бРП progra
+mam sichern цЪп"@tapecopy.bas" ь§О 
+
+ Щ" 1 - make file" - Щ" 2 - list
+ file" f Щ" 3 - execute file" ƒ# Щ" 4 
+- save this program" П( Е e:С e Н 1000,2
+000,3000,      400,500 Х2 А ≥H П einles
+en des filenamens CR Е"file:";f$ I| О б
+РП programam sichern цЪп"@tapecopy.ba
+s" ь§О $С•8йЕ∞F•&H
+0Шi€®HШБ
+©€$К†Сl	 v 1.FIND“+D,Є"фЕ"…Д
+ Е№"9.Д  Ф.dфЦ,a[Д
+ ЛЕ¬ё€ 
+°\v о.'“+$х.Ща3Haeh?\v 7/I[COMPIL
+E]“+;/!\v o/C[']“+;/^\v ≈/NULLSTRING
+?“+ЄJЩЄД  \H±…ЕH±… Е†l	 w 
+’/
+>INTERPRETХ/ 0x Ђ;""Л;%7#;[\– 
+Ћ;ALL-BUFFERS“+#;"7;#;"…Дт€\“+J
+ 
+1\“+к*№#ЛФ(\“+А(%"Pп"ЁД^
+ ЄPZ…Pп"Pф«ЄЛaк*1Д
+. Ф(ДZ€a|;Д фaз;Д aS*aр
+¬ґ€9¬Ь€\Ќ<†±Щ$ Иш†±…Е*H±… Е+
+†°$Е,±$Е-,р5•,E*•-е+Р•,E&•- "≥a…
+\] ђ2DEPTH“+;Є"Л…\“+1$"Д ѓ$
+
+ compilingdѓ$ ok\^ G2(QUIT“+н1?п!щ/
+я2¬ф€\^ 3'QUITI0
+3^ 3QUIT“+B"B0
+&3\^ ,3STANDARDI/O“+/*фZD\^ c3'A
+BORTI0†^ Ѕ3ABORT“+,(√ 3q333\_ –3SCR.
+* _ И3R#.*  _ Ф3(ERROR“+q3С4X +ћ #?С
+і,""!$JЄЉ
+ ѓЙа3invalid nameX
+ ~';#э И)^)"Д Љ^)[Є)!Ю(
+ Z')L
+;¬ &)Аі'°!л(lя(3*°Е(±Е)•…ЕР
+ж°Е&±Е'&PlМ±&СЕ%°&БЕ$%Pl	 •$…
+Е$Рж%°$h8)≈$Е$Рж%») р
+±$h°$Е$»Е%•$E(P∞
+•%E)P™lcn Є)>NAME“+%"ЄД йZ…Л1*
+ЁД zё;\≈ Ж6UNLOCK“+ЄН6ч\»8й
+Е»й Е©lБ†±ЕH±Е†°Е±Е•…ЕР
+жҐlР∆ Ј6FILE<,∆  7PREV.*ш{.*  ∆ 7
+B/BUFњ+†±(Y" PHјPф`:7†±Щ$ Иш†±
+≈&Е&H±≈'Е'≠7Е(≠7Е) )7P•…ЕРж†©
+≈(Б•)… Сlf•(Е*•)Е+°*Е(†±*Е)(Pl	  )
+7Pв°(Б*†±(С*≠7Б(≠ ≤2 - list file" о
+Д8,e$:Щe$ ,шЛ e$≥±"" Й 2030 4† 8 :
+О ]ЄП umleiten der standardeingabe –B
+Л f$≤"" І Н200 АLЕ"file:";f$ ШVЯ 8,8
+,2,f$™",seq,r" §аЧ 152,8 ™кА    А QH
+ П einlesen des filenamens бR Е"file:";f
+$ з| О €РП programam sicherйh:J€є€
+¬ п°№€ йh:ЉЉхJ€є€м9ё\ѕ 8:COPY
+“+Љ÷:\ѕ T:CONVEY“+Л#FН…Є<Йа3n
+ein÷:\– е:LIMITњ+ А– ;FIRST.*ш{– ;A
+LLOTBUFFER“+#;"B"…%7a”%7§#;[#;"
+Є{87"ф;7;\– );
+FREEBUFFER“+#;"
+;%7…Д. #;"!87Є"#;"…Д "¬о€#
+±EH±е†Рl	  ЖУа3stack empty\\
+ Х1.STATUSI0Ct.*пп;\\ г1ДPUSH“+пЛЄ
+P"Pс1PP\\ э1LOAD“+ЁЩ”D!2D!;Є
+!2Є!чн1щ/\] 2+LOAD“+D!"ч#2\] c2T
+HRU“+#Л…€
+ %#2J€є€\] y2+THRU“+#Л…€
+
+ %k2J€є€\] ÷2c-->“+ЉD![Є!чн1\] Ф2
+RDEPTH“+B Ф4of4А90А100Бno”hadowsА>ramdis
+kЙ>fileLrddelБid"Аc64Аgrafdemo"Р4of4А144А
+164Бno”hadowsА>ramdiskИ165АbinaryЮ4of4А16
+5А169Бno”hadowsА>ramdiskИ>fileL;  Ь€en.ђ∆
+allsА…hrАdenkt,АdassАetwasАaufА≈urerГЋass
+etteАfehlt,АgucktАbitteАhierАnach.ВƒerАko
+mpletteА…nhaltАderАƒ ≤2 - list file" о
+Д8,e$:Щe$ ,шЛ e$≥±"" Й 2030 4† 8 :
+О ]ЄП umleiten der standardeingabe –B
+Л f$≤"" І Н200 АLЕ"file:";f$ ШVЯ 8,8
+,2,f$™",seq,r" §аЧ 152,8 ™кА    А QH
+ П einlesen des filenamens бR Е"file:";f
+$ з| О €РП programam sicher Ц шЛ e$
+≥±"" Й 2030 † 8 О aЄП umleiten 
+der standardeingabe tBЛ f$≤"" І Н200 ƒ
+LЕ"file:";f$ №VЯ 8,8,2,f$™",seq,r" Иа
+Ч 152,8 ОкА    ≥H П einlesen des file
+namens CR Е"file:";f$ I| О бРП progra
+mam sichern цЪп"@tapecopy.bas" ь§О 
+ Ж шЛ e$≥±"" Й 2030 † 8 О aЄ
+П umleiten der standardeingabe tBЛ f$≤"
+" І Н200 ћVЯ 8,8,2,f$™",seq,r" ЎаЧ 15
+2,8 ~кА      400,500 Х2 А ≥H П einles
+en des filenamens CR Е"file:";f$ I| О б
+РП programam sichern цЪп"@tapecopy.ba
+s" ь§О  ХшЛ e$≥±"" Й 2030 † 8 
+О @ЄП umleiten der standardeingabe s
+BЛ f$≤"" І Н200 √LЕ"file:";f$ {VЯ 8
+,8,2,f$™",seq,r" ЗаЧ 152,8 НкА   А ≥
+H П einlesen des filenamens CR Е"file:";
+f$ I| О бРП programam sichern цЪп"@t
+apecopy.bas" ь§О е'l≤<•(E,•)е-∞°,Б$
+±,С$lG<•,Е$•-Е%lЙ<lЭ“+%"ЁД ЄPZ…
+Ћ<п¬к€\“+}#Є"}…Д( й"ЛX ѓД
+ Є"#"ф;«¬ "¬N€ё\“+%Ћ<R,…€  
+й%"zѓД
+ /Ћ-%;/ю€ы€є€йі,"zѓД
+
+ /Ћ-і,;\” Ї;CUSTOM-REMOVEI0†“+фл<
+'=M<{=А(Л…i(L;°~';\‘ Ћ=n Ъп"@
+tapecopy.bas" €§О /иП ein minieditor 
+bтЛ f$≤"" І Н200 zьЯ 8,8,1,f$™",seq,w
+" ”Щ"type //// to exit" ВЕ e$:Ш8,e$
+ ЪЛ e$≥±"////" Й 1030 •Ш8,"x" єШ
+8,"poke 152,0" A€† 8 G$О бPП drucke
+n eines files фZЛ f$≤"" І Н200 
+дЩ" 
+иП ein minieditor $тЛ f$≤"" І Н200 
+<ьЯ 8,8,1,f$™",seq,w" uЩ"type //// t
+o exit" ƒЕ e$:Ш8,e$ №Л e$≥±"////" Й
+ 1030 ЗШ8,"x" ЫШ8,"poke 152,0" £€
+† 8 ©$О CPП drucken eines files VZЛ
+ f$≤"" І Н200 одЯ 8,8,2,f$™",seq,r" ьо
+Д8,e$:Щe$иП ein minieditor $тЛ f$≤
+"" І Н200 <ьЯ 8,8,1,f$™",seq,w" uЩ"t
+ype //// to exit" ƒЕ e$:Ш8,e$ №Л e$
+≥±"////" Й 1030 ЗШ8,"x" ЫШ8,"poke 1
+52,0" £€† 8 ©$О CPП drucken eines f
+iles VZЛ f$≤"" І Н200 одЯ 8,8,2,f$™",
+seq,r" ьоД8,e$:Щe$/NOTFOUNDI0я/x Њ/
+NO.EXTENSIONS“+ъ3Haeh?\x O/	INTERPRET“+
+Є/\ “+Ю1$х.ЁД Љ1Д ЧЄ/а3compile
+ onlyГ/”p'ЩД I/Є/\“+Ю1$х.ЁД <Д
+ ЧЄ/!Є/Г/”p'ЁД <Д Л^^¬ I/Є
+/\y н/a[“+/ 0г0Ї/1$ч\y {0]“+/;0г0Ї/
+1$е\“+Уа3Crash\z С0DEFERtape"Аnew
+ќameО4of4Б0Б5Аwith”hadowsА>ramdiskЙ4of4А1
+3А31Аwith”hadowsА>ramdiskЙ>fileLrddelБ"Аd
+ecompiler"АnewќameМ4of4А51А60Вno”hadowsА>
+ramdiskЙ>fileе µ \А..makecopyА2of4Мclv19n
+ov87©rddelБ"А1Аuf-quelle"АnewќameЛ2of4В0Б
+50Вno”hadowsА>ramdiskЗ>fileLrddelБ"А2Аuf
+ 8hallowas ist daswas ist daswas ist d
+aswas ist das                         
+                                         
+                                         
+                                         
+                                         
+          6Б46Аwith”hadowsА>ramdiskЗ>fi
+leLrddelБ"Аeditor"АnewќameР3of4А14А18Аwit
+h”hadowsА>ramdiskЙ3of4А19А45Аwith”hadowsА
+>ramdiskЙ>fileLrddelБ"Аtracer"АnewќameР3o
+f4А47А56Аwith”hadowsА>ramdiskЙ>fileLrddel
+Б"Аmultitasker"АnewќameЛ3of4А57А62Аwith”h
+adowsА>ramdiskЙ>filehadowsА>ramdiskЗ4of
+4А138А143Вno”hadowsА>ramdiskЗ>fileLrddelБ
+id"Аeditor"Ц3of4А14А18Аwith”hadowsА>ramdi
+skЙ3of4А19А45Аwith”hadowsА>ramdiskЙ>fileL
+rddelБid"Аtracer"Ц3of4А47А56Аwith”hadowsА
+>ramdiskЙ>fileLrddelБid"Аmultitasker"С3of
+4А57А62Аwith”hadowsА>ramdiskЙ>skЙ>fileL
+rddelБid"Аc16Аtape"Ф4of4Б0Б5Аwith”hadowsА
+>ramdiskЙ4of4А13А31Аwith”hadowsА>ramdiskЙ
+>fileLrddelБid"Аdecompiler"Т4of4А51А60Вno
+”hadowsА>ramdiskЙ>fileЯµ \А..makecopyА3o
+f4Мclv19nov87©rddelБid"Аkleinkram"У3of4Б4
+6Б46Аwith”hadowsА>ramdiskЗ4of4Б61Б63Вno”
+ dowsА>ramdiskЙ>fileLrddelБ"Аc64Аgrafdem
+o"АnewќameК4of4А144А164Бno”hadowsА>ramdis
+kИ165АbinaryЮ4of4А165А169Бno”hadowsА>ramd
+iskИ>fileL;Ј \А..makecopyА4of4А1.‘eilДc
+clv19nov87©rddelБ"Аc16Аsupertape"Аnewќame
+Й4of4А32А50Аwith”hadowsА>ramdiskЙ>fileLrd
+delБ"Аc16АfileLrddelБid"Аprinter"Х3of4А
+63А84Аwith”hadowsА>ramdiskЙ>fileS і \А..m
+akecopyА2of4Мclv19nov87©rddelБid"А1Аuf-qu
+elle"С2of4В0Б50Вno”hadowsА>ramdiskЗ>fileL
+rddelБid"А2Аuf-quelle"С2of4Б51А100Вno”had
+owsА>ramdiskЗ>fileLrddelБid"А3Аuf-quelle"
+С2of4А101А169Вno”had4Б0А1Гno”hadowsА>ra
+mdiskЙ>fileLrddelБ"Аassembler"АnewќameН2o
+f4Б2А13Аwith”hadowsА>ramdiskЙ>fileЁґ \А.
+.makecopyА3of4Мclv19nov87©rddelБ"Аkleinkr
+am"АnewќameН1of4Б14Б25Аwith”hadowsА>ramdi
+skЗ4of4Б61Б63Вno”hadowsА>ramdiskЗ4of4А138
+А143Вno”hadowsА>ramdiskЗ3of4Б4owsА>ramd
+iskЗ>file√≥ \АkopierenАaufА“amdisksА1of4
+Бclv19nov87©floppyА\АwirdАnachherАaufА‘ap
+eАgespultЂ:АmakecopyА\АkopiertАalleАƒiske
+ttenЃbaseАpushАdecimalјlimitАmemtopАrdnew
+њrddelБid"Аsys+infos"У1of4Б0А36Аwith”hado
+wsА>ramdiskЙ2of4Б0А1Гno”hadowsА>ramdiskЙ
+АrotМrdrop£conveyА;G'АtrueБЅliasАwith”h
+adowsП'АfalseАЅliasВno”hadows$ ђ \А’tilit
+iesТclv19nov87©ѕnlyforth8 Ђ \АƒirectoryА‘
+ape-√opyИclv19nov87©’tilitiesЛ2д…nfoП86ш 
+ґ \А..makecopyА4of4А1.‘eilЕclv19nov87©rdd
+elБid"Аc16Аsupertape"П4of4А32А50Аwith”had
+owsА>ramdiveyА‘»≈ќА;≤:А>fileБfilefloppy
+АsaveramdiskА;wЄ \А..makecopyА4of4А2.‘ei
+lДcclv19nov87©rddelБ"Аc64А1-grafik"Аnewќa
+meК4of4Б0В1Бno”hadowsА>ramdiskЙ4of4Б6Б12Б
+no”hadowsА>ramdiskЙ>fileLrddelБ"Аc64А2-gr
+afik"АnewќameК4of4А64Б89Бno”hadowsА>ramdi
+skЙ4of4А90А100Бno”ha3of4Б0А1Гno”hadowsА
+>ramdiskЙ4of4Б0А1Гno”hadowsА>ramdiskЙ>fil
+eLrddelБid"Аassembler"У2of4Б2А13Аwith”had
+owsА>ramdiskЙ>fileЊ \\АzuА‘ape-√opyОclv
+19nov87©»ierАistАderАersteА‘eilАdesАЋopie
+r-ЕvorgangsА(vonА∆orth-”creensАinА“amdisk
+s,АdieАaufАƒisketteАgesichertАshАdecima
+lЧ[А“amdiskА]ЭlimitА$c000Аu>Аabort"АnoАro
+om"К$c000АmemtopАrdnewі \А..makecopyА1o
+f4Мclv19nov87©rddelБ"Аsys+infos"АnewќameН
+1of4Б0А13Аwith”hadowsА>ramdiskЙ1of4А26А36
+Аwith”hadowsА>ramdiskЙ2of4Б0А1Гno”hadowsА
+>ramdiskЙ3of4Б0А1Гno”hadowsА>ramdiskЙ4of
+werden)Жniedergelegt.DƒerАzweiteА‘eilА(
+∆loppyА->А‘ape)ИfolgtАanschliessend.љƒasА
+ЋopierenАistАeineАleidigeА”ache,ДichАhoff
+e,АichАhabeАnichtsАvergessen.ђ∆allsА…hrАd
+enkt,АdassАetwasАaufА≈urerГЋassetteАfehlt
+,АgucktАbitteАhierАnach.ВƒerАkompletteА…n
+haltАderАƒ	."Аeinlegen!"АwaitА‘»≈ќЛdisk#
+А!А;њ0Аdisk:АfilefloppyЦ1Аdisk:А1of4Ь2Аdi
+sk:А2of4Ь3Аdisk:А3of4Ь4Аdisk:А4of4Z ≠ \Аs
+conveyАwith/no”hadowsЕclv19nov87©:Аsconve
+yА(А[fromАto]Аdestination--)Ж2АpickБ2Аpic
+kБ2БpickСconveyҐ[А≈ditorА]АshadowА@А>rТr@
+А+АrotБr@А+АrotБr@А+
+ameА(Аstring--)Хcou
+ntА[А“amdiskА]АidАplaceА;э ѓ \А>ramdiskУc
+lv19nov87©:А.scrsГ(АfАtА--)ЦcrАdisk#А@А1А
+.rА."Аof4А"РswapА.А.†."А>"А[А“amdiskА]Аid
+АcountАtypeА;Ѓ:А>ramdiskА(А[fromАto]Аshad
+ow∆lag--)Ж>rА2dupА.scrsЫoverАdisk#А@Аblk/
+drvА*А+Аr>Н…∆АsconveyА≈ћ”≈АconiskettenЖ
+istАimА»andbuchАbeschrieben.µ√lausА÷ogt,А
+19nov87 Є \Ьclv19nov87dЈ \А..makecopyА4
+of4А1.‘eilЕclv19nov87©rddelБid"Аc64А1-gra
+fik"Р4of4Б0В1Бno”hadowsА>ramdiskЙ4of4Б6Б1
+2Бno”hadowsА>ramdiskЙ>fileLrddelБid"Аc64А
+2-grafik"Р4of4А64Б89Бno”hadowsА>ramdiskЙ
+-quelle"АnewќameЛ2of4Б51А100Вno”hadowsА
+>ramdiskЗ>fileLrddelБ"А3Аuf-quelle"Аnewќa
+meЛ2of4А101А169Вno”hadowsА>ramdiskЗ>fileN
+ ≥ \АkopierenАaufА“amdisksА1of4Бclv19nov8
+7©floppyА\АwirdАnachherАaufА‘apeАgespultЂ
+:АmakecopyА\АkopiertАalleАƒiskettenЕ0Аdri
+ve°baseАpu #monitorm1000x////xpoke 1
+52,0 e$≥±"" Й 2030 4† 8 :О ]ЄП u
+mleiten der standardeingabe –BЛ f$≤"" І
+ Н200 АLЕ"file:";f$ ШVЯ 8,8,2,f$™",se
+q,r" §аЧ 152,8 ™кА    А QH П einlese
+n des filenamens бR Е"file:";f$ з| О €
+РП programam sicher dLrddelБ"Аprinter"Аn
+ewќameП3of4А63А84Аwith”hadowsА>ramdiskЙ>f
+ile    Аwith”hadowsА>ramdiskЙ>fileЁґ \А.
+.makecopyА3of4Мclv19nov87©rddelБ"Аkleinkr
+am"АnewќameН1of4Б14Б25Аwith”hadowsА>ramdi
+skЗ4of4Б61Б63Вno”hadowsА>ramdiskЗ4of4А138
+А143Вno”hadowsА>ramdiskЗ3of4Б4А;А\Аwart
+etАaufАtaste≠÷ariableАdisk#Б-1Аdisk#А!Ј:А
+disk:Б√reateА,†ƒoes>А@АdupАdisk#А@А-У…∆Аc
+rА."А¬itteАƒisketteА"АdupА.П."Аeinlegen!"
+АwaitА‘»≈ќЛdisk#А!А;њ0Аdisk:АfilefloppyЦ1
+Аdisk:А1of4Ь2Аdisk:А2of4Ь3Аdisk:А3of4Ь4Аd
+isk:А4of4k ± \АnewќameФclv19nov87©:Аnewќ
+ †1 2
+# =і  € € € RD.tapecopy         
+             ≤ \Ьclv19nov87Z ≠ \Аsconvey
+Аwith/no”hadowsЕclv19nov87©:АsconveyА(А[f
+romАto]Аdestination--)Ж2АpickБ2АpickБ2Бpi
+ckСconveyҐ[А≈ditorА]АshadowА@А>rТr@А+Аrot
+Бr@А+АrotБr@А+АrotМrdrop£conveyА;G'АtrueБ
+ЅliasАwith”hadowsП'АfalseАЅliasВno”hado
+ws» \\АzuА‘ape-√opyОclv19nov87©»ierАist
+АderА(fast)АkompletteАЋopier-ГvorgangАvon
+АƒisketteАrevА3.8АaufИЋassetteАniedergele
+gt.їƒasАЋopierenАistАeineАleidigeА”ache,Д
+ichАhoffe,АichАhabeАnichtsАvergessen.ђ∆al
+lsА…hrАdenkt,АdassАetwasАaufА≈urerГЋass
+etteАfehlt,АgucktАbitteАhierАnach.ВƒerАko
+mpletteА…nhaltАderАƒiskettenЖistАimА»andb
+uchАbeschrieben.µ√lausА÷ogt,А19nov87≠ ∞ \
+Аdisk"Хclv119nov87©:Аdisk"Б\АfolgenderА”t
+ringАwirdАanО\АƒiskАgesendetТ8А&15Аbusope
+nАn"АbustypeАbusoffЙderror?АdropЬ8А&15А
+buscloseА;и\\Аz.¬.§disk"Аs:file"Б\Аloesch
+tАfileo ђ \АtapecopyУclv19nov87©ѕnlyforth
+°1Б6А+thruБ\АkleinkramС7А11А+thruБ\Аmakec
+opyc Ђ \АƒirectoryА‘ape-√opyИclv19nov87©’
+tilitiesЛ3ТmakecopyМ9ї…nfoП86Ѓ \АwaitАd
+isk#А1of4А...Иclv19nov87©:АwaitАkeyАdrop
+ИPчЎl_]pП  cpП   ( €   * €  
+ - €   0 €   * €   - €  лй€шхьтЯЗ
+УЗЖРМИАЫйЮДмЗЛЛЩстуфхцчшщъыЭСНРј¶∞¶°±ѓ©ѓЇ
+Jњ£Mљ°њЊҐ™TіЄ≥Xіїґьфё€ !"#v@gcagm+nlc/012
+45dry]su[2im…’ЋЌ√'	
+№ —’{}”€;
+ ЋћЌќo–—“”‘’}~@ab√d
+efgh?/9%+7xclvЄsec8sedшseiЎnopкrti@rts`
+dexJdeyИinxиinyHphahphppla»plp(brk  bccР
+bcs∞beqрbmi0bnePbplbvcpbvs– rorEAќ~∆÷ ad
+cиZЌ}ў≈’—Ѕ…andиZ-=9%51!)aslEA
+bitВА,$
+cmpиZ а§Д§	ДҐ Э[xIРP ¶V FU$Мh© 8
+нЪ ÷V»Ў`I∞•„lC	А C e»»lп8` ќlЫ
+© ЕМ©€ЕЛlќrk-µTenЁu©	Е©Е юЕ©#Е 
+юEPIр¶§ р€©8 R€lЏ© ЕҐК 3hдр
+др»0'©Ь†  ©X† ~l¶»©Ж†  ©≤† 
+~l¶иаРD©“†  © Е*©Е+©!©Ґ	 Ъ©Ґ	 Ъ
+•IP
+©Ґ	 Ъl€©Ґ	 Ъ© Ґ Ъ©Ґ Ъ•P
+
+©Ґ ЪlkIP
+©Ґ Ъlk©Ґ Ъ•р©	 ©
+ •р©&,©$Н…† є  Щ HPчо…р•	 C 
+
+хpюЄ≠С0HPх†ЇpюЄ≠Щ HPф аш•8Egрlцф йх
+E:рlх•ВIр•„ C Ј т•	≈ДEcРеcЕ	l(©
+ ЕБ¶Бљ  CжБPфжН` ЫЕГlхЕ	 т© ЕБ Ы¶
+БЭ жБPф йхЕ:≠ )PlБх Пч хҐ	pюЄJPъ ;Ґ
+НЄpюЄJPъ†їє pюЄНHPф±0pюЄНHPхpю  ю
+©  ClJ≠)	јН©€Н`•$ЛЕ© Е©∞ —
+-;);8*_DHQH§≠я®F†™RБ≠Ѓѓ∞±≤≥BPDёёјЇZZIџM
+АцркраЖПсЖдВМф£ПРСТУФХ€рцциюЬпыюДбЗСЦКФФи
+бУдВдоБЁјтуфхцчшщ їЉљЊњАБВГДЕЖЗИЙКЛМНОП^ь
+RSTUVWXYШџ|ЁЃЊr@ofp@t'agz^x-./“23456789Ў
+;<=>? 	
+r<x»ѕ№Ѕ“”
+»≈ћ}~ѕ2\“”‘’÷„Ўўч;<=>? 	
+
+M—rstu?a *addR` bcc ...enDƒ inc *a
+ddr+±»...end   .mE“!!!sbi16 .md (sddr s
+v©÷ lda *sddRА sbi (sv©Д sta *sddRИ b
+cs ...enDТ dec *sddr+±Ц...end   .mlэlљ
+ Ы©l…щ` k Ы 9∞ц ЫЕЙ ЫЕК$Й0$К
+0© m• C• C$К0'©А — +†ҐЧH Р Р 
+РPф©ЧЕБ¶Бµ  CжБPх©`ЕДҐ† (∞
+© Е
+ 'lЃ©yЕ 'IyрInр©Э R€lЫh©TЕ©ЕҐ
+† »`абТВЦДЛВЬМШлЕГЮЪДстSфхцчшщъыьэю€јA
+BCDEFGHIJKLMNOPQRSTUVWXYъ™™™™™У$%&'()*
++,-./0123456789:;<=>? 	76¬
+`~Џ€–~–`¬€ƒ≈’∆ў ЋћЌќѕ–—on‘’÷„ЎўЏ{№
+}~@abcdefghijklmnopqrstuvwxy«•lo ™ 
+Ір!©§†	  •I€ —РlБ•э8йЕэ∞Fюlh ІЎ
+†4Д† Сы†7ДжыPмжьxlo©†
+ Ю І©Ў†	  
+©x†
+ Ю©  бlЈ  ©€Е† ±эhжэPжю б»`
+$p0$† Др&h©ƒ†	  ©  ™ І0 ™©P†	  
+ —РяlБ»Iр∞)$ l4Е •©p†	  lZ
+P8©ж†	 Юle ™Ў†4Д† ±ы†7Д бжыPмжь 
+                              clv13oct87 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                              clv13oct87 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+∆\]^_†°UQMQRBF©ї≤ієЃMI±ZљSPDџWя|їЉљЊњАБ
+њЊДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийW
+VмнопУГУРЯРТчСЧъкеек€ҐЄB®VЈHGNI©ЄҐMNOPQпо
+TUVWXYZџ|Ёёя !"#$%&'()*+,-./0123456789И
+=>? 3—ћ—„≈¬Ї	ќќЏƒЌ 	&Ѕ„≈№ќ©ў{…	√№h
+w«»… Ћ“’}08bk*j3nh'«klmn
+opq4<&87#xk
+
+
+
+
+
+ @loa c-16†††††††
+             	key†††††††††††††         
+    :key††††††††††††             f†
+††††††††††††††         :   Вl††††††††††
+†††††            Вl1††††††††††††††    
+        Вl2††††††††††††††            
+В	l3††††††††††††††          k
+
+
+
+
+
+
+k
+
+
+
+
+
+ €  t†††††††††††††††         
+    uF-16/2†††††††††                   
+                                         
+                                         
+                                         
+                                         
+                    k
+
+
+
+
+
+k
+
+
+
+
+
+
+k
+
+
+
+
+
+k
+
+
+
+
+
+k
+
+
+
+
+
+k
+
+
+
+
+
+
+k
+
+
+
+
+
+k
+
+
+
+
+
+k
+
+
+
+
+
+k
+
+
+
+
+
+
+k
+
+
+
+
+
+
+
+ Ю(2064)    кlG8кla9l»’ 
+b. {КОeЎ   F;∆q.+p_                  
+                                         
+                                         
+                                         
+                                         
+           $volksFOR	VOC-LINKV# ъ	U
+DPV#€ 
+
+SP@
+•Е$•Е%Ґ$•8йЕ∞FµСµ
+ Ґ l  
+SP!g
+°™±ЕЖҐ l	  ?
+UP@_
+Ґ
+l'
+ w
+ГUP!ќ
+Ґ±ХИ±Х Ґ †•…ЕРжl
+	  ∆
+RP@Х
+Ґl'
+ Н
+ГRP!§
+Ґl–
+ Ь
+В>R≤
+
+•8йЕ∞F°Б±Сl}
+ Ђ
+ВR>Q
+•8йЕ∞F
+°Б±С©≈ЕРжl	  J
+R@°$l € ж
+!°Е$±Е%H±Б$H±†С$lЉ€ €+!%°Е$
+±Е%H±Ѕ$Б$H±†—$l DROP}
+ aSWA
+Pu±™†±Е$КС•$†СHҐ ±Е$°СИ•$l  l
+DUPВ•8йЕ∞F†±†СH±Иl  Џ?DU
+PІ°Pl	 lВ ЮOVERЊ•8йЕ∞F†±
+БH±†Сl	  µROTг†±Е%†±†С†±
+WANDыH°1СИ±†1Сlў
+  уXORH°
+qСИ±†qСlў
+! -3H±8бСH±†с†
+Сlў
+! -NOTsКбБКсСl	 ! kNEGATE
+ќ8∞г" √DNEGATEH8КсСHКсСКбБ†Кс
+Сl	 
+™®И±Щ$ ИшК≈ЕРжҐ †`" ”D+њ
+© ЫH±≈&СH±≈'С°≈$Б†±≈%Сl	 # Є
+1+н©Ѕ% KГLITщ•8йЕ∞F±С°Б
+•…ЕРжl	 % сGLITERAL#Ач €щb
+ ф
+чI$фR|$& 0<m±©€$КСl & f
+0=√°риPй& \UWITHINў© Ы†°E$±е
+%∞
+°E&±е'∞љlt' Ќ<Я°Е$±Е%•…ЕР
+ж•%q0Х°E$±е%lo' ЩU<L°Е$±Е%•…
+ЕРж°E$±е%∞lqlXb }$) вABS
+#Xb ћ$#O
+	А∞
+б∞
+s∞
+∞
+$* чГ(
+DO#Љ1	* #Д(?DO#Љ1•b 	O
+Акњ
+∞
+h$* 3BOUNDS#Љњs$* xЗENDLOOPў
+©lж
++ ЌЕ(LOOPК©ЅБР±… СРl	 †±
+ЕИ±Е†l	 + АЖ(+LOOPї°ЅБ±—С q
+•…ЕРж(Dl	 , ∞БIе† •FК†С»Ґ
+ l / ≤CASE? © Ы•$AP	•%QPlqКlZ0
+ цBIF#фbƒД$0 €DTHEN#эДї{$0 
+-DELSE#Дїф ƒs{[$0 bEBEGIN#У
+О$0 _EWHILE#ОїОфbƒчю€Р$#¶А
+чю€1b
+ h{ о€$0 —FREPEAT#Оїф 
+П$0 ЂEUNTIL#ОїфbП$1 DBDO#ф
+#\h$3 ё2*у°
+Б±*Сl	 #[ƒ+div
+ision overflow$4 мUM/MOD'°Е)±Е(•…
+ЕРж°Е%±Е$H±Е'H±Е&Ґ∆*8•%е)®•$е(∞
+&*РЕ$Д%&'&&&%&$JPя†∆$∆%Р ∆	 $•&СH•
+%СH•$С†•'l 5 M/MOD#А∞
+эЉkb 
+dњs%щ
+kb ћЉb sщ
+њs/$5 Ц
+2/Ё±
+±	 7 ІMOVE#∞
+±Jb O
+∞$
+O
+В$8 гPLACE#Љ∞
+бЉлO
+кђ$8 
+COUNT,°Е$…Б±Е%… С•8йЕ∞FlЬ8 "
+ERASE#…∆$9 mFILL»© ЫИ•$¶'р
+С(H
+Pыж)JPц¶&рС(HJPъ†l	 : _HERE#ђ	к$: 
+ПPAD#ЦRbњ$: †ALLOT#ђ	#$: ≥,
+#ЦОї$: EC, ЉТщ
+1b /sлs
+ д€$< JSKIP#∞
+Аb€ ЉТщ
+1b /
+sлs д€$< щ/STRING#ЉEбЉњ"
+1$h)яIaР	I[∞»…А`»`= (€CAPITALƒ€° d€
+Бl	 > x€
+CAPITALIZE€°Е$±Е%°$Е&ИD&P†
+l	 H±$ d€С$lМ€Ґ€Ж*†±Щ$ Иш†≠Ў≈&Е&≠ў
+≈'Е'8•$нЎЕ$•%нўЕ%∞°НЎ±НўTH-83 3.5
+ compiled 20nov85reН€€±Е≠€€Е•…Е∞ћ
+€€ж∞щ   	END-TRACEe	©•Е©Е©…Е©Еl	 
+ 7	RECOVERZ!»Е»Е•PFFl# z	NOOP	
+  ў	ORIGINy# Д	S0V# У	R0V#
+ Э	
+DPV# І	OFFSETV# ±	BASEV# њ	OUTPU
+TV# K	INPUTV# Y	ERRORHANDLERV# ж
+ы
+•8йЕ∞F±С°l  ф
+ЕRDROPд
+ 
+EXIT&°Е±Еlд
+ ?EXIT=°•…Е
+Рж(PVl	  3EXECUTEЅ°Е±Е•…ЕР
+жl  uPERFORM#к_$ ўC@Ф°Е$±Е
+%© С°$l  НC!Ѓ°Е$±Е%H±Б$И•…ЕР
+жl	  ІCTOGGLE#dТsђ$€ L@м°
+Е$±Е%±$СЕ$•%С†•$СH±Е%°С†±Б•%
+С†l	  џ-ROT#бб$ NIP#sh$
+ ,UNDER#sЉ$ <PICK#лс
+њк$
+ nROLL#А∞
+u
+А	O
+лс∞h$ ≈2S
+WAP#б∞
+бO
+$ И2DROPЉ Ю2DUP#ЉЉ
+$  ™+AH°—СИ±†—Сlў
+  їORёH
+°СИ±†Сlў
+                    
+                       	           
+                                         
+                              
+                   ; 1014 00  00  
+                   "1",8,00 00       
+                              t( E>
+#sЭ$( с0>#ћk$( €0<>#Ѕq$( 
+U>#sJ$( =#1Ѕ$( -D0=#|Ѕ$
+( ;D=#}љa$( kD<#б±1b х2
+2  ¶J$#b sh$) \MIN#±х}
+) НMAX#±Э}) ЭUMAX#±J}) ≠UM
+IN#±#}) ЊEXTEND#Аk$) ODABS#
+\\ zu Files                   clv06jan88 
+                                         
+SKP ignoriert 2 bytes                    
+WRD gibt 2 bytes als Zahl aus            
+STR gibt einen 0-terminated string aus   
+                                         
+Kanal-Nummer 0 gibt die aufbereitete     
+ Version der Directory.                  
+                                         
+Der Rest ist auch zur Ausgabe jedes      
+ Basic-Files brauchbar, da gleichs Form. 
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+
+l4†•$%р=°&QPж&Pж'•$PF%F$lя€•&Е(
+•'Е)°&Qж&Pж'•$PF%F$(рж*•$%Pв8†•&с
+НЎH•'сНў©≈ЕРж†±БЕ$H±†СЕ%И•
+*С$±(HF*ч© С$†l	 b –€SOURCE#Вк•b
+ Њ1а;$Ык$b «WORD#–†€$b МPARS
+E#∞
+–÷к2€ЉsO
+Q∞
+Љ1АO
+1÷#$
+b ЭNAMEd F\NEEDS#VР&2b Ѓ$d 
+WHEX#RF	$d тDECIMAL#R
+F	$e
+ DIGIT?#R01АR	#b RЗ1АR	#b
+ F	кЉ#•;h…$e 
+ACCUMULATE#s∞
+
+sF	к\hбF	к\љO
+$e [CONVERT#л
+*%b » ф€/$#„кЅ$#*[„#$
+#/*$f ИDPLZ!€€ЅR»√®д≤%Ѕ
+bр€ЊoЅRNњ®д≤ T€$g }NUMBER#
+З•Ѕƒ+?kb X$h LASTZ!  #*к•
+$h #HIDE#.b mкo$к$h :REVEA
+L#.b
+ mo$к$h wIRECURSIVE#`$#
+.b dТ|Љђh$h ‘	IMMEDIATE#R@Ж
+$h ЮRESTRICT#RАЖ$i µ
+C1$#Ц
+R€щR€1b ААлЦЉ1л∞Д*#Дї$
+k І ?HEADZ!  k !|#
+!к;[
+!$l !
+WARNINGZ!  #0!к;*кo$кT%2b ,*к
+G" exists §6$l &!CREATE#ЦВкIo$к
+кIVТАДR „qƒ+invalid nameЦ*
+лї4!
+!кb Д
+!#Ај Ij R Жј ђ	 
+•b А@ b  |*Rщ7   ???,
+$o њ":#Ќ!ao$к_$)(…Ч •8йЕ∞F•
+Б•С•…ЕК≈Еl	 o ф"A;#…їф$(`
+$o 0#CONSTANT#Ќ!IЧ •8йЕ∞F†±БH
+±†Сl	 o f#VARIABLE#Ќ!Ої$p ÷#UALL
+OT#А
+књR€#ƒ+Userarea full
+кs
+
+#$p Н#U$r µ$
+VOCABULARY#Ќ!…I…I
+Ц
+кI
+Ч lћ _$$r J$FORTHс$U„U„ 
+ r ь$ONLY%88
+%Ч lћ …1$_$А$$r %
+	ONLYFORTH#%%А$z%$s 2%DEFINITIONS#_
+$кo$$#кmu"G"$s l%ORDER#Ќ$) г
+∆%чю€є„О(,o$∆%$s ‘%WORDS#_$ккАМ
+6Ѕщb §6А	G",  sm ё€2…$v Й&
+'#VР&Ѕƒ+Haeh?$v R&I[COMPILE]#V&I$
+v к&C[']#V&&$v  'NULLSTRING?#АТЅ
+Аb 2$H±…ЕH±… Е†l	 w '
+>INTER
+PRET0'Ш'x f'NOTFOUND](Џ'x y'NO.EXTENSIO
+NS#~+Haeh?$x  '	INTERPRET#s'#-)VР&•
+b Дщb _s'ƒ+compile onV&АЗ(Ј"м
+кb
+ ф„(I$$#[*R хƒ+tight stac
+k`.b А@ b Ц"  Ґ1Ѓ5[ƒ+diction
+ary full$[ ґ(?STACK/)†8•сЕ$H•сP	†
+ ∆	Y($†±EH±е†Рl	  ∆	[ƒ+stack em
+pty\ $).STATUS](ГbZ!O
+O
+$\ ѕ)ДPUSH#O
+
+sА∞
+к∞
+})∞
+∞
+$\ Й)LOAD#•Ѕ;ВР)
+QUIT#Ґ	кҐ
+(∞*^ ґ*STANDARDI/O#ч*T
+	ҐВ$^ K*'ABORT](А	^ й*ABORT#Xc	т*Y
+*љ*_ ш*SCRZ! _ +R#Z!  _ €+(ERROR#Y*
+,ЦG"*7,§6Вк•b +÷к+љ*_ %
++З(ABORT"#3sb ∞
+XO
+х	Г$h$#3s
+b х	Г$h$_ z+FABORT"#фƒ+$_ Ф+FE
+RROR"#ф~ ЗњR0њi,$¬ Ы,#S#Я,±ab
+ш€$√ D,D.R#"dй`,I,бК,—,бЉ£Љ1
+(,7$√ Y,.R#sXбя,$√ -U.R#…sя,
+$√ -D.#…я,,$√ (-.#X--$√ 9-U.
+#…--$ƒ g-.S#
+Ш	кЉ1R EЅ: гк
+l-Оє„$ƒ v-C/Ly#) ƒ В-L/Sy# ƒ О-LI
+ST#+ Scr +кА#C+У}€$$c OSTA
+TEZ!  c дeASCII#C+УлТмкb &$c т
+,"#R"•ЦЉлї$c Д"LIT#O
+O
+d*
+њ∞
+∞
+$c ,В("#3$c gA"#фl$d t
+Г(."#3*7$d ƒB."#ф $d ÷a(#R
+)•¶$d Зb.(#R)•7$d Шa\#÷кИ-
+лИ-в÷$d ™b\\#а;÷$#b ¶
+h…$#b  hO
+b }бhNкл•;h
+[$#R&юb	 R
+[$R$юb	 R[$R
+Hюb	 R[$R%юb О[$…$#R,Љ1
+sR.1|$#Nк[1;ДN#$Z!  g H
+NUMBER?#F	Р)А*„N≠…∞
+R R б®R
+≤R-юb [∞
+®R≤
+b F	®R≤%
+LEARSTACKZ†±ЕH±Е†l	 i KHALLOT
+#Ш	кЉ1s
+	Аб1АШ	ОuЉ1кXШ	
+$i мHEAP#Ш	к"$i % HEAP?#, ]
+„
+$#АЦЉ1Ах, sВ, Љ1*#`$•8й
+Е∞F•С•Б°…ЕК—Е©≈hК≈lЁ#O
+
+*кЦ"$j 8 EDOES>#фЧ Rl|фћ $#А
+R€щR€1 R h`…IЧ lЛ я!°Е(±Е)•
+…ЕРж°Е&±Е'&Plt±&СЕ%°&БЕ$%P
+l	 •$…Е$Рж%°$h8)≈$Е$Рж%») р
+±$h°$Е$»
+Е%•$E(P∞•%E)P™ln ƒ!>NAME#
+кАb ±
+Ґ1sЁ!•b "¶$ а€2$#*Rщњ$
+n m"NAME>#А"sТR щb к$n О">BO
+DY#	$n ѓ".NAME#SER#Ќ!ОЦ#|Ч •8й
+Е∞F†±≈БКH≈†Сl	  p C#ALIAS#Ќ
+!*кАТR щb чю€ї  R Ж"$q 
+ш#VPZ! %%%l_%    q ,$CURRENTZ!%q 
+e$CONTEXT#1$Акњ	$#1$	_$$q u$AL
+SO#1$кR
+х~+Vocabulary stack full_$к
+О1$#_$$q ў$TOSS#чю€1$#ж€h$t 
+Ь%(FINDV%†±Щ$ Иш°&)Е(† ±$™H±$Е%Ж$$P
+†Ґ ltH±$)E(Pа©≈$Е)© ≈%Е*§(±&Q)PKИPч
+†•*СИ•)СИҐ lq1&°Е$±Е%°$Е&)8≈$Е$Рж
+%•&) P	•$Б•%l]&°$Б±$С•8йЕ∞F•&H
+
+0Шi€®HШБ©€$К†Сl	 v L%FIND#_$АкЉ
+mк1b mdкT%b 2/&$Љ1$	#b
+
+ly';ЗЅb ƒ's'#-)VР&•b b _
+s'Is'';З•b b s&&  ƒ's'y 
+И'a[#чШ'„(u'мњ$y (]#чQ'„(u'м≠$
+#[ƒ+Crash$z %(DEFER#Ќ!ч9(IЧ †±
+hH±Е»Е†l z i((IS#O
+А	∞
+к$#к
+чƒ'кЉ1sчs'к1|qƒ+not deferred$
+z —(bIS#В÷Р)÷њў)Ф'$] ®)+LOAD
+#Вкњѓ)$] O)THRU#лs)
+ гѓ)И„$]
+ е)+THRU#лs)
+ гW)И„$] *c-->#Д
+В#÷њў)$]  *RDEPTH#Ґ	кУ
+	1џ$] 
+8*DEPTH#
+Ш	кs1џ$#мкb  
+ com
+piling$  ok$^ s*(QUIT#ў)7≠Ф'Ћ* ф
+€^ О*'QUIT](Ц*^ ®*	+$` ©+BLy#  ` Њ
++	-TRAILINGW+Ш Ы°Е&±≈%Е'§$РИ±&I рH
+Pж%Шh•%lЁШPкF'F%дШlZЅ I+SPACE#C+ъ6$
+Ѕ ,SPACES#…: ,И„$#¶m$¬ ,
+HOLD#[8,#8,кђ$¬ b,<##8,8,$¬ [,
+#>#¶8,к8,Љ1$¬ ћ,SIGN#kb R-i,
+$¬ Г,##F	к¬бR	ЉЭb R
+l- Dr 
+?<=-Ф-…)& 7гО-,+кЊ1гИ-вњИ-/U
++7И„7$≈ Ъ-PAUSE	 ≈ т-LOCK#Ак]
+1
+b h$Акb ъ- ф€]
+s$≈ ю-UNLOC
+K#А.њ$»8йЕ»й Е©lБ†±ЕH±Е†°
+Е±Е•…ЕРжҐl–
+∆ /.FILEV#∆ Ў.PR
+EVZ!и≥Z!  ∆ Д.B/BUFy#†±(Y" PHјPф`≤
+кбЛ.кЉЛ. Г€  Х.(DISKER
+R# error !  r to retry Ю7АRr1sRR1
+|qƒ+aborted$  L/DISKERR](W/  0R/W
+](?„#А"кkbj 	Аклb3 б	Р)T	Р)Y*А
+"Љ	кОuк…(0b  write 0 џ€RА
+ЉлVh$#	А≠њ$#АЖ0б	Р)T	Р)Y
+*∞
+ЉЇ	књR#Ф1ѕ1$Ќ £1BLOCK#Ф1Ж1$ќ 
+ґ1UPDATE#RАЛ.к"лђ$ќ H1SAVE-BUFFE
+RS#П..1•b ,0 ф€П.8.$ќ д1EMPTY-BU
+FFERS#П..Л.к•b
+ АЖ0 т€П.8.$ќ 2F
+LUSH#у12$#АФ1y1b Л.кЖ071b у1Ї	к
+њsЊ1mmQ1$#у1∞
+Љщ
+њЉ#∞
+±JO
+
+щb$ щ
+щ
+љO
+…: *3ккsЭ.*3#$–
+ “3ALL-BUFFERS#*3к>3*3к1bт€$#ТR
+ щ$#Ц"dлJs@ |$#, 
+к∞
+O
+к•b
+^ А∞
+Ґ1∞
+O
+к∞
+Љ/Ащ
+Jsщ
+	Ц"Jщb
+. щ
+@ bZ€щ
+	Ё3b Љщ
+	и3b щ
+	"	
+і ґ€ Ь€$ќ4†±Щ$ Иш†±…Е*H±… Е
++†°$Е,±$Е-,р5•,E*•-е+Р•,E&• К5(FORG
+ET#А@ ƒ+	is symbolъ3 5$‘ §5FORGET#V&
+Ач$кJƒ+	protectedu"А@ b Ц"  mm
+Ѓ5$‘ H5EMPTY#ч$к]
+ 5ч2к
+$’ 
+6SAVE#Ц]
+ 5
+кАmmкЉmк•Ѕb
+к€]
+Н	ч В$’ '6BYE#g26T;$#Ю7Ш1b
+ [$’ `6STOP?#™7b –6–6…$’ Д6
+7 ÷ Ш7KEY?Ћ7÷ £7DECODEЋ7÷ ѓ7EXPECT
+Ћ7„   SEAL#…ч%Ј"$„ K7$ONLY%„ в7
+%FORTH%„ н7%WORDS§%„ щ7$ALSOА$„ 8+DEFIN
+ITIONSz%#
+кАmкЉҐ1к•Ѕbк€$
+#…Л.3*3I3$Ў љ7'COLD](е„# 8@8'7\8
+>% ultraFORTH-83  rev 3.57?9Ў t8'REST
+ART](D÷#ч§S±QЕNЖLl,9 С9CUROFF≥9HДLДM
+ЖO•N§SСQ†l	  ®9C64KEY#Щ9ъ-v9bъ€±9Ќ9$
+ G9#BSy#  д9#CRy# А р9	C64DECODE#
+к9юb Аb 7/$ц9юb
+ АП$∞
+±њ
+щ
+sђO
+ъ6л$А ь9	C64EXPECT#П…АП
+кJb
+ Ю7Є7 о€¶,$А d:KEYBOARDН7P9v9
+:p:Б ‘:CON!Ф:° зEЪ;© Ы† D$р±& ±:
+∞©. зHl°;l§:Г О;DISPLAYи6к:;Ш;;1;d;«
+;вьД Ї;B/BLKy# Д X;BLK/DRVy#™ Z!  #ф;
+кRњ$Д ж;DRIVE#р;вЇ	$Д <>DRIV
+E#р;вњЇ	к1$Д <DRV?#Ї	књр;$Д
+ 8<DRVINIT#А	$Е o<I/OZ!  Е Ѕ<BUSOFFЎ
+< L€†Ґ  ∆	«<8.$Ґ † ∆	÷<П.8.
+И Г=BUS
+TYPE#Ѕ: гТК=И„ъ-$И Ц=BUS@A= •€l
+ZИ Є=BUSINPUT#Ѕ: њ=гђИ„ъ-$И I=
+DERROR?#ш;R„=њ=АR01b ъ6њ=Ац91b
+ф€Ѕ7Ѕ÷<$y#≈y#кy#v#А$>Jb	 Rф
+$ШњА(>Jb $>1RфRњ$А,>Jb
+ (>1RфRњ$,>1RфRњ$#0>л
+ Л ÷?1541R/W#sƒ+no file"р;фАф;Ш
+#b€ =- beyond capacity2$`?b h2
+$…sссҐЅ). h±гбb
+ Л>C>  Л>
+?∞
+∞>њO
+Аb bИ„"¶В?$#R©EsR©
+E±хb sлs$М С?INDEX#%@)! 7гО
+-гЊ1лR%7М6b bИ„$М e@FINDEX#
+`?b ¶$.†±Щ$ Иш†±≈&Е&H±≈'Е'≠Н
+.Е(≠О.Е) °.P•…ЕРж†©≈(Б•)… Сl&
+•(Е*•)Е+°*Е(†±*Е)(Pl	  °.Pв°(Б*†±(С*
+≠Н.Б(≠О.С(•(НН.•)НО.lџ.#Акs	кp$
+#ЉЇ	књЉЛ.к7/b ¶Л.кRњ$±∞
+
+Ї	књ∞
+Л.кАк•Ѕb
+ h$АO
+O
+±∞
+
+∞
+б7/Ѕb 2 R€АЉщ
+Rњ"Д(0b
+  read 0 Y€O
+$#Л.Акb кА	к[
+1bк€П..А,0$#	∞
+±щ
+Ї	књщ
+	O
+
+њП.8.$#Л.кАb А"кkbо€$#Л.
+кАкЅbц€"кk$ћ "0CORE?#i/¶…$Ќ
+ q1(BUFFER#i/S0щ0 ш€Ќ ≈1(BLOCK#i/S0Ф
+0щ0 ц€Ц1†±hH±lЁЌ }1BUFFE[чю€љ±
+o2И„  O
+…: ±o2ДДљИ„у1¶$ѕ 
+?2COPY#Д}2$ѕ џ2CONVEY#sлОu1А
+qƒ+nein}2$– м2LIMITy# ј– 3FIRSTZ!†
+П– "3ALLOTBUFFER#*3кҐ	к1Э.	J;Э.ћ
+*3#*3кАЖ0Л.кЉЛ.$– 03
+FREEBUFFER
+#*3к3Э.1Jb( у1Ак*3к1b к о€
+\                            clv06may87) 
+                                         
+                                         
+Speicher:                                
+                                         
+rdfirst : (len blk data) ...             
+                                         
+rdafter : ... free ...                   
+                                         
+rdlimit : other                          
+                                         
+-----------------------------            
+                                         
+len= 2byte, blk= 2byte                   
+data= 7b-chars / No-of-spaces+$80        
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+[ƒ+	no deviceЖР ±€©` У€ Ѓ€•Рр»»lИ<`Љ<
+° £<•…ЕРжl{<Ж Ќ<?DEVICE#«<.Ї<$
+з<ЖЭ© Ы•& £<•& ±€•$	` У€¶&ЖЪl,9З Q<BUS
+OUT#«<.е<$З =BUSOPEN#Rр|=$З =
+BUSCLOSE#Rа|=÷<$n=ЖЭ© Ы•& £<•& і€•
+$	` Ц€¶&ЖЩl,9З 4=BUSIN#«<.l=$И ѕ=BUS
+!М=° ®€lў	s$#F	Р)…`,I,hR,i,I,—,
+$y# К м=
+READSECTOR#ш;R=lu1:13,0,
+*†=Х>†=÷<ъ-ц=;ш;R„=∞>T=÷<…$К ґ>WRI
+TESECTOR#бш;R=lb-p:13,0*†=÷<ш;R
+=∞>†=÷<ш;R=lu2:13,0,*†=Х>†=÷<ъ-ц=$
+Л ъ>DISKOPEN#ш;R'=R#К=÷<ц=$Л u?	DI
+SKCLOSE#ш;R?=÷<$
+%@)1 7гО-¶Аг
+ссЛ>C>∞
+лR%7O
+М6|b bИ„В?$Н Ў
+@INK-POTZ!   hКhШh©НЁђЁl“ю
+ к€ б€Pх Д€ Б€la9О H@C64INITaЎҐчЪ Д€ К€
+©@Н©аН©6Е≠T@Н P≠U@Н!P≠V@НЖ©АНК©Н
+P© Н€P©НP©НИxl,9П a(BSAVE≈aЖЭ¶Ѓ§ѓ©A
+ X€∞© lP©€lPП za(BLOADЙaЖЭ•b  
+ Blk l-§6$#17±9$ №b2!ЃbШ Ы†±С$Ищ
+†lЉ Іb2@Ib°Е$±Е%•8йЕ∞F†±$СИ
+щl,9 Bb	2VARIABLE#Ќ!Ґї$ кb	2CONSTAN
+T#Ќ!IIЧ lћ Gb$ cUNLINK,c≠И	А®© ™Ф
+Y…(РHиа€Pу•SI(Рй(ЕS§S¶V р€Ґ †l	 Е*)?
+*$*	А–	@`Е*)I РI@Р)$*	@`©.` !
+ltcКd© ЫИD$Pltc±( ћcС&HPп£dШ ЫЖ&≠И
+Е'Ґ†'±$ ћcQ&р©€lPИп dJPзКlP#
+Gcс
+1$џdКh≠ИlЁеd•SI(КР©'≈Qh•R… lЁъd•S≈
+Qh•R… lЁ	e•UI(∞JКlP#YdчјњGcU+2Ѕо
+cк|$#шdYdOcњ/1оcкЅщ$#кcТТ:…
+$#.e•;eгdGcњ/ТC+1qщeqщА;R
+ФТ:$#.eGcњYdOcњЉ1∞*f$#ґeА;
+RТ:$#цcGbњльcкMdУ#А;шdТцcGbњ
+ђДцc	#$#•f•;ґe$#•f•;Цf$#цc	
+кЅ•;reА;[цc	#цcGbњТшdђ$#ьc
+GbњMd#А;гdьcGbњGcВGcьc	#$#g•;
+Щe$#g•;jf$#Gcћьc	#ьcGbњгdGcВ
+$#ьc	кЅ•;‘fАgТ;8h$#Yd¶Gcс
+ВYdGcсR†∆$#¶YdGcсВ$#Њ1mк$#
+Щ9ъ-™7bъ€±9$#<7Жh£g……Эb Scr # +к
+А=-≠hЅb	  not  updatedДДЭbчDg*
+7О(,чЁg*7ЈgЭbЈhЯh…$#<7sGcлвњ
++$#+кАGcлGc11а;/УGcлфsЭb
+$#*cR%i$#_i+кЊ1°db )P€•…Е
+Рж†•'С•&ИСИlq•$%P•…ЕРж†lt
+°&A*р®†±Щ$ Иш•$PF%F$ж&Pж'l-j" j	DI
+GDECODE#к9юb Аb 7/$ц9юb
+ АП
+$¬€А%b h∞
+±њщ
+sђO
+ъ6л$h$"
+ OjDIGITSН7P9v9џjp:#dк…)
+ к9Т:И„…
+dк…)
+ re|И„А;dGbшdsИd ih$
+#•ihdGb+к+кЊ1ња;+к1!jЅb …
+ 
+ +кЊ11+9i$# ihЛk’l+кb' Ю7
+АRr1b :k•b 2$Ш1•; S€+ктc
+к1М6Ѕщ•b kb
+ їih  Kih І€[$
+#ъR@1$Z!НЕЙЖКЯ ЛЗИМЭС
+УФ	€Z!їiKiџiыi±l;gff_i iПiЪi‘fjfЌ
+ggghGhSfя∞
+d	кщ
+ВO
+d$#¶nк1
+;n$y#ёЫn§S±QЕNiАСQl,9™n•N§SСQl,9#ч
+$ХnЈg®n$#Вк•Ѕb ≥n$÷к/+Ј
+g®n£g+кЉ1b +•iД…Эbў)9iЩnh$* 
+'k(LOAD#÷Р)÷•Ѕ;ВР)Вў)Ф'$* 	
+oSHOWLOAD#+Р)+њ+Р)чCnХno≥n$#љ
+mР)R@RњТљmђ•ihzpV#V&u"•b Ґ1
+к$, ЌpVIEW#—p•b >p   from key
+board$- n	EDIDECODE#RНюb
+ жcњ7$ц
+9юb; жcњRQкRUТU+АRSђЅ: ±њг
+Т®csђлИ„АП$АкcђRЦm_рmh$
+- ≤p	EDIEXPECT#ЕnП…АПкJb
+ Ю7Є7
+ о€¶,$- 'qEDIBOARDН7P9v9Њ Ч lћ Т|
+йq$ ]rBRKЋr  ЎrCLCЋr ГrCLDЋrX Оr
+CLIЋrx ЩrCLVЋrЄ §rDEXЋrJ ѓrDEYЋrИ
+ ЇrINXЋrи ErINYЋrH PrNOPЋrк џrPHAЋ
+rh жrPHPЋr сrPLAЋr» ьrPLPЋr( sR
+TIЋr@ sRTSЋr` sSECЋr8 (sSEDЋrш 3
+sSEIЋrЎ >sTAXЋr™ isTAYЋr® tsTSXЋr
+¶C§D©  U€l–aЏ ~aFORTH-83#${ Щa	ASSEM
+BLERс$ГwГw%{   PUSHAy#P{ јaPUSH0Ay#Z
+{ NaPUSHy#Ё{ ЁaRPy# { кaUPy# { хaS
+Py# {  bIPy# { bNy#$ { bPUTAy# { 
+ bWy# { -bSETUPy#Ы{ 7bNEXTy#	 { ebX
+YNEXTy#,9{ rbPOPTWOy#Љ{ ЅbPOPy#}
+. ™a
+.BLK#ВкcCBM>SCRТc° ћcБl	  ЖcSCR
+>CBM™c° [cБl	  ЮcEDITORс$yqyqЉay#( y#
+ y#и   SHADOWZ!u Z!- Z!  Z!o Z!€€Z! 
+Z!'ў  Z!„ў  Z! WЎZ! €Ў•$…)Е$Рж%•&…(Е
+&Рж'`'dШ ЫЖ&≠ИЕ'Ґ†'±$ ћcС&Иц dJPо≠Ж
+Э XЭ YЭ ZЭ џиPсltc]dШ ЫЖ&≠ИЕ'Ґ† ±& [c
+С$Hј(РфJр
+© С$ dl d•;жcкb re•;f
+e$#оcкЅg7Kcm#щА;RТ:$#.eА;R
+Т:$#YdOcU+2Oc/УGcфsЭb…$#…R
+
+…) hґeАb bИ„$#R…) RЭТ:И
+„…$#g7…Эb*cжcњЩe$#гdGcC+∆…$#
+шdGcw71C+∆…$#гdАGcњsYdчјњА∞
+Љ
+1ВO
+GcC+∆…$#eq•;гdА;sg$#ж
+c≠…$#жcњ…$ ґcRVSON#RТ:$ Ыg
+RVSOFF#RТТ:$ Ѓg***ULTRAFORTH83***	 
+ BgFORTH-GESELLSCHAFT	  UcSTAMP$Z!    
+              #эgл*YdGcњЉ1sИd…$
+ фgGETSTAMP#б	Р):эg≠7 your stamp: 
+£gR(,g7RЭbэg	RF7ЈgПкэgлђ$#э
+hh+кЊ1[dQ1R|$# iR|$#ПiR|
+$#+кЊ1%dжcњ*c9i…$# ihД+#•i$
+# ih[+#•i$# ihёcкА+кJb ћ
++#•i$# ihвcк+квc+•i$  џg(SE
+ARCH#j†±Щ$ Иш•()р…•$%р√°&A*р•$PF%F
+$ж&Pж'l3j†є$ СИшж&Pж'ж*Pж+•$PF%F$•
+(PF)F(•(#7R<ъ6Gc/w71(,$#б	Р)*cЖ
+h<7£gД…Эb replace with: <7dGb÷k……Э
+b >     search: <7dGb÷k…О±ЭbтcкШ
+-±ЭbЦлШ0kF7Пк•b ЦdђhтcЭb
+тcкШ-:±Эbd	кGcmw71F7Пк•b 
+dЭbdGb÷k±Эbd	кGcmw71F7Пк•b 
+dЭbdGb÷kЈgЯhЭb$fлfбe fґeЩefefefeEe
+refeЦf*f8fЕgПgeШm© Ы§$ИHє%mI€рE&PфШ
+®
+єlmhєmmlЁy# Py#Ж#єmђъ-RА…) И„$
+#єmР)…AmДAm…AmДAm$#А[1b XmЅ$
+( -h(PADZ!  #¶АnGcсњАd	Gcњ
+Аd	GcњАцcGcсњьcцc	њьc	њ
+чDg*∞
+d	кщ
+ВO
+dчЁg*оcњєmР)R
+@		кєmЮ7Акcђ…Цm_рm•bм€……Эbjf
+hоc≠$+ 1oEDIT#+ЏhЕnxoR…Эb Sc
+r +к=-АОщЅb	  not  changedАҐ
+щb у1АRщR1b  , savedRщb
+€  	, loading7+к+к<o$, ЂoL#+њ≤
+o$, :pR#+к≤o$, jp+L#+књ>p$, 
+	p3q –bEND-CODE#_$mк_$$ –qINDE
+XZ!		А	ААААА ААААААА,Z!  
+ЛqMODE:#Ќ!|Ч lћ Тµq$ їq.AKq  Xq
+#KqKq вq,XKq оq,YKq шqX)Kq 
+r)YKq r)Kq#b µqкR|µqДµqк
+Rщ•b …)
+ АњИ„ЉлкщЅ$ r
+CPU#Ќ!|
+Ї _sTXAЋrК  sTXSЋrЪ ’sT
+YAЋrШ АsM/CPU#Ќ!|IЧ lћ АлкRАщb
+	 Rµq#Љч €щrrb йq[ƒ+invalidТ
+µqкУqњТњ|µqкRщb µqкRщRЭ
+b |  Iйq$ ЛsADCЭs`ќ tANDЭs ќ
+ tCMPЭsјќ +tEORЭs@ќ 8tLDAЭs†ќ
+ etORAЭs ќ rtSBC	 yu?]#|Цл1:
+u|$	 ∆u?[#|Ц…|$	 }u?[[#Вus$	
+ Рu]?#ЦЉТb
+ s  Љл1:usђ$	
+ †u][#ЦлД(usЦЉл1:usђ$	 Iu]]
+#(u$		 мu]]?#(u•u$
+ ъuCSy#Р 
+ 
+vCC
+y#∞ 
+ v0=y#P 
+  v0<>y#р 
+ +v0<y# 
+ 7
+v0>=y#0 
+ bvVSy#p 
+ nvVCy#–u$ gwW
+DEC#Аkt%vВuЉлМt•uМt$ ƒw;C:#ƒ	u{q
+)(…*…$ Зp	ASSEMBLER#ґaйq$ Яwe;C
+ODE#ѓ чэ€ї4#чю€їЂw$ µwCODE#Ќ!ЦА
+mЂw$ Uw>LABEL#Ц!Ќ!sIҐх, Дщ
+хЦҐ1, ҐВ, *к*Rщњђ	Ч lћ 
+к$ оwLABEL#ЦчwЂw$0 ;xTOOLSс$Ф[Ф[
+)чu'Р)Р)ЫкЃxҐ	Р)У
+Ґ	RВїчNx„
+(≤*љ*Йy©xЕ©вЕ©lЕl	 4 ¶xTRACE'#У
+m√x
+V&Зy_c	$4 ЪyЕBREAK#У
+	√xЗy$4 єy
+TRACEL:#Ќ!IЧ lћ к√x#$4 Qy+DOгyъ€4 р
+y-DOгy 4 ьy+Rгyю€4 z-Rгy 4 z+PUSH
+гyъ€4 z-PUSHгy Z!,zA•…ЕРж≠:zЕ$≠
+;zЕ%°$M<zр     1††††††††††††††          
+                                         
+                                         
+                                         
+                                         
+                                         
+                                       
+                                         
+                                         
+                                         
+                                         
+                                         
+                               ]xy#Иy#
+ аy# Xy# Dy# јy#  y# y# y#Ў_Ў©2ЕИҐД
+$Д&©XЕ%©XЕ'±$С&HPщж%ж'JPт©6ЕxHl	    	CL
+RSCREEN#v_ч  …∆$Z!ЅZ!ўZ!цўZ!(ўZ!P
+Z! ў©НP©НP≠I_Н P`©;НP©НP≠M_Н P`≠Q_
+8й0jjj8йEV∞`™и†ДLДM•N§SСQ† ДO р€† ±QЕ
+NДL`≠Н)Pl1к Я€≠НPшћA_≠PНPҐJPэ•$≠U
+\\ zu grafik-1                clv06jan88 
+                                         
+nicht vergessen limit auf $c000 patchen  
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+\ zu C16grafik                           
+G/TAnfangsaddrs des Farb/Text-Speichers  
+= $800                                   
+Bit-Map-Basisadr =$c000                  
+-h : High -3:3hoechstBit -+:+$400        
+                                         
+ Gh                                      
+                                         
+                                         
+                                         
+                B3                       
+                Gh                       
+                                         
+ Th                                      
+                                         
+                                         
+                                         
+                Th                       
+                                         
+    G                G+                  
+    B                                    
+    B                                    
+                                         
+                                         
+                                        
+\\ zu grafik-2                clv06jan88 
+                                         
+und die Moral, wenn Grafikspeicher unter 
+m ROM liegt:                             
+                                         
+  Die Grafik benimmt sich nur dann       
+  manierlich, wenn keine ROM-Routinen    
+  benutzt werden, d.h.:                  
+   - Alle Interrupts aus sind            
+   - keine Systemroutinen benutzt werden 
+                                         
+  was tun?                               
+   - Grafik-speicher ins wertvolle       
+     untere RAM legen?                   
+   - Alles sperren?                      
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+
+ђ$ ∆
+FORMSPRITE#∞
+Т≈ч ?щR@њ
+Ащ
+¬_8∆O
+^_8∆$€ h∆XMOVE#±сЦ≈њђЪ≈б
+R€хX≈$€ Џ∆YMOVE#слЦ≈њђ$€ Э∆MO
+VE#dВ∆•∆$€ µ∆SPRPOS#А∞
+слЦ≈њТщ
+
+сЦ≈њТO
+N≈њТЪ≈Тщb ч њ$ H∆HI
+GH#≠≈ ∆$ «LOW#≠≈∆$ «WIDE#B≈ ∆
+$ («SLI$ ,»RIGHT#»кs1ч»
+»$ c»LEFT#»књч»»$ √»"
+CS±_ А»"PC!√ Й»"BG√ Т»*FULLSCREENд` 
+Ы»+SPLITSCREEN	Ѕ ђ»XCOR#э«к_$ Њ»Y
+COR#»к_$ Q»SETX#§^э«$ д»SETY
+#§^»$ ч»SETXY#ю»л»$ 
+…PENDOWN
+#	»≠$ …PENUP#	д…$ . TURTLESTAT
+E#	»Т^_ТАRщsR$ ? "FDд… … "
+BK5  “ "TSm #3*И-Љ1џ(,77$#фВ 
+$#В Forth Gesellschaft e.V.$#В **
+* ultraFORTH-83 ***$#В (c) 1985В !Bern
+d Pennemann  Klaus SchleisiekВ Georg Reh
+feld  Dietrich Weineck$#В genВ verf
+olgen und verhindern.7В Die Mitglieder 
+derҐ $? –Ћ	.MESSAGE2#'7В Wenn's gefael
+lt,7В  2 Original-Disketten mit dem ...В
+ "+ dem kompletten Quelltext des ...В "Gr
+aphic, Tools u.v.a. fuer das ...В ca. 20
+0 Seiten Handbuch zum ...7ј 7В Fuer M
+it may be an ADVENTURE !7$#±_<¬0¬џ¬
+д`$- ІЌLINIEN#nќч@…)% ч@…) г
+RF…-ƒR#є„R#є„$- ^ќMOIRE#±_h¬
+ ¬џ¬д`ч@…) гRFч?г1…-ƒШє„R
+G…) ч?RFг1…г-ƒОє„$; ЬќSTOP
+юќ•8йЕ∞F•Б•С•8йЕ∞F•Б•С†
+•СH•СщѕTASK#їЦR€щRю1b Д
+ї]
+Цч ВЦRl|]
+лкIА]
+лШїА
+R1АII±њIdњЦ1	їч–ЉRњ
+q#$> -–
+RENDEZVOUS#А8.ъ-.$#мкb
+ &$> £–b'S#V&Ј"ТњЉ–$> L–TASKS# 
+MAIN 7]
+Алк±1b8 АR
+њкRњЦ"u"
+G"АТRl1b  sl v v v v v v 
+v ™          ™™В™ХВvХВvХВvХВvХВvХ™vХuvХ
+uvХ™vХВvХВvХВvХВvХВvХВvХВv™В™         ™8 
+a—INIT#wЅ'70¬Ђ¬0¬√R…) j—гR@вњ
+г&∆И„$¬фЅњ«R…) г……фЅгџ«И„R
+…) гƒ«г«гЊ≈ ∆гў«И„$9 О“YPOS
+#Q∆h$9 ”XPOS#Q∆2$9 ”D#…©≈ђ$
+: ‘SLIDE-SPRITES#R…) г‘гл…)
+
+ г‘И„И„$TASK ESTSLIDE#Х“a‘Ю7А
+Т:R1bс€$	TESTSLIDE LA‘» Ф‘PLP‘(
+ Я‘RTI‘@ ™‘RTS‘` µ‘SEC‘8123BK‘ED
+‘ш K‘SEI‘Ў V‘TAX‘™ б‘TAY‘® м‘T
+SX‘Ї ч‘TXA‘К ’TXS‘Ъ ’TYA‘Ш 
+	 ссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+сссссссссс
+ссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+ссссссссссссссссссссссссссссссссссссссссс
+сссссссссссссссссссссссссссссссссссссссс
+сссссссссс
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+А`       А`     
+                                         
+                                         
+                                         
+                                         
+                                         
+                                       
+                                         
+                             А`      
+ А`                                    
+                                         
+                                         
+                                       
+                                         
+                                         
+                                         
+                                       А
+`       А`                          
+                                       
+                                         
+                                         
+                                         
+                                         
+                                         
+                                 А` 
+€                                        
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+                                         
+                                         
+                                         
+             А`       А`           
+                                         
+                                       
+                                         
+                                         
+                                         
+                                         
+                                         
+       А`       А`               
+                                         
+                                 А`  
+     А`                                
+                                         
+                                         
+                                        
+                                       
+                                         
+                                         
+                            А`       
+А`                                     
+                                         
+            А`       А`           
+                                         
+                                         
+                                         
+                                         
+                                         
+                                       
+                                         
+       А`       А`                 
+                                         
+                                         
+                                         
+                                       
+                                         
+                                         
+                                         
+                                         
+                                         
+                                       
+                                     
+                                         
+                                         
+                                         
+                                         
+                                         
+                                       
+                                         
+                                         
+                                         
+                     А`       А`   
+                                         
+                    	                   
+                                         
+                                         
+                                         
+                                         
+                                         
+               А`       А`
+         
+                                         
+                                        
+ А`       А`                        
+                                         
+                                         
+                                        
+                                       
+                                         
+                                         
+                                    А`
+       А`                             
+                                         
+                   А`       А`   
+                                         
+                                         
+                                         
+                                         
+                                         
+                                       
+                                         
+               А`       А`         
+                                         
+                                         
+                                         
+                                       
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+      А`                             
+                                         
+                                         
+                                         
+                                         
+                                         
+          €                             
+                              А`     
+  А`                                   
+                                         
+                                         
+                                         
+                    €                   
+                                         
+                                         
+                                         
+                                         
+                                         
+                              €         
+                                         
+                                         
+                                         
+                                         
+                                         
+                                        
+€                                       
+                                         
+                                         
+                                         
+                                         
+                                         
+           s                             
+                                         
+                                         
+                                         
+                                         
+                                         
+                    €                   
+                                         
+                                         
+                                         
+                                         
+                                         
+                              €€$+ud
+А dњGt#EkRamDisk full	$+udu
+St$" >uDELBLOCK+Аu±1"dus1Вu
+њSt$+±,u1$# ЂuSEARCHBLOCK+чTujuб
+h$+оub А4u"коs d#ƒ3damaged 
+ 
+h dC3∆ $+Аоub ґu  h÷u4u d¬tЫu$%
+ аuRAMR/W+sEkno fileыtЅb *v  ьu
+€                                       
+                                         
+                                         
+                                         
+                                         
+                                         
+          €
+…$% jvBOTHR/W+ОuR€#b
+ sv  чg$& „vRDUSE+ $Ramdisk Gt;1
+ч Jb  $no space 
+ ;	Јt??$& 
+ЬvRDNEW+§vйtb KtSt$& аv'RDCOLD]0А&
+ ъvRDCOLD+чБv„0*8йtqb иvйtb w$'
+ 
+w?BREAK+М>Ekbreak$' 3w?ERROR+<wb
+
+  $error$' lw.RD€                   
+                                         
+                                         
+                                        
+                                         
+                                         
+                              €+ыtFР1ш
+$? $limit     :;l5? $firstblock:Ktl5
+Ktm;1quw? $afterblock:ul5Ktu#uw
+? $rdlimit   :Gtl5uGt#uw? $r/w is no
+w:ч(8Ј*Акu*G*Ц #uw$+А?А,uҐ54А
+Ґ5АкАҐ54Ач #uws4us…sбs
+Ѕ€)€a г€ТАRхb R1њ/C3w?R#Эb
+€	                                       
+            А`       А`            
+                                         
+                                         
+                                         
+                                         
+          € ъ>  hлА d#b bИ€„€
+ d#uw…$) …wRDCHECK+ѕw?? $)blk  adr
+  len headerline             exp ? $(---
+- ---- --- --------------- ------ ---чx
+juh? $ end:Аl5u1uw$* wtSAVERAMDIS
+K+ыtKtmuтl$* !yLOADRAMDISK+ыtKtmGt
+Ul$* ?yLOADDOWN+m€                   
+                                         
+                                         
+                                         
+                                         
+                                         
+                              €yч ѓ1$
+t ]y
+SAVESYSTEM+3kД33k…3ЈtА
+kњ.>чЦ тl$u ÷ySAVEALL+#lкR1b
+  'qлRC3∆ …•#RE'qлsВЊrыtчwЈ*
+kч»y„0wГyу9/y$y ѓyTAPEINIT+mэrwчА
+„0w$. z.BLK+В!к•b  $ Blk l5§>$
+ !z2!kzШ Ы†±С$Ищ†lЉ dz2@∆z°Е
+€                                       
+                                         
+                                         
+                                         
+                                         
+                    А`       А`    
+           $±Е%•8йЕ∞F†±$СИщlca
+ _z	2VARIABLE+Ќ)Ґї $ Зz	2CONSTANT+Ќ)
+I I Ч(lћ(ƒz$ ЯzUNLINK+……чоiz$Ґ †
+l	 Е*)?*$*	А–	@`Е*)I РI@Р)$*	@
+`©.` ЊzCBM>SCR[° нzБl	  [SCR>CBM+
+[° |zБl	  [EDITORс,……isy+( y+ y+и
+   SHADOWZ)u Z) €                   
+                                         
+                                         
+                                        
+А`       А`                         
+                                         
+                              Z)  Z)q Z
+)€€Z) Z)з÷  Z)7„  Z) Ч÷Z) њ÷y+H y+J y+
+€y+;y+€•$…)Е$Рж%•&…(Е&Рж'`Љ[Ш ЫЖ&
+≠>Е'Ґ†'±$ нzС&Иц £[JPо≠;Э Э 	Э 
+Э и
+PсlUzт[Ш ЫЖ&≠>Е'Ґ† ±& |zС$Hј(РфJр
+© С$
+ £[l€[lUz\© ЫИD$PlUz±( нzС&HPп8\Ш ЫЖ
+&≠>Е'Ґ†'±$ нzQ&р©€lPИп £[JPзКlP+
+h[с1$–\Кh≠>lЁЏ\•JI(КР©'≈Hh•I… lЁ
+П\•J≈Hh•I… lЁ+ќ\чјњh[U32Ѕѕ[к|$
++Н\ќ\p[њ/1ѕ[кЅщ$+Ћ[ТЪb…$+ґ\
+•;[Ў\h[њ/ТC31qщЬ\qщА;RФЪb$
++ґ\•;«[кb Z\•;N\$+ѕ[кЅg?l[m#
+щА;RЪb$+ґ\А;RЪb$+ќ\p[U32p[
+/Уh[фs1?…$+…R
+…)€ h>]Аb 
+bИ€„€$+R…)€ RЭЪbИ€„€…$+g?…1?G
+z«[њ!]$+Ў\h[C3∆ …$+Н\h[w?1C3∆ …$
++Ў\Аh[њsќ\чјњА∞Љ1ВOh[C3∆ …$
++Ь\q•;Ў\Аh[њќ\p[њЉ1∞≤]$+>]А
+;RЪb$+„[ƒzњл}[к¬\У#А;Н\Т„[ƒz
+њђД„[	#$+-^•;>]$+-^•;^$
++„[	кЅ•;Z\А;[„[	#„[ƒzњТН\ђ$
++}[ƒzњ¬\#А;Ў\}[ƒzњh[Вh[}[	#$+Э
+^•;!]$+Э^•;R]$+h[ћ}[	#}[ƒzњЎ\
+h[В$+}[	кЅ•;ь]А;џ^$+«[≠…$
++«[њ…$ 7[RVSON+RЪb$ #_RVSOFF+
+RТЪb$ 6_***ULTRAFORTH83***	  j_FO
+RTH-GESELLSCHAFT	  v[STAMP$Z)   clv04ju
+n87     +Е_л* ќ\h[њЉ1s\…$ №_GE
+TSTAMP+бР1ЗbЕ_≠? $your stamp: +_R(
+4g?R1?Е_	RF??_П!кЕ_лђ$+Е_Т;ј_
+$+ќ\¶ h[сВќ\h[сR†∆ $+¶ ќ\h[сВ$
++Њ9mк$+Яaъ5™?bъ€јa$+<?`+_……1?
+ $Scr # 3кА=55`Ѕb	  $not  $upda
+tedДД1?чl_* ?О(4ч≈_* ??_1??`'`…$
++<?sh[лвњ3$+3кАh[лh[11 
+d/Уh[лфs1?$+GzR≠`$+з`3кЊ96\b
+ Щ_h3кЊ9р[Q9R|$+т`R|$+ЅR
+|$+3кЊ9Ї[«[њGzA`…$+т`hД3#-Ѕ
+$+т`h[3#-Ѕ$+т`h_[кА3кJb
+ ћ3#-Ѕ$+т`h√[к3к√[3-Ѕ$  √_
+(SEARCHЂЅ†±Щ$ Иш•()р…•$%р√°&A*р•$P
+F%F$ж&Pж'lїЅ†є$ СИшж&Pж'ж*Pж+•$PF
+%F$•(PF)F(•()P€•…ЕРж†•'С•&ИСИl
+q•$%P•…ЕРж†lt°&A*р®†±Щ$ Иш•
+$PF%F$ж&Pж'lµЅ" ЯЅ	DIGDECODE+тaюb
+ Аb ?/$юaюb
+ АП!$¬"А%%b h
+∞±њщsђOъ>л$h$" w¬DIGITSН?XaЌa
+√¬xb+Г[к…)€
+ тaЪbИ€„€…Й[к…)€
+ Z\|И
+€„€А;Й[ƒzН\s\т`h$+?R<ъ>h[/w?1(
+4$+бР1Gz`<?+_Д…1? $replace with: <
+?Й[ƒzю¬……1? $>     search: <?Г[ƒzю¬…
+О±1?”[кШ5±1?Ц лШЄ¬F?П!к•b Ц 
+dђ'h”[1?”[кШ5Зb±1?Г[	кh[mw?1
+F?П!к•b Г[1?Г[ƒzю¬±1?Й[	кh[mw?
+1F?П!к•b Й[1?Й[ƒzю¬?_'`1?$+-ЅhГ
+[ƒz3к3кЊ9њ d3к1©ЅЅb … 
+ 3к
+Њ913A`$+т`h√э√3кb' Ю?АRr1b
+
+LEARSTACKZ'†±ЕH±Е†l	 i K'HALLOT
++ШкЉ1s	Аб1АШОuЉ1кX'Ш
+$i м'HEAP+Шк"$i %(HEAP?+,(]„
+$+АЦ Љ1Ах',(sВ,(Љ1*'#`'$•8й
+Е∞F•С•Б°…ЕК—Е©≈hК≈lЁ+O
+*'кЦ*$j 8(EDOES>+ф Ч(Rl| ф ћ($+А
+R€щR€11$+Ц R€щR€1b ААл
+Ц Љ1л∞Д*'#Дї $k І(?HEADZ)  k )
+|+
+)к;[
+)$l )WARNINGZ)  +0)к;
+*'кo,кT-2b 4*'кG* $exists §>$l &
+)CREATE+Ц В!кI o,ккI V#ТАДR „q
+ƒ3invalid nameЦ *'лї 4)
+)кb Д
+)#
+Ај(I j(R Ж'ј(ђ 	%ЅR%»%√&®%д%≤%%%Ѕ
+bр€Њ%o&ЅR%N%њ®%д%≤% T€$g }&NUMBER+
+З&•Ѕƒ3?kb X$h 'LASTZ)  +*'к•
+$h #'HIDE+.'b mкo,к$h :'REVEA
+L+.'b
+ mo,к$h w'IRECURSIVE+`'$+
+.'b dТ|Љђh$h ‘'	IMMEDIATE+R@Ж'
+$h Ю'RESTRICT+RАЖ'$i µ'
+C R(h`'
+…I Ч(lЛ(я)°Е(±Е)•…ЕРж°Е&±Е'&P
+lt±&СЕ%°&БЕ$%Pl	 •$…Е$Рж%°$h8)≈
+$Е$Рж%») р
+±$h°$Е$»Е%•$E(P∞•%E)P™ln ƒ)
+>NAME+кАb ±Ґ1sЁ)•b "¶$ 
+а€2$+* Rщњ$n m*NAME>+А*sТR
+ щb к$n О*>BODY+	$n ѓ*.NAME+
++b ¶h…$+b  hOb }бh
+N%кл•;h[$+R&юb	 R
+[$R$юb
+	 R[$RHюb	 R[$R%юb О[$…
+$+R,Љ1sR.1|$+N%к[1;ДN%#
+$Z)  g H%NUMBER?+FР1А* „&N%≠…∞R
+ R б®%R%≤%R-юb [∞®%R%≤%
+&b F
+®%R%≤%%•b А@(b  $|* Rщ? 
+  $???4$o њ*:+Ќ)a'o,к_,)0…Ч(•8
+йЕ∞F•Б•С•…ЕК≈Еl	 o ф*A;+…
+їф $0`'$o 0+CONSTANT+Ќ)I Ч(•8йЕ∞
+F†±БH±†Сl	 o f+VARIABLE+Ќ)Ої $
+p ÷+UALLOT+АкњR€#ƒ3Userarea fu
+llкs#$p Н+Ud F$\NEEDS+V#Р.2
+b Ѓ$$d W$HEX+RF$d т$DECIMAL+
+R
+F$e %DIGIT?+R01АR	#b RЗ
+1АR	#b FкЉ#•;h…$e %
+ACCUM
+ULATE+s∞sFк\hбFк\љO$e [%C
+ONVERT+л* %%b »% ф€/$+„&кЅ$+*
+ [„&#$+/* $f И%DPLZ)€€SER+Ќ)О
+Ц+| Ч(•8йЕ∞F†±≈БКH≈†Сl	  p C
++ALIAS+Ќ)*'кАТR щb чю€ї   R 
+Ж'*$q ш+VPZ) ---vz~j    q ,,CUR
+RENTZ)-q e,CONTEXT+1,Акњ	$+1,	_
+,$q u,ALSO+1,кR
+х~3Vocabulary stac
+k full_,кО1,#_,$q ў,TOSS+чю€1,#
++C3У#}"$$c O#STATEZ)  c д#eASCII+C3
+У#лТм#кb &$c т#,"+R"•#Ц Љлї 
+ $c $Д"LIT+OOd* њ∞∞$c ,$В("+3$
+$c g$A"+ф l$$$d t$Г(."+3$* ?$d ƒ$B
+."+ф  $$$d ÷$a(+R)•#¶$d З$b.(+R)
+•#?$d Ш$a\+÷!кИ5лИ5в÷!$d ™$b\\
++ d÷!$3$$` ©3BLy+  ` Њ3	-TRAILIN
+GW3Ш Ы°Е&±≈%Е'§$РИ±&I рHPж%Шh•%lЁ
+ШPкF'F%дШlZЅ I3SPACE+C3ъ>$Ѕ 4SPAC
+ES+…:€ 4И€„€$+¶ m$¬ 4HOLD+[84
+#84кђ$¬ b4<#+8484$¬ [4#>+¶84к
+84Љ1$¬ ћ4SIGN+kb R-i4$¬ Г4#+
+Fк¬бR	ЉЭb R-е'l≥<•(E,•)е-∞°,Б
+$±,С$lH<•,Е$•-Е%lК<l}+к•b А∞Ґ1
+ћ<O к€$+]лАк]1b( ±кsЦ „b
+ АклкЉ/  к N€¶$+ћ<Ќ,)€ 
+ ±г€к"„b
+ ч-г€чю€є€„€±o,к"„
+b
+ ч-o,$+Љм<(=N<,(s1х'ђ…*'
+$‘ ї;CLEAR+Ц А] =ђ$‘ QUIT+Ґк
+Ґ0∞2^ ґ2STANDARDI/O+ч*TҐВ$^ K2
+'ABORT]0А^ й2ABORT+X'cт2Y2љ2_ ш2SCR
+Z) _ 3R#Z)  _ €3(ERROR+Y24Ц G** ?
+4§>В!к•b 3÷!к3љ2_ %3З(ABORT"+
+3$sb ∞X'OхГ$h$+3$sb хГ$h
+$_ z3FABORT"+ф ƒ3$$_ Ф3FERROR"+ф ~
+*;ккsЭ6*;#$– “;ALL-BUFFERS+*;к
+>;*;к1bт€$+ТR щ$+Ц*dлJs@(|
+$+,(к∞Oк•b^ А∞Ґ1∞Oк∞Љ
+/АщJsщ	Ц*Jщb. щ@(bZ€щ	Ё;b
+ Љщ	и;b щ	*	і ґ€ Ь€$ќ<†±
+Щ$ Иш†±…Е*H±… Е+†°$Е,±$Е-,р5•,E*•
+-е+Р•,E&•В!÷!Р1÷!њў1Ф/$] ®1+LOAD
++В!књѓ1$] O1THRU+лs)€
+ г€ѓ1И€„€$]
+ е1+THRU+лs)€
+ г€W1И€„€$] 2c-->+Д
+В!#÷!њў1$]  2RDEPTH+ҐкУ	1џ$] 
+82DEPTH+Шкs1џ$+м#кb  $
+ com
+piling$ $ ok$^ s2(QUIT+ў1?≠!Ф/Ћ2 ф
+€^ О2'QUIT]0Ц2^ ®2[чю€љ±o:И€„€ 
+ O…:€ ±o:ДДљИ€„€у9¶$ѕ ?:COPY+Д
+}:$ѕ џ:CONVEY+sлОu1Аqƒ3nein
+}:$– м:LIMITy+ э– ;FIRSTZ)А– ";ALLO
+TBUFFER+*;кҐк1Э6	J;Э6ћ*;#*;кА
+Ж8Л6кЉЛ6$– 0;
+FREEBUFFER+*;к;Э6
+1Jb( у9Ак*;к1b к о€V.АЗ0Ј*м
+#кb
+ ф „0I $$+[2R хƒ3tight stac
+k`'.'b А@(b Ц*  Ґ1Ѓ=[ƒ3diction
+ary full$[ ґ0?STACK/1†8•сЕ$H•сP	†
+ ∆Y0$†±EH±е†Рl	  ∆[ƒ3stack em
+pty\ $1.STATUS]0ikZ)OO$\ ѕ1ДPUSH+O
+sА∞к∞}1∞∞$\ Й1LOAD+•Ѕ;В!Р1
+R+Ф9ѕ9$Ќ £9BLOCK+Ф9Ж9$ќ ґ9UPDATE
++RАЛ6к"лђ$ќ H9SAVE-BUFFERS+П669
+•b ,8 ф€П686$ќ д9EMPTY-BUFFERS+П6
+6Л6к•b
+ АЖ8 т€П686$ќ :FLUSH+у9:
+$+АФ9y9b Л6кЖ879b у9ЇкњsЊ9mm
+Q9$+у9∞ЉщњЉ#∞±JOщb$ щщ
+љO…:€ ly/;З&Ѕb ƒ/s/+-1V#Р.•b
+ b _s/I s//;З&•b b s&&
+  ƒ/s/y И/a[+чШ/„0u/м#њ$y 0]+чQ
+/„0u/м#≠$+[ƒ3Crash$z %0DEFER+Ќ)ч
+90I Ч(†±hH±Е»Е†l z i0(IS+OА	∞
+к$+кчƒ/кЉ1sчs/к1|qƒ3not
+ deferred$z —0bIS+ЉщRњ"Д(8b
+  $read 8 Y€O$+Л6Акb кА	к[
+1bк€П66А,8$+	∞±щЇкњщ	O
+њП686$+Л6кАb А"кkbо€$+Л6
+кАкЅbц€"кk$ћ "8CORE?+i7¶…$Ќ
+ q9(BUFFER+i7S8щ8 ш€Ќ ≈9(BLOCK+i7S8Ф
+8щ8 ц€Ц9†±hH±lЁЌ }9BUFFE sm ё€
+2…$v Й.'+V#Р.Ѕƒ3Haeh?$v R.I[COMPI
+LE]+V.I $v к.C[']+V.&$v  /NULLSTRIN
+G?+АТЅАb 2$H±…ЕH±… Е†l	 w
+ /
+>INTERPRET0/Ш/x f/NOTFOUND]0Џ/x y/N
+O.EXTENSIONS+~3Haeh?$x  /	INTERPRET+s
+/+-1V#Р.•b Дщb _s/ƒ3compile on
+	кбЛ6кЉЛ6 Г€  Х6(DISKER
+R+ $error !  r to retry Ю?АRr1sRR1
+|qƒ3aborted$  L7DISKERR]0W7  8R/W
+]0чg+А"кkbj 	Аклb3 бР1TР1Y2А
+"Љ	кОuк…(8b  $write 8 џ€RА
+ЉлVh$+	А≠њ$+АЖ8бР1TР1Y
+2∞ЉЇкњ
+ж€h$t Ь-(FINDV-†±Щ$ Иш
+°&)Е(† ±$™H±$Е%Ж$$P†Ґ ltH±$)E(Pа©
+≈$Е)© ≈%Е*§(±&Q)PKИPч†•*СИ•)СИҐ lq1.°
+Е$±Е%°$Е&)8≈$Е$Рж%•&) P	•$Б•%l].°$Б
+±$С•8йЕ∞F•&H
+0Шi€®HШБ©€$К†С
+l	 v L-FIND+_,АкЉmк1b mdкT-b
+ 2/.$Љ1,	#b
+6†±Щ$ Иш†±≈&Е
+&H±≈'Е'≠Н6Е(≠О6Е) °6P•…ЕРж†©≈(
+Б•)… Сl&•(Е*•)Е+°*Е(†±*Е)(Pl	  °6Pв
+°(Б*†±(С*≠Н6Б(≠О6С(•(НН6•)НО6lџ6+Ак
+s	кp$+ЉЇкњЉЛ6к77b ¶Л6кR
+њ$±∞Їкњ∞Л6кАк•Ѕb
+ h$
+АOO±∞∞б77Ѕb 2 R€А$r µ,
+V
+OCABULARY+Ќ)…I …I Ц кI Ч(lћ(_,
+$r J,FORTHс,lzlz  r ь,ONLY-@@
+-Ч(l
+ћ(…1,_,А,$r -	ONLYFORTH+--А,z-$
+s 2-DEFINITIONS+_,кo,$+кmu*G*$
+s l-ORDER+Ќ,)€ г€∆-чю€є€„€О(4o,∆-$s
+ ‘-WORDS+_,ккАМ>Ѕщb §>А	G*4 
+l5 $Dr _d=5Ф5…)€& ?г€О543кЊ9г€
+И5вњИ5/U3?И€„€?$≈ Ъ5PAUSE	 ≈ т5LO
+CK+Ак]1b h$Акb ъ5 ф€]s$
+≈ ю5UNLOCK+А6њ$»8йЕ»й Е©lБ†±
+ЕH±Е†°Е±Е•…ЕРжҐl–∆ /6FIL
+EV+∆ Ў6PREVZ)ДZ)  ∆ Д6B/BUFy+†±(Y"
+ PHјPф`≤ К=(FORGET+А@(ƒ3	is symbol
+ъ; =$‘ §=FORGET+V.Ач$кJƒ3	protect
+edu*А@(b Ц*  mmЃ=$‘ H=EMPTY+ч$
+к] =ч2к$’ >SAVE+Ц ] =кА
+mmкЉmк•Ѕbк€]Нч В$’ '>B
+YE+g:>оc$+Ю?Ш1b [$’ `>STOP?
++™?b –>–>…$’ Д>ЗњR0њi4$¬ Ы4#
+S+Я4±abш€$√ D4D.R+"dй`4I4бК4—4
+бЉ£Љ1(4?$√ Y4.R+sXбя4$√ 5U
+.R+…sя4$√ 5D.+…я44$√ (5.+X-5
+$√ 95U.+…-5$ƒ g5.S+ШкЉ1R E
+Ѕ€:€ г€кl5Оє€„€$ƒ v5C/Ly+) ƒ В5L/Sy
++ ƒ О5LIST+3 $Scr 3кАЪ© Ы•& 
+Id•&Н>€ і€Н?€•$	`Н>€ Ц€Н?€¶&ЖШlcaЙ ЎeBUS
+IN+Зd6Рe$К њeBUS!|e°Н>€ ®€Н?€lўК Se
+BUSTYPE+Ѕ€:€ г€ТZeИ€„€ъ5$К мeBUS@f
+Н>€ •€Н?€lZК fBUSINPUT+Ѕ€:€ fг€ђИ€
+„€ъ5$К %fDERROR?+dRGefАR01b ъ
+>fАюa1bф€Ѕ?ЅЦd$y+≈y+кy+v+АА
+s1?…$+…R
+…)€ h_nАb bИ€„€$
++R…)€ RЭЪbИ€„€…$+g?…1?иkИlњbn
+$+Щm…lC3∆ …$+Ѓm…lw?1C3∆ …$+ЩmА…
+lњsПmчјњА∞Љ1ВO…lC3∆ …$+љmq
+•;ЩmА…lњПm—lњЉ1∞Sn$+_nА;RЪb
+$+ШlЕkњлЮlкГmУ#А;ЃmТШlЕkњђДШ
+l	#$+n FШdН>€ L€Н?€†Ґ  ∆Зd86$Ґ †
+ ∆ЦdП686[ƒ3	no deviceЖРН>€ ±€Н?€©`Н>€ У
+€Н?€Н>€ Ѓ€Н?€•Рр»»lЃd`фd° Id•…ЕРж
+l°dИ Нd?DEVICE+Зd6тd$eЖЪ© Ы•& Id•&
+Н>€ ±€Н?€•$	`Н>€ У€Н?€¶&ЖЩlcaЙ 	eBUSOUT
++Зd6e$Й leBUSOPEN+Rр|ue$Й ЅeBUSC
+LOSE+Rа|ueЦd$ТeЖ+…lс1$СmКh≠>
+lЁЫm•JI(КР©'≈Hh•I… lЁ∞m•J≈Hh•I… lЁ+
+Пmчјњ…lU32ЅРlк|$+ЃmПm—lњ/1Рlк
+Ѕщ$+МlТЪb…$+Wm•;[Щm…lњ/ТC3
+1qщљmqщА;RФЪb$+Wm•;Иlкb ыm
+•;пm$+РlкЅg?Ќlm#щА;RЪb$+Wm
+А;RЪb$+Пm—lU32—l/У…lфКҐ Б»lZ
+Е ћcC64TYPEЃc© Ы† D$р±& њb∞©.Н>€ l€Н
+?€Hlµcl≤bЕ ҐcDISPLAYи>шbcђc#c?crc’cрcН>
+€lr€Ж TcB/BLKy+ Ж шcBLK/DRVy+™ Z)  +
+dкRњ$Ж dDRIVE+dвЇ$Ж 'd>DRI
+VE+dвњЇк1$Ж =dDRV?+Їкњd$
+Ж xdDRVINIT+А$З ѕdI/OZ)  З БdBUSOF
+) Z)  Z)e Z)€€Z) Z)С^  Z)б^  Z) a^Z)
+ …^y+H y+J y+€y+;y+€•$…)Е$Рж%•&…(Е
+&Рж'`ЁlШ ЫЖ&≠>Е'Ґ†'±$ lС&Иц DlJPо≠;
+Э Э 	Э 
+Э иPсlцkmШ ЫЖ&≠>Е'Ґ† ±& эk
+С$Hј(РфJр
+© С$ Dll mlцk@m© ЫИD$Plцk±( 
+lС&HPпymШ ЫЖ&≠>Е'Ґ†'±$ lQ&р©€lPИп
+ DlJPзКlP!Ьb°Н>€ l€Н?€•…ЕРжЖKЖO
+† ∆ъ5$IА∞I `Iа∞Iј``Г Уb
+PRINTABLE?а
+b° њbРJКlPД QbC64EMITъb° њb∞©.lЮbД 
+оbC64CR+юaЪb$Д cC64DEL+RЭЪb4RЭЪb
+$Д €cC64PAGE+RУЪb$Д 5cC64ATtc© Ы¶
+&§$Н>€ р€Н?€lcaД jcC64AT?„c•8йЕ∞FК
+С8Н>€ р€Н?€ј(ШРй(h°Е$±Е%•8йЕ∞F
+†±$СИщlca Аk	2VARIABLE+Ќ)Ґї $ ®k	
+2CONSTANT+Ќ)I I Ч(lћ(Еk$ јkUNLINK+…
+…чо k$Ґ †l	 Е*)?*$*	А–	@`Е*)I Р
+I@Р)$*	@`©.` яkCBM>SCR4l° lБl	 
+ (lSCR>CBMll° эkБl	  @lEDITORс,5z5z
+Вjy+( y+ y+и   SHADOWZ)u ZURON°a•J
+≈HН€•I… йН€l	 Б ЧaCUROFFBa©€Н€Н€l	 
+В ЈaC64KEY+Яaъ5Ќabъ€јaЗa$В Oa#BSy+ 
+В мa#CRy+ В шa	C64DECODE+тaюb Аb
+ ?/$юaюb
+ АП!$∞±њщsђOъ>л
+$В b	C64EXPECT+П!…АП!кJb
+ Ю?Є? 
+о€¶4$В lbKEYBOARDН?XaЌabxbГ №bCON
+PUSHAy+P{ ЖjPUSH0Ay+Z{ ФjPUSHy+Ё{ 
+£jRPy+ { ∞jUPy+ { їjSPy+ { FjIPy+
+ { QjNy+$ { |jPUTAy+ { жjWy+ { уjSE
+TUPy+Ы{ эjNEXTy+	 { kXYNEXTy+ca{ kP
+OPTWOy+Љ{ 'kPOPy+}. –j.BLK+В!к•b
+  $ Blk l5§>$ bk2!ћkШ Ы†±С$Ищ†lЉ
+ ≈k2@Зk?vaЎ t@'RESTART]0…i+чЦ2„0≤
+2ўd≠@ч.кхчА„0ф2 3ў Ґ@COLDё@©@h©¬
+h jx† ≠ …Е$≠!… Е%єС$HPш j†єЩ 
+Ич≠ …Е≠!… Е†±ЕH±Е†
+±ЕH±ЕҐ
+ †КБС»Е»ЕҐ †l	 Џ U@RESTARTxa©@h©≥h
+laА laC64KEY?ѕa•п]р©€hlЁА √aGETKEY
+ЙaН>€ ЁлН?€lZБ ~aC	€≠2iН@©АН@≠€	Н
+€ nixlcaТ _i(BSAVEіiЖЪ©≤¶Э§ЮН>€ X€Н?€∞
+© lP©€lPТ ©i(BLOADёiЖЪ© ¶≤§≥Н>€ U€Н?€l
+EiН>€НО©h©hЇљh© Ґ l≥ьН?€@8Н>€ Щ€О
+;М;†єтiЩ Ич©Н€€© Ню€Н?€`Џ Sia)+$Џ
+ 9jd(C16+$Џ cjd(C64+Л$$Џ pjFORTH-83
++${ _j	ASSEMBLERс,6k6k-{   
+? ÷ Ш?KE
+Y?Ћ?÷ £?DECODEЋ?÷ ѓ?EXPECTЋ?„   SEA
+L+…ч-Ј*$„ K?$ONLY-„ в?%FORTH-„ н
+?%WORDS§-„ щ?$ALSOА,„ @+DEFINITIONSz-+
+кАmкЉҐ1к•Ѕbк€$+…Л6;*;
+I;$Ў љ?'COLD]0…i+ @@@'?\@>- $ultraF
+ORTH-83  rev3.51  ;Ц 1l5 $
+bytes free
+E±хb sлs$О нgINDEX+Бh)€! ?г
+€О5г€Њ9лR%?М>b bИ€„€$О °hFINDEX
++Љgb ¶$Бh)€1 ?г€О5¶ Аг€ссзfg∞
+лR%?OМ>|b bИ€„€ёg$П ThINK-POTZ
+)цц оц цц   ЕЖЗЙКЛМИҐJ0	љ<iЭ]
+lpi`С $iC64INITЋiЎҐчЪН>€ Д€Н?€Н>€ К€Н?€
+≠0iН€≠1iН?CR+w?И5R
+1#b ?$+Ќ)А
+| 	Ч(lћ(ТTкњГ$÷ Ю>OUTPUT:+Ќ))0Ч
+(lћ(T$÷ V>EMITE> ÷ у>CRE>÷ €>TYPE
+E>÷ 	?DELE>÷ ?PAGEE>÷  ?ATE>
+÷ ,?
+AT?E>÷ 6?ROW+<?h$÷ a?COL+<?2$+Ќ
+)А| 	Ч(lћ(ТбкњГ$÷ q?INPUT:+Ќ))0
+Ч(lћ(б$÷ №?KEYЋRuel$u2:13,0,* ц
+eсfцeЦdъ5rf$Н vgDISKOPEN+dRЋeR#ZeЦ
+drf$Н ±g	DISKCLOSE+dRГeЦd$Н Rg1541
+R/W+sƒ3no file"dфАdШ#b€ =5 $
+beyond capacity2$Љgb h2$…sссҐ
+Ѕ€)€. h±г€бb
+ зfg  зfƒg∞gњOА
+b bИ€„€"¶ёg$+R©EsR©o•;_n$
++no•;?o$+Шl	кЅ•;ыmА;[Шl	#Ш
+lЕkњТЃmђ$+ЮlЕkњГm#А;ЩmЮlЕkњ…lВ
+…lЮl	#$+Њo•;bn$+Њo•;уn$+…lћЮ
+l	#ЮlЕkњЩm…lВ$+Юl	кЅ•;oА;ьo
+$+Иl≠…$+Иlњ…$ xlRVSON+RЪb$
+ dpRVSOFF+RТЪb$ wp***ULTRAFORTH83
+fJb	 Rф$ШњАДfJb Аf1RфR
+њ$АИfJb Дf1RфRњ$Иf1RфR
+њ$+Мfлs$+FР1%…`4I4hR,i4I4—4
+$y+ М hf
+READSECTOR+dRuel$u1:13,0,
+* цeсfцeЦdъ5rf;dRGeg0fЦd…$М gWRI
+TESECTOR+бdRuel$b-p:13,0* цeЦddR
+uegцeЦddЉ1b 3nrД…1?ў1вqЯah
+$* Ps(LOAD+÷!Р1÷!•Ѕ;В!Р1В!ў1Ф/$
+* РwSHOWLOAD+3Р13њ3Р1чjw6wШw:w$
++.iњАТЄlђАлТјlђ	ТЉlђ$+Ґяw
+RУЪbnrhРlњЮ?АМlђ…?v_Сv•bм€……1?
+уnhРl≠…яw…чкђ$+ ЄwEDIT+3#q&w
+xR…1? $Scr 3к=5АОщЅb	  $no
+t  $changedАҐщb у9АRщR1b  
+$, savedRщb€  $	, loading?3к3кC
+w$, hxL+3њox$, WxR+3кox$, зx+
+L+3књџx$, чxV+V.u*•b Ґ1к$, 
+
+yVIEW+y•b џx   $from keyboard$
++∞lкіlТњ$, •vCURLIN+R  И€„€$
++ЄlР1…¬vД¬v…¬vД¬v$+А[1b ўvЅ$
+( Vp(PADZ)  +¶ Ађv…lсњА§l	…lњ
+А™l	…lњАШl…lсњЮlШl	њЮl	њч
+Ќp* ∞§l	кщВO§lчЖp* ∞™l	кщВ
+O™l$+¶ ђvк1;∞v$y+ё#+ч$6w`pј
+a$+В!к•Ѕb :w$÷!к/3`pјalp3к
+ЪbRjЪbmyRЪbRkЪbRЪbmyЉ1$- ]y	ED
+IDECODE+RНюb
+ Иlњ?$юaюb< Иlњ∆yА
+П!к#b hП!кЅ€:€ ±њг€ТjlsђлИ€
+„€АП!$АМlђR?v_Сvh$- Нy	EDIEXPE
+CT+&wП!…АП!кJb
+ Ю?Є? о€¶4$- 
+zEDIBOARDН?XaЌaЩyz0 $yTOOLSс,Т]Т]«lZ) 
+ Z)P“∆zN¬z1b гs•b 2$Ш1•; S
+€3кФlк1М>Ѕщ•b kb
+ ƒrh  ‘rh
+ І€[$+ъ#R@1$Z)ТНЕЙЖКЯЛ
+ЗИМЭСУФ	€Z)ƒr‘rДr§rzuдoAnAnrr8r
+croуnpрoЇp–q№oИoФoКn©n_nbnпmпmпmќnыmпm?
+oSnбn.p8p(nav© Ы§$ИHєNuI€рE&PфШ
+®єхuhє
+цulЁ+Єlђъ5RА…)€	€„€$+Ч[Р1…a≈Дa≈
+…a≈Дa≈$+А[1b x≈Ѕ$( µ_(PADZ)g÷
++¶ АЛ≈h[сњАГ[	h[њАЙ[	h[њА
+„[h[сњ}[„[	њ}[	њчl_* ∞Г[	к
+щВOГ[ч≈_* ∞Й[	кщВOЙ[$+¶ Л
+≈к1;П≈$y+ё#+ч$∆?_јa$+В!к•Ѕ
+b ∆$÷!к/3?_јa+_3кЉh: <?§lЕk
+t…О±1?ФlкШ5±1?Ц лШYsF?П!к•b
+ Ц dђ'hФl1?ФlкШ5Зb±1?§l	к…lm
+w?1F?П!к•b §l1?§lЕkt±1?™l	к…lm
+w?1F?П!к•b ™l1?™lЕkt`phq1?$+nr
+h§lЕk3к3кЊ9њ d3к1JrЅb … 
+ 
+3кЊ913вq$+rh4tu3кb' Ю?АRr
+ B¬•b 2$Ш1•; S€3к”[к1М>
+Ѕщ•b kb
+ cЅh  sЅh І€[$+ъ#R
+@1$Z)ТНЕЙЖКЯЛЗИМЭСУФ
+	€Z)cЅsЅ√ЅГЅ9ƒC^†]†]з`т`Ѕ"Ѕь]R]х^O^Щ_o
+`[^«^”^…]И]>]!]N\N\N\m]Z\N\^≤]ј]__] ≈
+© Ы§$ИHє≠ƒI€рE&PфШ
+®єTƒhєUƒlЁ+Ч[ђъ5
+RА…)€ И јr	DIGDECODE+тaюb Аb 
+?/$юaюb
+ АП!$¬"А%%b h∞±њщ
+sђOъ>л$h$" ЎsDIGITSН?XaЌaДsxb+§
+lк…)€
+ тaЪbИ€„€…™lк…)€
+ ыm|И€„€А;
+™lЕkЃms>mrh$+?R<ъ>…l/w?1(4$+б
+Р1иk/q<?lpД…1? $replace with: <?™lЕkt
+……1? $>     searc1b 3-ЅД…1?ў
+1A`Яah$* ѓ¬(LOAD+÷!Р1÷!•Ѕ;В!Р1В!
+ў1Ф/$* ѕ∆SHOWLOAD+3Р13њ3Р1ч)∆∆
+„∆∆$+.iњАТЧ[ђАлТЯ[ђ	ТЫ[ђ$
++ҐЊ∆RУЪb-Ѕhѕ[њЮ?АЋ[ђ…≈_–≈•bм
+€……1?R]hѕ[≠…Њ∆…чкђ$+ Ч∆EDIT+
+3`∆а∆R…1? $Scr 3к=5А[3#nr
+$+rhАlкА3кJb ћ3#nr$+rhД
+lк3кДl3nr$  Дp(SEARCHLr†±Щ$ И
+ш•()р…•$%р√°&A*р•$PF%F$ж&Pж'l|r†є$
+ СИшж&Pж'ж*Pж+•$PF%F$•(PF)F(•()P€•
+…ЕРж†•'С•&ИСИlq•$%P•…ЕРж
+†lt°&A*р®†±Щ$ Иш•$PF%F$ж&Pж'lVr"
+ОщЅb	  $not  $changedАҐщb у
+9АRщR1b  $, savedRщb€  $	, 
+loading?3к3кҐ∆$, '«L+3њ.«$, ґ«
+R+3к.«$, F«+L+3књЇ«$, V«V+V.
+u*•b Ґ1к$, й«VIEW+н«•b Ї«  
+ $from keyboard$+П[кУ[Тњ$, Д≈CURL
+IN+RЪbR
+1? $Scr # 3кА=5vqЅb	  
+$not  $updatedДД1?чЌp* ?О(4чЖp* 
+?`p1?`qhq…$+<?s…lлвњ3$+3кА
+…lл…l11 d/У…lлфs1?$+иkRNq$
++r3кЊ9wmb Їph3кЊ9mQ9R|$+r
+R|$+8rR|$+3кЊ9џlИlњиkвq…$
++rhД3#nr$+rhjЪb,»RЪbRkЪbR
+Ъb,»Љ1$- <»	EDIDECODE+RНюb
+ «[њ?
+$юaюb< «[њe»АП!к#b hП!кЅ€:€ ±
+њг€Т)[sђлИ€„€АП!$АЋ[ђR≈_–
+≈h$- ћ»	EDIEXPECT+∆П!…АП!кJb
+ 
+Ю?Є? о€¶4$- в»EDIBOARDН?XaЌaЎ»о»l »
+PRINTс,Р…Р…f[l   PRINIT+ҐR***	  Ћp
+FORTH-GESELLSCHAFT	  „lSTAMP$Z)  clv26
+.4.87)     +¶pл* Пm…lњЉ1s>m…$ Эp
+GETSTAMP+бР1Зb¶p≠? $your stamp: lpR
+(4g?R1?¶p	RF?`pП!к¶pлђ$+¶pТ;
+бp$+Пm¶ …lсВПm…lсR†∆ $+¶ Пm…lсВ
+$+Њ9mк$+Яaъ5™?bъ€јa$+<?/qlp……
+ue$l =…CRET+RZe$l s…PSPACES+…
+:€
+ C3ZeИ€„€$m ≈…PCOLZ)  m Г…PROWZ)  
++ZeДК…#$+z…ДЧ…#…К…$+$+R€…
+Ч……К…$+ЉЧ…кЭb љ……бЧ…к1Ѕ€:
+€ І…И€„€АК…к1ѕ…К…$+Ч…кК…к$+А
+К…#Ѕ€:€ г€ТZeИ€„€$Z)Ы…І… є…љ…P… m +
+…PRINTER°Е±Е•…ЕРж≠^zЕ≠_zЕ
+l Z)ƒzZ)У* ±њҐOsВ$2   NPUSH+O
+"Љ∞УЉл1АҐ Нz∞∞$+ў14≠!Ф/ч~
+€ї $•…ЕРж•M¬zрl •M√zPцо¬z•Н
+^z•Н_z ∆щЙz∞бР1ЗbTР1ёc?mАҐ5кА
+R5О(4u*G*Rw?1…£(4[5м#Р1В!Р1÷!Р1
+ч≤2Р1чu/Р1!Р1Ы!!+f…, T$m > DIS
+PLAY+?Цdёc$n v B/SCRy+ n ћ .LINE+Њ
+9sИ5вњИ5/?$n Џ .===+Rp…)€ R=ъ
+>И€„€$n Ш PRLIST+АЊ9hh Rъ> $Scree
+n Nr. А=5Rъ>?Я R…)€ г€ЉВ ?И€„€h
+Я ???` $ 6kEND-CODE+_,mк_,$
+ ЋINDEXZ)		А	ААААА CLV
+ћЄ 
+cћDEX
+ћJ nћDEY
+ћИ yћINX
+ћи ƒћINY
+ћ
+H ѕћNOP
+ћк ЏћPHA
+ћh ЕћPHP
+ћ РћPL
+A
+ћ» ЫћPLP
+ћ( ¶ћRTI
+ћ@ ±ћRTS
+ћ` Љћ
+SEC
+ћ8 GћSED
+ћш RћSEI
+ћЎ ЁћTAX
+ћ™
+ ићTAY
+ћ® ућTSX
+ћЇ юћTXA
+ћК 	ЌTXS
+
+ћЪ ЌTYA
+ћШ ЌM/CPU+Ќ)| I Ч(lћ(Ал
+кRАщb	 RtЋ#Љч €щЉЋЉЋb ИЋ[ƒ
+3invalidТtЋк2ЋњТњ| tЋкRщb tЋк
+RщRЭb |   I ИЋ$ *ЌADC<Ќ`ќ
+ ∞ЌAND<Ќ ќ љЌCMP<Ќјќ JЌEOR<Ќ@ќ W
+ЌLDA<Ќ†ќ дЌORA<Ќ ќ сЌSBC<Ќаќ юЌ
+STA<ЌАћ ќASL<Ќ ќDEC<ЌA %ќIN
+C<Ќб 2ќLSR<Ќa ?ќROL<Ќ! lќRO
+R<ЌЅ yќSTX<ЌБ ∆ќCPX<ЌаЖ ”ќCPY<
+ЌјЖ АќLDX<ЌҐЦ НќLDY<Ќ†О ЪќSTY<ЌА
+М ІќJSR<ЌА іќJMP<Ќ@АД AќBIT<Ќ Д
++АэR#ƒ3out of range $	 Nќ[[+Ц $
+	 шќ?]+| Ц л1Yќ| $	 ѕ?[+| Ц …| 
+$	 ѕ?[[+!ѕs$	 /ѕ]?+Ц ЉТb
+ s
+  Љл1Yќsђ$	 ?ѕ][+Ц лДGќsЦ 
+Љл1Yќsђ$	 »ѕ]]+Gќ$	 Лѕ]]?+Gќdѕ
+$
+ ШѕCSy+Р 
+ ®ѕCCy+∞ 
+ ≥ѕ0=y+P 
+ Њѕ0
+<>y+р 
+ Iѕ0<y+ 
+ Uѕ0>=y+0 
+ аѕVSy+p 
+
+ мѕVCy+– 
+ чѕNOT+R $
+ –BEQ+Oѕ
+ѕ
+$
+ –BMI+жѕ
+ѕ$
+ #–BNE+Cѕ
+ѕ$
+ 3–
+BPL+Zѕ
+ѕ$
+ c–BCC+≠ѕ
+ѕ$
+ s–BVC+сѕ
+ѕ
+$
+ √–BCS+Єѕ
+ѕ$
+ ”–BVS+ьѕ
+ѕ$ Г–2I
+NC+АкЌ(ћОЕЋґЌАќ≠ѕ!ѕsл8ќdѕ$ У–2D
+EC+АкЌMћОЕЋќАќЄѕ!ѕsл+ќdѕ$ Љ–WI
+NC+А8ќCѕ!ѕsл8ќdѕ$ е–WDEC+АкЌCѕ!ѕ
+Љл+ќdѕ+ќ$ —;C:+ƒЇќ€Ћ)0…*'…$
+ Ј 	ASSEMBLER+№jИЋ$ =—e;CODE+ѓ(чэ
+€ї 4+чю€ї i—$ s—CODE+Ќ)Ц Аmi—$
+ ”—>LABEL+Ц )Ќ)sI Ґх',(Дщх'Ц Ґ1,
+(ҐВ,(*'к* RщњђЧ(lћ(к$ М—L
+ABEL+Ц Х—i—$0 Y—TOOLSс,2’2’9…Z)$Z)ш~
+“N“°Е±Е•…ЕРж≠€—Е≠ “Еl Z)“Z
+)У* ±њҐOsВ$2   NPUSH+O"Љ∞
+УЉл1АҐ .“∞∞$+ў14≠!Ф/ч~€ї $
+•…ЕРж•M“рl •M“Pцо“•Н€—•Н 
+“ ∆щ*“∞бР1ЗbTР1` ?mАҐ5кАR5
+О(4u*G*Rw?1…£(4[5м#Р1В!Р1÷!Р1ч≤2Р1
+чu/Р1!Р1Ы!!кl“ҐР1УҐRВї чћ“„0≤2
+љ2'”©“Е©АЕ©lЕl	 4 d“TRACE'+Уm“
+V.%”_c$4 8”ЕBREAK+У	“%”$4 w”T
+RACEL:+Ќ)I Ч(lћ(к“#$4 ѕ”+DOБ”ъ€4 О”
+-DOБ” 4 Ъ”+RБ”ю€4 ¶”-RБ” 4 ±”+PUSHБ
+”ъ€4 Љ”-PUSHБ” Z)‘’"•…ЕРж≠X”Е$≠Y
+”Е%°$MZ”р•Н“•Н“©“Е©АЕlЬ“±$Mџ”Pдl 
+‘©”Е©|Е©lЕl	 6 J”WATCH'+	АV”кV
+”	V.‘_c$6 *‘CONT+V”ккV”	‘$
++АҐ5 $:$+АкR5$+АТШ5$
++R$w?1…£(4$7 o‘S+»‘4Г‘Ґ(4А* ?А
+ТњлП‘$7 Ґ‘N+»‘÷‘О(4Акu*G*	П‘$
+7 F‘L+»‘÷‘	П‘$8 д‘D+±s»‘Ш(4s…)
+€
+ Г‘лИ€„€Ґ(4"?П‘$8 ц‘C+Дъ‘$8 $
+ S’B+»‘÷‘АкЉњR5	П‘$  н—T+ $
+halo_” $laber $  q’V1Z)$  Ќ’T2+  Ќ’
+T2+ $hallo“’кО“’#$ Б’GR•’°ЕГр5©
+јНыН€≠€	 Н€≠€)п$Г0	Н€≠€)C	Н€≠
+€)	Н€l÷≠€)яН€≠€)пН€≠€	Н€≠€)	
+Н€l}lЬ“±$Mџ”Pдl ‘©”Е©|Е©lЕl	 6 J
+”WATCH'+a"FН"°А8Џ •$write ‘
+8xџ€
+Афt#А\y+aЄеtч\y+Єё8
+|1ф|1%3PфZ"чф
+чzЉА8Џ •$
+read ‘8xY€п\y+г6Є"Џ "Єa"У…Џ
+к€з6]6ЄД8\y+aPй;Z"чa;пtч
+з6Р6\y+г6"ЄЏ Єz"ГЏо€\y+г6"Є
+"ЩЏц€z"Г\ћ Џ8CORE?y+°7ё°\Ќ ©
+9(BUFFERy+°7+9q9xш€Ќ љ9(BLOCKy+°7+9м8q
+9xц€о9†±hH±lЌ U9BUFFERy+м9G9\Ќ ы9
+BLOCKy+м9ё9\ќ :UPDATEy+
+Аг6"z#д\
+ќ  :SAVE-BUFFERSy+з6]6’9ЁЏ Д8xф€з6Р
+6\ќ <:EMPTY-BUFFERSy+з6]6г6"ЁЏ
+ Єё8
+xт€з6Р6\ќ «:FLUSHy+k:„:\y+ Єм9±9Џ
+ г6"ё8П9Џ k:Z"чЛ:ЕЕ;):\y+k:P
+фчф[Pйп1Џ$ хп°“€ У/
+ю€хйІ:ј€ѓ€x п°“€ йІ:ЉЉхј€ѓ€k:
+ё\ѕ Ч:COPYy+ЉU:\ѕ 3;CONVEYy+Л#FН
+…Є<Й∞3neinU:\– d;LIMIT¶+ А– ћ;FI
+RST*  – Џ;ALLOTBUFFERy+В;"B"…х6a
+ m(4s…)€
+ г\лИ€„€Ґ(4"?п\$8 v]C+
+Дz]$8 Д]B+H\V\АкЉњR5	п\$4 Ч
+[ЕBREAK+У	`zД[$4 ґ[TRACEL:+Ќ)I Ч(
+lћ(к`z#$4 N[+DOа[ъ€44 н[-DOа[ 4 ъ[
++Rа[ю€4 \-Rа[ 4 \+PUSHа[ъ€4 \-PUSH
+а[ Z)*\A•…ЕРж≠8\Е$≠9\Е%°$M:\р•Н
+¬z•Н√z©zЕ©яЕlыz±$M;\Pдl ў\©\Е©<Е©
+lЕl	 6 *\WATCH'+А6\к6\	V.„\_c
+$6 К\CONT+6\кк6\	„\$+АҐ5 $:
+$+АкR5$+АТШ5$+R$w?1…£(
+4$7 ѓ\S+H\4г\Ґ(4А* ?АТњлп\$7 
+]N+H\V\О(4Акu*G*	п\$7 &]L+H\V\	
+п\$8 d]D+±sH\ШкЂzҐР1УҐRВї 
+чKz„0≤2љ2Ж[©zЕ©яЕ©lЕl	 4 £zTRACE'+У
+m`zV.Д[_c$4 Ч[ЕBREAK+У	`zД[$
+4 ґ[TRACEL:+Ќ)I Ч(lћ(к`z#$4 N[+DOа[
+ъ€44 н[-DOа[ 4 ъ[+Rа[ю€4 \-Rа[ 4 \
++PUSHа[ъ€4 \-PUSHа[ Z)*\A•…ЕРж
+≠8\Е$≠9\Е%°$M:\р•Н¬z•Н√z©zЕ ААААА
+АА,Z)  *ЋMODE:+Ќ)| Ч(lћ(ТtЋ$ zЋ
+.A Ћ  „Ћ# Ћ Ћ БЋ,X Ћ НЋ,Y Ћ Ч
+ЋX) Ћ °Ћ)Y Ћ ЂЋ) Ћ+b tЋкR|
+tЋДtЋкRщ•b …)€
+ АњИ€„€Љлк
+щЅ$ µЋCPU+Ќ)| Ч(lћ(Т| ИЋ$ ьЋBRK
+
+ћ  ћCLC
+ћ "ћCLD
+ћX -ћCLI
+ћx 8ћ
+ ERROR?y+yd
+fzfЄ
+0…Џ v?zfЄ6b…Џ
+ф€Щ`?ЩWd\¶+≈¶+к¶+vy+ЄEfЏ	 
+,
+dPчЄIfЏ Ef…
+,
+чdЄMfЏ
+ If…
+,
+чdMf…
+,
+ч\y+Qf#Л
+\y+ж|1j%°ђ45А
+,Х45љ4\¶+ М Нf
+RE
+ADSECTORy+yd
+ШeЗ$u1:13,0,¬ ;f6g;fWdr6Ч
+f”yd
+f  USOUTy+Hd]6`e\Й ПeBUSOPENy+
+
+рШe\Й §eBUSCLOSEy+
+аШeWd\UeЖЪ©
+ S•& 
+e•&Н>€ і€Н?€•$	`Е≠Н>€ Ц€Н?€¶&ЖШl’a
+Й їeBUSINy+Hd]6Se\К fBUS!!f°Н>€ ®€Н?
+€lЩК fBUSTYPEy+Щ€“€ Jfј€ѓ€r6\К 1
+fBUS@\fН>€ •€Н?€lК sfBUSINPUTy+Щ€“€ 
+zfдј€ѓ€r6\К  fD \Ж ~dDRV?y+Z"ч
+hd>\Ж ЩdDRVINITy+†\З ∞dI/O*  З Bd
+BUSOFFYdН>€ L€Н?€†Ґ  ЖHdР6\Ґ † ЖWdз6
+Р6У∞3	no deviceЖРЕЃН>€ ±€Н?€©`Н>€ У€Н?€Н
+>€ Ѓ€Н?€•Рр»»lпd`7e° 
+e•…ЕРжlвdИ 
+Nd?DEVICEy+Hd]65e\¬eЖЪ© S•& 
+e•&Н>€ ±
+€Н?€•$	`Н>€ У€Н?€¶&ЖЩl’aЙ leB >€ р€Н?€l
+’aД ВcC64AT?ѓc•8йЕ∞FКС8Н>€ р€Н?€ј(
+ШРй(hКҐ Б»lЕ §cC64TYPEжc© S† D$р±
+& чb∞©.Н>€ l€Н?€HlнclкbЕ ZcDISPLAYd?0ch
+cдc[c„cКc≠c(dН>€lr€Ж dB/BLK¶+ Ж 0dBLK
+/DRV¶+™ Ж >d(DRV*  y+ud"
+ч\Ж ndDR
+IVEy+hd€Z;\Ж »d>DRIVEy+hd€чZ"…
+ G!"Џ
+ ъ?@xо€ёЅ4\В ДbKEYBOARDй
+?bЯahbРbГ іbCON!Tb°Н>€ l€Н?€•…ЕРж
+ЖKЖO† Жr6\IА∞I `Iа∞Iј``Г Kb
+PRINTA
+BLE?c° чbРJКlД 	cC64EMIT2c° чb∞©.
+lVbД &cC64CRy+6bRb\Д @cC64DELy+
+ЭRbЅ4
+
+ЭRb\Д rcC64PAGEy+
+УRb\Д ЌcC64ATМc©
+ S¶&§$Н KEY?°a•п]р©€hlА ХaGETKE
+YїaН>€ ЁлН?€I†P© lБ ∞aCURONYa•J≈HН€
+•I… йН€l	 Б OaCUROFFъa©€Н€Н€l	 В пa
+C64KEYy+War6ЯaЏъ€шaєa\В b#BS¶+ В $b
+#CR¶+ В 0b	C64DECODEy+*b6Џ ЄЏ „?«
+d6b6Џ
+ ЄG!;dPйчЛдпv?#\В <
+b	C64EXPECTy+G!;°Є +°г6;‘;В;;'<\Ў 
+@'COLD©0њiy+№@Ь@Г?Є@К-¬ ћ?`?ИaЎ ∞@'R
+ESTART©0њiy+/в2C0ю2Їdя@/.";/†C0@
+3l3ў T@COLDa©@h©Њh jx† ≠ …Е$≠!… Е%
+єС$HPш j†є9Щ Ич≠ …Е≠!… Е†±
+ЕH±Е†
+±ЕH±ЕҐ †КБС»Е»ЕҐ †l	 Џ
+ aRESTARTКa©@h©еhl3aА ~aC64 ROWy+Ш?А
+\÷ Э?COLy+Ш? \y+®)Є!aR(lІ(J"ч
+ї\÷ ≠?INPUT:y+®)’0R(lІ(;\÷ X?KEY
+G? ÷ ф?KEY?G?÷ €?DECODEG?÷ @EXPECTG
+?„   SEALy+°/Ѕ-т*;\„ '@$ONLYЅ-„ >@%
+FORTHp-„ i@%WORDSр-„ u@$ALSOL,„ Ѕ@+DEFINI
+TIONS¶-y+%"ЄЕ"фZ…;"ЁЩЏк€\y
+ Е;"ЁЩЏк€}≠/ Ї\’ Е>BYEy+k:
+&d\y+ъ?P…Џ У9\’ Њ>STOP?y+@Џ L
+>L>°\’ а>?CRy+≥?T5
+
+…[Џ `?\y+®)Є
+!aR(lІ(Jф"чї\÷ ъ>OUTPUT:y+®)’0R
+(lІ(ф;\÷ 2?EMIT!? ÷ o?CR!?÷ [?TYPE
+!?÷ ≈?DEL!?÷ —?PAGE!?÷ №?AT!?
+÷ И?
+AT?!?÷ Т? -;/ю€с€ѓ€йЫ,"zѓЏ
+ /
+r-Ы,;\y+фj=Ж=,=«(Л…0(L;°≈';\‘ 
+<CLEARy+N Є}H=L;\‘ и=(FORGETy+Є{(
+∞3	is symbolx<H=\‘ >FORGETy+"/Є/$"
+∞3	protectedР*Є{(Џ Q*x ЕЕ>\‘ &
+>EMPTYy+/$"}H=/2"0;\’ √>SAVEy
++N }H=%"ЄЕЕ"ф 	 фaf<Џ a
+Ї*aмxґ€9xЬ€\L<†±Щ$ Иш†±…Е*H±
+… Е+†°$Е,±$Е-,р5•,E*•-е+Р•,E&•-е'l=•
+(E,•)е-∞°,Б$±,С$l&=•,Е$•-Е%lи<lЭy+%"Ё
+Џ ЄPZ…J<пxк€\y+}#Є"}…Џ( 
+й"ЛN ѓЏ Є"#"ф;«x "xN€ё\
+y+%J<є,Ѕ€  й"zѓЏ
+ /r 
+”х6§В;
+[В;"Єё8г6"ф;г6;\– И;
+FREEBUFFERy+
+В;"‘;х6…Џ. В;"Д8г6Є"В;"…Џ "x
+о€В;""Л;х6В;[\– J;ALL-BUFFERSy+В;
+"Ц;В;"…Џт€\y+J
+ 1\y+Q*№#Л{(
+\y+«(%"Pп"ЁЏ^ ЄPZ…Pп"Pф
+«ЄЛaQ*1Џ. {(ЏZ€a;<Џ
+ qg’fWd°\М wgWRITESECTORy+yd
+ШeЗ$
+b-p:13,0¬ ;fWdyd
+Шeqg;fWdyd
+ШeЗ$u2:
+13,0,¬ ;f6g;fWdr6Чf\Н ЫgDISKOPENy+yd
+
+Ѓe
+#fWdЧf\Н цg	DISKCLOSEy+yd
+FeWd\Н
+ h1541R/Wy+Л∞3no filezhd,Єud;P[
+Џ€ Й5•$beyond capacity dhЏ А d°
+Л))ZЩ €Ѕ€. АйЏ
+ ,gƒgx ,g©g
+PqgчпЄЏ Џј€ѓ€zё#h\y+
+©эЛ
+©э
+й-Џ Л#Л\О 2hINDEXy+FhЅ€! `?F
+t5:#
+%ћ?и>Џ Џј€ѓ€\О жhFINDEXy+
+hЏ ёdFhЅ€1 `?Ft5ё Є)),gƒgP#
+
+%ћ?пи>Џ Џј€ѓ€#h\П iINK-POT*цц
+ оц цц    ЕЖЗЙКЛМИР …iC64FKE
+YSҐiҐJ0	љБiЭ]l§il’aС ХiC64INITAiЎҐчЪН>
+€ Д€Н?€Н>€ К€Н?€≠’iН€≠÷iН€≠„iН@©АН@≠
+€	Н€xl’aН>€НjОj©jh©hЇљh© Ґ l≥ьН?€@
+ЎН>€©iН€€©ъНю€Н?€x`Џ µic(64y+$¬ Щ∞3
+C) 
+missing"/C)…Џг€\Џ .jbC)y+\Џ yjc(16y
++\Џ ƒjFORTH-83y+\{ –j	ASSEM IBLER=-  g
+k«-{   PUSHA¶+{ ЧjPUSH0A¶+{ •jPUSH
+¶+{ іjRP¶+ { AjUP¶+ { LjSP¶+ { Wj
+IP¶+ { вjN¶+$ { нjPUTA¶+ { чjW¶+ {
+ kSETUP¶+S{ kNEXT¶+	 { kXYNEXT¶+’a
+{ )kPOPTWO¶+ф{ 8kPOP¶+Эи>Џ Џј€ѓ€
+#h\П iINK-POT*цц оц цц   
+!# ЩG(14):П switch to lower case ;
+
+ Н750:П Seitenanfang x Щ" ultraFORTH 83
+ ist ein „ Щ" Public-Domain-Programm. }
+( Щ £2 Щ" Es darf (und soll) zu private
+n H< Щ" Zwecken weitergegeben werden. P
+f Щ:Щ тp Щ" Die komerzielle Verwertung 
+	z Щ" Beha!
+ Ю(4112)    кlƒaкlёal„ 
+д6 „ „ {Оk   qdcB3Pj                  
+                                         
+                                         
+                                         
+                                         
+                    !                   
+              o*ultraFORTH-83 3.59-C16+ 
+Н€€±Е≠€€Е•…Е∞ћ€€ж∞щ   	END-TRAC
+E≈©•Е©Е©…Е©Еl	  wRECOVERo*»Е»Е
+•PFFlУ+ ЏNOOP	  ЩORIGINа+ §
+S0], ≥R0],
+ љDP], GOFFSET],
+ QBASE], яOUTPUT], л!INPUT],
+ щERRORHANDLER], VOC-LINK], €
+UDP],€ *SP@=•Е$•Е%Ґ$•8йЕ∞FµС
+µ Ґ l  5SP!«°™±ЕЖҐ l	  _UP@
+Ґlg „ГUP!ОҐ±ХИ±Х Ґ †•…ЕРж
+l	  ЖRP@µҐlg ≠ГRP!DҐlР ЉВ>RR
+•8йЕ∞F°Б±СlЭ KВR>с•8йЕ∞
+!F°Б±С©≈ЕРжl	  кR@•8й
+Е∞F±С°l  ЕRDROP 1EXITf°Е
+±Еl =UNNEST^°Е±Еl s?EXI
+T’°•…ЕРж(PЊl	  ЋEXECUTEЩ°
+Е±Е•…ЕРжl  НPERFORMУ+"Ч\
+ ±C@L°Е$±Е%© С°$l  EC!ж°Е$±Е
+%H±Б$И•!…ЕРжl	  яCTOGGLEУ+№J
+№Лд\€ @$°Е$±Е%±$С°$l € !=
+°Е$±Е%H±Б$H±†С$lф€ 7+!]°Е$±Е%H
+±Ѕ$Б$H±†—$lo vDROPЭ ўSWAPН±
+™†±Е$КС•$†СHҐ ±Е$°СИ•$l  ДDUP
+Ї•8йЕ∞F†±†СH±Иl  ≤?DUPя°
+Pl	 lЇ VOVERц!•8йЕ∞F†±БH
+±†Сl	  нROT†±Е%†±†С†±Е$•%
+С†•$СH±Е%°С†±Б•%С†l	  -ROT
+У+\ sNIPУ+ЛА\ ƒUNDERУ+Лф\
+ ‘PICKУ+q¬;%"\ ЖROLLУ+ЄPН
+;Єѕпq¬! А\ Э-ROLLУ+PЄ;ЄѕЄ
+ѕЛ¬упq¬%;\ ј2S!WAPУ+P
+п\ о2DROPф 2DUPУ+фф\  +
+'H°—СИ±†—СlЩ  !ORdH°СИ±
+†СlЩ  =ANDЅH°1СИ±†1СlЩ  y
+XOR~H°qСИ±†qСlЩ! ÷-ЩH±8бС
+H±†с†СlЩ! УNOTєКбБКсСl	 ! 
+±NEGATET8∞г" IDNEGATEеH8КсСHКсС
+!КбБ†КсСl	 
+™®И±Щ$ ИшК≈ЕРжҐ
+ †`" YD+%© H±≈&СH±≈'С°≈$Б†
+±≈%Сl	 # 1+s©Ѕ∞l Б±… Сl	 # 
+l2+—©Pа#  3+~©PSД©PMК©PG# „
+1-Ч8°йРl Б±й Сl	 # Р2-µРа$ Ѓ
+TRUEа+€€$ ЇFALSEа+  $ G"-1A$ U!0O$
+ ё1а+ $!	lten wir uns aber vor!!! 	ƒ 
+Щ 7	ќ Н 640:П seitenvorschub x	Ў Щ" Zum L
+ieferumfang gehoeren №	В Щ" zwei beidseit
+ig beschriebene Ґ	М Щ" Disketten und ein 
+200-seitiges ≥	Ц Щ" Handbuch. є	† Щ в	™ Щ
+" Beides zusammen kostet ca. 50.-DM и	і Щ
+ 
+
+Њ Щ" Forth besitz!
+t sein eigenes 3
+H 
+Щ" Diskettenverwaltungssystem, daher [
+R 
+Щ" bitte immer die ganzen Disketten Ж
+| Щ
+" kopieren und nicht nur die Files!!! М
+ж
+ Щ І
+р Н 640:П seitenvorschub G
+ъ Щ" Die 
+Disketten enthalten: M
+Щ р
+Щ" Seite 1
+ --  System-Diskette Щ" - !File c16u
+ltraforth3.6 ."Щ" - File c64ultraforth3
+.6 d,Щ" - File c16demo z6Щ" - File c6
+4demo А@Щ" - Hilfstexte & Kontaktadress
+en ЬjЩ" - Diskettenutilities ҐtЩ K^
+Щ" Seite 2 --  Quelltext des Systems T»
+Н640 ч№Щ" Seite 3 --  Forth-Quellexte 
+!ЖЩ" - 6502-Assembler +РЩ" - Full-S
+creen-Editor dЪЩ" - Debugging Tools y§
+Щ" - Multitasker “ЃЩ" - Drucker-Treibe
+r №ЄЩ:Щ:Щ ЫBЩ" Seite 4 --  Grafik/Tap
+e љLЩ" - Grafik    (nur fuer C64) WVЩ
+" - Kassettenversion ьаЩ" - Supertape (
+nur fuer C!16/+4) кН640 #фЩ" Hardwa
+reanforderungen: )юЩ sЩ" C64/SX64   
+ mit  Diskettenlaufwerk ~Щ"           
+  oder Kassetttenrekorder ТЩ:Щ"    ode
+r":Щ Ј&Щ" C16/C116    mit min. 32kB RAM
+ б0Щ"             mit  Diskettenlaufwer
+k х:Щ:Щ"    oder":!Щ €dЩ" C16/C116/P
+lus4   mit 64kB RAM dnЩ"             mi
+t  Diskettenlaufwerk ѕxЩ"             o
+der Kassetttenrekorder „¬Щ:Щ ¶ћЩ" Vie
+l Spass mit ultraFORTH83 /clv25sep87 ђ÷
+А CАП **************** XКП ende der s
+eite пФП **************** х!ЮП  ®Щ
+"":П positionieren n≤
+Щ"**** (C) 1985,1987 bp/ks/re/we/clv ***
+* ≈ЈЩ"*Mitglieder der: УЉЩ"*FORTH-Ges
+ellschaft e.V. c/o R. Mertins AFЩ"* Ant
+ilopenstieg 6a,D-2000 Hamburg 54 * пZЩ"
+>>>>bitte eine beliebige Taste<<******* 
+ Ґд° e$: Л e$≤"" Й740 оП **********
+****** 4шП anfang der seite kП *****
+*********** qП zЩ"У" А Щ"        
+ultraFORTH 83 - rev 3.8 И*Щ:Щ О4О   R
+TH83 /clv25sep87 ђ÷А CАП ************
+**** XКП ende der seite пФП *********
+******* х" ж2а+ $ р3а+ $ ъ4а+ 
+$ ONУ+AЛ;\$ OFFУ+OЛ;\% ДC
+LIT:•8йЕ∞F°БКСжPжl	 % 1ГLIT_
+•8йЕ∞F±С°Б•…ЕРжl	 % wGLI
+TERALУ+Є] €_≤
+ ≈!]:!d≈!8m!\& В0
+<≥±©€$КСl & ђ0=I°риPй& BUWI
+THINя© †°E$±е"REVEALУ+£'≤
+ ≥U,"
+;\h L'IRECURSIVEУ+U'\У+£'≤ №Jbф
+дА\h й'	IMMEDIATEУ+8@ы'\h (RESTRIC
+TУ+8Аы'\i *(
+CLEARSTACKo(†±ЕH±Е†l
+	 i @(HALLOTУ+Є"фЧЛ;ѕЄЧЄЄ;
+фНфЧ[ m(Є;\i Ѕ(HEAPУ+Є"И\i Ъ(
+HEAP?У+°(}Ё\У+Є!фЧЄ (" .Чb\У+
+c&"AЧ”кc&[\o*  g =&NUMBER?У+ж2Є
+Ы м&;c&OP8 8 &g&'&8-ќ≤ 9A
+P&g&'&&≤ ж;&g&'&Ъ%Gg&Ё%X&&y&'&
+Ъ%G≤р€3&D&Gg&c&%&y&'&РT€\g т&NUMB
+ERУ+ь&ЁGъ3?±≤ f€\h „'LASTo*  У+Я'
+"Ё\h Ш'HIDEУ+£'≤ ≥"U,";\h ѓ'
+"ACCUMULATEУ+ЛPЛж"MАж"M#п\
+e P%CONVERTУ+qЫ Ъ%≤ Ё%Рф€Х\У+м&"
+G\У+Ы Aм&[\У+ХЫ \f э%DPLo*€€У+≤
+ 9А9O\У+≤  9Ап≤ гАc&"q
+Ё”АA\У+8&ќ≤	 8
+Ad8$ќ≤	 8A
+d8Hќ≤	 8Ad8%ќ≤ фAdO\У+8
+,фЧЛ8"d H$Г(."У+І$Ы Љ?\d X$B."У+≈
+!ё$Л$\ d к$a(У+8)$\d ь$b.(У+8)$Љ?
+\d %a\У+з!"6„q6sз!;\d %b\\У+”d
+з!;\d ;%\NEEDSУ+j$/ ≤ #%\d l%HEX
+У+8ж;\d «%DECIMALУ+8
+ж;\e Џ%DI
+GIT?У+80ЧЄ8	Й≤ 8ЗЧЄ8	Й≤ ж"
+фЙЁ”АO\e С%
+"	 b д"SOURCEУ+у!"
+Ё≤ ∆:”dd"~!"\b џ#WORDУ+д##\b  $
+PARSEУ+Pд#з!"£"фЛпb"PфЧЄпЏЧз
+![\b $NAMEУ+y4$с"d\c c$STATEo*  c
+ x$eASCIIУ+y4$qJ`$"≤ М\c ∆$,"У+8
+"$!фq,!} \c Ж$Д"LITУ+пп№Ы %PP
+\c †$В("У+І$\c ї$A"У+≈!ј$Л$\" µ"Бl	 
+> L"
+CAPITALIZEу"°Е$±Е%°$Е&ИD&P†l	 H±
+$ µ"С$l ##Ж*†±Щ$ Иш†≠й!≈&Е&≠к!≈'Е'8
+•$нй!Е$•%нк!Е%∞°Нй!±Нк!l®#†•$%р=°&Q
+Pж&Pж'•$PF%F$ls#•&Е(•'Е)°&Qж&Pж'•$P
+F%F$(рж*•$%Pв8†•&сНй!H•'сНк!©≈Е
+Рж†±БЕ$H±†СЕ%И•*С$±(HF*ч© С$†l
+"    ; Д!>INo*  ; б!BLKo*  ; н!SPANo*
+  ; щ!TIBУ+Л!"\; "QUERYУ+"8p“@ ""
+~!;з!%у!%\< "SCANУ+PЄ≤€ фJЧ
+≤ ХЛqЛРд€9\< ;"SKIPУ+PЄ≤€ ф
+JЧ≤ ХЛqЛРд€9\<  "/STRINGУ+ф
+1€ф%zЧ\IaРI{∞I¬Р)яI[∞	А`= Щ"
+CAPITALX"°"И•$¶'р
+С(HPыж)JPц¶&рС(HJPъ†
+l	 : P HEREУ+L"\:  !PADУ+!8b%\:
+ !ALLOTУ+L[\: $!,У+!;ф,!\: 6!C
+,У+!дк,!\: h!ЗCOMPILEУ+пЄѕP":!\
+; [!#TIBo*  ; „!>TIBo*П!               
+                                         
+                    "ЛPЦп\7 JCMOV
+Eх© ИD$P	F%†l	 ±(С&HPмж)ж'lы7 л
+CMOVE># © •%≈'Е'•%≈)Е)ж%§$РИ±(С&ШP
+шF'F)F%Pр†l	 7  MOVEУ+P0≤ п! d
+пу\8 t PLACEУ+фPфqп[ д\8 ’ 
+COUNTЭ °Е$…Б±Е%… С•8йЕ∞FlT8 У
+ ERASEУ+OW \9 Њ FILLY © "†∆$∆%Р 
+Ж—\•&СH•%СH•$С†•'l 5 НM/MODУ+Є
+PЋ€ф±≤ №%ЛЦ±≤ Rф≤ Л%
+ЛХ9\5 2/n±
+± С° l 6 g/MOD
+У+Pf€п\6 ^/У+≈ \6 ”MODУ+≈А\
+6 Б*/MODУ+Pп\6 С*/У+Щ \6 І
+U/MODУ+OЛЦ\6 ґUD/MODУ+POЦп
+"	%&$Р±≈'Е'H±И≈&Е&Рж%Pж$JP|•'СH•&С
+†•$С•%Бl	 3 GM*У+Є±ЄP≤ RЛЄ
+±≤
+ RпЈPMп≤ г\3 €*У+MА\3
+ o2*ƒ°
+Б±*Сl	 У+Aъ3division over
+flow\4 ]UM/MODШ°Е)±Е(•…ЕРж°Е
+%±Е$H±Е'H±Е&Ґ∆*8•%е)®•$е(∞&*РЕ$Д%&
+'&&&%&$JPя"
+HILEУ+ф+ф≈!≤T]ю€ц\ У+
+Є]ю€Ч≤
+ АлРо€\0 бFREPEATУ+ф+
+≈!Р \0 EUNTILУ+ф+≈!≤ \1 5BDOУ+
+≈!Ч€Tю\1 mC?DOУ+≈!™€Tю\1 `DLOOPУ+
+ю+≈!ш€≈!з€л\1 ‘E+LOOPУ+ю+≈!)≈!з€л
+\1 ПЕLEAVEУ+з€п≥Є"%P\2 ЂUM*O
+±Е$°Е%HЖ&Ж'Ґ'&&&"OLVEУ+!фЧЛ;\.
+ а<MARKУ+!\. ы<RESOLVEУ+!Ч:!\. 
+?PAIRSУ+Чъ3unstructured\I h©€lmh©
+ ™•8йЕ∞FК†С»Ґ l / "CASE?–© 
+•$AP	•%QPlЈКlj0 ∆BIFУ+≈!≤Tк\0 К
+DTHENУ+Ћ€к+л\0 ЭDELSEУ+к+≈!РTЛ
+лA\0 ≤EBEGINУ+ф\0 OEW"©l+ Ё€
+Е(LOOPъ€©ЅБР±… СРl	 †±ЕИ±Е†
+l	 + р€Ж(+LOOP+°ЅБ±—С q•…ЕР
+ж(Dl	 ,  БIu† •8йЕ∞F±HH—БИ±
+HH—†Сl	 , oБJБ†PR- {ЖBRANCHТ•Ѕ
+Е$•—Е•$Еl	 - ЗЗ?BRANCHі°•…Е
+Рж(рKl“. ®>MARKУ+!O:!\. L>RES
+"ЛА\) BMINУ+[г\) уMAXУ+г
+\) €UMAXУ+0г\) €UMINУ+Йг\
+) *€EXTENDУ+Є±\) =€DABSУ+f€≤ г\)
+ p€ABSУ+f€≤ R\У+9пѕЄPPЛPP
+\* ≈€Г(DOУ+фЧ„€\* С€Д(?DOУ+фЧЁ≤ 
+„€пЄ"%PА\* £€BOUNDSУ+ф%Л\* H€
+ЗENDLOOPй€"%∞
+°E&±е'∞љlЇ' S<°Е$±
+Е%•…ЕРж•%q0Х°E$±е%lµ' €U<2°
+Е$±Е%•…ЕРж°E$±е%∞lЈlЇ( +>У
++Л\( w0>У+R±\( ≈0<>У+GЈ\( ‘
+U>У+Л0\( Д=У+ЧG\( УD0=У+bG\
+( °D=У+г#І\( ±D<У+Ч≤ [ 
+ Р 0\У+9≤ #°(Лу°(фЧЯ'[U'\
+•8йЕ∞F•С•Б°…ЕК—Е©≈hК≈
+lmУ+пЯ'"+;\j ≠(EDOES>У+≈!)8lm!≈!б
+(\У+Є8€_8€ЧЧ\У+!8€_8€Ч≤ Є
+Єq!фЧq! кЯ'[к,!\k )?HEADo*  k
+ „)|У+)"”A);\l Е)WARNINGo*  У+•)
+"”Я'"U,"z. ≤ Ђ4Я'"<+ё$#orted\  
+–8DISKERRй0{8  ґ8R/Wй0ўhУ+ЄИ"±≤j ѕ
+Є"q≤3 2ф2Ћ3ЄИфѕ"фН"OL8
+≤ ё$write ј8Рџ€8АфВqА\У+ѕЄ
+В%\У+Є*92ф2Ћ3PфZ"%ф8%
+zкL8≤ ё$read ј8РY€п\У+-7Є"≤ 
+"Єѕ"AЧ≤к€17І6ЄP8\У+ѕP;Z
+# l	  c7Pв°(Б*†±(С*≠/7Б(≠07С(•(Н/7•)Н07
+l}7У+ЄВ"Лѕ"ґ\У+фZ"%ф-7"Y7≤
+ 9-7"8%dPZ"%P-7"Є"ЁG
+≤
+ 99АdЄппPPY7G≤  РR€Є
+";-7"ф;-7;99РГ€\  77(DISKER
+RУ+ё$error !  r to retry j@Є8rЧЛ8RЧ
+bЈъ3ab#≤ АdЄ"≤ Ь6Рф€}Л;\
+≈ †6UNLOCKУ+ЄІ6%\»8йЕ»й Е©lБ†±
+ЕH±Е†°Е±Е•…ЕРжҐlР∆ Q6FIL
+E],∆ €7PREVo*  o*  ∆ &7B/BUFа+†±(Y"
+ PHјPф`t7†±Щ$ Иш†±≈&Е&H±≈'Е'≠/7Е
+(≠07Е) c7P•…ЕРж†©≈(Б•)… Сlf•
+(Е*•)Е+°*Е(†±*Е)(P#+OЛ’5\√ ђ5D.У+O
+’5Ђ4\√ Њ5.У+f€C5\√ O5U.У+OC5\ƒ Ё5
+.SУ+;Є"фЧ8 1€Q€™€ s"в5ф)з€\ƒ 
+м5C/Lа+) ƒ 6L/Sа+ ƒ $6LISTУ+®3;ё$S
+cr ®3"ЄГdЗв5ё$Dr џdS5*6OЧ€. 8?≤ ≥
+∞?sфЮ5Ђ4®3"∆:s6s%6ХЋ4Љ?ш€з€∞?\≈
+ 06PAUSE	 ≈ Ф6LOCKУ+Є"}Ч#£4SPACES
+У+O™€ Ђ4ш€з€\У+!≥\¬ µ4HOLDУ+AN4[
+N4"д\¬ X4<#У+N4N4;\¬ с4#>У+N4"N
+4фЧ\¬ 5SIGNУ+±≤ 8-я4\¬ 5#У+ж
+"S8	ф≤ 8З%80%я4\¬ 15#SУ+5
+5І≤ш€\√ z5D.RУ+z№w€ц4_5 55ф
+€фЧЊ4Љ?\√ ѕ5.RУ+Лf€’5\√ Щ5U.RУ
+#_ Ѓ3(ERRORУ+Ћ3Ђ4!<+Ы Љ?Ђ4p?у!"Ё≤ 
+®3;з!"≥3;m3\_ є3З(ABORT"У+І$Л≤ Pm
+(пїdА\У+І$Л≤ їdА\_ р3FABO
+RT"У+≈!ъ3Л$\_ *4FERROR"У+≈!4Л$\` ?4BL
+а+  ` t4	-TRAILINGЌ4Ш °Е&±≈%Е'§$РИ
+±&I рHPж%Шh•%lmШPкF'F%дШljЅ _4SPACE
+У+y4¶?\Ѕ #![з!%2\] Ѓ2RDEPTHУ+B"≥
+ѕЧl\] F2DEPTHУ+;Є"ЛЧl\У+`$"
+≤ ё$
+ compilingdё$ ok\^ б2(QUITУ+2
+∞?"€0щ2Рф€\^ 3'QUITй0$3^ 83QUITУ+B
+"BЯ0@3\^ f3STANDARDI/OУ+]*фу\^
+ ]3'ABORTй0†^ {3ABORTУ+m(√Д3Ћ3m3\_ К
+3SCRo* _ Ґ3R#o*  #†8•сЕ$H•сP	† 
+Ж≈1\†±EH±е†Рl	  ЖAъ3stack emp
+ty\\ ∞1.STATUSй0†o*пп;\\ э1ДPUSHУ+
+пЛЄP"P2PP\\ 2LOADУ+ЁG”у!2
+у!;з!2з!%2€0\] 62+LOADУ+у!"%=2\]
+ ]2THRUУ+qЛЧ€
+ s=2ш€з€\] ”2+THRUУ+q
+ЛЧ€
+ s≈2ш€з€\] Р2c-->У+ку#џ/`$\У
++Aъ3Crash\z ±0DEFERУ+в)]E0:!)†±hH
+±Е»Е†l z U0(ISУ+пЄѕP";\У+"]
+к/"фЧЛ]Y/"ЧbЈъ3not deferred\z
+ э0bISУ+\/Є1,+`$"≤
+ ≈!1:!d;\У+й28
+ [ъ3tight stackU'£'≤ Єµ(≤ +Р 
+Ч\>Aъ3dictionary full\[ b1?STACKї1
+#±… Е†l	 w Ц/
+>INTERPRETґ/ 0x L/NOTF
+OUNDй0 0x я/NO.EXTENSIONSУ+4Haeh?\x р
+/	INTERPRETУ+Y/\У+є1j$/Ё≤ к_≤ Ч
+Y/ъ3compile only§/”ь&G≤ к/Y/\У+є1j$
+/Ё≤  ≤ ЧY/:!Y/§/”ь&Ё≤  ≤ Л
+ММР к/Y/\y 0a[У+] 01џ/`$%\y Ы0
+]У+][01#	Е&)8≈$Е$Рж%•&) P	•$Б•%lг.°
+$Б±$С•8йЕ∞F•&H
+0Шi€®HШБ©€$К†
+Сl	 v r.FINDУ+е,Є"ф≥"Ч≤ ≥№"
+z.≤  µ.dфЈ,ѕЙ≤
+ Л≥Рё€ O\v 
+/'У+j$/Gъ3Haeh?\v x/I[COMPILE]У+\/:!
+\v –/C[']У+\/М\v Ж/NULLSTRING?У+ЄJG
+Є≤  \H±…ЕH#
+HУ+Ы-К--а-\s Є-D
+EFINITIONSУ+е,"U,;\У+"≥J*<+\s R-OR
+DERУ+у,Ч€ sм-]ю€)з€фЊ4U,м-\s ъ-WOR
+DSУ+е,""Є8?G_≤ p?Єѕ<+Ђ4Рж€А\t
+ ".(FIND\.†±Щ$ Иш°&)Е(† ±$™H±$Е%Ж$$
+P†Ґ lЇH±$)E(Pа©≈$Е)© ≈%Е*§(±&Q)PKИP
+ч†•*СИ•)СИҐ lЈЈ.°Е$±Е%°$#    q ≤,
+CURRENTo*  q K,CONTEXTУ+Ј,Є"%ѕ\У+Ј,
+ѕе,\q џ,ALSOУ+Ј,"8
+[4Vocabulary s
+tack fullе,"фЈ,[е,;\q €,TOSSУ+]ю€Ј
+,[\r ;-
+VOCABULARYУ+в)O:!O:!!%":!%
+;)lб(е,;\r p-FORTH„-  Њj  r В-ONLY
+•-  Љ@Р-)lб(OЈ,;е,;-\r Ф-	ONLYFORT
+#U'\o Ј+CONSTANTУ+в):!)•8йЕ∞F†±
+БH±†Сl	 o M+VARIABLEУ+в)ф,!\p э+
+UALLOTУ+Є0"%8€Йъ3Userarea full0"
+Л0[\p ,USERУ+в)ф,m!)•8йЕ∞F†
+±≈БКH≈†Сl	 p j,ALIASУ+в)Я'"ЄJ
+8 _≤ ]ю€,!Р 8 ы'ф*;\q ~,VPo*  
+          #EУ+%"Є≤ ЧЛr*Ё≤ 
+zdРа€ \У+Ы 8_%\n B*NAME>У+Є
+ф*ЛJ8 _≤ "\n +>BODYУ+ѕ\n $+.
+NAMEУ+Ё≤ Єµ(≤ ё$|Ы 8_Љ?Р ё$?
+??Ђ4\o 4+CREATE:У+в)ґ'U,"е,;µ0O\o …
++:У+”+)•8йЕ∞F•Б•С•…ЕК≈Еl
+	 o Й+A;У+O+≈!\Я0#exists p?\l Ы)CR
+EATEУ+!у!":!U,"":!j$JЄк8 ЁЈъ3i
+nvalid name!Я';q,!©))"≤ к)[Є5)
+:!њ(8 ы'5)L;Р g)АU'O:!)l )t*°Е(±
+Е)•…ЕРж°Е&±Е'&PlЇ±&СЕ%°&БЕ$
+%Pl	 •$…Е$Рж%°$h8)≈$Е$Рж%») р
+±$h°
+$Е$»Е%•$E(P∞•%E)P™l—n Y)>NAM#FFЯi©€Н€
+Н€l	  Фi#BSy3  ђi#CRy3  ЄiC64KEY
+3№iъ=pib#ъ€Эi i$А Di	C64DECODE3≤iю#b#
+ Аb# g/$Њiю#b#
+ АП)$∞€±њщ€sђ
+O€ъfл$А бi	C64EXPECT3П)…АП)кJ b#
+
+ ЮgЄg #о€¶<$А )jKEYBOARDНgMipiнi5jБ y
+jCON!ўj° l€•…ЕРжЖKЖO† ∆ъ=$IА∞

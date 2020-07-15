@@ -1,0 +1,1248 @@
+\\ дIRECTORY 1OF4 26OCT87RE                                                       .                     0                  ..                    0                  иNHALT                1                  еDITOR-тELEGRAMM      2                  еRSTES-иNFO           3                  лADE-сYSTEM           4                  лADE-дEMO             5                  LOADFROM              6                  EINFACHE-дATEI        8                  HELP                &10                  фортх-гRUPPE        &11                  зAHLENSPIEL         &12                  BUFFERS             &13                  DUMP                &14                  дISASSEMBLER        &16                  тест.дир            &23                  SAVESYSTEM          &26                  FORMATDISK          &27                  COPYDISK            &28                  COPY2DISK           &29                                                                                                                                            \\ иNHALT ULTRAфортх 1OF4      26OCT87RE                                          дIRECTORY             0                  иNHALT                1                  еDITOR тELEGRAMM      2                  еRSTES иNFO           3                  лADE сYSTEM           4                  EINFACHE дATEI        8                  HELP                &10                  LOKALE фортх-гRUPPE &11                  зAHLENSPIEL         &12                  RELOCATE THE SYSTEM &13                  DUMP                &14 -  &15           6502-дISASSEMBLER   &16 -  &22            тEST-оRDNER        &23 -  &25           SAVESYSTEM          &26                  BAMALLOT FORMATDISK &27                  COPYDISK            &28                  2DISK COPY2DISK     &29 -  &30             FREI              &31 -  &36             PRG-FILES         &37 -  &84           сHADOWS             &85 - &121             PRG-FILES        &122 - &169                                                    фортх-геселлсцхафт  (C) BP/KS/RE/WE/CLV   *** ULTRAфортх  едитор коммандос ***    BESONDERE фUNKTIONEN:                       цTRL O  оVERWRITE   цTRL I  иNSMODE      цTRL $  .STAMP      цTRL #  .SCR#        цTRL '  SEARCH                        цURSOR кONTROLLE:                           NORMALE фUNKTION, ANDERE:                ф7      +TAB        ф8      -TAB         цлр     >TEXT-END   ретурн  цр        зEICHEN-бEHANDLUNG:                         ф5      BUF>CHAR    ф6      CHAR>BUF     дел     BACKSPACE   инст    INSERT       цTRL D  дELETE      цTRL @  COPYCHAR  зEILEN-бEHANDLUNG:                          ф1      NEWLINE     ф2      KILLINE      ф3      BUF>LINE    ф4      LINE>BUF     цTRL E  еRASELINE   цTRL R  CLRрIGHT     цTRL ^  COPYLINE                      бLAETTERN:                                  цTRL N  >нEXT       цTRL B  >бACK        цTRL A  >аLTERNATE  цTRL W  >SHADOв   аUSSTIEG AUS еDITOR:                        цTRL C  цANCELED    цTRL X  UPDATED      цTRL F  фLUSHED     цTRL L  лOADING  фортх-геселлсцхафт   (C) BP/KS/RE/WE/CLV  дU BIST IM еDITORMODUS  сCREEN # 3         зURUECK INS фортх MIT рун/стоп                                                                                                 *** ULTRAфортх-83 ***                                                           еINSTIEG IN DEN еDITOR MIT            "L ( N -- )" ODER MIT "R ( -- )"                                                   ацхтунг! оHNE еRFAHRUNG NUR MIT          сCHREIBSCHUTZ AUF DEN дISKETTEN                    ARBEITEN!                                                              еINIGE фортх-вORTE ZUM пROBIEREN              AUSSERHALB DES еDITORS:                      вордс   ордер                              жиев хелп                            UND DIE ц= -тASTE                                                              сEITE ZURUECK MIT "цTRL B"                                                     зUM вEITERGEBEN BITTE DIE GANZE          дISKETTE KOPIEREN (бACK-уP) !!!                                               фортх-геселлсцхафт   (C) BP/KS/RE/WE/CLV\ лADE EIN аRBEITSSYSTEM       05NOV87RE                                          оNLYFORTH                                                                              2 +LOAD       \ LOADFROM            &46 C: LOADFROM    \ .BLK                  4 C: LOADFROM    \ тRANSIENT аSSEMB    &19 C: LOADFROM    \ еDITOR              &26 A: LOADFROM    \ SAVESYSTEM          OLDSAVE                                       2 +LOAD       \ LOADFROM              5 C: LOADFROM    \ аSSEMBLER           &47 C: LOADFROM    \ тRACER + тOOLS      &13 A: LOADFROM    \ бUFFERS                                                                                                                                                                                                                                                                                                                                                     OLDSAVE   \\                                                                      фортх-геселлсцхафт  (C) BP/KS/RE/WE/CLV \ лADE DIE ц64 дEMO            21OCT87RE                                          (16 .( нICHT FUER ц16!) \\ ц)                                                     оNLYFORTH                                                                         1 +LOAD   \ LOADFROM                                                              LIMIT FIRST @ -   B/BUF 8 * -            ?\ 8 BUFFERS                                                                      \NEEDS DEMOSTART : DEMOSTART ; 90 ALLOT  \NEEDS TASKS        $39 ц: LOADFROM      \NEEDS HELP         $а  а: LOADFROM      \NEEDS SLIDE        &6  д: LOADFROM                                               1 SCR !  0 R# !                                                                   оNLYFORTH                                                                         OLDSAVE                                                                           \\                                                                                фортх-геселлсцхафт  (C) BP/KS/RE/WE/CLV \ GETDISK LOADFROM             20OCT87RE                                          HERE   $200 HALLOT  HEAP DP !                                                     : GETDISK  ( DRV -- )                     CR  ." бITTE дISKETTE "                  1+ .  ." EINLEGEN! "                     KEY DROP  .STATUS  CR ;                                                          : LOADFROM  ( BLK DRV -- )                ?DUP 0= иф  LOAD EXIT  тхен              FLUSH  GETDISK  LOAD                     FLUSH  0 GETDISK ;                                                               0 цONSTANT а:       1 цONSTANT б:        2 цONSTANT ц:       3 цONSTANT д:                                                 : ?\  ( F -- )   ?EXIT  [COMPILE] \ ;                                                                           -->                                                                                                                                                                            фортх-геселлсцхафт  (C) BP/KS/RE/WE/CLV \ нEUES SAVE EMPTY CLEAR       20OCT87RE                                          ' SAVE  аLIAS OLDSAVE                    ' CLEAR аLIAS OLDCLEAR                   ' EMPTY аLIAS OLDEMPTY                                                            : SAVE  STATE @ иф  COMPILE SAVE  тхен ;   IMMEDIATE                                                                       : CLEAR STATE @ иф  COMPILE CLEAR тхен ;   IMMEDIATE                                                                       : EMPTY STATE @ иф  COMPILE EMPTY тхен ;   IMMEDIATE                                                                       DP !                                                                                                                                                                                                                                                                                           \\                                                                                фортх-геселлсцхафт  (C) BP/KS/RE/WE/CLV \ EINFACHES дATEISYSTEM        20OCT87RE                                          \NEEDS (SEARCH  .( (SEARCH FEHLT! ) \\                                            ' WORD >BODY 2+ @ аLIAS (WORD                                                     0 цONSTANT ORDNER                                                                 ' ORDNER >BODY э цONSTANT >ORDNER                                                 : WURZEL   >ORDNER OFF ; WURZEL                                                     : KATALOG  ( -- ADDR LEN )              ORDNER BLOCK  B/BLK ;                                                              : (SUCHE  ( ADR LEN -- N )              KATALOG (SEARCH                          0= ABORT" NICHT GEFUNDEN"                ORDNER BLOCK -  >IN PUSH  >IN !          бегин  BL KATALOG (WORD CAPITALIZE              DUP C@ 0= ABORT" EXHAUSTED"              NUMBER? ?DUP NOT                  вхиле  DROP  репеат  0< ?EXIT  DROP ;                                            -->                                     \ EINFACHES дATEISYSTEM        20OCT87RE                                          : SPLIT                                   ( ADR LEN CHAR -- ADR2 LEN2 ADR1 LEN1 )  >R 2DUP R@ SCAN  R>                      OVER >R  SKIP  2SWAP  R> - ;                                                     : LIES  ( -- N ) \ /PATH/FILE             BL WORD COUNT DUP 0= ABORT" вAS DENN?"   PAD PLACE  PAD COUNT                     бегин  аSCII / SPLIT                      DUP иф    (SUCHE                             елсе  NIP WURZEL  тхен  OVER        вхиле  >ORDNER +!  репеат                -ROT 2DROP ORDNER + ;                                                            : LD  LIES LOAD ;      \ лOAд            : SH  LIES LIST ;      \ схOW            : ED  LIES L ;         \ едIT            : CD  LIES >ORDNER ! ; \ цHANGE дIR      : LS  ORDNER LIST ;    \ лIсT дIR                                                                                                                                   фортх-геселлсцхафт  (C) BP/KS/RE/WE/CLV \ HELP                        14OCT85RE)                                          оNLYFORTH                                                                         : HELP  ( --)                             3 L                \ LIST сCR # 3                                                 CR ." пROBIER' RUHIG WEITER!" CR         CR ." аBER OHNE хANDBUCH"                CR ." UND DIE хILFE DER"                 CR ." фортх-гESELLSCHAFT"                CR ." BLEIBT фортх EIN аджентуре!" CR ;                                                 \ PRINT SILLY TEXT                                                                                                                                                                                                                                                                                                                                                        \\                                                                                фортх-геселлсцхафт  (C) BP/KS/RE/WE/CLV \\ хIER IST  ...                      \\ \      ... дEINE LOKALE ...            \ \           ... фортх-гRUPPE :         \ \                                      \ \                                      \ \                                      \ \           кONTAKTADRESSE :           \ \                                      \ \           BERND  PENNEMANN           \ \           тREITSCHKESTR 20           \ \                                      \ \           1000  бERLIN  41           \ \                                      \ \                                      \ \           цLAUS     жOGT             \ \           бUELOWSTR.  67             \ \                                      \ \           1000 бERLIN 30             \ \                                      \ \                                      \ \                                      \ \                                      \ \                                      \ \                                      \ \\ \\ \\ \\ \\ \\  \\  \\ \\ \\ \\ \\ \\\ NUMBERS                     05JUL85RE)                                          DECIMAL             \ SORRY, BUT THIS                        \ IS FOR ыоу !                                                : ALPHABETIC  ( --)  &36 BASE ! ;                                                 HEX                 \ аH, MUCH BETTER                                                                                      \ лOOK AT THIS:                                                                                                            31067е6.  ALPHABETIC D.       HEX        19211д5.  ALPHABETIC D.       HEX           -123.  ALPHABETIC D.       HEX                                                                                          \ тRY TO EXPLAIN !                                                                                                                                                  \\                                                                                фортх-геселлсцхафт  (C) BP/KS/RE/WE/CLV \ RELOCATING THE SYSTEM        20OCT87RE                                          э : RELOCATE-TASKS  ( NEWуп -- )          UP@ DUP                                  бегин  1+ UNDER @ 2DUP -                 вхиле  ROT DROP  репеат  2DROP ! ;                                               : RELOCATE  ( STACKLEN RSTACKLEN -- )     SWAP  ORIGIN +                           2DUP + B/BUF + 2+  LIMIT U>               ABORT" BUFFERS?"                        DUP   PAD  $100 +  U< ABORT" STACK?"     OVER  UDP @ $40 +  U< ABORT" RSTACK?"    FLUSH EMPTY                              UNDER  +   ORIGIN $а + !        \ R0     DUP RELOCATE-TASKS                       UP@ 1+ @   ORIGIN   1+ !        \ TASK         6 -  ORIGIN  8 + ! COLD ; \ S0                                             : BYTES.MORE  ( N -- )                    UP@ ORIGIN -  +  R0 @ UP@ - RELOCATE ;                                           : BUFFERS  ( +N -- )                      B/BUF * 2+  LIMIT R0 @ -                 SWAP - BYTES.MORE ;                    \ DUMP UTILITY                30NOV85RE  \ ADAPTED FROM ф83 лAXEN/пERRY                                                    э : .2  ( N --)                           0 <# # # #> TYPE SPACE ;                                                         э : д.2  ( ADR LEN --)                    BOUNDS ?до  и C@ .2  лооп ;                                                      : DLN  ( ADR --)  \ дUMPлIнE              CR  DUP 4 U.R  SPACE  DUP 8 д.2          ." Z "  8 BOUNDS до  и C@ EMIT  лооп ;                                           э : ?.N  ( N0 N1 -- N0)                   2DUP = иф  RVSON  тхен                   2 .R  RVSOFF  SPACE ;                                                            э : ?.A  ( N0 N1 -- N0)                   2DUP = иф  RVSON  тхен  1 .R RVSOFF ;                                            -->                                                                                                                                                                 фортх-геселлсцхафт  (C) BP/KS/RE/WE/CLV \ DUMP UTILITY                30NOV85RE  \ ADAPTED FROM ф83 лAXEN/пERRY                                                    э : .HEAD  ( ADR LEN -- ADR' LEN')        SWAP  DUP $ффф0 AND  SWAP $ф AND         2 0 до  CR 5 SPACES                       и 8 * 8 BOUNDS до и ?.N лооп 2 SPACES    и 8 * 8 BOUNDS до и ?.A лооп            лооп  ROT + ;                                                                    : DUMP  ( ADR LEN --)                     BASE PUSH  HEX  .HEAD                    BOUNDS ?до  и DLN  STOP? иф леаже тхен               8 +лооп CR ;                                                         : Z  ( ADR N0 ... N7 --)                  ROW 2- >R  UNLINK                        8 PICK 7 + -7 BOUNDS                     до  и C!  -1 +лооп R> 0 AT DLN  QUIT ;                                                                                    CLEAR                                                                                                                                                              \ DISASSEMBLER 6502 LOADSCR    06MAR86RE                                          оNLYFORTH                                                                         \NEEDS тOOLS жOCABULARY тOOLS                                                     тOOLS ALSO DEFINITIONS HEX                                                        э : TABELLE  ( +N -- )                    цREATE     0 до                          BL WORD NUMBER DROP , лооп               дOES> ( 8B1 -- 8B2 +N )                  + COUNT SWAP C@ ;                                                                -->                                                                                                                                                                                                                                                                                                                                                                                                                                                               \ DIS SHORTCODE0               20OCT87RE                                          BASE @  HEX                                                                       $80 э TABELLE SHORTCODE0                 0б10 0000 0000 0341 2510 0320 0000 0332  0ац1 0000 0000 03а1 0е10 0000 0000 0362  1д32 0000 0741 2841 2710 2820 0732 2832  08ц1 0000 0000 28а1 2д10 0000 0000 2862  2а10 0000 0000 2141 2410 2120 1ц32 2132  0цц1 0000 0000 21а1 1010 0000 0000 2162  2б10 0000 0000 2941 2610 2920 1цд2 2932  0дц1 0000 0000 29а1 2ф10 0000 0000 2962  0000 0000 3241 3141 1710 3610 3232 3132  04ц1 0000 32а1 31б1 3810 3710 0000 0000  2051 1ф51 2041 1ф41 3410 3310 2032 1ф32  05ц1 0000 20а1 1фб1 1110 3510 2062 1ф72  1451 0000 1441 1541 1б10 1610 1432 1532  09ц1 0000 0000 15а1 0ф10 0000 0000 1562  1351 0000 1341 1941 1а10 2210 1332 1932  06ц1 0000 0000 19а1 2е10 0000 0000 1962                                           BASE !                                                                            -->                                     \ DIS SCODE ADRMODE            20OCT87RE                                          э цREATE SCODE                            $23 C, $02 C, $18 C, $01 C,              $30 C, $1E C, $12 C, $2C C,                                                      э цREATE ADRMODE                          $81 C, $41 C, $51 C, $32 C,              $91 C, $A1 C, $72 C, $62 C,                                                      э : SHORTCODE1 ( 8B1 - 8B2 +N)            2/ DUP 1 AND                             иф  0= 0  EXIT  тхен                     2/ DUP $7 AND ADRMODE + C@               SWAP 2/ 2/ 2/ $7 AND SCODE + C@ ;                                                э жARIABLE MODE                                                                   э жARIABLE LENGTH                                                                 -->                                                                                                                                                                                                         \ DIS SHORTCODE TEXTTAB        06MAR86RE                                          э : SHORTCODE ( 8B1 -- +N )               DUP 1 AND         ( UNGERADE CODES)      иф  DUP $89 =                             иф  DROP 2  тхен  SHORTCODE1            елсе  SHORTCODE0  ( GERADE CODES)        тхен                                     SWAP DUP 3 AND LENGTH !                  2/ 2/ 2/ 2/ MODE ! ;                                                             э : TEXTTAB   ( CHAR +N 8B -- )           цREATE                                   DUP C, SWAP 0 до >R DUP WORD             1+ HERE R@ CMOVE R@ ALLOT R>             лооп 2DROP                               дOES>  ( +N -- )                         COUNT >R SWAP R@ * + R> TYPE ;                                                   -->                                                                                                                                                                                                                                                  \ DIS TEXT-TABELLEN            06MAR86RE                                          BL $39 3 э TEXTTAB .MNEMONIC             *BY ADC AND ASL BCC BCS BEQ BIT BMI BNE  BPL BRK BVC BVS CLC CLD CLI CLV CMP CPX  CPY DEC DEX DEY EOR INC INX INY JMP JSR  LDA LDX LDY LSR NOP ORA PHA PHP PLA PLP  ROL ROR RTI RTS SBC SEC SED SEI STA STX  STY TAX TAY TSX TXA TXS TYA              ( +N -- )                                                                         аSCII / $е 1 э TEXTTAB .VOR                 / /A/ /Z/#/ / /(/(/Z/Z/ /(/                                                                                             аSCII / $е 3 э TEXTTAB .NACH                  /   /   /   /   /   /,X              /,Y /,X)/),Y/,X /,Y /   /)  /                                                    -->                                                                                                                                                                                                                                                  \ DIS 2U.R 4U.R                06MAR86RE                                          : 4U.R ( U -)                              0 <# # # # # #> TYPE ;                                                          : 2U.R ( U -)                              0 <# # # #> TYPE ;                                                              -->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     \ DIS                          20OCT87RE                                          фORTH DEFINITIONS                                                                 : DIS   ( ADR -- ) BASE PUSH HEX         бегин                                     CR DUP 4U.R SPACE DUP C@ DUP 2U.R SPACE  SHORTCODE >R LENGTH @ DUP                иф OVER 1+ C@ 2U.R SPACE тхен DUP 2 =    иф OVER 2+ C@ 2U.R SPACE тхен            2 SWAP - 3 * SPACES                      R> .MNEMONIC SPACE 1+                    MODE @ DUP .VOR $ц =                     иф DUP C@ DUP $80 AND иф $100 - тхен      OVER + 1+ 4U.R                          елсе LENGTH @ DUP 2 SWAP - 2* SPACES      ?DUP                                     иф 2 =                                    иф   DUP  @ 4U.R                         елсе DUP C@ 2U.R                       тхен тхен тхен MODE @ .NACH LENGTH @ +   STOP?  унтил DROP ;                                                                                                       оNLYFORTH CLEAR                         \\ сUBDIRECTORY TEST.DIR       26OCT87RE                                          .                    0                   ..                -&23                   ALL-WORDS            1                   FREE                 2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             \ PRETTY WORDS                 26OCT87RE                                          : .TYPE  ( CFA -- )   DUP @ SWAP 2+                   CASE? иф ." цODE" EXIT тхен  ['] :     @ CASE? иф ."    :" EXIT тхен  ['] BASE  @ CASE? иф ." уSER" EXIT тхен  ['] FIRST @ CASE? иф ."  жAR" EXIT тхен  ['] LIMIT @ CASE? иф ."  цON" EXIT тхен  ['] фORTH @ CASE? иф ."  жOC" EXIT тхен  ['] R/W   @ CASE? иф ."  дEF" EXIT тхен  DROP ." ????" ;                                                                  : (WORDS  ( LINK -- )                     бегин  STOP? ABORT" STOPPED"  @ DUP      вхиле  CR DUP 2- @ 3 .R SPACE                   DUP 2+  DUP NAME> .TYPE SPACE            .NAME  репеат DROP ;                                                      : ALL-WORDS ( -- )                        VOC-LINK                                 бегин  @ ?DUP                            вхиле  DUP 6 - >NAME                            CR CR .NAME ."  WORDS:" CR               ." бLK тYPE нAME "                       DUP 4 - (WORDS  репеат ;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        \ SAVESYSTEM                   23OCT87RE                                          э : (SAVSYS ( ADR LEN -- )                [ аSSEMBLER ] нEXT  [ фORTH ]            ['] PAUSE  DUP PUSH  !  \ SINGLETASK     I/O PUSH  I/O OFF  BUSTYPE ;                                                     : SAVESYSTEM   \ NAME MUSS FOLGEN            \ фORTH-кERNAL VORBEREITEN:           SCR PUSH  1 SCR !  R# PUSH  R# OFF          \ еDITOR VORBEREITEN:                 [ еDITOR ]                               STAMP$ DUP PUSH OFF                      (PAD   DUP PUSH OFF                         \ NUN GEHT'S LOS:                     SAVE                                     8 2 BUSOPEN  0 PARSE BUSTYPE             " ,P,W" COUNT BUSTYPE  BUSOFF            8 2 BUSOUT  ORIGIN $17 -                 DUP  $100 U/MOD  SWAP BUS! BUS!          HERE OVER - (SAVSYS  BUSOFF              8 2 BUSCLOSE                             0 (DRV ! DERROR? ABORT" SAVE-ERROR" ;                                            оNLYFORTH                               \ BAMALLOCATE, FORMATDISK      16FEB91PZ                                          : BAMALLOCATE ( --)                       DISKOPEN ?EXIT                           PAD &18 0 READSECTOR 0=                   иф PAD 4 + $8ц ERASE                        PAD &18 0 WRITESECTOR DROP            тхен  DISKCLOSE                         (DRV @ 8 + &15 BUSOUT                    " I0" COUNT BUSTYPE                      BUSOFF ;                                                                         : FORMATDISK ( --)  \ нAME MUSS FOLGEN    (DRV @ 8 + &15 BUSOUT                    " N0:" COUNT BUSTYPE                     0 PARSE BUSTYPE BUSOFF                   DERROR? ?EXIT                            BAMALLOCATE ;                                                                    \ Z.б.: FORMATDISK ULTRAфортх,ID                                                                                                                                                                             фортх-геселлсцхафт  (C) BP/KS/RE/WE/CLV \ COPYDISK                    06JUN85WE)                                          э жARIABLE DISTANCE                                                               LIMIT FIRST @ - B/BUF /  э цONSTANT BUFS                                          э : BACKUPBUFS  ( FROM COUNT --)          CR ." иNSERT сOURCE-дISK" KEY DROP CR    BOUNDS 2DUP до  и BLOCK DROP  лооп       CR ." иNSERT дESTINATION-дISK"           KEY DROP CR                              DISTANCE @ ?DUP                          иф    >R  SWAP 1- OVER  R> +  CONVEY     елсе  до  и BLOCK DROP UPDATE  лооп            SAVE-BUFFERS тхен ;                                                        : COPYDISK  ( BLK1 BLK2] [TO.BLK --)      2 PICK - DISTANCE !  1+ OVER -           DUP 0> NOT аBORT" ранге еррор!"          BUFS /MOD ?DUP                           иф SWAP >R 0                                до DUP BUFS BACKUPBUFS BUFS +  лооп      R> тхен                               ?DUP иф BACKUPBUFS елсе DROP тхен ;                                             \ 2DISK COPY2DISK..           CLV14JUL87                                                                                   $165 э цONSTANT 1.T                      $1еа э цONSTANT 2.T                      $256 э цONSTANT 3.T                                                                                                        э : (S#>S+T ( SECTOR# -- SECT TRACK)           DUP 1.T U< иф $15 /MOD EXIT тхен   ( 3+) DUP 2.T U< иф 1.T - $13 /MOD $11 +                             EXIT тхен          DUP 3.T U< иф 2.T - $12 /MOD $18 +                             EXIT тхен                        3.T - $11 /MOD $1е +  ;                                                                                                                         э : S#>T+S  ( SECTOR# -- TRACK SECT )     (S#>S+T  1+ SWAP ;                                                                                                                                                                                          -->                                     \ ..2DISK COPY2DISK           CLV04AUG87                                                                                   э : ?E ( FLAG--)                           ?DUP иф ." дRV " (DRV @ . DISKCLOSE              ABORT" " тхен ;                                                         э : OP ( DRV#--) (DRV ! DISKOPEN ?E ;                                             : COPYSECTOR \ ADR SEC# --                 2DUP                                     0 OP S#>T+S READSECTOR  ?E DISKCLOSE     1 OP S#>T+S WRITESECTOR ?E DISKCLOSE ;                                          : COPY2DISK \ -- \ FUER 2 фLOPPYS         PAD DUP $110 + SP@ U> ABORT" NO ROOM"    CR ." сOURCE=0, дEST=1" KEY DROP CR      BASE PUSH DECIMAL      0 &682            до и . и S#>T+S . . CR $91 CON!             DUP и COPYSECTOR   -1 +лооп DROP ;                                            : 2DISK1551 \ -- STELLT EINE 1551 AUF #9  FLUSH 8 &15 BUSOPEN " %9" COUNT BUSTYPE  BUSOFF DERROR? DROP ;                                                           ES KOMMT NICHTS MEHR ES KOMMT NICHTS MEH R ES KOMMT NICHTS MEHR ES KOMMT NICHTS M EHR ES KOMMT NICHTS MEHR ES KOMMT NICHTS  MEHR ES KOMMT NICHTS MEHR ES KOMMT NICH TS MEHR ES KOMMT NICHTS MEHR ES KOMMT NI CHTS MEHR ES KOMMT NICHTS MEHR ES KOMMT  NICHTS MEHR ES KOMMT NICHTS MEHR ES KOMM T NICHTS MEHR ES KOMMT NICHTS MEHR ES KO MMT NICHTS MEHR ES KOMMT NICHTS MEHR ES  KOMMT NICHTS MEHR ES KOMMT NICHTS MEHR E S KOMMT NICHTS MEHR ES KOMMT NICHTS MEHR  ES KOMMT NICHTS MEHR ES KOMMT NICHTS ME HR ES KOMMT NICHTS MEHR ES KOMMT NICHTS  MEHR ES KOMMT NICHTS MEHR ES KOMMT NICHT S MEHR ES KOMMT NICHTS MEHR ES KOMMT NIC HTS MEHR ES KOMMT NICHTS MEHR ES KOMMT N ICHTS MEHR ES KOMMT NICHTS MEHR ES KOMMT  NICHTS MEHR ES KOMMT NICHTS MEHR ES KOM MT NICHTS MEHR ES KOMMT NICHTS MEHR ES K OMMT NICHTS MEHR ES KOMMT NICHTS MEHR ES  KOMMT NICHTS MEHR ES KOMMT NICHTS MEHR  ES KOMMT NICHTS MEHR ES KOMMT NICHTS MEH R ES KOMMT NICHTS MEHR ES KOMMT NICHTS M EHR ES KOMMT NICHTS MEHR ES KOMMT NICHTS  MEHR ES KOMMT NICHTS MEHR ES KOMMT NICH                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ф═╠│х╠═▒L	 O ╛#жариаблеr#а!фЩ\P э#уаллотr#╦0
+"В
+Ъ[Ю+уSERAREA FULL0
+"▀0
+[\P С#усерr#а!фЭ#К ╔8И┘╟ф═╠e│┼хe═▒L	 P )$алиасr#а!~"╦й
+ 1└ /ЧЪЩb 
+ зс";\Q ]$жп." |%k%k%fk%    Q ▒$цуррент."k%Q ╙$цонтеьтr"╢$;\r#"┘╘"#\S ╠%ордерr#р$i %к%/ЧЪШ╧ф╓,╢$к%\S ы%вордсr#д$""╦║6≥1└ ╧6╦A#▒,bФЪ─\T &(финд;&═╠≥$ ┬Ь║&)┘(═ ╠$╙х╠$┘%├$$п═╒ L▄х╠$)е(пЮ╘e$┘)╘ e%┘*╓(╠&я)пк┬пВ═╔*▒┬╔)▒┬╒ L┴√&║┘$╠┘%║$┘&)8e$┘$░Ф%╔&) п	╔$│╔%Lб&║$│╠╢$""й╦╪
+ ╞┴Ю+INVALID NAMEь~;#Щ┬!^!"└ ╪^![╦!· 
+ з!л	;b &!─╢║К Lъ 3"║┘(╠┘)╔i┘░Ф║┘&╠┘'&пL▄╠&▒┘%║&│┘$%пL	 ╔$i┘$░Ф%║$H8)e$┘$░Ф%h) П
+╠$H║$┘$h┘%╔$е(п╟╔%е)п╙LCN ╦!>намеr#%
+"╦└ Изi▀1"щ└ Zч'нотфоунди(ъ'X ╬'но.еьтенсионсr#З+хAEH?\X о'	интерпретr#╦'\ r#·)У&щ└ ╪1└ ≈╦'Ю+COMPILE ONLY┐'sP≥└ и'╦'\r#·)У&щ└ <└ ≈╦'╦'┐'sPщ└ <└ ▀^^b и'╦'\Y М'A[r#/ (Ц(╨'1В\Y {(]r#/;(Ц(╨'1Е\r#⌠Ю+цRASH\Z ▒(деферрсижеr#╢\r#┌└ |йТД─\H х	иммедиатеr#
+@з\H Ррестрицтr#
+─з\I 	 
+цлеарстацк. ═╠┘х╠┘═L	 I  халлотr#╦	"Тi▀;
+A╦i╦╦	;ф█Тi,, ╦	;\I @ хеапr#╦	"Z\I y хеап?r#─ }
+╞\r#╦ьТi╦I ─ ▀д─ Тi~[╢\╔8И┘╟ф╔╠ех╠Е═░L	  ├	⌠Ю+STACK EMPTY\\ ∙).статуси(нB."О
+О
+;\\ Ц)└пусхr#О
+▀╦п
+"п
+Я)п
+п
+\\ Щ)лоадr#щ≥sд*д;╦*╦ВМ)Ы'\] *+лоадr#д"В#*\] C*тхруr##▀i
+ %#*й╧\] Y*+тхруr##▀i
+ %K*й╧\] v*C-->r#╪д[╦ВМ)\] ■*рдептхr#б	жертr##lj└ ╜bТЪg\r#╪"≥\r#l⌠╪[\r#gl\F мдпл."ЪЪr#└ 9ч─9║\r#└  9─О
+└ ╣─"#щs─⌠\r#
+&@└	 
+
+⌠D
+$@└	 
+⌠D
+х@└	 
+⌠D
+%@└ ф⌠D║\r#
+,Тi▀
+.i\r#"⌠is╪[\."  G нумбер?r#Ф	,╧6д"щ└ ▌+;╦"≥+;3+\_ ÷+┤(аборт"r#x▀└ п
+, О
+
+╩D─\r#x▀└ 
+╩D─\_ ж+фаборт"r#6Ю+\\_ ,феррор"r#6З+\\` %,бл©#  ` :,	-траилингS,≤ с║┘&╠e%┘'╓$░┬╠&и ПхпФ%≤H╔%L≤пЙф'ф%Д≤La E,спацеr#?,7\a ┴,спацесr#║| ▒,й╧\rc ╓-.r#╘-\c ╣-у.r#║╘-\d ц-.сr#;
+╦	"Тi
+ ё| %"х-фШ╧\d р-ц/л©#) d Ч-л/с©# d 
+.листr#▌+;╞сCR ▌+"╦ <Xх-╞дR X<╧-.║i. ║6└ └7%ф└-▒,▌+"╥1%.$В.gQ,#7й╧7\e .паусе	 e z.лоцкr#╦"}
+i└ ─D╦"└ ┌.bТЪ}
+▀/▒(╔(█/╔)█/Lc/j /(дискеррr#╞ERROR !  R TO RETRY ╞7╦
+Ri▀
+рi┴Ю+ABORTED\j а/дискерри(л/j 0р/ви(╤?r#╦Z"┐└J A╦"#└3 
+*Т	*Q+╦ZТA"ф█"║0└ ╞WRITE 0bшЪ
+─ТT#─\r#A╦ЕTВ\r#╦{0
+*Т	*Q+п
+Тз	"ВТ
+ВZ#√$╦"ВA\r#√$Aд$\Q ╨$алсоr#√$"
+
+-З+жOCABULARY STACK FULLд$"ф√$[д$;\Q ч$тоссr#/ЧЪ√$[\R %
+жоцабуларыr#а!║║ь%
+"%
+;К Lю д$;\R /%фортхV%V{V{  R a%онлы└%!8!8o%К Lю ║√$;д$;Е$\R s%	онлыфортхr#z%i%Е$©%\S ≈%дефинитионсr#д$$▒╔8И┘╟ф╔&х
+0≤IЪ╗х≤│╘Ъ$┼═▒L	 V 1&финдr#д$╦"Т┘"i└ ┘|"9&└ j■&DТ√$A[└
+ ▀┘bчЪj║\V Н&'r#У&≥Ю+хAEH?\V 7'и[цомпиле]r#;'\V O'ц[']r#;'^\V e'нуллстринг?r#╦й≥╦└ j\х╠i┘х╠i ┘═L	 W u'
+>интерпрет∙' (X ╚DbЮЪj\r#l
+1В\N ║"наме>r#╦с"▀й
+ 1└ "\N Б">бодыr#A\N #.намеr#щ└ ╦■ └ ╞эl
+1#7b ╞???▒,\O #цреате:r#а!∙╢$"д$;∙(║\O H#:r#R#К ╔8И┘╟ф╔│╔▒╔i┘┼e┘L	 O h#а;r#║Щ6\(╢\O √#цонстантr#а!К ╔8И┘╟r#а!/╔(К ═╠Hх╠┘h┘═L Z ╣((исr#О
+╦Aп
+";\r#"/и'"Тi▀/╦'"i┴Ю+NOT DEFERRED\Z щ(Bисr#;'╦С(#1"└
+ 6Ц(D;\." r#о*
+ -Ю+TIGHT STACKE)й≥└ ⌠E)Д⌠Ю+DICTIONARY FULL╞STILL FULL \[ ")?стацк═)═8╔Ях╔Яп	═ ├	H)\▌G)═▒╔│║i┘┼q┘╘eH┼eLr#О
+~"Й";\J ▄ едоес>r#6К 
+L6ю \r#╦
+Ъ1
+Ъii\r#ь
+Ъ1
+Ъi└ ╦╦#ьТi#Р╪~[╪Щ\K Ш ?хеад."  K V!эr#^!"s⌠^!;\L d!варнинг."  r#└!"s~"╢$"9&j└ ▒,~"#╞EXISTS ╧6\L z!цреатеr#ьд""Ё
+Ai\] ╛*дептхr#;
+╦	"▀i\r#1"└ ╞
+ COMPILINGD╞ OK\^ г*(яуитr#М)7ОЫ'ъ*bТЪ\^ +'яуити(
++^ +яуитr#б	"б
+(&+\^ ,+стандарди/оr#/*Т	зд\^ C+'аборти(═	^ a+абортr#, c	j+Q+3+\_ p+сцр." _ ┬+р#."  _ ■+(еррорr#Q+▒,ь#l#7▒*╦l╪;Е║п
+║║МВ
+-@└ 9⌠п
+МВO└ Ф	;МВj≥╜╗М)Вj≥└ПЪ■≥ВМ)ВbтЪ\G б'нумбер?и(лG Eнумберr#Pщ≥Ю+?┐└ \H Vласт."  r#~"щ\H wхидеr#┌└ ┘"╢$";\H ▌режеалr#┌└
+ ┘╢$";\H ╚ирецу	#Х┘\b ⌡,холдr#⌠╢,[╢,"Д\b ╬,<#r#╢,╢,;\b в,#>r#ч╢,"╢,Тi\b Х,сигнr#┐└ 
+-е,\b Ъ,#r#Ф	"╓
+	Ту└ 
+┤В
+0Ве,\b -#сr#-Иy└ЬЪ\c @-д.рr#Z|)э,E--М,ТщТi╓,#7\c U-.рr#▀[-\c -у.рr#║▀[-\c ▓-д.r#║[-▒,\
+;\e ├.унлоцкr#╦█.В\h8И┘hИ ┘╘L│═╠┘х╠┘═║┘╠┘╔i┘░Ф╒L░
+f ╥.филе<$f  /преж."п╖."  f /б/буф©#═╠(ы" пхюпТ`:/═╠≥$ ┬Ь═╠e&┘&х╠e'┘'╜/┘(╜/┘) )/п╔i┘░Ф═╘e(│╔)i ▒LF╔(┘*╔)┘+║*┘(═╠*┘)(пL	  )/пБ║(│*═╠(▒*╜/│(╜
+╪0└ ╞READ 0bыЪО
+\r#/╦"└ "╦A"⌠i└ЙЪ/█.╦!0\r#Aп
+И;з	"ВA;О
+TВ/ю.\r#/"╦└ ╦Z"┐└НЪ\r#/"╦"≥└ЖЪZ"┐\l 0цоре?r#8/ч║\m F1(буфферr#8/х0Н0bЬЪ\m Z1(блоцкr#8/х0┴0Н0bЖЪ\▐1═╠Hх╠Lm t1буфферr#█1d1	
+0∙║е$╠Е%L┤' яу<║┘$╠┘%╔i┘░Ф║е$╠Е%╟L┴L▄( Щ>r#▀у\( )0>r#╓┐\( 70<>r#≥┴\( Fу>r#▀\( V=r#i≥\( eд0=r#≥\( sд=r#╣Уy\( ┐д<r#Иi└ -jjb ч\r#9└ ▀─\) ■минr#И-╣\) емаьr#Иу╣\) в	д+В╘ сх╠e&▒х╠e'▒║e$│═╠e%▒L	 # П1+%╘a╟L │╠i ▒L	 # 2+C╘пЮ# <3+P╘псV╘пм\╘пг# I1-i8║И░L │╠И ▒L	 # b2-┤░Ю$ ─труе©#ЪЪ$ ▄фалсе©#  $ ≥"-1⌠$ ╖!0║$ ╟1©# $ ╦2©# $ б3©# $ л4©# $ жонr#⌠▀;\	ибr#\"\; вяуерыr#щ
+Pв7я"O;╦ВдВ\< Гсцанr#п
+╦└ Тйi└ g▀#▀bДЪ9\< скипr#п
+╦└ Тйi└ g▀#▀bДЪ9\< ;/стрингr#ТТВZi\иA░и{╟иb░)ъи[╟	─`= jцапитал╘║ ├│L	 > ²
+цапитализед║┘$╠┘%║$┘&┬д&п═L		╔8И┘╟ф═╠│х╠═▒L	  Мрот═╠┘%═╠═▒═╠┘$╔%▒═╔$▒х╠┘%║▒═╠│╔%▒═L	  -ротr#\ Sнипr#▀─\ dундерr#▀Т\ tпицкr##3;
+В"\ ├роллr#╦п
+█;
+╦AО
+#3Р─\ ²2свапr#п
+О
+\ ю2дропТ ж2дупr#ТТ\  	ЛФ)Ф'Lл7 ╪цможе>Т╘ с╔%e'┘'╔%e)┘)Ф%╓$░┬╠(▒&≤пЬф'ф)ф%пП═L	 7 Иможеr#п
+И└ О
+РDО
+д\8 %плацеr#Тп
+Т#О
+,Д\8 Fцоунтn║┘$i│╠┘%i ▒╔8И┘╟фLт8 dерасеr#║╗\9 ▐филл╙╘ с┬╔$╕'П
+▒(хпШФ)йпЖ╕&П▒(хйпЗ═L	 : ║хереr#л	"	ф║│╠▒╘e┘░ФL	  Й
+р@╔8И┘╟ф╠▒║L  ┘рдроп 1еьитF║┘╠┘L =уннест^║┘╠┘L S?еьитu║╔i┘░Ф(п╬L	  kеьецуте≥║┘╠┘╔i┘░ФL  █перформr#"≈\ ╠ц@л║┘$╠┘%╘ ▒║$L  ец!Ф║┘$╠┘%х╠│$┬╔	%│L	 3 ≤м*r#╦┐╦п
+└ ╓▀╦┐└
+ ╓О
+┴п
+·О
+└ ╣\3 К*r#·─\3  2*5║
+│╠*▒L	 r#⌠Ю+DIVISION OVERFLOW\4 .ум/модi║┘)╠┘(╔i┘░Ф║┘%╠┘$х╠┘'х╠┘&╒f*8╔%Е)╗╔$Е(╟&*░┘$└%&'&&&%&$йпъ═f$f%░ ├	B\╔&▒х╔%▒х╔$▒═╔'L 5 ^м/модr	                                 ."ULTRAфортх-83 3.80-ц64  █ЪЪ╠┘╜ЪЪ┘╔i┘╟lЪЪФ╟Ы   	енд-трацеe	╘╔┘╘┘╘i┘╘┘L	  W	рецожер."h┘h┘╔пффLr# z	нооп	  ≥	оригин©# ╓	с0<$ Ё	р0<$
+ ╫	дп<$ г	оффсет<$ я	басе<$ ъ	оутпут<$ К		еr#ьi\. щ?паирсr#iЮ+UNSTRUCTURED\и H╘ЪLH╘ ╙╔8И┘╟ф┼═▒h╒ L / Тцасе?B╘ с╔$ап	╔%япL┴┼L0 8бифr#6└╕╪\0 \дтхенr#=╪Щ╫\0 oделсеr#╪Щ6b╕▀╫⌠\0 └ебегинr#уф\0 ║евхилеr#фЩф6└╕/ЧЪх\r#Х╦/ЧЪi└
+ ─╫	дr#╣Е\B япарсеr#п
+╣╦"tТ▀О
+п
+Тi╦О
+Li╦[\B Бнамеr#?,ьбD\C стате."  C )Eасцииr#?,ь#й1"└ ^\C 7,"r#
+"ЙьТ#ЩN\C W└"литr#О
+О
+|lВп
+п
+\C q┌("r#x\C ▄а"r#6▒\\D ≥┐(."r#xl#7\D ╘б."r#6╞\\D ╩A(r#
+)	умаьr#И╣\) Иуминr#И[╣\) Эеьтендr#╦┐\) дабсr#└ ╣\) "абсr#└ ╓\r#9О
+A╦п
+п
+▀п
+п
+\* 7┐(доr#ТiI\* c└(?доr#Тiщ└ IО
+╦"Вп
+─\* uбоундсr#ТВ▀\*  ┤ендлооп╩╘L+ ╞┘(лоопл╘a│░╠i ▒░L	 ═╠┘┬╠	 $ Юоффr#║▀;\% Я└цлит╔8И┘╟ф║│┼▒ФпФL	 % ┐лит1╔8И┘╟ф╠▒║│╔i┘░ФL	 % )глитералr#╦/ Ъ1└
+ 6/D6
+\& T0<┘╠╘Ъ$┼▒L & ~0=⌡║ПХпИ& ■увитхин╠╘ с═║е$╠Е%╟
+║е&╠Е'╟╫L▄' ╔<в║┘$╠┘%╔i┘░Ф╔%Q		 х╠$ ├▒$LяГ├*═╠≥$ ┬Ь═╜╨e&┘&╜╩e'┘'8╔$М╨┘$╔%М╩┘%╟║█╨╠█╩Ly═╔$%П=║&япФ&пФ'╔$пф%ф$L$╔&┘(╔'┘)║&яФ&пФ'╔$пф%ф$(ПФ*╔$%пБ8═╔&Я█╨х╔'Я█╩╘e┘░Ф═╠│┘$х╠═▒┘%┬╔*▒$╠(хф*В╘ ▒$═L	 B ╣соурцеr#д"щ└ ╥1О;DщO"\B ╛вор	Б+Ых║q▒┬╠═q▒L≥
+  Сорх║▒┬╠═▒L≥
+  анд3х║1▒┬╠═1▒L≥
+  +ьорPх║Q▒┬╠═Q▒L≥
+! H-kх╠8А▒х╠═Я═▒L≥
+! eнот▀┼А│┼Я▒L	 ! ┐негате╕8╟Ц" ⌡днегате╥х8┼Я▒х┼Я▒┼А│═┼Я▒L	 
+╙╗┬╠≥$ ┬Ь┼e┘░Ф╒ ═`" ╚	\: япадr#ь
+BВ\: Баллотr#л	[\: У,r#ь;фЩ\: ц,r#ьД╪Щ\: ┤цомпилеr#О
+╦Aп
+"\; ,#тиб." ; H>тиб."`SAVESYSTEM @:C64DEMO                                                            ; U>ин." ; ╡блк."  ; ╬спан." ; йт	i┘░ФL	  ъцтогглеr#|йN▀Д\ @$║┘$╠┘%╠$▒║$L  !=║┘$╠┘%х╠│$х╠═▒$LТ 7+!]║┘$╠┘%х╠a$│$х╠═q$LO Vдроп²
+ yсвап█╠╙═╠┘$┼▒╔$═▒х╒ ╠┘$║▒┬╔$L  └дуп╨╔8И┘╟ф═╠═▒х╠┬L  ╡?дупъ║пL	 L╨ жожерЖ	#╦п
+=Т┐└ |В▀g┐└ ╓Т└ ▀В▀g9\5 ь2/╠
+╠j▒║jL 6 /модr#п
+О
+Ю\6 //r#6j\6 Dмодr#6─\6 R*/модr#п
+ПО
+Ю\6 b*/r#jj\6 xу/модr#║▀g\6 ┤уд/модr#п
+║gО
+▀п
+gО
+\7 ⌡цможеф╘ с┬д$п	ф%═L	 ╠(▒&хп	инпут<$ Ы	еррорхандлер<$ 
+жоц-линк<$ 
+удп<$ *
+сп@=
+╔┘$╔┘%╒$╔8И┘╟ф╣▒╣ ╒ L  5
+сп!g
+║╙╠┘├╒ L	  _
+уп@
+╒LG
+ w
+┐уп!▌
+╒╠∙┬╠∙ ╒ ═╔i┘░ФL	  ├
+рп@╣
+╒LG
+ ╜
+┐рп!д
+╒L░
+ ╪
+┌>рр
+╔8И┘╟ф║│╠▒L²
+ к
+┌р>Я
+╔8И┘╟	bНЪ\0 Ёфрепеатr#фЩ6bя\0 Меунтилr#фЩ6└я\1 бдоr#6i╕п\1 ц?доr#6|╕п\1 1длоопr#пЩ6й6╧╫\1 Eе+лоопr#пЩ6Ш6╧╫\1 `┘леажеr#╧О
+┘╦"Вп
+\2 |ум*═╠┘$║┘%х├&├'╒'&&&%&$░╠e'┘'х╠┬e&┘&░Ф%пФ$йпэ╔'▒х╔&▒═╔$▒╔Йч\D лB.(r#
+)Й#7\D щA\r#╦".H#.$╦;\D ОB\\r#О;╦;\D \неедсr#У&j└ С\D хеьr#
+Ф	;\D 7децималr#
+
+Ф	;\E Jдигит?r#
+0i╦
+	[└ 
+┤i╦
+	[└ Ф	"Т[щs─║\E a
+аццумулатеr#▀п
+▀Ф	"·─Ф	"·УО
+\E ═цон	┘═L	 + б├(+лоопЩ║a│╠q▒jQ╔i┘░Ф(дL	 , Р│и'═ ╔8И┘╟ф╠ххq│┬╠ххq═▒L	 , !│йS═пр- M├бранцхd╔a┘$╔q┘╔$┘L	 - Y┤?бранцх├║╔i┘░Ф(ПкLD. z>маркr#ь║\. ·>ресолжеr#ьТi▀;\. ╡<маркr#ь\. м<ресолж                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+ю 
+;\v ▐7кеы~7 v ╘7кеы?~7v ╢7децоде~7v ю7еьпецт~7w   сеалr#║/z%#;\w э7$онлыz%w С7%фортхi%w Ч7%вордс	&w 
+8$алсоЕ$w 8+дефинитионс©%r#%
+"╦┘"Тзi;"щ≥└ЙЪ\r#║/;3#3;х3\x н7'цолди(═	r#18Q8ё%m8:7	l#77 8\x e8'рестарти(═	r#/цлеарr#ь╦}
+5л	;\t ║5(форгетr#╦■ Ю+	IS SYMBOLЫ35\t ╩5форгетr#;'╦/$"Ю+	PROTECTED╘"╦■ └ Й"b ┘┘е5\t ъ5емптыr#/$"}
+5/2"0
+;\u 6сажеr#ь}
+5%
+"╦┘┘"Т┘;"щ≥└ЙЪ}
+╜	/ д\u >6быеr#Л1Ц;\r#╞7пi└ ⌠9\u w6стоп?▀i1 7%ф└-Х╦%33╕>ч>п
+#
+%#7О
+║6└ └й╧²?\▐ w@инк-пот."     H╜Б@┘h@x█А@╘@H╘ЦH╜А@H┼H≤H╔█Б@╘6┘╘█щ╛щLrЧ ЙЪ АЪпУL<9▒ и@инит-сыстемr#/@Ъ╦
+юд/К@╦/ЗЪ;/;\xь └Ъ │Ъ ┼Ъ╘6┘╜у@█ п╜ж@█!п╜в@█├╘─█┼╘█п╘ █п╘█п╘█┬X3""▀;%/#3[\p k3алл-буфферсr##3"73#3"i└РЪ\r#й
+ 1\r#Й"|#▀■ \r#─ %
+"п
+О
+"щ└^ ╦п
+зiп
+О
+"п
+Тg╦▀AЙ"1└. ■ └зЪAэ3└ ТAГ3└ Aс"AПb╤Ъ9b°Ъ\m4═╠≥$ ┬Ь═╠i┘*х╠i ┘+═║$┘,╠$┘-,П5╔,е*╔-Е+░╔,е&╔-ВDG>i
+6
+В\r#K>#▀\r#Ф	*T║э,E-─
+,е,E-М,\©# █ >
+реадсецторr#<
+,=▒U1:13,0,l╩=╟>╩=▐<┌.>s<
+▓=к>О=▐<║\█ я>вритесецторr#<
+,=▒B-P:13,0l╩=▐<<
+,=к>╩=▐<<
+,=▒U2:13,0,l╩=╟>╩=▐<┌.>\▌ ?дископенr#<
+B=
+#╔=▐<>\\m °1блоцкr#█1}1\n ╞1упдатеr#
+─/"Z#Д\n а1саже-буфферсr#/█.1щ└ !0bТЪ/ю.\n щ1емпты-буфферсr#/█./"щ└
+ ╦{0bРЪ/ю.\n 2флусхr#Л12\r#╦█1N1└ /"{0,1└ Л1з	"В▀╥1┘┘;й1\r#Л1п
+ТВТ[п
+ИО
+1└$ УО
+║| ⌠/ЧЪУ╒  ├	─<ю.\╒ ═ ├	▐</ю.⌠Ю+	NO DEVICE\├░ ╠Ъ╘` ⌠Ъ ╝Ъ╔░ПhhL║<`в<║ ╬<╔i┘░ФL■<┴ ├<?дежицеr#─<█.у<\=├²╘ с╔& ╬<╔& ╠Ъ╔$	` ⌠Ъ╕&├ LN9┼ Л<бусоутr#─<█. =\┼ #=бусопенr#
+П,=\┼ 8=бусцлосеr#
+Ю,=▐<\i=├²╘ с╔& ╬<╔& ╢Ъ╔$	` √Ъ╕&├≥LN9┼ O=бусинr/▒(╔(█/╔)█/Lc/j /(дискеррr#╞ERROR !  R TO RETRY ╞7╦
+Ri▀
+рi┴Ю+ABORTED\j а/дискерри(л/j 0р/ви(╤?r#╦Z"┐└J A╦"#└3 
+*Т	*Q+╦ZТA"ф█"║0└ ╞WRITE 0bшЪ
+─ТT#─\r#A╦ЕTВ\r#╦{0
+*Т	*Q+п
+Тз	"ВТ
+ВZ:цон!║:║ Г╔i┘░Ф├т├ь═ ├	┌.\и─╟и `иЮ╟ию``└ ≤:
+принтабле?ъ:║ ╬:░й┼L┘ п:ц64емитЫ:║ ╬:╟╘.Lё:┘ М:ц64црr#:÷:\┘ ;ц64делr#
+²÷:▒,
+²÷:\┘ ;ц64пагеr#
+⌠÷:\┘ 4;ц64атS;╘ с╕&╓$ ПЪ╓с╠я┘нLN9┘ I;ц64ат?v;╔8И┘╟ф┼▒8 ПЪю(≤░И(H┼╒ │hL =п©#с| ┌Bнеьт©#	 | ░Bьынеьт©#N9| ²Bпоптво©#Т| ╛Bпоп©#²
+w@инк-пот."     H╜Б@┘h@x█А@╘@H╘ЦH╜А@H┼H≤H╔█Б@╘6┘╘█щ╛щLrЧ ЙЪ АЪпУL<9▒ и@инит-сыстемr#/@Ъ╦
+юд/К@╦/ЗЪ;/;\xь └Ъ │Ъ ┼Ъ╘6┘╜у@█ п╜ж@█!п╜в@█├╘─█┼╘█п╘ █п╘█п╘█┬X
++Ц((+r<√8/."
+;/═	Ц(l+x+\═╧9	≥ ┬В╜ i┘╜!i ┘═╠┘х╠┘═
+╠┘х╠┘╒ ═┼│▒`z ▀8цолд9╒Ъ  PA╜ i┘$╜!i ┘%═ ╧▒$хпЬ ╬8 ├	/Aq8\z З8рестарт<9╒Ъ  PA ╬8 ├	/A 8\╒ ═L	 │ 09ц64кеы?c9╔фП╘ЪHL│ W9геткеыz9╔фПx╛w╫x²wХДфпУфф≤Xи═п╘ L┌ r#╩7└ ┘6┘6║\u ≥6?црr#j7.
+
+i[└ 7\r#а!╦AК Lю йТ	"В╩\v Ё6оутпут:r#R#К Lю Т	;\v К6емитз6 v 7црз6v 7тыпез6v 7делз6v (7пагез6v 37атз6
+v ?7ат?з6v I7ровr#O7─\v T7цолr#O7j\r#а!╦AК Lю й
+"В╩\v d7инпут:r#R#К L	`▒ !Aц64инит A PALN9{ ▌AC(16r#l≥Ю+
+ц) MISSING"/ц)i└ЦЪ\{ ╒ABц)r#\{ мAC(64r#\{ ьAфортх-83r#\| ДA	ассемблерV%  ╩B─%|   пусха©#| Bпусх0а©#| Bпусх©#| (Bрп©# | 5Bуп©# | @Bсп©# | KBип©# | VBн©#$ | aBпута©# | kBв©# | xBсетуЕ'L╡4╔(е,╔)Е-╟║,│$╠,▒$Lг4╔,┘$╔-┘%L┴4L²
+r#%
+"щ└ ╦п
+зik4О
+bЙЪ\r#}
+#╦"}
+i└( И"▀ь╞└ ╦"#"Т;gb "bнЪч\r#%
+k4р$i  И%"Z╞└
+ /k%%;/ЧЪШ╧И╢$"Z╞└
+ /k%╢$;\s ╨3цустом-реможеи(═	r#ТК4'5м4{5─ ▀iI л	;║~;\t k5▌ p?	дискцлосеr#<
+Z=▐<\▌ ▒?1541р/вr#▀Ю+NO FILEZ <6╦<;п[└ ╧-╞BEYOND CAPACITYjD{?└ ─jD║▀33зёi. ─И%└
+ ╕>ч>b ╕>#?п
+к>ВО
+╦└ └й╧Zч²?\▐ ╛?индеьr##▀i! 7%ф└-%╥1#
+%#7║6└ └й╧\▐ B@финдеьr#{?└ чD#ИH2й╧b О
+║| ИH2╪╪Уй╧Л1ч\o 82цопыr#╪v2\o т2цонжеыr#▀#ф█i╦<┴Ю+NEINv2\p Е2лимит©# юp 3фирст."  p 3аллотбуфферr##3"б	"i%/As%/╓#3[#3"╦{0/"Т;/;\p )3
+фреебуфферr##3"3%/i└. #3"!0/╦"#3"i└ "bНЪ##─<█.g=\▀ ┼=бус!╖=║ ╗ЪL≥
+▀ ·=бустыпеr#ё| %й╔=й╧┌.\▀ ╠=бус@э= ╔ЪL▀ с=бусинпутr#ё| з=%Дй╧┌.\▀ Д=деррор?r#<
+▓=з=╦
+0i└ 7з=╦:i└ТЪ≥7≥▐<\©#e©#Й©#Vr#╦?>└	 
+6DпВ╦C>└ ?>i
+6
+ВD╦G>└ C>i
+6
+╪0└ ╞READ 0bыЪО
+\r#/╦"└ "╦A"⌠i└ЙЪ/█.╦!0\r#Aп
+И;з	"ВA;О
+TВ/ю.\r#/"╦└ ╦Z"┐└НЪ\r#/"╦"≥└ЖЪZ"┐\l 0цоре?r#8/ч║\m F1(буфферr#8/х0Н0bЬЪ\m Z1(блоцкr#8/х0┴0Н0bЖЪ\▐1═╠Hх╠Lm t1буфферr#█1d1├ k;ц64тыпе╖;╘ с═ д$П╠& ╬:╟╘. ГхL╝;L╠:├ ⌡;дисплаыШ6В:;╔;";>;Q;t;\БЭ┤ г;б/блк©#  ┤ Г;блк/држ©#╙ ┤ Ж;(држ."  r#<"
+В\┤ <дрижеr# <$з	;\┤  <>дрижеr# <$Вз	"i\┤ 6<држ?r#з	"В <H\┤ Q<држинитr#═	\┬ h<и/о."  ┬ z<бусофф▒< лЪ═	
+ ·(2064)    ЙL9ЙL<9L4y й. {╬⌡╬÷е{  
+ с;!R╗+	f                                                                                                                                                                                                           o9цурон╕9╓с╠я┘н├лLN9┌ °9цурофф╬9х└л└м├о╔н╓с▒я═L	 ┐ Ё9ц64кеыr#╓9┌.a9└ЗЪ╪9x9\┐ р9#бс©# ┐ О9#цр©# ┐ Ш9	ц64децодеr#У9@└ ╦└ .7gD:@└
+ ╦я;Dп
+ИВ▀ДО
+7#\┐ :	ц64еьпецтr#я;║╦я"└
+ ╞7и7bНЪч▒,\┐ O:кеыбоард·7ш9a9:[:\└ 
+DbЮЪj\r#l
+1В\N ║"наме>r#╦с"▀й
+ 1└ "\N Б">бодыr#A\N #.намеr#щ└ ╦■ └ ╞эl
+1#7b ╞???▒,\O #цреате:r#а!∙╢$"д$;∙(║\O H#:r#R#К ╔8И┘╟ф╔│╔▒╔i┘┼e┘L	 O h#а;r#║Щ6\(╢\O √#цонстантr#а!К ╔8И┘╟▒╔│║i┘┼q┘╘eH┼eLr#О
+~"Й";\J ▄ едоес>r#6К 
+L6ю \r#╦
+Ъ1
+Ъii\r#ь
+Ъ1
+Ъi└ ╦╦#ьТi#Р╪~[╪Щ\K Ш ?хеад."  K V!эr#^!"s⌠^!;\L d!варнинг."  r#└!"s~"╢$"9&j└ ▒,~"#╞EXISTS ╧6\L z!цреатеr#ьд",╧6д"щ└ ▌+;╦"≥+;3+\_ ÷+┤(аборт"r#x▀└ п
+, О
+
+╩D─\r#x▀└ 
+╩D─\_ ж+фаборт"r#6Ю+\\_ ,феррор"r#6З+\\` %,бл©#  ` :,	-траилингS,≤ с║┘&╠e%┘'╓$░┬╠&и ПхпФ%≤H╔%L≤пЙф'ф%Д≤La E,спацеr#?,7\a ┴,спацесr#║| ▒,й╧\r*╦l╪;Е║п
+║║МВ
+-@└ 9⌠п
+МВO└ Ф	;МВj≥╜╗М)Вj≥└ПЪ■≥ВМ)ВbтЪ\G б'нумбер?и(лG Eнумберr#Pщ≥Ю+?┐└ \H Vласт."  r#~"щ\H wхидеr#┌└ ┘"╢$";\H ▌режеалr#┌└
+ ┘╢$";\H ╚ирецу╠ех╠Е═░L	  ├	⌠Ю+STACK EMPTY\\ ∙).статуси(═	."О
+О
+;\\ Ц)└пусхr#О
+▀╦п
+"п
+Я)п
+п
+\\ Щ)лоадr#щ≥sд*д;╦*╦ВМ)Ы'\] *+лоадr#д"В#*\] C*тхруr##▀i
+ %#*й╧\] Y*+тхруr##▀i
+ %K*й╧\] v*C-->r#╪д[╦ВМ)\] ■*рдептхr#б	Йч\D лB.(r#
+)Й#7\D щA\r#╦".H#.$╦;\D ОB\\r#О;╦;\D \неедсr#У&j└ С\D хеьr#
+Ф	;\D 7децималr#
+
+Ф	;\E Jдигит?r#
+0i╦
+	[└ 
+┤i╦
+	[└ Ф	"Т[щs─║\E a
+аццумулатеr#▀п
+▀Ф	"·─Ф	"·УО
+\E ═цон'нотфоунди(ъ'X ╬'но.еьтенсионсr#З+хAEH?\X о'	интерпретr#╦'\ r#·)У&щ└ ╪1└ ≈╦'Ю+COMPILE ONLY┐'sP≥└ и'╦'\r#·)У&щ└ <└ ≈╦'╦'┐'sPщ└ <└ ▀^^b и'╦'\Y М'A[r#/ (Ц(╨'1В\Y {(]r#/;(Ц(╨'1Е\r#⌠Ю+цRASH\Z ▒(дефер х╠$ ├▒$LяГ├*═╠≥$ ┬Ь═╜╨e&┘&╜╩e'┘'8╔$М╨┘$╔%М╩┘%╟║█╨╠█╩Ly═╔$%П=║&япФ&пФ'╔$пф%ф$L$╔&┘(╔'┘)║&яФ&пФ'╔$пф%ф$(ПФ*╔$%пБ8═╔&Я█╨х╔'Я█╩╘e┘░Ф═╠│┘$х╠═▒┘%┬╔*▒$╠(хф*В╘ ▒$═L	 B ╣соурцеr#д"щ└ ╥1О;DщO"\B ╛вор"╢$;\r#"┘╘"#\S ╠%ордерr#р$i %к%/ЧЪШ╧ф╓,╢$к%\S ы%вордсr#д$""╦║6≥1└ ╧6╦A#▒,bФЪ─\T &(финд;&═╠≥$ ┬Ь║&)┘(═ ╠$╙х╠$┘%├$$п═╒ L▄х╠$)е(пЮ╘e$┘)╘ e%┘*╓(╠&я)пк┬пВ═╔*▒┬╔)▒┬╒ L┴√&║┘$╠┘%║$┘&)8e$┘$░Ф%╔&) п	╔$│╔%Lб&║$│╠c ╓-.r#╘-\c ╣-у.r#║╘-\d ц-.сr#;
+╦	"Тi
+ ё| %"х-фШ╧\d р-ц/л©#) d Ч-л/с©# d 
+.листr#▌+;╞сCR ▌+"╦ <Xх-╞дR X<╧-.║i. ║6└ └7%ф└-▒,▌+"╥1%.$В.gQ,#7й╧7\e .паусе	 e z.лоцкr#╦"}
+i└ ─D╦"└ ┌.bТЪ}
+▀ф═╠│х╠═▒L	 O ╛#жариаблеr#а!фЩ\P э#уаллотr#╦0
+"В
+Ъ[Ю+уSERAREA FULL0
+"▀0
+[\P С#усерr#а!фЭ#К ╔8И┘╟ф═╠e│┼хe═▒L	 P )$алиасr#а!~"╦й
+ 1└ /ЧЪЩb 
+ зс";\Q ]$жп."                Q ▒$цуррент."  Q ╙$цонтеьтr ╢$""й╦╪
+ ╞┴Ю+INVALID NAMEь~;#Щ┬!^!"└ ╪^![╦!· 
+ з!л	;b &!─╢║К Lъ 3"║┘(╠┘)╔i┘░Ф║┘&╠┘'&пL▄╠&▒┘%║&│┘$%пL	 ╔$i┘$░Ф%║$H8)e$┘$░Ф%h) П
+╠$H║$┘$h┘%╔$е(п╟╔%е)п╙LCN ╦!>намеr#%
+"╦└ Изi▀1"щ└ Zч	#Х┘\b ⌡,холдr#⌠╢,[╢,"Д\b ╬,<#r#╢,╢,;\b в,#>r#ч╢,"╢,Тi\b Х,сигнr#┐└ 
+-е,\b Ъ,#r#Ф	"╓
+	Ту└ 
+┤В
+0Ве,\b -#сr#-Иy└ЬЪ\c @-д.рr#Z|)э,E--М,ТщТi╓,#7\c U-.рr#▀[-\c -у.рr#║▀[-\c ▓-д.r#║[-▒,\рсижеr#╢\r#┌└ |йТД─\H х	иммедиатеr#
+@з\H Ррестрицтr#
+─з\I 	 
+цлеарстацк. ═╠┘х╠┘═L	 I  халлотr#╦	"Тi▀;
+A╦i╦╦	;ф█Тi,, ╦	;\I @ хеапr#╦	"Z\I y хеап?r#─ }
+╞\r#╦ьТi╦I ─ ▀д─ Тi~[╢\╔8И┘╟ф╔"Ё
+Ai\] ╛*дептхr#;
+╦	"▀i\r#1"└ ╞
+ COMPILINGD╞ OK\^ г*(яуитr#М)7ОЫ'ъ*bТЪ\^ +'яуити(
++^ +яуитr#б	"б
+(&+\^ ,+стандарди/оr#/*Т	зд\^ C+'аборти(═	^ a+абортr#, c	j+Q+3+\_ p+сцр." _ ┬+р#."  _ ■+(еррорr#Q+▒,ь#l#7▒жертr##lj└ ╜bТЪg\r#╪"≥\r#l⌠╪[\r#gl\F мдпл."ЪЪr#└ 9ч─9║\r#└  9─О
+└ ╣─"#щs─⌠\r#
+&@└	 
+
+⌠D
+$@└	 
+⌠D
+х@└	 
+⌠D
+%@└ ф⌠D║\r#
+,Тi▀
+.i\r#"⌠is╪[\."  G нумбер?r#Ф	r#а!/╔(К ═╠Hх╠┘h┘═L Z ╣((исr#О
+╦Aп
+";\r#"/и'"Тi▀/╦'"i┴Ю+NOT DEFERRED\Z щ(Bисr#;'╦С(#1"└
+ 6Ц(D;\." r#о*
+ -Ю+TIGHT STACKE)й≥└ ⌠E)Д⌠Ю+DICTIONARY FULL╞STILL FULL \[ ")?стацк═)═8╔Ях╔Яп	═ ├	H)\▌G)═дr#╣Е\B япарсеr#п
+╣╦"tТ▀О
+п
+Тi╦О
+Li╦[\B Бнамеr#?,ьбD\C стате."  C )Eасцииr#?,ь#й1"└ ^\C 7,"r#
+"ЙьТ#ЩN\C W└"литr#О
+О
+|lВп
+п
+\C q┌("r#x\C ▄а"r#6▒\\D ≥┐(."r#xl#7\D ╘б."r#6╞\\D ╩A(r#
+)$▒╔8И┘╟ф╔&х
+0≤IЪ╗х≤│╘Ъ$┼═▒L	 V 1&финдr#д$╦"Т┘"i└ ┘|"9&└ j■&DТ√$A[└
+ ▀┘bчЪj║\V Н&'r#У&≥Ю+хAEH?\V 7'и[цомпиле]r#;'\V O'ц[']r#;'^\V e'нуллстринг?r#╦й≥╦└ j\х╠i┘х╠i ┘═L	 W u'
+>интерпрет∙' (X ╚;\e ├.унлоцкr#╦█.В\h8И┘hИ ┘╘L│═╠┘х╠┘═║┘╠┘╔i┘░Ф╒L░
+f ╥.филе<$f  /преж."  ."  f /б/буф©#═╠(ы" пхюпТ`:/═╠≥$ ┬Ь═╠e&┘&х╠e'┘'╜/┘(╜/┘) )/п╔i┘░Ф═╘e(│╔)i ▒LF╔(┘*╔)┘+║*┘(═╠*┘)(пL	  )/пБ║(│*═╠(▒*╜/│(╜#√$╦"ВA\r#√$Aд$\Q ╨$алсоr#√$"
+
+-З+жOCABULARY STACK FULLд$"ф√$[д$;\Q ч$тоссr#/ЧЪ√$[\R %
+жоцабуларыr#а!║║ь%
+"%
+;К Lю д$;\R /%фортхV%  УA  R a%онлы└%  !8o%К Lю ║√$;д$;Е$\R s%	онлыфортхr#z%i%Е$©%\S ≈%дефинитионсr#д$
+
+ ·(2064)    ЙL9ЙL<9L{ й. { { еB  
+ с;▄:╗+B                                                                                                                                                                                                          ┘═L	 + б├(+лоопЩ║a│╠q▒jQ╔i┘░Ф(дL	 , Р│и'═ ╔8И┘╟ф╠ххq│┬╠ххq═▒L	 , !│йS═пр- M├бранцхd╔a┘$╔q┘╔$┘L	 - Y┤?бранцх├║╔i┘░Ф(ПкLD. z>маркr#ь║\. ·>ресолжеr#ьТi▀;\. ╡<маркr#ь\. м<ресолжbНЪ\0 Ёфрепеатr#фЩ6bя\0 Меунтилr#фЩ6└я\1 бдоr#6i╕п\1 ц?доr#6|╕п\1 1длоопr#пЩ6й6╧╫\1 Eе+лоопr#пЩ6Ш6╧╫\1 `┘леажеr#╧О
+┘╦"Вп
+\2 |ум*═╠┘$║┘%х├&├'╒'&&&%&$░╠e'┘'х╠┬e&┘&░Ф%пФ$йпэ╔'▒х╔&▒═╔$▒╔0∙║е$╠Е%L┤' яу<║┘$╠┘%╔i┘░Ф║е$╠Е%╟L┴L▄( Щ>r#▀у\( )0>r#╓┐\( 70<>r#≥┴\( Fу>r#▀\( V=r#i≥\( eд0=r#≥\( sд=r#╣Уy\( ┐д<r#Иi└ -jjb ч\r#9└ ▀─\) ■минr#И-╣\) емаьr#Иу╣\) в#╦п
+=Т┐└ |В▀g┐└ ╓Т└ ▀В▀g9\5 ь2/╠
+╠j▒║jL 6 /модr#п
+О
+Ю\6 //r#6j\6 Dмодr#6─\6 R*/модr#п
+ПО
+Ю\6 b*/r#jj\6 xу/модr#║▀g\6 ┤уд/модr#п
+║gО
+▀п
+gО
+\7 ⌡цможеф╘ с┬д$п	ф%═L	 ╠(▒&хпд+В╘ сх╠e&▒х╠e'▒║e$│═╠e%▒L	 # П1+%╘a╟L │╠i ▒L	 # 2+C╘пЮ# <3+P╘псV╘пм\╘пг# I1-i8║И░L │╠И ▒L	 # b2-┤░Ю$ ─труе©#ЪЪ$ ▄фалсе©#  $ ≥"-1⌠$ ╖!0║$ ╟1©# $ ╦2©# $ б3©# $ л4©# $ жонr#⌠▀;\ |~Jсп©+ | ┴Jип©+ | ■Jн©+$ | ÷Jпута©+ | ╘Jв©+ | ╤Jсетуп©+с| юJнеьт©+	 | нJьынеьт©+HA| шJпоптво©+Т | ЙJпоп©+²╧ЕG\░ ©Hинк-пот.*ЖЖ НЖ ЖЖ ▓ Iинит-сыстем;I╒В LHA█>Ъ█VI▌XI╘IH╘\H╨╫H╘ ╒ LЁЭ█?Ъ@x█>Ъ╘I█ЪЪ╘A█ЧЪ └Ъ ┼Ъ╜I█Ъ╜I█Ъ╜I█@╘─█@╔8И┘╟ф═╠│х╠═▒L	  Мрот═╠┘%═╠═▒═╠┘$╔%▒═╔$▒х╠┘%║▒═╠│╔%▒═L	  -ротr#\ Sнипr#▀─\ dундерr#▀Т\ tпицкr##3;
+В"\ ├роллr#╦п
+█;
+╦AО
+#3Р─\ ²2свапr#п
+О
+\ ю2дропТ ж2дупr#ТТ\  ф║│╠▒╘e┘░ФL	  Й
+р@╔8И┘╟ф╠▒║L  ┘рдроп 1еьитF║┘╠┘L =уннест^║┘╠┘L S?еьитu║╔i┘░Ф(п╬L	  kеьецуте≥║┘╠┘╔i┘░ФL  █перформr#"≈\ ╠ц@л║┘$╠┘%╘ ▒║$L  ец!Ф║┘$╠┘%х╠│$┬╔\: япадr#ь
+BВ\: Баллотr#л	[\: У,r#ь;фЩ\: ц,r#ьД╪Щ\: ┤цомпилеr#О
+╦Aп
+"\; ,#тиб."  ; H>тиб."`                                                                                ; U>ин."  ; ╡блк."  ; ╬спан."  ; йт                                 ."ULTRAфортх-83 3.80-ц64  █ЪЪ╠┘╜ЪЪ┘╔i┘╟lЪЪФ╟Ы   	енд-трацеe	╘╔┘╘┘╘i┘╘┘L	  W	рецожер."h┘h┘╔пффLr# z	нооп	  ≥	оригин©# ╓	с0<$ Ё	р0<$
+ ╫	дп<$ г	оффсет<$ я	басе<$ ъ	оутпут<$ К	╜Ъ	█Ъ█?ЪX`⌠ +Iц64инит╕I `ILHA  ┘├┤┴┼▀▄┬■  Iц64фкеысмI╒й0	╫╛I²]LоILHA{ юIC(64r+$l ≥Ю3
+ц) MISSING"/ц)i└ЦЪ\{ ЮIBц)r+\{ JC(16r+\{ Jфортх-83r+\| "J	ассемблерV-  ЗJ─-|   пусха©+| IJпусх0а©+| WJпусх©+| fJрп©+ | sJуп©+ | еr#ьi\. щ?паирсr#iЮ+UNSTRUCTURED\и H╘ЪLH╘ ╙╔8И┘╟ф┼═▒h╒ L / Тцасе?B╘ с╔$ап	╔%япL┴┼L0 8бифr#6└╕╪\0 \дтхенr#=╪Щ╫\0 oделсеr#╪Щ6b╕▀╫⌠\0 └ебегинr#уф\0 ║евхилеr#фЩф6└╕/ЧЪх\r#Х╦/ЧЪi└
+ ─╫умаьr#И╣\) Иуминr#И[╣\) Эеьтендr#╦┐\) дабсr#└ ╣\) "абсr#└ ╓\r#9О
+A╦п
+п
+▀п
+п
+\* 7┐(доr#ТiI\* c└(?доr#Тiщ└ IО
+╦"Вп
+─\* uбоундсr#ТВ▀\*  ┤ендлооп╩╘L+ ╞┘(лоопл╘a│░╠i ▒░L	 ═╠┘┬╠%│L	 3 ≤м*r#╦┐╦п
+└ ╓▀╦┐└
+ ╓О
+┴п
+·О
+└ ╣\3 К*r#·─\3  2*5║
+│╠*▒L	 r#⌠Ю+DIVISION OVERFLOW\4 .ум/модi║┘)╠┘(╔i┘░Ф║┘%╠┘$х╠┘'х╠┘&╒f*8╔%Е)╗╔$Е(╟&*░┘$└%&'&&&%&$йпъ═f$f%░ ├	B\╔&▒х╔%▒х╔$▒═╔'L 5 ^м/модr$ Юоффr#║▀;\% Я└цлит╔8И┘╟ф║│┼▒ФпФL	 % ┐лит1╔8И┘╟ф╠▒║│╔i┘░ФL	 % )глитералr#╦/ Ъ1└
+ 6/D6
+\& T0<┘╠╘Ъ$┼▒L & ~0=⌡║ПХпИ& ■увитхин╠╘ с═║е$╠Е%╟
+║е&╠Е'╟╫L▄' ╔<в║┘$╠┘%╔i┘░Ф╔%Q	ЛФ)Ф'Lл7 ╪цможе>Т╘ с╔%e'┘'╔%e)┘)Ф%╓$░┬╠(▒&≤пЬф'ф)ф%пП═L	 7 Иможеr#п
+И└ О
+РDО
+д\8 %плацеr#Тп
+Т#О
+,Д\8 Fцоунтn║┘$i│╠┘%i ▒╔8И┘╟фLт8 dерасеr#║╗\9 ▐филл╙╘ с┬╔$╕'П
+▒(хпШФ)йпЖ╕&П▒(хйпЗ═L	 : ║хереr#л	"Б+Ых║q▒┬╠═q▒L≥
+  Сорх║▒┬╠═▒L≥
+  анд3х║1▒┬╠═1▒L≥
+  +ьорPх║Q▒┬╠═Q▒L≥
+! H-kх╠8А▒х╠═Я═▒L≥
+! eнот▀┼А│┼Я▒L	 ! ┐негате╕8╟Ц" ⌡днегате╥х8┼Я▒х┼Я▒┼А│═┼Я▒L	 
+╙╗┬╠≥$ ┬Ь┼e┘░Ф╒ ═`" ╚i┘░ФL	  ъцтогглеr#|йN▀Д\ @$║┘$╠┘%╠$▒║$L  !=║┘$╠┘%х╠│$х╠═▒$LТ 7+!]║┘$╠┘%х╠a$│$х╠═q$LO Vдроп²
+ yсвап█╠╙═╠┘$┼▒╔$═▒х╒ ╠┘$║▒┬╔$L  └дуп╨╔8И┘╟ф═╠═▒х╠┬L  ╡?дупъ║пL	 L╨ жожерЖибr#\"\; вяуерыr#щ
+Pв7я"O;╦ВдВ\< Гсцанr#п
+╦└ Тйi└ g▀#▀bДЪ9\< скипr#п
+╦└ Тйi└ g▀#▀bДЪ9\< ;/стрингr#ТТВZi\иA░и{╟иb░)ъи[╟	─`= jцапитал╘║ ├│L	 > ²
+цапитализед║┘$╠┘%║$┘&┬д&п═L	инпут<$ Ы	еррорхандлер<$ 
+жоц-линк<$ 
+удп<$ *
+сп@=
+╔┘$╔┘%╒$╔8И┘╟ф╣▒╣ ╒ L  5
+сп!g
+║╙╠┘├╒ L	  _
+уп@
+╒LG
+ w
+┐уп!▌
+╒╠∙┬╠∙ ╒ ═╔i┘░ФL	  ├
+рп@╣
+╒LG
+ ╜
+┐рп!д
+╒L░
+ ╪
+┌>рр
+╔8И┘╟ф║│╠▒L²
+ к
+┌р>Я
+╔8И┘╟цлеарr+ь ╦}=л;\t ║=(форгетr+╦■(Ю3	IS SYMBOLЫ;=\t ╩=форгетr+;/╦/$"Ю3	PROTECTED╘*╦■(└ Й*b ┘┘е=\t ъ=емптыr+/$"}=/2"0;\u >сажеr+ь }=%"╦┘┘"Т┘;"щ≥└ЙЪ}╜/ д\u >>быеr+Л9ФC\r+╞?пi└ ⌠9\u w>стоп?+Х ┘\b ⌡4холдr+⌠╢4[╢4"Д\b ╬4<#r+╢4╢4;\b в4#>r+ч╢4"╢4Тi\b Х4сигнr+┐└ 
+-е4\b Ъ4#r+Ф"╓
+	Ту└ 
+┤В
+0Ве4\b 5#сr+5Иy└ЬЪ\c @5д.рr+Z|)э4E55М4ТщТi╓4#?\c U5.рr+▀[5\c 5у.рr+║▀[5\c ▓5д.r+║[5▒4\Ъ╔иi И█ЪL	 ┌ ▀Aцурофф╤A╘Ъ█Ъ█ЪL	 ┐ ╚Aц64кеыr+⌠A┌6[A└ЗЪ╢AuA\┐ цA#бс©+ ┐ ЮA#цр©+ ┐ ЛA	ц64децодеr+ФA@└ ╦└ .?gDРA@└
+ ╦я!;DпИВ▀ДО?#\┐ ЬA	ц64еьпецтr+я!;║╦я!"└
+ ╞?и?bНЪч▒4\┐ @Bкеыбоард·?лA[ABLB\└ pBцон!▓B║█>Ъ L╪8└ ╞$READ 8bыЪО\r+7╦"└ "╦A"⌠i└ЙЪ7█6╦!8\r+AпИ;з"ВA;ОTВ7ю6\r+7"╦└ ╦Z"┐└НЪ\r+7"╦"≥└ЖЪZ"┐\l 8цоре?r+87ч║\m F9(буфферr+87х8Н8bЬЪ\m Z9(блоцкr+87х8┴8Н8bЖЪ\▐9═╠Hх╠Lm t9буфферr+█9d9\≈E├ ╘ с╔& лD╔&█>Ъ ╢Ъ█?Ъ╔$	`┘╜█>Ъ √Ъ█?Ъ╕&├≤LHA┼ }Eбусинr+┬D█6∙E\▀ фEбус!ЦE║█>Ъ ╗Ъ█?ЪL≥▀ зEбустыпеr+ё| %йАEй╧┌6\▀ СEбус@F█>Ъ ╔Ъ█?ЪL▀ Fбусинпутr+ё| F%Дй╧┌6\▀ ,Fдеррор?r+D
+нEF╦
+0i└ ?F╦РAi└ТЪ≥?≥≈D\©+e©+Й©+ Е'L╡<╔(е,╔)Е-╟║,│$╠,▒$Lг<╔,┘$╔-┘%L┴<L²r+%"щ└ ╦пзik<ОbЙЪ\r+}#╦"}i└( И"▀ь ╞└ ╦"#"Т;gb "bнЪч\r+%k<р,i  И%"Z╞└
+ /k-%;/ЧЪШ╧И╢,"Z╞└
+ /k-╢,;\s ╨;цустом-реможеи0═r+ТК<'=м<{=─(▀iI(л;║~';\t k=Vr+╦┤F└	 
+6DпВ╦▀F└ ┤Fi
+6
+ВD╦▐F└ ▀Fi
+6
+ВD▐Fi
+6
+В\r+⌠F#▀\r+Ф2T%║э4E5─
+,е4E5М4\©+ █ OF
+реадсецторr+D
+ZE▒$U1:13,0,l ЩEЬFЩE≈D┌6YFsD
+нEG7F≈D║\█ Gвритесецторr+D
+ZE▒$B-P:13,0l ЩE≈DD
+ZE
+3Ц0(3zD√@/.";/═Ц0l3x3\═╧9≥ ┬В╜ i┘╜!i ┘═╠┘х╠┘═
+╠┘х╠┘╒ ═┼│▒`z ▀@цолдA `I╜ i┘$╜!i ┘%═ ╧▒$хпЬ ╬@ ├9Iq@\z З@рестарт9A `I ╬@ ├9I @\╒ ═L	 │ -Aц64кеы?]A╔О]П╘ЪHL│ QAгеткеыwA█>Ъ щК█?Ъи═п╘ L┌ lAцурон∙A╔йeх█7▒(╔(█7╔)█7Lc7j 7(дискеррr+╞$ERROR !  R TO RETRY ╞?╦
+Ri▀
+рi┴Ю3ABORTED\j а7дискерри0л7j 8р/ви0ЧGr+╦Z"┐└J A╦"#└3 2Т2Q3╦ZТA"ф█"║8└ ╞$WRITE 8bшЪ
+─ТT#─\r+A╦ЕTВ\r+╦{82Т2Q3пТз"ВТ
+ВZфф≥D█>Ъ лЪ█?Ъ═╒  ├┬Dю6\╒ ═ ├≈D7ю6⌠Ю3	NO DEVICE\├░┘╝█>Ъ ╠Ъ█?Ъ╘`█>Ъ ⌠Ъ█?Ъ█>Ъ ╝Ъ█?Ъ╔░ПhhL╞D`ЫD║ лD╔i┘░ФL╒D┴ ▌D?дежицеr+┬D█6ВD\$E├ ╘ с╔& лD╔&█>Ъ ╠Ъ█?Ъ╔$	`█>Ъ ⌠Ъ█?Ъ╕&├≥LHA┼ Eбусоутr+┬D█6"E\┼ QEбусопенr+
+ПZE\┼ fEбусцлосеr+
+ЮZE≈D;""▀;%7#;[\p k;алл-буфферсr+#;"7;#;"i└РЪ\r+й
+ 1\r+Й*|#▀■(\r+─(%"пО"щ└^ ╦пзiпО"пТg╦▀AЙ*1└. ■(└зЪAэ;└ ТAГ;└ Aс*AПb╤Ъ9b°Ъ\m<═╠≥$ ┬Ь═╠i┘*х╠i ┘+═║$┘,╠$┘-,П5╔,е*╔-Е+░╔,е&╔-GЩE≈DD
+ZE▒$U2:13,0,l ЩEЬFЩE≈D┌6YF\▌ ]Gдископенr+D
+pE
+#АE≈DYF\▌ ╦G	дискцлосеr+D
+┬E≈D\▌ ыG1541р/вr+▀Ю3NO FILEZD6╦D;п[└ ╧5╞$BEYOND CAPACITYjDцG└ ─jD║▀33зёi. ─И%└
+ НF&Gb НFkGпGВО╦└ └й╧ZчЕG\▐ ТGю(;\v ▐?кеы~? v ╘?кеы?~?v ╢?децоде~?v ю?еьпецт~?w   сеалr+║/z-+;\w э?$онлыz-w С?%фортхi-w Ч?%вордс	.w 
+@$алсоЕ,w @+дефинитионс©-r+%"╦┘"Тзi;"щ≥└ЙЪ\r+║7;;#;;х;\x н?'цолди0═r+1@Q@ё-m@:?l #?? @\x e@'рестарти0═r+/;\e ├6унлоцкr+╦█6В\h8И┘hИ ┘╘L│═╠┘х╠┘═║┘╠┘╔i┘░Ф╒L░f ╥6филе<,f  7преж.*  .*  f 7б/буф©+═╠(ы" пхюпТ`:7═╠≥$ ┬Ь═╠e&┘&х╠e'┘'╜7┘(╜7┘) )7п╔i┘░Ф═╘e(│╔)i ▒LF╔(┘*╔)┘+║*┘(═╠*┘)(пL	  )7пБ║(│*═╠(▒*╜7│(╜	 bCц64тыпе╓C╘ с═ д$П╠& ╣B╟╘.█>Ъ LЪ█?ЪхL╚CL╗B├ ≤CдисплаыШ>НBC╒CC5CHCkC\ХC█>ЪLRЪ┤ йCб/блк©+ ┤ ПCблк/држ©+╙ ┤ ЧC(држ.*  r+D"
+В\┤ Dдрижеr+D$з;\┤ (D>дрижеr+D$Вз"i\┤ >Dдрж?r+з"ВDH\┤ YDдржинитr+═\┬ pDи/о.*  ┬ ┌Dбусо
+ИH:й╧b О║| ИH:╪╪Уй╧Л9ч\o 8:цопыr+╪v:\o т:цонжеыr+▀#ф█i╦<┴Ю3NEINv:\p Е:лимит©+ ─p ;фирст.*  p ;аллотбуфферr+#;"б"i%7As%7╓#;[#;"╦{87"Т;7;\p );
+фреебуфферr+#;";%7i└. #;"!87╦"#;"i└ "bНЪ#индеьr+#▀i! ?%ф└5%╥9#
+%#?║>└ └й╧\▐ ┼Hфиндеьr+цG└ чD#▀i1 ?%ф└5Х ╦%33НF&Gп#
+%#?О║>└ └й╧ЕG\░ ©Hинк-пот.*ЖЖ НЖ ЖЖ ▓ Iинит-сыстем;I╒В LHA█>Ъ█VI▌XI╘IH╘\H╨╫H╘ ╒ LЁЭ█?Ъ@x█>Ъ╘I█ЪЪ╘A█ЧЪ └Ъ ┼Ъ╜I█Ъ╜I█Ъ╜I█@╘─█@r+╩?└ ┘>┘>║\u ≥>?црr+j?6
+
+i[└ ?\r+а)╦!AК(Lю(йТ"В╩\v Ё>оутпут:r+R+К(Lю(Т;\v К>емитз> v ?црз>v ?тыпез>v ?делз>v (?пагез>v 3?атз>
+v ??ат?з>v I?ровr+O?─\v T?цолr+O?j\r+а)╦!AК(Lю(й"В╩\v d?инпут:r+R+К(Lc ╓5.r+╘5\c ╣5у.r+║╘5\d ц5.сr+;╦"Тi
+ ё| %"х5фШ╧\d р5ц/л©+) d Ч5л/с©+ d 
+6листr+▌3;╞$сCR ▌3"╦DXх5╞$дR `D╧56║i. ║>└ └?%ф└5▒4▌3"╥9%6$В6gQ4#?й╧?\e 6паусе	 e z6лоцкr+╦"}i└ ─D╦"└ ┌6bТЪ}▀Ъ█?Ъ╔i┘░Ф├к├о═ ├┌6\и─╟и `иЮ╟ию``└ ┴B
+принтабле?жB║ ╣B░й┼L┘ гBц64емитПB║ ╣B╟╘.L■B┘ ДBц64црr+РA░B\┘ ЧBц64делr+
+²░B▒4
+²░B\┘ Cц64пагеr+
+⌠░B\┘ +Cц64атJC╘ с╕&╓$█>Ъ ПЪ█?ЪLHA┘ @Cц64ат?mC╔8И┘╟ф┼▒8█>Ъ ПЪ█?Ъю(≤░И(H┼╒ │hL├\m °9блоцкr+█9}9\n ╞9упдатеr+
+─7"Z#Д\n а9саже-буфферсr+7█69щ└ !8bТЪ7ю6\n щ9емпты-буфферсr+7█67"щ└
+ ╦{8bРЪ7ю6\n :флусхr+Л9:\r+╦█9N9└ 7"{8,9└ Л9з"В▀╥9┘┘;й9\r+Л9пТВТ[пИО1└$ УО║| ⌠/ЧЪУ2╦l ╪&;&Е║п║║М%&В%
+-@└ 9⌠пМ%&В%O&└ Ф;М%&В%j%≥&╜%╗&М%)&В%j%≥└ПЪ&■&≥&&ВМ%)&В%bтЪ\G б&'нумбер?и0л&G E'нумберr+P'щ≥Ю3?┐└ \H V'ласт.*  r+~'"щ\H w'хидеr+┌'└ ┘"╢,";\H ▌'режеалr+┌'└
+ ┘╢,";\H ╚'ирецу/нотфоунди0ъ/X ╬/но.еьтенсионсr+З3хAEH?\X о/	интерпретr+╦/\ r+·1$У.щ└ ╪1└ ≈╦/Ю3COMPILE ONLY┐/sP'≥└ и/╦/\r+·1$У.щ└ <└ ≈╦/!╦/┐/sP'щ└ <└ ▀^^b и/╦/\Y М/A[r+/ 0Ц0╨/1$В\Y {0]r+/;0Ц0╨/1$Е\r+⌠Ю3цRASH\Z ▒0деферибr+\!"\; в!яуерыr+щ!
+Pв?я!"O!;╦!Вд!В\< Г!сцанr+п╦└ Тйi└ g▀#▀bДЪ9\< "скипr+п╦└ Тйi└ g▀#▀bДЪ9\< ;"/стрингr+ТТВZi\иA░и{╟иb░)ъи[╟	─`= j"цапитал╘"║ ├"│L	 > ²"
+цапитализед"║┘$╠┘%║$┘&┬д&п═L	DbЮЪj\r+l 
+1В\N ║*наме>r+╦с*▀й
+ 1└ "\N Б*>бодыr+A\N +.намеr+щ└ ╦■(└ ╞$эl 
+1#?b ╞$???▒4\O +цреате:r+а)∙'╢,"д,;∙0║\O H+:r+R+К(╔8И┘╟ф╔│╔▒╔i┘┼e┘L	 O h+а;r+║Щ6!\0╢'\O √+цонстантr+а)!К(╔8И┘╟ жертr+#l j%└ ╜%bТЪg\r+╪&"≥\r+l ⌠╪&[\r+gl \F м%дпл.*ЪЪr+└ 9ч─9║\r+└  9─О└ ╣─&"#щs─⌠\r+
+&@└	 
+
+⌠D
+$@└	 
+⌠D
+х@└	 
+⌠D
+%@└ ф⌠D║\r+
+,Тi▀
+.i\r+&"⌠is╪&[\.*  G &нумбер?r+Ф$▒╔8И┘╟ф╔&х
+0≤IЪ╗х≤│╘Ъ$┼═▒L	 V 1.финдr+д,╦"Т┘"i└ ┘|"9.└ j■.DТ√,A[└
+ ▀┘bчЪj║\V Н.'r+$У.≥Ю3хAEH?\V 7/и[цомпиле]r+;/!\V O/ц[']r+;/^\V e/нуллстринг?r+╦й≥╦└ j\х╠i┘х╠i ┘═L	 W u/
+>интерпрет∙/ 0X ╚4╧>д!"щ└ ▌3;╦!"≥3;33\_ ÷3┤(аборт"r+x$▀└ п,(О╩D─\r+x$▀└ ╩D─\_ ж3фаборт"r+6!Ю3\$\_ 4феррор"r+6!З3\$\` %4бл©+  ` :4	-траилингS4≤ с║┘&╠e%┘'╓$░┬╠&и ПхпФ%≤H╔%L≤пЙф'ф%Д≤La E4спацеr+?4?\a ┴4спацесr+║| ▒4й╧\r\: я падr+ь 
+BВ\: Б аллотr+л[\: У ,r+ь ;фЩ \: !ц,r+ь Д╪Щ \: !┤цомпилеr+О╦Aп"!\; ,!#тиб.*  ; H!>тиб.*`!                                                                                ; U!>ин.*  ; ╡!блк.*  ; ╬!спан.*  ; й!т╢,""!$й╦╪
+ ╞┴Ю3INVALID NAMEь ~';#Щ ┬)^)"└ ╪^)[╦)!·(
+ з')л;b &)─╢'║!К(Lъ(3*║┘(╠┘)╔i┘░Ф║┘&╠┘'&пL▄╠&▒┘%║&│┘$%пL	 ╔$i┘$░Ф%║$H8)e$┘$░Ф%h) П
+╠$H║$┘$h┘%╔$е(п╟╔%е)п╙LCN ╦)>намеr+%"╦└ Изi▀1*щ└ ZчЙ#ч\D л$B.(r+
+)Й##?\D щ$A\r+╦!"6H#6$╦!;\D О$B\\r+ЬC╦!;\D %\неедсr+$У.j└ С$\D %хеьr+
+Ф;\D 7%децималr+
+
+Ф;\E J%дигит?r+
+0i╦
+	[└ 
+┤i╦
+	[└ Ф"Т[щs─║\E a%
+аццумулатеr+▀п▀Ф"·─Ф"·УО\E ═%цон"╢,;\r+"┘╘*+\S ╠-ордерr+р,i %к-/ЧЪШ╧ф╓4╢,к-\S ы-вордсr+д,""╦║>≥1└ ╧>╦A+▒4bФЪ─\T .(финд;.═╠≥$ ┬Ь║&)┘(═ ╠$╙х╠$┘%├$$п═╒ L▄х╠$)е(пЮ╘e$┘)╘ e%┘*╓(╠&я)пк┬пВ═╔*▒┬╔)▒┬╒ L┴√.║┘$╠┘%║$┘&)8e$┘$░Ф%╔&) п	╔$│╔%Lб.║$│╠"ЁAi\] ╛2дептхr+;╦"▀i\r+1$"└ ╞$
+ COMPILINGD╞$ OK\^ г2(яуитr+М1?О!Ы/ъ2bТЪ\^ 3'яуити0
+3^ 3яуитr+б"б0&3\^ ,3стандарди/оr+/*Тзд\^ C3'аборти0═^ a3абортr+,(cj3Q333\_ p3сцр.* _ ┬3р#.*  _ ■3(еррорr+Q3▒4ь +l #?▒ЛФ)Ф'Lл7 ╪цможе>Т╘ с╔%e'┘'╔%e)┘)Ф%╓$░┬╠(▒&≤пЬф'ф)ф%пП═L	 7 Иможеr+пИ└ ОРDОд\8 % плацеr+ТпТ#О, Д\8 F цоунтn ║┘$i│╠┘%i ▒╔8И┘╟фLт8 d ерасеr+║╗ \9 ▐ филл╙ ╘ с┬╔$╕'П
+▒(хпШФ)йпЖ╕&П▒(хйпЗ═L	 : ║ хереr+л"▒╔│║i┘┼q┘╘eH┼eLr+О~'"Й*;\J ▄(едоес>r+6!К(
+L!6!ю(\r+╦
+Ъ1
+Ъii\r+ь 
+Ъ1
+Ъi└ ╦╦#ь Тi#Р╪~'[╪Щ \K Ш(?хеад.*  K V)эr+^)"s⌠^);\L d)варнинг.*  r+└)"s~'"╢,"9.j└ ▒4~'"+╞$EXISTS ╧>\L z)цреатеr+ь д!"!	дr+╣#Е"\B я#парсеr+п╣#╦!"t"Т▀О"пТi╦ОLi╦![\B Б#намеr+?4ь#б"D\C $стате.*  C )$Eасцииr+?4ь##й1$"└ ^\C 7$,"r+
+"Й#ь Т#Щ N \C W$└"литr+ОО|l Впп\C q$┌("r+x$\C ▄$а"r+6!▒$\$\D ≥$┐(."r+x$l #?\D ╘$б."r+6!╞$\$\D ╩$A(r+
+)
++√,╦"ВA\r+√,Aд,\Q ╨,алсоr+√,"
+
+-З3жOCABULARY STACK FULLд,"ф√,[д,;\Q ч,тоссr+/ЧЪ√,[\R -
+жоцабуларыr+а)║!║!ь %"!%;К(Lю(д,;\R /-фортхV-  3J  R a-онлы└-  !@o-К(Lю(║√,;д,;Е,\R s-	онлыфортхr+z-i-Е,©-\S ≈-дефинитионсr+д,╠ех╠Е═░L	  ├⌠Ю3STACK EMPTY\\ ∙1.статуси0═.*ОО;\\ Ц1└пусхr+О▀╦п"пЯ1пп\\ Щ1лоадr+щ≥sд!2д!;╦!2╦!ВМ1Ы/\] 2+лоадr+д!"В#2\] C2тхруr+#▀i
+ %#2й╧\] Y2+тхруr+#▀i
+ %K2й╧\] v2C-->r+╪д![╦!ВМ1\] ■2рдептхr+брсижеr+╢'\r+┌'└ |йТД─\H х'	иммедиатеr+
+@з'\H Р'рестрицтr+
+─з'\I 	(
+цлеарстацк.(═╠┘х╠┘═L	 I (халлотr+╦"Тi▀;A╦i╦╦;ф█Тi, ,(╦;\I @(хеапr+╦"Z\I y(хеап?r+─(}╞\r+╦ь Тi╦I(─(▀д─(Тi~'[╢'\╔8И┘╟ф╔r+а)/╔0!К(═╠Hх╠┘h┘═L Z ╣0(исr+О╦Aп";\r+"/и/"Тi▀/╦/"i┴Ю3NOT DEFERRED\Z щ0Bисr+;/╦С0+1$"└
+ 6!Ц0!D;\.* r+о2
+ -Ю3TIGHT STACKE1й≥└ ⌠E1Д⌠Ю3DICTIONARY FULL╞$STILL FULL \[ "1?стацк═1═8╔Ях╔Яп	═ ├H1\▌G1═ х╠$ ├"▒$Lя"Г"├*═╠≥$ ┬Ь═╜╨!e&┘&╜╩!e'┘'8╔$М╨!┘$╔%М╩!┘%╟║█╨!╠█╩!Ly#═╔$%П=║&япФ&пФ'╔$пф%ф$L$#╔&┘(╔'┘)║&яФ&пФ'╔$пф%ф$(ПФ*╔$%пБ8═╔&Я█╨!х╔'Я█╩!╘e┘░Ф═╠│┘$х╠═▒┘%┬╔*▒$╠(хф*В╘ ▒$═L	 B ╣"соурцеr+д!"щ└ ╥9ЬCDщ!O!"\B ╛#ворф═╠│х╠═▒L	 O ╛+жариаблеr+а)фЩ \P э+уаллотr+╦0"В
+Ъ[Ю3уSERAREA FULL0"▀0[\P С+усерr+а)фЭ+!К(╔8И┘╟ф═╠e│┼хe═▒L	 P ),алиасr+а)~'"╦й
+ 1└ /ЧЪЩ b 
+ з'с*;\Q ],жп.*                Q ▒,цуррент.*  Q ╙,цонтеьтr ЛTIEG 6A,д-2000 хAMBURG 54 * 9з≥">>>>BITTE EINE BELIEBIGE тASTE<<******* PД║ E$: ▀ E$╡"" ┴740 gН▐ **************** ~Ь▐ ANFANG DER SEITE ∙▐ **************** ⌡▐ ╓≥"⌠" й ≥"        ULTRAфортх 83 - REV 3.8 р*≥:≥ ь4▌   ртх83 /CLV12OCT87 Ж
+ ·(4112)    ЙLAЙL9ALw й6 w w {K  
+ жC}B╗3EJ                                                                                                                                                                                                          ╔8И┘╟ф═╠│х╠═▒L	  Мрот═╠┘%═╠═▒═╠┘$╔%▒═╔$▒х╠┘%║▒═╠│╔%▒═L	  -ротr+\ Sнипr+▀─\ dундерr+▀Т\ tпицкr+#3;В"\ ├роллr+╦п█;╦AО#3Р─\ ²2свапr+пО\ ю2дропТ ж2дупr+ТТ\  i┘░ФL	  ъцтогглеr+|йN▀Д\ @$║┘$╠┘%╠$▒║$L  !=║┘$╠┘%х╠│$х╠═▒$LТ 7+!]║┘$╠┘%х╠a$│$х╠═q$LO Vдроп² yсвап█╠╙═╠┘$┼▒╔$═▒х╒ ╠┘$║▒┬╔$L  └дуп╨╔8И┘╟ф═╠═▒х╠┬L  ╡?дупъ║пL	 L╨ жожерЖ0∙║е$╠Е%L┤' яу<║┘$╠┘%╔i┘░Ф║е$╠Е%╟L┴L▄( Щ>r+▀у\( )0>r+╓┐\( 70<>r+≥┴\( Fу>r+▀\( V=r+i≥\( eд0=r+≥\( sд=r+╣Уy\( ┐д<r+Иi└ -jjb ч\r+9└ ▀─\) ■минr+И-╣\) емаьr+Иу╣\) в v─ ─▐ **************** "┼▐ ENDE DER SEITE 9■▐ **************** ?·▐ j╗≥"":▐ POSITIONIEREN ≤╡≥"**** (ц) 1985,1987 BP/KS/RE/WE/CLV **** ╞╥≥"*мITGLIEDER DER: щ╪≥"*фортх-гESELLSCHAFT E.ж. C/O р. мERTINS ф≥"* аNTILOPENSумаьr+И╣\) Иуминr+И[╣\) Эеьтендr+╦┐\) дабсr+└ ╣\) "абсr+└ ╓\r+9ОA╦пп▀пп\* 7┐(доr+ТiI\* c└(?доr+Тiщ└ IО╦"Вп─\* uбоундсr+ТВ▀\*  ┤ендлооп╩╘L+ ╞┘(лоопл╘a│░╠i ▒░L	 ═╠┘┬╠┘═L	 + б├(+лоопЩ║a│╠q▒jQ╔i┘░Ф(дL	 , Р│и'═ ╔8И┘╟ф╠ххq│┬╠ххq═▒L	 , !│йS═пр- M├бранцхd╔a┘$╔q┘╔$┘L	 - Y┤?бранцх├║╔i┘░Ф(ПкLD. z>маркr+ь ║!\. ·>ресолжеr+ь Тi▀;\. ╡<маркr+ь \. м<ресолжф║│╠▒╘e┘░ФL	  Йр@╔8И┘╟ф╠▒║L  ┘рдроп 1еьитF║┘╠┘L =уннест^║┘╠┘L S?еьитu║╔i┘░Ф(п╬L	  kеьецуте≥║┘╠┘╔i┘░ФL  █перформr+"≈\ ╠ц@л║┘$╠┘%╘ ▒║$L  ец!Ф║┘$╠┘%х╠│$┬╔$ Юоффr+║▀;\% Я└цлит╔8И┘╟ф║│┼▒ФпФL	 % ┐лит1╔8И┘╟ф╠▒║│╔i┘░ФL	 % )глитералr+╦/ Ъ1└
+ 6!/!D6!
+!\& T0<┘╠╘Ъ$┼▒L & ~0=⌡║ПХпИ& ■увитхин╠╘ с═║е$╠Е%╟
+║е&╠Е'╟╫L▄' ╔<в║┘$╠┘%╔i┘░Ф╔%QMIN. 32Kб рам +0≥"             MIT  дISKETTENLAUFWERK ?:≥:≥"    ODER":≥ dD≥" ц16/ц116/пLUS4   MIT 64Kб рам ▌N≥"             MIT  дISKETTENLAUFWERK ╧X≥"             ODER кASSETTTENREKORDER аb≥:≥ Пl≥" жIEL сPASS MIT ULTRAфортх83 /CLV12OCT87 Жеr+ь i!\. щ?паирсr+iЮ3UNSTRUCTURED\и H╘ЪLH╘ ╙╔8И┘╟ф┼═▒h╒ L / Тцасе?B╘ с╔$ап	╔%япL┴┼L0 8бифr+6!└╕╪\0 \дтхенr+=╪Щ╫\0 oделсеr+╪Щ6!b╕▀╫⌠\0 └ебегинr+уф\0 ║евхилеr+фЩф6!└╕/ЧЪх\r+Х╦/ЧЪi└
+ ─╫bНЪ\0 Ёфрепеатr+фЩ6!bя\0 Меунтилr+фЩ6!└я\1 бдоr+6!i╕п\1 ц?доr+6!|╕п\1 1длоопr+пЩ6!й6!╧╫\1 Eе+лоопr+пЩ6!Ш6!╧╫\1 `┘леажеr+╧О┘╦"Вп\2 |ум*═╠┘$║┘%х├&├'╒'&&&%&$░╠e'┘'х╠┬e&┘&░Ф%пФ$йпэ╔'▒х╔&▒═╔$▒╔инпут<, Ыеррорхандлер<, жоц-линк<, удп<, *сп@=╔┘$╔┘%╒$╔8И┘╟ф╣▒╣ ╒ L  5сп!g║╙╠┘├╒ L	  _уп@╒LG w┐уп!▌╒╠∙┬╠∙ ╒ ═╔i┘░ФL	  ├рп@╣╒LG ╜┐рп!д╒L░ ╪┌>рр╔8И┘╟ф║│╠▒L² к┌р>Я╔8И┘╟	д+В╘ сх╠e&▒х╠e'▒║e$│═╠e%▒L	 # П1+%╘a╟L │╠i ▒L	 # 2+C╘пЮ# <3+P╘псV╘пм\╘пг# I1-i8║И░L │╠И ▒L	 # b2-┤░Ю$ ─труе©+ЪЪ$ ▄фалсе©+  $ ≥"-1⌠$ ╖!0║$ ╟1©+ $ ╦2©+ $ б3©+ $ л4©+ $ жонr+⌠▀;\
+   (NUR FUER ц64) !ж≥" - кASSETTENVERSION FЮ≥" - сUPERTAPE (NUR FUER ц16/+4) OЙ█640 mТ≥" хARDWAREANFORDERUNGEN: sЧ≥ ²≥" ц64/сь64    MIT  дISKETTENLAUFWERK х≥"             ODER кASSETTTENREKORDER э≥:≥"    ODER":≥ &≥" ц16/ц116    MIT %│L	 3 ≤м*r+╦┐╦п└ ╓▀╦┐└
+ ╓О┴п·О└ ╣\3 К*r+·─\3  2*5║
+│╠*▒L	 r+⌠Ю3DIVISION OVERFLOW\4 .ум/модi║┘)╠┘(╔i┘░Ф║┘%╠┘$х╠┘'х╠┘&╒f*8╔%Е)╗╔$Е(╟&*░┘$└%&'&&&%&$йпъ═f$f%░ ├B\╔&▒х╔%▒х╔$▒═╔'L 5 ^м/модr+╦п=Т┐└ |В▀g┐└ ╓Т└ ▀В▀g9\5 ь2/╠
+╠j▒║jL 6 /модr+пОЮ\6 //r+6j\6 Dмодr+6─\6 R*/модr+пПОЮ\6 b*/r+jj\6 xу/модr+║▀g\6 ┤уд/модr+п║gО▀пgО\7 ⌡цможеф╘ с┬д$п	ф%═L	 ╠(▒&хп                                 .*ULTRAфортх-83 3.80-ц16+ █ЪЪ╠┘╜ЪЪ┘╔i┘╟lЪЪФ╟Ы   	енд-трацеe╘╔┘╘┘╘i┘╘┘L	  Wрецожер.*h┘h┘╔пффLr+ zнооп	  ≥оригин©+ ╓с0<, Ёр0<,
+ ╫дп<, гоффсет<, ябасе<, ъоутпут<, КБ+Ых║q▒┬╠═q▒L≥  Сорх║▒┬╠═▒L≥  анд3х║1▒┬╠═1▒L≥  +ьорPх║Q▒┬╠═Q▒L≥! H-kх╠8А▒х╠═Я═▒L≥! eнот▀┼А│┼Я▒L	 ! ┐негате╕8╟Ц" ⌡днегате╥х8┼Я▒х┼Я▒┼А│═┼Я▒L	 
+╙╗┬╠≥$ ┬Ь┼e┘░Ф╒ ═`" ╚E 2 --  яUELLTEXT DES сYSTEMS h█640 A|≥" сEITE 3 --  фORTH-яUELLEXTE Y├≥" - 6502-аSSEMBLER u░≥" - фULL-сCREEN-еDITOR ▌ ≥" - дEBUGGING тOOLS ё╓≥" - мULTITASKER ╪╝≥" - дRUCKER-тREIBER ф╦≥:≥:≥ Еб≥" сEITE 4 --  гRAFIK/тAPE л≥" - гRAFIK # ≥г(14):▐ SWITCH TO LOWER CASE ;
+ █750:▐ сEITENANFANG X ≥" ULTRAфортх 83 IST EIN w ≥" пUBLIC-дOMAIN-пROGRAMM. }( ≥ ё2 ≥" еS DARF (UND SOLL) ZU PRIVATEN х< ≥" зWECKEN WEITERGEGEBEN WERDEN. пF ≥:≥ РP ≥" дIE KOMERZIELLE жERWERTUNG Z ≥" бEHALTEN WIR UNS ABER VOR!!! d ≥ 7n █ 640:▐ SEITENVORSCHUB Xx ≥" зUM лIEFERUMFANG GEHOEREN |┌ ≥" ZWEI BEIDSEITIG BESCHRIEBENE ╒▄ ≥" дISKETTEN UND EIN 200-SEITIGES Ё√ ≥" хANDBUCH. ╧═ ≥ Б╙ ≥" бEIDES ZUSAMMEN KOSTET CA. 50.-дм Х╢ ≥ 
+╬ ≥" фORTH BESITZT SEIN EIGENES 3х ≥" дISKETTENVERWALTUNGSSYSTEM, DAHER [р ≥" BITTE IMMER DIE GANZEN дISKETTEN ├э ≥" KOPIEREN UND NICHT NUR DIE фILES!!! ▄Ф ≥ ╖П █ 640:▐ SEITENVORSCHUB гЗ ≥" дIE дISKETTEN ENTHALTEN: м≥ П≥" сEITE 1 --  сYSTEM-дISKETTE ≥" - фILE C16ULTRAFORTH83 - сYSTEMKERN F"≥" - фILE C64ULTRAFORTH83 - сYSTEMKERN u,≥" - фILE C16DEMO - аRBEITSSYSTEM MIT тAPE ╓6≥" - фILE C64DEMO -      ''         гRAFIK й@≥" - хILFSTEXTE & кONTAKTADRESSEN ФJ≥" - дISKETTENUTILITIES ЛT≥ ^≥" сEIT\\   дIES IST DER сHADOW-сCREEN                    ZUM сCREEN # 0                                                           дER сCREEN # 0 LAESST SICH NICHT LADEN    (IST DER иNHALT VON блк GLEICH 0, SO      WIRD DER яUELLTEXT VON DER тASTATUR     GEHOLT, IST блк VON 0 VERSCHIEDEN, SO     WIRD DER ENTSPRECHENDE блоцк VON DER        дISKETTE GELADEN), DER еDITOR        UNTERSTUETZT DESHALB AUCH NICHT DAS      сHADOW-кONZEPT FUER DEN сCREEN # 0.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         фортх-геселлсцхафт  (C) BP/KS/RE/WE/CLV сHADOW ZU сCR# 1                                                                  иM сCREEN # 1 SOLLTE иммер EIN           иNHALTSVERZEICHNIS GEFUEHRT WERDEN,      EINE GUTE рEGEL IST:                                                               ерст DEN еINTRAG IM дIRECTORY                                                     данн DEN яUELLTEXT TIPPEN                                                        бEI бEDARF KOENNEN DIE сCREENS 2 - 4     EBENFALLS FUER иNHALTSANGABEN BENUTZT    WERDEN.                                                                                                                                                                                                                                                                                                                                               нEBENBEI,                                                               HAST дU SCHON бACK-уP'S GEMACHT?                                              фортх-геселлсцхафт  (C) BP/KS/RE/WE/CLV сHADOW ZU сCR# 2                                                                  дA еINTIPPEN MUEHSAM IST,                BEUGT DER еDITOR DEM VERSEHENTLICHEN     лOESCHEN VON яUELLTEXT VOR:              WEDER AM еNDE EINER зEILE,               NOCH AM еNDE DES сCREENS GEHT тEXT       VERLOREN, WENN MAN еINFUEGT.             вILL MAN EINEN GANZEN сCREEN LOESCHEN,   SO GEHE MAN MIT хоме IN DIE 0TE зEILE    UND DRUECKE схифт ф1 (=ф2) BIS ALLE      зEILEN NACH OBEN GELOESCHT UND DER       сCREEN VON UNTEN MIT лEERZEILEN          AUFGEFUELLT IST.                                                                  вEM DAS ZU MUEHSAM IST, DER DEFINIERE:                                            : WIPE  ( -- )   \  FUELLT DEN            SCR @ BLOCK     \  BEARBEITETEN сCREEN   B/BLK BL FILL ; \\ MIT лEERZEICHEN.                                              UND BENUTZE випе, NACHDEM DER ZU         LOESCHENDE сCREEN GELISTET WURDE.                                                 фортх-геселлсцхафт  (C) BP/KS/RE/WE/CLV фортх-геселлсцхафт  (C) BP/KS/RE/WE/CLV                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         A                                                                                                                                             ULTRAFORTH 3.8-1══U1═2A════                                                                                      Ъ┌ RUNME═══════════         	   ┌C16ULTRAFORTH83═         <   ┌ C64ULTRAFORTH83═         <   ┌C16DEMO═════════         g   ┌C64DEMO═════════         u    " NOCHMEHRMUELL═══                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           \\ EINFACHES дATEI-сYSTEM      20OCT87RE                                          еIN орднер IST EIN ZUSAMMENHAENGENDER    сCREEN-бEREICH, DER EINEN дIRECTORY-     сCREEN MIT дATEI- BZW орднер-нAMEN UND   DEREN RELATIVEN сCREEN-нUMMERN ENTHAELT:                                          ..     -&150        .            0       датеинаме $д        орднернаме &13                                                дER вурзел-орднер IST DIE GANZE дISKETTE MIT дIRECTORY IN сCREEN 0, SEINE сCREEN- нUMMERN SIND DESHALB AUCH ABSOLUT.                                                аLLE сCREEN-нUMMERN MUESSEN MANUELL      GEPFLEGT WERDEN.                                                                  бEI жERSCHIEBEN EINES KOMPLETTEN         оRDNERS MUESSEN NUR DER сCREEN-оFFSET IM мUTTER-дIRECTORY UND DER оFFSET FUER ..  GEAENDERT WERDEN.                                                                 .. UND . SIND NICHT UNBEDINGT NOETIG,    DANN KANN NICHT AUFS мUTTER-дIRECTORY    ZURUECKPOSITIONIERT WERDEN.             \\ EINFACHES дATEISYSTEM       20OCT87RE                                          сплит TEILT EINEN сTRING BEI цхар OHNE    цхар ZU ENTHALTEN. дER ERSTE тEIL$       LIEGT OBEN AUF, DER рEST$ DARUNTER.      дER рEST$ KANN WEITERE цхар ENTHALTEN.                                           лиесT пFAD UND фILENAMEN. сYNTAX:                                                  CD /                                         аKTUELLES дир WIRD вURZEL-дIRECTORY  CD /сUB1/                                           дир WIRD сUB1 VON вURZEL AUS  CD сUB2/                                        дир WIRD сUB2 VOM BISHERIGEN AUS  CD ../                                                       дир WIRD мUTTER-дир  LD /дATEI1                                             лADE дATE1 VON вURZEL AUS  LD дATEI2                                                лADE дATEI2 VON дир AUS  LD /сUB3/дATEI3                              лADE дATEI3 AUS сUB3 VON вURZEL AUS  LD сUB4/дATEI4                                  лADE дATEI4 AUS сUB4 VON дир AUS                                                                                                                                                                      хилфе !!!                                                                                                                                                                                                                                                                                                                                                                                                                                                               хUMMEL, хUMMEL - фORTH, фORTH                                                                                                                                                                                                                                                                                                                                                                                     \\ хIER IST  ...                      \\ \      ... дEINE LOKALE ...            \ \           ... фортх-гRUPPE :         \ \                                      \ \                                      \ \                                      \ \           кONTAKTADRESSE :           \ \                                      \ \                                      \ \                                      \ \                                      \ \           GEORG    REHFELD           \ \           REINBEKER WEG 32           \ \                                      \ \           2050  HAMBURG 80           \ \                                      \ \                                      \ \                                      \ \                                      \ \                                      \ \                                      \ \                                      \ \                                      \ \                                      \ \\ \\ \\ \\ \\ \\  \\  \\ \\ \\ \\ \\ \\\ кOMMENTAR ZU NUMBERS        14OCT85RE)                                                                                                                                                                     ALPHABETIC - NICHT HEX ODER DECIMAL        NACH 08 FOLGT 09, NACH 09 FOLGT 0а,      DANN 0б USW. BIS 0з, NACH 0з FOLGT 10    DANACH 11  ...  19, 1а, 1б, 1ц, ...                                                                                                                                                                        HEX-зAHL  ALPHABETISCH DARGESTELLT       HEX-зAHL  ALPHABETISCH DARGESTELLT       HEX-зAHL  ALPHABETISCH DARGESTELLT                                                                                         еS GEHT AUCH ANDERSHERUM                  (DAMIT SIND DIE HEX-NUMBERS VON           "NUMBERS" ENTSTANDEN)                                                           бRAUCHST дU бинары ODER оцтал ?           : BINARY  ( --)   2 BASE ! ;             : OCTAL  ( --)   8 BASE ! ;            \\ RELOCATING THE SYSTEM    BP 19 9 84 )                                          UP@ ORIGIN -   IS STACKLEN               R0 @ UP@ -     IS RSTACKLEN                                                       SYMBOLIC MAP OF SYSTEM                                                            функтион     топ          боттом                                                  DISK-BUFFER  LIMIT        FIRST @         UNUSED AREA                             RSTACK       R0 @         RP@                                                      FREE AREA                                                                        USER, WARM   UP@ UDP @ +  UP@            (HEAP)       UP@          HEAP           STACK        S0 @         SP@                                                      FREE AREA                                                                        SYSTEM       HERE         ORIGIN 0фе +   USER, COLD   ORIGIN 100 + ORIGIN         SCREEN       0800         0400           PAGE 0-3     0400         0000                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          \\ DISASSEMBLER 6502 LOADSCR                                                                                                                                                                                                                                                                                                            +N вERTE WERDEN IN EINEM аRRAY           ABGELEGT.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      \\ DIS SHORTCODE0                                                                 тABELLE FUER DIE SCHWIERIGEN GERADEN     оPCODES                                                                           дA сCHEMA NICHT ERKANNT,                 тABELLEN-лOESUNG.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         \\ DIS SCODE ADRMODE                                                              хILFSTABELLE FUER UNGERADE оPCODES                                                                                                                                  хILFSTABELLE FUER UNGERADE оPCODES        аDRESSIERUNGSARTEN                                                                                                        ERMITTELT AUS DEM оPCODE 8B1             DIE аDRESSIERUNGSART 8B2                 UND DIE бEFEHLSLAENGE +N                 FUER UNGERADE оPCODES                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      \\ DIS SHORTCODE TEXTTAB                                                          ERMITTELT бEFEHLSLAENGE (LENGTH)         UND аDRESSIERUNGSART (MODE)              AUS DEM оPCODE (8B1)                                                                                                                                                                                                                                                                           EIN DEFINING WORD FUER тEXT-тABELLEN                                              дATENSTRUKTUR:                                                                    COUNT TEXT1 TEXT2 ... TEXT+N-1 TEXT+N                                                                                                                                                                                                                                                                                                                                                                                    \\ TEXT-TABELLEN                                                                  DIE мNEMONIC-тABELLE                                                                                                                                                                                                                                                                                                                                                             DIE жорOPERANDEN-тABELLE                                                                                                                                            DIE нацхOPERANDEN-тABELLE                                                                                                                                                                                                                                                                                                                                                                                                \\ DIS 4U.R 2U.R                                                                  4U.R SCHREIBT EINE аDRESSE                MIT FUEHRENDEN нULLEN                                                            2U.R SCHREIBT EIN бYTE                    MIT FUEHRENDER нULL                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      \\ DIS SHADOW                                                                     "DIS" IST EIN SO HAESSLICHES вORT,       DASS ICH JEDEM DANKE, DER ES BESSER      MACHT! (уND MIR DEN яUELLTEXT SCHICKT!)                                           GEORG REHFELD                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             \\ SAVESYSTEM SHADOW          CLV04AUG87                                                                                   аUFRUF: сажесыстем NAME                    Z.б.: сажесыстем меин-фортх                    --ERZEUGT EIN лADBARES фILE              --MIT нAMEN меин-фортх.                                                     зUR аRBEITSWEISE: NORMALERWEISE          WIRD SO ALLE EIN BIS ZWEI вOCHEN         EIN сYSTEM GESICHERT, WO DANN            DIE WICHTIGSTEN (FERTIGEN) сACHEN        MIT DRIN SIND. дIE сACHEN, WO NOCH       DRAN GETESTET WIRD, WERDEN DANN          ALS яUELLEN GELADEN. аBER WER            WILL SCHON JEDESMAL DEN еDITOR ETC.      ALS яUELLE LADEN. дAS NUTZT NUR          DIE дISKETTE UND DIE EIGENEN нERVEN      SINNLOS AB.                                                                       йEDES GROESSERE пROGRAMM SETZT           I.A. SEIN EIGENES сажесыстем OBEN        DRAUF, UM SEINE EIGENEN жARIABLEN        FUER'S SPAETERE бOOTEN VORZUBEREITEN.                                          кOMMENTAR ZU BAMALLOCATE, FORMATDISK                                              ERZEUGT DEN сPRUCH "0 BLOCKS FREE"        дISKETTE AUF                             LIES DIE бам                              иф LOESCHE SIE (FAST) GANZ                  SCHREIB SIE ZURUECK                   тхен  дISKETTE ZU                       NOCHMAL INITIALISIEREN                   UND сCHLUSS!                                                                     лоесцхт (FORMATIERT) дISKETTE             GIB DEN лOESCH-бEFEHL                    SCHIEB DEN нAMEN NACH                     HAT'S GEKLAPPT?                         DANN LASSE SIE VOLL ERSCHEINEN                                                                                                                                                                                                                                                                                                                                                                                          ???                                                                                 тHIS PAGE UNINTENTIONALY LEFT BLANK.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        KOOPIERT NICHT! DIE дIRECTORY MIT.       иST ALSO NICHT FUER фILES GEEIGNET,      SONDERN NUR FUER фортх-яUELLсCREENS.                                                                                                                                                                                                                                                          \\ ZU:2DISK COPY2DISK..       CLV04AUG87                                                                                   дIESE WUESTE бERECHNUNG HAT NUR          EINEN зWECK: AUS EINER LAUFENDEN         нUMMER [0..&682] тRACK UND сECTOR        ZU ERMITTELN. хABE SIE EINFACH           AUS DEM ULTRAфортх-яUELLTEXT ENTNOMMEN   (WIRD VON р/в BENUTZT) UND DAS ' 3+ '    WEGKOMMENTIERT, DAMIT AUCH DIE           дIRECTORY-сEKTOREN KOPIERT WERDEN        KOENNEN.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     \\ ZU:..2DISK COPY2DISK       CLV04AUG87                                                                                   мACHT GGF. EINEN фEHLER-аBBRUCH                                                                                                                                     аBKUERZUNG FUER опEN. 40 зEICHEN SIND EN                                          кOPIERT EINEN сEKTOR (UEBER ADR)                                                                                                                                                                                                                       пRUEFT, OB BEI пад пLATZ IST.            лABERT DEN/DIE бENUTZER/IN VOLL                                                   сCHLEIFE UEBER DIE сEKTOREN              BEI JEDEM GIBT'S PAAR зAHLEN, DAMIT      OBENGENANNTE(R) SICH NICHT LANGWEILT.                                             сCHALTET NUR(!!) 1551-фLOPPYS UM.        фUER 1541 ISSES BISSCHEN COMPLICATED.                                           ES KOMMT NICHTS MEHR ES KOMMT NICHTS MEH R ES KOMMT NICHTS MEHR ES KOMMT NICHTS M EHR ES KOMMT NICHTS MEHR ES KOMMT NICHTS  MEHR ES KOMMT NICHTS MEHR ES KOMMT NICH TS MEHR ES KOMMT NICHTS MEHR ES KOMMT NI CHTS MEHR ES KOMMT NICHTS MEHR ES KOMMT  NICHTS MEHR ES KOMMT NICHTS MEHR ES KOMM T NICHTS MEHR ES KOMMT NICHTS MEHR ES KO MMT NICHTS MEHR ES KOMMT NICHTS MEHR ES  KOMMT NICHTS MEHR ES KOMMT NICHTS MEHR E S KOMMT NICHTS MEHR ES KOMMT NICHTS MEHR  ES KOMMT NICHTS MEHR ES KOMMT NICHTS ME HR ES KOMMT NICHTS MEHR ES KOMMT NICHTS  MEHR ES KOMMT NICHTS MEHR ES KOMMT NICHT S MEHR ES KOMMT NICHTS MEHR ES KOMMT NIC HTS MEHR ES KOMMT NICHTS MEHR ES KOMMT N ICHTS MEHR ES KOMMT NICHTS MEHR ES KOMMT  NICHTS MEHR ES KOMMT NICHTS MEHR ES KOM MT NICHTS MEHR ES KOMMT NICHTS MEHR ES K OMMT NICHTS MEHR ES KOMMT NICHTS MEHR ES  KOMMT NICHTS MEHR ES KOMMT NICHTS MEHR  ES KOMMT NICHTS MEHR ES KOMMT NICHTS MEH R ES KOMMT NICHTS MEHR ES KOMMT NICHTS M EHR ES KOMMT NICHTS MEHR ES KOMMT NICHTS  MEHR ES KOMMT NICHTS MEHR ES KOMMT NICH                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ИH2й╧b О
+║| ИH2╪╪Уй╧Л1ч\o 82цопыr#╪v2\o т2цонжеыr#▀#ф█i╦<┴Ю+NEINv2\p Е2лимит©# юp 3фирст."ю÷p 3аллотбуфферr##3"б	"i%/As%/╓#3[#3"╦{0/"Т;/;\p )3
+фреебуфферr##3"3%/i└. #3"!0/╦"#3"i└ "bНЪ#Е'L╡4╔(е,╔)Е-╟║,│$╠,▒$Lг4╔,┘$╔-┘%L┴4L²
+r#%
+"щ└ ╦п
+зik4О
+bЙЪ\r#}
+#╦"}
+i└( И"▀ь╞└ ╦"#"Т;gb "bнЪч\r#%
+k4р$i  И%"Z╞└
+ /k%%;/ЧЪШ╧И╢$"Z╞└
+ /k%╢$;\s ╨3цустом-реможеи(═	r#ТК4'5м4{5─ ▀iI л	;║~;\t k5r#╩7└ ┘6┘6║\u ≥6?црr#j7.
+
+i[└ 7\r#а!╦AК Lю йТ	"В╩\v Ё6оутпут:r#R#К Lю Т	;\v К6емитз6 v 7црз6v 7тыпез6v 7делз6v (7пагез6v 37атз6
+v ?7ат?з6v I7ровr#O7─\v T7цолr#O7j\r#а!╦AК Lю й
+"В╩\v d7инпут:r#R#К L
++Ц((+r<√8/."
+;/═	Ц(l+x+\═╧9	≥ ┬В╜ i┘╜!i ┘═╠┘х╠┘═
+╠┘х╠┘╒ ═┼│▒`z ▀8цолд9╒Ъ  PA╜ i┘$╜!i ┘%═ ╧▒$хпЬ ╬8 ├	/Aq8\z З8рестарт<9╒Ъ  PA ╬8 ├	/A 8\╒ ═L	 │ 09ц64кеы?c9╔фП╘ЪHL│ W9геткеыz9╔фПx╛w╫x²wХДфпУфф≤Xи═п╘ L┌:цон!║:║ Г╔i┘░Ф├т├ь═ ├	┌.\и─╟и `иЮ╟ию``└ ≤:
+принтабле?ъ:║ ╬:░й┼L┘ п:ц64емитЫ:║ ╬:╟╘.Lё:┘ М:ц64црr#:÷:\┘ ;ц64делr#
+²÷:▒,
+²÷:\┘ ;ц64пагеr#
+⌠÷:\┘ 4;ц64атS;╘ с╕&╓$ ПЪ╓с╠я┘нLN9┘ I;ц64ат?v;╔8И┘╟ф┼▒8 ПЪю(≤░И(H┼╒ │hL╒  ├	─<ю.\╒ ═ ├	▐</ю.⌠Ю+	NO DEVICE\├░ ╠Ъ╘` ⌠Ъ ╝Ъ╔░ПhhL║<`в<║ ╬<╔i┘░ФL■<┴ ├<?дежицеr#─<█.у<\=├²╘ с╔& ╬<╔& ╠Ъ╔$	` ⌠Ъ╕&├ LN9┼ Л<бусоутr#─<█. =\┼ #=бусопенr#
+П,=\┼ 8=бусцлосеr#
+Ю,=▐<\i=├²╘ с╔& ╬<╔& ╢Ъ╔$	` √Ъ╕&├≥LN9┼ O=бусинrВDG>i
+6
+В\r#K>#▀\r#Ф	*T║э,E-─
+,е,E-М,\©# █ >
+реадсецторr#<
+,=▒U1:13,0,l╩=╟>╩=▐<┌.>s<
+▓=к>О=▐<║\█ я>вритесецторr#<
+,=▒B-P:13,0l╩=▐<<
+,=к>╩=▐<<
+,=▒U2:13,0,l╩=╟>╩=▐<┌.>\▌ ?дископенr#<
+B=
+#╔=▐<>\	▀i1 7%ф└-Х╦%33╕>ч>п
+#
+%#7О
+║6└ └й╧²?\▐ w@инк-пот."     H╜Б@┘h@x█А@╘@H╘ЦH╜А@H┼H≤H╔█Б@╘6┘╘█щ╛щLrЧ ЙЪ АЪпУL<9▒ и@инит-сыстемr#/@Ъ╦
+юд/К@╦/ЗЪ;/;\xь └Ъ │Ъ ┼Ъ╘6┘╜у@█ п╜ж@█!п╜в@█├╘─█┼╘█п╘ █п╘█п╘█┬X `▒ !Aц64инит A PALN9{ ▌AC(16r#l≥Ю+
+ц) MISSING"/ц)i└ЦЪ\{ ╒ABц)r#\{ мAC(64r#\{ ьAфортх-83r#\| ДA	ассемблерV%ZZ─%|   пусха©#| Bпусх0а©#| Bпусх©#| (Bрп©# | 5Bуп©# | @Bсп©# | KBип©# | VBн©#$ | aBпута©# | kBв©# | xBсету\m °1блоцкr#█1}1\n ╞1упдатеr#
+─/"Z#Д\n а1саже-буфферсr#/█.1щ└ !0bТЪ/ю.\n щ1емпты-буфферсr#/█./"щ└
+ ╦{0bРЪ/ю.\n 2флусхr#Л12\r#╦█1N1└ /"{0,1└ Л1з	"В▀╥1┘┘;й1\r#Л1п
+ТВТ[п
+ИО
+1└$ УО
+║| ⌠/ЧЪУ3""▀;%/#3[\p k3алл-буфферсr##3"73#3"i└РЪ\r#й
+ 1\r#Й"|#▀■ \r#─ %
+"п
+О
+"щ└^ ╦п
+зiп
+О
+"п
+Тg╦▀AЙ"1└. ■ └зЪAэ3└ ТAГ3└ Aс"AПb╤Ъ9b°Ъ\m4═╠≥$ ┬Ь═╠i┘*х╠i ┘+═║$┘,╠$┘-,П5╔,е*╔-Е+░╔,е&╔-цлеарr#ь╦}
+5л	;\t ║5(форгетr#╦■ Ю+	IS SYMBOLЫ35\t ╩5форгетr#;'╦/$"Ю+	PROTECTED╘"╦■ └ Й"b ┘┘е5\t ъ5емптыr#/$"}
+5/2"0
+;\u 6сажеr#ь}
+5%
+"╦┘┘"Т┘;"щ≥└ЙЪ}
+╜	/ д\u >6быеr#Л1Ц;\r#╞7пi└ ⌠9\u w6стоп?ю 
+;\v ▐7кеы~7 v ╘7кеы?~7v ╢7децоде~7v ю7еьпецт~7w   сеалr#║/z%#;\w э7$онлыz%w С7%фортхi%w Ч7%вордс	&w 
+8$алсоЕ$w 8+дефинитионс©%r#%
+"╦┘"Тзi;"щ≥└ЙЪ\r#║/;3#3;х3\x н7'цолди(f{r#18Q8ё%m8:7	l#77 8\x e8'рестарти(┤zr#/ o9цурон╕9╓с╠я┘н├лLN9┌ °9цурофф╬9х└л└м├о╔н╓с▒я═L	 ┐ Ё9ц64кеыr#╓9┌.a9└ЗЪ╪9x9\┐ р9#бс©# ┐ О9#цр©# ┐ Ш9	ц64децодеr#У9@└ ╦└ .7gD:@└
+ ╦я;Dп
+ИВ▀ДО
+7#\┐ :	ц64еьпецтr#я;║╦я"└
+ ╞7и7bНЪч▒,\┐ O:кеыбоард·7ш9a9:[:\└ ├ k;ц64тыпе╖;╘ с═ д$П╠& ╬:╟╘. ГхL╝;L╠:├ ⌡;дисплаыШ6В:;╔;";>;Q;t;\БЭ┤ г;б/блк©#  ┤ Г;блк/држ©#╙ ┤ Ж;(држ."  r#<"
+В\┤ <дрижеr# <$з	;\┤  <>дрижеr# <$Вз	"i\┤ 6<држ?r#з	"В <H\┤ Q<држинитr#═	\┬ h<и/о."  ┬ z<бусофф▒< лЪ═#─<█.g=\▀ ┼=бус!╖=║ ╗ЪL≥
+▀ ·=бустыпеr#ё| %й╔=й╧┌.\▀ ╠=бус@э= ╔ЪL▀ с=бусинпутr#ё| з=%Дй╧┌.\▀ Д=деррор?r#<
+▓=з=╦
+0i└ 7з=╦:i└ТЪ≥7≥▐<\©#e©#Й©#Vr#╦?>└	 
+6DпВ╦C>└ ?>i
+6
+ВD╦G>└ C>i
+6
+▌ p?	дискцлосеr#<
+Z=▐<\▌ ▒?1541р/вr#▀Ю+NO FILEZ <6╦<;п[└ ╧-╞BEYOND CAPACITYjD{?└ ─jD║▀33зёi. ─И%└
+ ╕>ч>b ╕>#?п
+к>ВО
+╦└ └й╧Zч²?\▐ ╛?индеьr##▀i! 7%ф└-%╥1#
+%#7║6└ └й╧\▐ B@финдеьr#{?└ чD#
+п©#с| ┌Bнеьт©#	 | ░Bьынеьт©#N9| ²Bпоптво©#Т| ╛Bпоп©#²
+. УA.блкr#д"щ└ ╞ бLK х-╧6\ гB(сеарцхЖB═╠≥$ ┬Ь╔()Пi╔$%Пc║&а*П╔$пф%ф$Ф&пФ'LC═╧$ ▒┬ЬФ&пФ'Ф*пФ+╔$пф%ф$╔(пф)ф(╔()п╔i┘░Ф═╔'▒╔&┬▒┬L┴╔$%п╔i┘░Ф═L▄║&а*П╗═ $Dцбм>сцр⌠D║ mD│L	  ┤Dсцр>цбм╚D║ \D│L	  ÷DедиторV%RRB©#( ©# ©#Х   схадов."U ." ."  ."O ."ЪЪ." ."╖|  ."В|  ." W|." |©#я ©#с ©# п©#├©#!п╔$i)┘$░Ф%╔&i(┘&░Ф'`<E≤ с├&╜┬┘'╒═'╠$ mD▒&┬Ж #EйпН╜├² ь² ы² з² шХпЯLUDrE≤ с├&╜┬┘'╒═ ╠&1)F┴1╦s
+■÷:\r#CFщsГD"└ gFщs[F\r#ОD"≥Z7лD┘[1╦s
+÷:\r#CF╦s
+÷:\r#НEпDQ,jпDgкхD6▀═C║\r#║
+
+║i ─кF╦└ └й╧\r#
+║i 
+²÷:й╧║\r#Z7║═C-DГDВ╝F\r#ЬEхD?,╗║\r#FхDj7i?,╗║\r#ЬE╦хDВ▀НE/юВ╦п
+ТiдО
+Dд\r#ЩDA"≥щs┴G╦shH\r#ГDЕ║\r#ГDВ║\ ╥Dржсонr#
+÷:\ ╟Hржсоффr#
+▓÷:\ цH***ултрафортх83***	  вHRфортх-геселлсцхафтr#\ жDстамп$."    06NOV87RE     r#I#lНEхDВТi▀²E║\ Iгетстампr#
+*┼:IЕ7╞YOUR STAMP: ╦H
+╓,Z7
+═╦хD#XхDiiО;gкхD#6▀═C\r#-D
+`J\r# J▌+"╥1╤E└ *I─▌+"╥1pEй1
+\r#╔J
+\r#йJ
+\r#▌+"╥1:EГDВ-DtJ║\r#╔J─╪▌+[ЮJ\r#╔J─⌠▌+[ЮJ\r#╔J─ъD"╦ЮIj[┴└ ╓▌+[ЮJ\r#╔J─ЦD"▌+"ЦD;▌+;ЮJ\" ПH	дигдецодеr#У9@└ ╦└ .7gDп╣Kв7я"щ└ ь|Д_─СD;═CСD"п≤-┼:И═CEA"хD┘j7iв7я"щ└ E;═CEйCЩKИ═C	EA"хD┘j7iв7я"щ└ 	E;═C	EйCЩKлH╦I═C\r#ЮJ─EйC≥+"▌+"╥1ВО;≥+"iТB≥└ ║b
+ ▌+"╥1i≥+;tJ\r#╔J─LЭL≥+"└' ╞7╦
+Ri└ аKщ└ jDпiщsbсЪЮIj╦⌠i└ WN≥\( FI(пад."  r#Х╦┼N;хD3В╦EA;хDВ╦	EA;хDВ╦ВD;хD3ВЩD;ВDAВЩDAВ/ыHlп
+EA"дО
+E;/РHl
+1п
+	EA"дО
+	E;\r#Х┼N"is▌N\©##O╓с╠я┘нI─▒яLN9.O╔н╓с▒яLN9r#/DO;лH,O\r#д"щ≥└ 7OD╦"g≥+;лH,O╦H▌+"Тф1≥└	 ╞NOT ╞CHANGED╦з1└ Л1╦
+1
+i└ ╞, SAVED
+1└ ╞	, LOADING7▌+"≥+"юO\, =Pлr#≥+ВDP\, сPрr#▌+"DP\, ЦP+лr#▌+"ВвP\, СPжr#;'╘"щ└ зi"\, Qжиевr#
+Qщ└ вPb ╞FROM KEYBOARD\, ┐Nцурлинr#E"
+уйQ,╦
+сД\-	I╦*В┼N╦*ВE6
+фB=║Й╩=▒,P,Wl╩=▐<
+ф,=╜	
+i╦/ ▐▀╔=╔=ьТi+R▐<
+фZ=║<;>Ю+
+SAVE-ERROR\ ╩Bенд-цодеr#д$┘"д$;\ зRиндеь."		─	───── ───────,."  УRмоде:r#а!К Lю йS;\ %S.а5S  BS#5S5S LS,ь5S XS,ы 5S bSь)5S lS)ы5S vS)5Sr#└ S"
+S;╪S"
+1щ└ ║i
+ ╦Вй╧Т#"1≥\ ─Sцпуr#а!К Lю йSS\ гSбркуS  БSцлцуS МSцлдуSь ЬSцлиуSX TцлжуS╦ TдеьуSй TдеыуS┬ $TиньуSХ /TиныуSх :TнопуSЙ ETпхауSH PTпхпуS╠≥$ ┬Ь╔$пф%ф$Ф&пФ'L Cr#D7╪9\ ЙB2!╠C≤ с═╠▒$┬Ы═LТ ╙C2@лC║┘$╠┘%╔8И┘╟ф═╠$▒┬ЫLN9 еC	2жариаблеr#а!зЩ\ МC	2цонстантr#а!К Lю йC\ Dунлинк/D╜┬	─╗┼■ыi(░хХЮпС╔си(░И(┘с╓с╕ж ПЪ╒ ═L	 ┘*)?*$*	─p	@`┘*)и ░и@░)$*	@`╘.` \D▒$хю(░ТйП
+╘ ▒$ #ELELUD÷E╘ с┬д$пLUD╠( mD▒&хпО╦E≤ с├&╜┬┘'╒═'╠$ mDя&П╘ЪL┬О #EйпГ┼Lr#;
+хD3i\ПE┼H╜┬LЗE╔си(┼░╘'eяH╔рi LF╔сeяH╔рi LF╔уи(╟й┼Lr#НE/юВхDQ,j≥ОD"\r#FНEпDВgiОD"≥1\r#КDй÷:║\r#CFщsFЬEхDВgй?,i┴хD?,╗║\r#)F┴щsЬE╦хDВНEпDВТiР?G\r#кF╦s
+÷:\r#ВDйCВ#ЩD"БEк[╦sFйВDйCВД╪ВDA[\r#╨GщsкF\r#╨Gщs╚G\r#ВDA"≥щsgF╦s⌠ВDA[ВDйCВйFД\r#ЩDйCВБE[╦sЬEЩDйCВхDдхDЩDA[\r#*Hщs╝F\r#*Hщs_G\r#хD╓ЩDA[ЩDйCВЬEхCIA
+в7лHя"I#Д\r#IйsQI\r#НEХхD3дНEхD3
+═╗\r#ХНEхD3д\r#╥1┘"\r#╓9┌.╩7└ЗЪ╪9\r#▌+"з	"В <▐▀\r#O7÷I╦H║║═CЮI╞сCR # ╧-╞дRV ╧-▌+"фI≥└	 ╞NOT ╞UPDATED╪╪═C/ыHl#7ф╓,/РHl
+1#7лH═CпI╦I║\r#O7▀хD#$В≥+;\r#≥+":@└
+ ╦я;D╖╦j└ ─п
+ИВ▀ДО
+7#D─\" TKдигитс·7ш9a9`K[:\r#E"║i
+ У9÷:й╧║	E"║i
+ gFй╧╦s	EйCF▀²E╔J─\r##7
+<7хDgj7i╓,\r#
+*-D÷IO7╦H╪║═C╞REPLACE WITH: O7	EйCЩK║║═C╞>     SEARCH: O7EйCЩK║фИ═CСD"п≤-И═Cь#СD"i║6≥1щ└ ┐└
+ ЖJ─b K─b╖Ъ⌠\r#?
+@i\."█┘┴├┼÷ ▀┤┬▄²▒⌠■	Ъ."ЖJKK8K8MPH-G-G J╔JйJуJ┴G_G┌H\H*IТIХGТG HЖFGкF╝F[F[F[FзFgF[F╚G?GMG H╓H■FN╘ с╓$┬х╧╛MиЪПе&пТ≤
+╗╧сMH╧тMLr#EД┌.
+─║i й╧\r#E*║@N╪@N║@N╪@N\r#i└ ▌+;ЮJ╪║═CМ)tJO─\* ╛K(лоадr#╦*╦;щ≥sд*д;М)Ы'\* █Oсховлоадr#▌+*▌+В≥+*/GOO;∙O7O\r#с@В╦йEД╦#йEДAйEД\r#зэO
+⌠÷:ЮJ─ОDВ╞7╦КDД║N≈oNщ└ЛЪ║║═C_G─ОDЕ║эO\+ ╣Oедитr#▌+;⌠I	OЧO
+║═CЮI╞сCR ╧-╞дRV ╧-╦ KQ	едидецодеr#
+█@└
+ ГDВ7D:@└< ГDВTQ╦я"[└ ─я"ё| ИВ%й╘D▀Д#й╧╦я;D╦КDД
+N≈oN─\- lQ	едиеьпецтr#	Oя;║╦я"└
+ ╞7и7bНЪч▒,\- БQедибоард·7ш9a9xQНQ\r#≈B/┌.╦*;─<*─<В╩=\  Q
+сажесыстемr#▌+*╪▌+;≥+*≥+В
+ [TплауSh fTплпуS( qTртиуS@ |TртсуS` ┤TсецуS8 ▓TседуSЬ ²TсеиуSx ╗TтаьуS╙ ЁTтаыуS╗ ╬TтсьуS╨ иTтьауS┼ тTтьсуS  ъTтыауS≤ ЙTм/цпуr#а!К Lю ╦#"
+─1└	 
+S[Т/ Ъ1┤S┤S└ SS⌠Ю+INVALIDйS"ЩRВйВS"
+1└ S"
+1√ XVлдыU═▌ eVстыU─▄ rVйсрU─ VймпU@─└ ▄VбитU └r#╦=
+[Ю+OUT OF RANGE \	 ≥V[[r#ь\	 цV?]r#ь#i╓V\	 пV?[r#ь║\	 ГV?[[r#ЛV▀\	 ЗV]?r#ьТй└
+ ▀;b Т#i╓V▀Д\	 
+W][r#ь#╪▓V▀ьТ#i╓V▀Д\	 3W]]r#▓V NX2инцr#╦╣UСSфPS│U╦эUxWЛV▀#VW\ ^X2децr#╦╣U≤TфPSоU╦эU┐WЛV▀#ЖUW\ ┤Xвинцr#╦V▌WЛV▀#VW\ ╟Xвдецr#╦╣U▌WЛVТ#ЖUWЖU\ мX;ц:r#└	┘VЕR∙(║~;║\ GR	ассемблерr#BSS\ YE;цодеr#!/ЩЪЩ #/ЧЪЩY\ Yцодеr#а!ь╦┘;Y\ >Y>lИВб
+О
+▀д\1   цпусхr#О
+ZТп
+Ё
+Т#i╦б
+NUZп
+п
+\r#
+RЩ┼:я;М)▒,ОЫ'/╝ЪЩ9\1 kZрангеr#AZВ╦=Z;#╦"/\i└РЪNAZ;\ЮZ╘Ъ█KZ█LZ║┘╠┘╔i┘░Ф╜;Z┘╜<Z┘L ."чZ\╔i┘░Ф╜KZПГ╜GZп╔м?Z╔М@Z░ж╔мCZ╔МDZ╟йLA[▌GZ▌KZ▌LZ╔█;Z╔█<Z ├	EZ"D/0"@└
+ #"	\D"/Lюi└
+ "пВD╘"#╞CAN'T BE дебугGED3+\5 ╡Zнестr#MZ""	\─EZЕ\5 ²\уннестr#=ZЕAZВ\5 ╦\ендлоопr#MZ"зВ=Z;\5 о\%унбугc	5 К\(дебугr#	\╨ZEZВIZЕQZВZЬ[\5 
+Zдебугr#;' ]\5 ]траце'r#;'╦ ]≈c	\r#╧6╦з≤-╞:\]релоцатеr#▀╜	ВИВ%/ВA3[Ю+BUFFERS?╦Х/ ВЮ+STACK?Т0
+"
+@ВЮ+RSTACK?@2$6|В╜	
+
+В;╦,^}
+#"╜	#;
+i╜	
+В;9\ P^
+бытес.мореr#}
+╜	iВб	"}
+i[^\ щ^буфферсr#%/$A3б	"i▀iЙ^\ _	демостартr#\аллот мпты ЛЪ\тест т ╦О
+┘;▀ё| %;фШ╧\; `┬ацтижатеr#║b╘Ъ; l`слеепr#
+L▀Д\; │`вакеr#
+,▀Д\r#Q+Т_╞тASK ERROR : l#7`≥_\< √`таскr#Щь
+Ъ1
+Чi└ ╪Щ}
+ь/ дь
+L}
+#"╦}
+#;пЩ╦
+i╦ИВ|ВьiAЩ/╗`Т
+В;╥#\= й`
+рендезжоAFT7╞BLEIBT фортх EIN аджентуре!7\A чa>быте|b╠H┼▒╔8И┘╟ф┼▒hL A rbхбытеr#zbj\A √bлбытеr#zb─\r#а!║i й╧К ║i
+╗╠│х╠═▒L	 йb  ╞ ]╨hцpхtйs	
+д
+l╦\ ╒CЦ┌ ╪WП┬ЁFьhЖ┌∙║#╓#÷▓{Л	И┘╟ф╔'▒╔&│╔8И┘╟ф╔%▒╔$│L	 ] -dду<r#/ ─В/ ─В≥\r#║i. п
+3d3di╦┐└ ВО
+3gb
+ О
+3пВй╧\r#п
+3d╦┐└ 3diО
+#b 3dИ└ ─О
+gb iО
+#\r#п
+╦┐└ чО
+#b 3d/ ─sd≥╓О
+В\^ mdсяртr#║╪
+▀d─
+▀dа dШd\_ 'e100*Se║┘$╠┘%$&%$&%╔$┘&╔%┘'&&'&&'&&'╔$e&┘$╔%e'┘%&&'╔$e&│╔%e'▒L	 F+f*f)f(F+f*f)f(╔$e(┘$╔%e)┘%║e*│╠e+▒`` Je100у/нe├$├(║
+┘%┘)╠*│┘*┼*▒┘+ ≤eF+f*f)f( ≤eL	 @ дeграпхицV%2q2qZ©#┬©# Ю©# ь©# д©# ю©#  ©# ©# ©#1fx╘2┘┬╒└$└&╘ь┘%
+у└ b SS\ УTадцU`n {UандU n ┬UцмпUюn ∙UеорU@n ╒UлдаU═n ╞UораU n ╪UсбцUЮn иUстаU─l жUаслU ЦUдецUа ПUинцUА ЩUлсрUA 
+VролU! VрорUa $VстьU│ 1VцпьUЮ├ >VцпыUю├ KVлдьU╒\	 VW]]?r#▓VW\
+ cWцс©#░ 
+ sWцц©#╟ 
+ ~W0=©#п 
+ ┴W0<>©#П 
+ ■W0<©# 
+ ═W0>=©#0 
+ ╚Wжс©#P 
+ ╥Wжц©#p 
+ бWнотr#
+ N\
+ мWбеяr# WуV\
+ чWбмиr#╠WуV\
+ НWбнеr#▌WуV\
+ ЧWбплr#╔WуV\
+ Xбццr#xWуV\
+ Xбжцr#╪WуV\
+ .Xбцсr#┐WуV\
+ >Xбжсr#гWуV\лабелr#ьh!а!Ч▀зI ─ ╪1I ьзi─ зд─ ~"l
+1В;л	;К Lю "1"└ ^\ WYлабелr#ь`YY\ ЛXромr#ь
+	В/ ═[Ю+NOT HERE
+7PS╣U╪эU\ дYрамr#
+6PS╣U╪эU\/ ╟YтоолсV%^^фD0 СYвцмпr#Т╣U╦⌡U▀#╣U#оU\."  ."пx."фx."╪x."╟x."╓x."≤x."Ё
+└" EZВО
+AZ*=Z*╦┘╨ZQZ*╪QZ[п
+[п
+
+*Т	*┘╦MZ;7QZ"╓,╦з≤-"╦
+≤-▒,╘"#
+j7i║щ╓,в-1*д*╦*/(+*/╨'*O*щO"sZб	*Ё
+б	;/⌠ZЦ((+3+\З[╘[┘╘┘╘L┘L	 r#╦"/l#"@└ #D/╞7"@└ #й
+"В"	\D/#7"@└ #йТ	"В"	\r#╦"
+≤-\r#╦йп└-\r#
+$j7i║щ╓,\6 В\сr#C]▒,`]з╓,╦l#7╦йВ#l]\6 ]нr#C]S]ф╓,╦"╘"#Al]\6 ё]кr#C]S]Al]\7 а]дr#И▀C]п╓,▀║i
+ `]#й╧з╓,Z#7l]\7 с]цr#╪в]\7 ^бr#C]S]╦"ТВ
+≤-Al]\r#}
+╦#|"Иi└
+ ─bЛЪч;\ ,z
+ ╨$"X ╙$"312,6a_╦й╪
+╞┴-11053u_.гNAME╪113┘_й#Сн: &_стоп⌡_╔8И┘╟ф╔│╔▒╔8И┘╟ф╔│╔▒═╔▒х╔▒═≤e┘┼e┘L ."╘,│L⌡_: ▓_
+синглетаскr#
+	/┌.;\: Г_	мултитаскr#э_/┌.;\; `└пассr#▀
+,ТДО
+Z
+Вп
+A"▀A3"Тiусr#╦ю.┌.█.\r#1"└ ^\= @aB'сr#;'#йВYa\= iaтасксr#╞маин 7}
+╦#"Иi└8 ╦
+
+В"
+ВЙ"╘"#╦й
+Li└ ╞SLEEPING7#"bдЪч\
+ ~aхелпr#пвP7╞пROBIER' RUHIG WEITER!77╞аBER OHNE хANDBUCH7╞UND DIE хILFE DER7╞фортх-гESELLSCH[х2   b ц  !|!т!*"}"н"#g#╞#У#8$x$╣$О$'%[%█%╩%Г%&5&X&x&∙&╞&е&ы&Й&Ь&'
+'''r#╦
+Z-└	 
+╢▀iъb\\ ╗bсинr#/hX╦┐└ /hВ╦
+╢-└ 
+╢i≈c╓b ≈c\\ ╠cцосr#/hX
+ZВ╥c\\ Кcтанr#╦╥c▀Яcщ└ 
+d▀}b п$\] dд2*5d╘ с&&'&$&%╔8
+╘ь┘'╠$▒&хпЫФ%Ф'йпР╘6┘XхL	 C   	цлрсцреенr#f/@≈\."тg."≤."Ж≤."(≤."п."≤╘█п╘█п╜─f█ п`╘;█п╘█п╜└f█ п`╜┬f8И0JJJ8Иеж╟`╙Х═└л└м╔н╓с▒я═ └о ПЪ═ ╠я┘н└л`╜█)пL1Й ÷Ъ╜█пЬlxf╜п█п╒йпЩ╔$╜▄fI█▄f╙п ÷fLg ▌f╫┬f█п ╟f╜э)п╨L│Йx╘f█╘Ю█╘П█п╘│█эX
+ ·(4112)    ЙLAЙL9ALz й6 w zП{gu  
+ жCУc╗3ыh                                                                                                                                                                                                          й~fД/п├f;│g\H h	нограпхицr#ё%@g
+/пД
+/пДзfД~fй/ пД/ щйп/ щД\I ╥gблк©#  I ≥hвхт©# I ╔hред©# I ╠hцын©# I ╫hпур©# I иhгрн©# I уhблу©# I Аhыел©# II Мhора©# I Зhбрн©#	 I iлре©#
+ I iгр1©# I iгр2©# I *iлг                                 .*ULTRAфортх-83 3.80-ц16+ █ЪЪ╠┘╜ЪЪ┘╔i┘╟lЪЪФ╟Ы   	енд-трацеe╘╔┘╘┘╘i┘╘┘L	  Wрецожер.*h┘h┘╔пффLr+ zнооп	  ≥оригин©+ ╓с0<, Ёр0<,
+ ╫дп<, гоффсет<, ябасе<, ъоутпут<, К╘ ┘98&98&9he8┘8░Ф98&98&98&9╔$)8┘8╔&)Ьe8┘8╔'e9┘9╘Ю9┘9╔&)╙╫Йi═ `L jплот▐j j╕9ЮЮ░8▒8ФXLN9L ├jфлип╜j j╕9ЮЮ░Q8▒8L°jL ╓jунплотйj j╕9ЮЮ░IЪ18▒8L°jM ©jлинеГj╘ с╒╣$∙`йЫ╘г8Е(┘(╘г8Е$┘$└5└4└2┬└7└6└3┬╔*е&╔+Е'╟8╔&Е*┘0╔'Е+┘1└5L9k╔*Е&┘0╔+Е'инпут<, Ыеррорхандлер<, жоц-линк<, удп<, *сп@=╔┘$╔┘%╒$╔8И┘╟ф╣▒╣ ╒ L  5сп!g║╙╠┘├╒ L	  _уп@╒LG w┐уп!▌╒╠∙┬╠∙ ╒ ═╔i┘░ФL	  ├рп@╣╒LG ╜┐рп!д╒L░ ╪┌>рр╔8И┘╟ф║│╠▒L² к┌р>Я╔8И┘╟/ФkД\P lспрбуф©# х©# п©#пP Alсприте©#п©#пP Xl3цолоред©#п©#п©#%п©#'п." @─▓l╘ с┬╕(╫┬l╕$пIЪ1&L╙l&▒&LN9Q klсетr#⌠░l\Q ╠lресетr#║░l\Q аlгетформr#
+@$JlВ
+@д\r#/ЬВВД\Q сl
+формспритеr#п
+Jl/ ?1
+@HВ╦fОlО
+fОl\R Ъl	ф║│╠▒╘e┘░ФL	  Йр@╔8И┘╟ф╠▒║L  ┘рдроп 1еьитF║┘╠┘L =уннест^║┘╠┘L S?еьитu║╔i┘░Ф(п╬L	  kеьецуте≥║┘╠┘╔i┘░ФL  █перформr+"≈\ ╠ц@л║┘$╠┘%╘ ▒║$L  ец!Ф║┘$╠┘%х╠│$┬╔" ьможеr#И3NlВДRl
+Ъ-░l\R 1mыможеr#3#NlВД\R Tmможеr#|9m\m\R lmспрпосr#╦п
+3#NlВй3NlВйО
+├lВйRlй1└ / В\S mхигхr#el╥l\S ╬mловr#elиl\S оmвидеr#zl╥l\S ъmслимr#zlиl\S Пmбигr#╦еmФm\S nсмаллr#╦уmВm\S nбехиндri┘░ФL	  ъцтогглеr+|йN▀Д\ @$║┘$╠┘%╠$▒║$L  !=║┘$╠┘%х╠│$х╠═▒$LТ 7+!]║┘$╠┘%х╠a$│$х╠═q$LO Vдроп² yсвап█╠╙═╠┘$┼▒╔$═▒х╒ ╠┘$║▒┬╔$L  └дуп╨╔8И┘╟ф═╠═▒х╠┬L  ╡?дупъ║пL	 L╨ жожерЖ`Bgx╘Й█╘1█╘П█п╘│█эXL	 ╘f█╘У█╘█э╘Я█п▌|f▌▄fL╟fG ^fтеьт┐g╘█|f )g ▌fL	 G zgхирес²g╘█|f )g ÷fL	 ╜gx [gXLN9G ⌠gвиндовr#
+$
+0В├fД╚g\╝|fпХ▌|f )g ▌fL1ЙЮпХ▌|f )g ÷fL1Й╒ ▌|f [gL1ЙH Ыeграпхицr#f/f/ щй
+Э1f/ щДf·bfДfй┌fД/ п╔8И┘╟ф═╠│х╠═▒L	  Мрот═╠┘%═╠═▒═╠┘$╔%▒═╔$▒х╠┘%║▒═╠│╔%▒═L	  -ротr+\ Sнипr+▀─\ dундерr+▀Т\ tпицкr+#3;В"\ ├роллr+╦п█;╦AО#3Р─\ ²2свапr+пО\ ю2дропТ ж2дупr+ТТ\  р©# I 6iлбл©# I Biгр3©# I Niбордерr#╦~fД/ пД\I Ziсцреенr#/!пД\I uiцолорсr#Т┌fД
+$f/Ь╗\I ┼i
+бацкгроундr#fй
+H⌠i\I ╟iпенцолорr#fй
+1▀⌠i\─@ r#Т`YВ\J нiпоинты©#` J Чiпоинть©#b ╘ с╒╣$∙`йЫ╘г8Е$┘$xф╔$)ЬH┘8Б+Ых║q▒┬╠═q▒L≥  Сорх║▒┬╠═▒L≥  анд3х║1▒┬╠═1▒L≥  +ьорPх║Q▒┬╠═Q▒L≥! H-kх╠8А▒х╠═Я═▒L≥! eнот▀┼А│┼Я▒L	 ! ┐негате╕8╟Ц" ⌡днегате╥х8┼Я▒х┼Я▒┼А│═┼Я▒L	 
+╙╗┬╠≥$ ┬Ь┼e┘░Ф╒ ═`" ╚┘1╔(е$╟8╔$Е(┘.└4LOkЕ$┘.╔1п╔0е.╟╕.┘.├0╔5┘6╔4┘7х└5└4╔1J┘-╔0j┘,8╟d╔5П0	Ф&пФ'L░k╔&пф'ф&╔$e7┘$╔,e.┘,░Ф-Ф2пФ3╔0е,╔1Е-╟+8╔,Е0┘,╔-Е1┘-╔6П0	Ф&пФ'Lжk╔&пф'ф&╔$e4┘$ /j╕9ЮЮ░8▒8ФX╔0е2╔1Е3╟┌LN9O чjдравтоl═╧` ≥( ┬В╘ сLЛjO Эkфлиплинеr#
+Q/ФkДЕj
+д+В╘ сх╠e&▒х╠e'▒║e$│═╠e%▒L	 # П1+%╘a╟L │╠i ▒L	 # 2+C╘пЮ# <3+P╘псV╘пм\╘пг# I1-i8║И░L │╠И ▒L	 # b2-┤░Ю$ ─труе©+ЪЪ$ ▄фалсе©+  $ ≥"-1⌠$ ╖!0║$ ╟1©+ $ ╦2©+ $ б3©+ $ л4©+ $ жонr+⌠▀;\$ Юоффr+║▀;\% Я└цлит╔8И┘╟ф║│┼▒ФпФL	 % ┐лит1╔8И┘╟ф╠▒║│╔i┘░ФL	 % )глитералr+╦/ Ъ1└
+ 6!/!D6!
+!\& T0<┘╠╘Ъ$┼▒L & ~0=⌡║ПХпИ& ■увитхин╠╘ с═║е$╠Е%╟
+║е&╠Е'╟╫L▄' ╔<в║┘$╠┘%╔i┘░Ф╔%Q0∙║е$╠Е%L┤' яу<║┘$╠┘%╔i┘░Ф║е$╠Е%╟L┴L▄( Щ>r+▀у\( )0>r+╓┐\( 70<>r+≥┴\( Fу>r+▀\( V=r+i≥\( eд0=r+≥\( sд=r+╣Уy\( ┐д<r+Иi└ -jjb ч\r+9└ ▀─\) ■минr+И-╣\) емаьr+Иу╣\) вибr+\!"\; в!яуерыr+щ!
+Pв?я!"O!;╦!Вд!В\< Г!сцанr+п╦└ Тйi└ g▀#▀bДЪ9\< "скипr+п╦└ Тйi└ g▀#▀bДЪ9\< ;"/стрингr+ТТВZi\иA░и{╟иb░)ъи[╟	─`= j"цапитал╘"║ ├"│L	 > ²"
+цапитализед"║┘$╠┘%║$┘&┬д&п═L	 \: я падr+ь 
+BВ\: Б аллотr+л[\: У ,r+ь ;фЩ \: !ц,r+ь Д╪Щ \: !┤цомпилеr+О╦Aп"!\; ,!#тиб.* ; H!>тиб.*`!SAVESYSTEM C16NEU                                                               ; U!>ин.* ; ╡!блк.*  ; ╬!спан.* ; й!т DbЮЪj\r+l 
+1В\N ║*наме>r+╦с*▀й
+ 1└ "\N Б*>бодыr+A\N +.намеr+щ└ ╦■(└ ╞$эl 
+1#?b ╞$???▒4\O +цреате:r+а)∙'╢,"д,;∙0║\O H+:r+R+К(╔8И┘╟ф╔│╔▒╔i┘┼e┘L	 O h+а;r+║Щ6!\0╢'\O √+цонстантr+а)!К(╔8И┘╟ЛФ)Ф'Lл7 ╪цможе>Т╘ с╔%e'┘'╔%e)┘)Ф%╓$░┬╠(▒&≤пЬф'ф)ф%пП═L	 7 Иможеr+пИ└ ОРDОд\8 % плацеr+ТпТ#О, Д\8 F цоунтn ║┘$i│╠┘%i ▒╔8И┘╟фLт8 d ерасеr+║╗ \9 ▐ филл╙ ╘ с┬╔$╕'П
+▒(хпШФ)йпЖ╕&П▒(хйпЗ═L	 : ║ хереr+л"╢,""!$й╦╪
+ ╞┴Ю3INVALID NAMEь ~';#Щ ┬)^)"└ ╪^)[╦)!·(
+ з')л;b &)─╢'║!К(Lъ(3*║┘(╠┘)╔i┘░Ф║┘&╠┘'&пL▄╠&▒┘%║&│┘$%пL	 ╔$i┘$░Ф%║$H8)e$┘$░Ф%h) П
+╠$H║$┘$h┘%╔$е(п╟╔%е)п╙LCN ╦)>намеr+%"╦└ Изi▀1*щ└ Zч+╦п=Т┐└ |В▀g┐└ ╓Т└ ▀В▀g9\5 ь2/╠
+╠j▒║jL 6 /модr+пОЮ\6 //r+6j\6 Dмодr+6─\6 R*/модr+пПОЮ\6 b*/r+jj\6 xу/модr+║▀g\6 ┤уд/модr+п║gО▀пgО\7 ⌡цможеф╘ с┬д$п	ф%═L	 ╠(▒&хп▒╔│║i┘┼q┘╘eH┼eLr+О~'"Й*;\J ▄(едоес>r+6!К(
+L!6!ю(\r+╦
+Ъ1
+Ъii\r+ь 
+Ъ1
+Ъi└ ╦╦#ь Тi#Р╪~'[╪Щ \K Ш(?хеад.*  K V)эr+^)"s⌠^);\L d)варнинг.*  r+└)"s~'"╢,"9.j└ ▒4~'"+╞$EXISTS ╧>\L z)цреатеr+ь д!"!%│L	 3 ≤м*r+╦┐╦п└ ╓▀╦┐└
+ ╓О┴п·О└ ╣\3 К*r+·─\3  2*5║
+│╠*▒L	 r+⌠Ю3DIVISION OVERFLOW\4 .ум/модi║┘)╠┘(╔i┘░Ф║┘%╠┘$х╠┘'х╠┘&╒f*8╔%Е)╗╔$Е(╟&*░┘$└%&'&&&%&$йпъ═f$f%░ ├B\╔&▒х╔%▒х╔$▒═╔'L 5 ^м/модrрсижеr+╢'\r+┌'└ |йТД─\H х'	иммедиатеr+
+@з'\H Р'рестрицтr+
+─з'\I 	(
+цлеарстацк.(═╠┘х╠┘═L	 I (халлотr+╦"Тi▀;A╦i╦╦;ф█Тi, ,(╦;\I @(хеапr+╦"Z\I y(хеап?r+─(}╞\r+╦ь Тi╦I(─(▀д─(Тi~'[╢'\╔8И┘╟ф╔bНЪ\0 Ёфрепеатr+фЩ6!bя\0 Меунтилr+фЩ6!└я\1 бдоr+6!i╕п\1 ц?доr+6!|╕п\1 1длоопr+пЩ6!й6!╧╫\1 Eе+лоопr+пЩ6!Ш6!╧╫\1 `┘леажеr+╧О┘╦"Вп\2 |ум*═╠┘$║┘%х├&├'╒'&&&%&$░╠e'┘'х╠┬e&┘&░Ф%пФ$йпэ╔'▒х╔&▒═╔$▒╔2╦l ╪&;&Е║п║║М%&В%
+-@└ 9⌠пМ%&В%O&└ Ф;М%&В%j%≥&╜%╗&М%)&В%j%≥└ПЪ&■&≥&&ВМ%)&В%bтЪ\G б&'нумбер?и0л&G E'нумберr+P'щ≥Ю3?┐└ \H V'ласт.*  r+~'"щ\H w'хидеr+┌'└ ┘"╢,";\H ▌'режеалr+┌'└
+ ┘╢,";\H ╚'ирецу	еr+ь i!\. щ?паирсr+iЮ3UNSTRUCTURED\и H╘ЪLH╘ ╙╔8И┘╟ф┼═▒h╒ L / Тцасе?B╘ с╔$ап	╔%япL┴┼L0 8бифr+6!└╕╪\0 \дтхенr+=╪Щ╫\0 oделсеr+╪Щ6!b╕▀╫⌠\0 └ебегинr+уф\0 ║евхилеr+фЩф6!└╕/ЧЪх\r+Х╦/ЧЪi└
+ ─╫
+жертr+#l j%└ ╜%bТЪg\r+╪&"≥\r+l ⌠╪&[\r+gl \F м%дпл.*ЪЪr+└ 9ч─9║\r+└  9─О└ ╣─&"#щs─⌠\r+
+&@└	 
+
+⌠D
+$@└	 
+⌠D
+х@└	 
+⌠D
+%@└ ф⌠D║\r+
+,Тi▀
+.i\r+&"⌠is╪&[\.*  G &нумбер?r+Ф┘═L	 + б├(+лоопЩ║a│╠q▒jQ╔i┘░Ф(дL	 , Р│и'═ ╔8И┘╟ф╠ххq│┬╠ххq═▒L	 , !│йS═пр- M├бранцхd╔a┘$╔q┘╔$┘L	 - Y┤?бранцх├║╔i┘░Ф(ПкLD. z>маркr+ь ║!\. ·>ресолжеr+ь Тi▀;\. ╡<маркr+ь \. м<ресолжЙ#ч\D л$B.(r+
+)Й##?\D щ$A\r+╦!"6H#6$╦!;\D О$B\\r+ЬC╦!;\D %\неедсr+$У.j└ С$\D %хеьr+
+Ф;\D 7%децималr+
+
+Ф;\E J%дигит?r+
+0i╦
+	[└ 
+┤i╦
+	[└ Ф"Т[щs─║\E a%
+аццумулатеr+▀п▀Ф"·─Ф"·УО\E ═%цонумаьr+И╣\) Иуминr+И[╣\) Эеьтендr+╦┐\) дабсr+└ ╣\) "абсr+└ ╓\r+9ОA╦пп▀пп\* 7┐(доr+ТiI\* c└(?доr+Тiщ└ IО╦"Вп─\* uбоундсr+ТВ▀\*  ┤ендлооп╩╘L+ ╞┘(лоопл╘a│░╠i ▒░L	 ═╠┘┬╠дr+╣#Е"\B я#парсеr+п╣#╦!"t"Т▀О"пТi╦ОLi╦![\B Б#намеr+?4ь#б"D\C $стате.*  C )$Eасцииr+?4ь##й1$"└ ^\C 7$,"r+
+"Й#ь Т#Щ N \C W$└"литr+ОО|l Впп\C q$┌("r+x$\C ▄$а"r+6!▒$\$\D ≥$┐(."r+x$l #?\D ╘$б."r+6!╞$\$\D ╩$A(r+
+) х╠$ ├"▒$Lя"Г"├*═╠≥$ ┬Ь═╜╨!e&┘&╜╩!e'┘'8╔$М╨!┘$╔%М╩!┘%╟║█╨!╠█╩!Ly#═╔$%П=║&япФ&пФ'╔$пф%ф$L$#╔&┘(╔'┘)║&яФ&пФ'╔$пф%ф$(ПФ*╔$%пБ8═╔&Я█╨!х╔'Я█╩!╘e┘░Ф═╠│┘$х╠═▒┘%┬╔*▒$╠(хф*В╘ ▒$═L	 B ╣"соурцеr+д!"щ└ ╥9ЬCDщ!O!"\B ╛#ворф═╠│х╠═▒L	 O ╛+жариаблеr+а)фЩ \P э+уаллотr+╦0"В
+Ъ[Ю3уSERAREA FULL0"▀0[\P С+усерr+а)фЭ+!К(╔8И┘╟ф═╠e│┼хe═▒L	 P ),алиасr+а)~'"╦й
+ 1└ /ЧЪЩ b 
+ з'с*;\Q ],жп.* |-k-k-AJAJ    Q ▒,цуррент.*k-Q ╙,цонтеьтr+Х ┘\b ⌡4холдr+⌠╢4[╢4"Д\b ╬4<#r+╢4╢4;\b в4#>r+ч╢4"╢4Тi\b Х4сигнr+┐└ 
+-е4\b Ъ4#r+Ф"╓
+	Ту└ 
+┤В
+0Ве4\b 5#сr+5Иy└ЬЪ\c @5д.рr+Z|)э4E55М4ТщТi╓4#?\c U5.рr+▀[5\c 5у.рr+║▀[5\c ▓5д.r+║[5▒4\c ╓5.r+╘5\c ╣5у.r+║╘5\d ц5.сr+;╦"Тi
+ ё| %"х5фШ╧\d р5ц/л©+) d Ч5л/с©+ d 
+6листr+▌3;╞$сCR ▌3"╦DXх5╞$дR `D╧56║i. ║>└ └?%ф└5▒4▌3"╥9%6$В6gQ4#?й╧?\e 6паусе	 e z6лоцкr+╦"}i└ ─D╦"└ ┌6bТЪ}▀4╧>д!"щ└ ▌3;╦!"≥3;33\_ ÷3┤(аборт"r+x$▀└ п,(О╩D─\r+x$▀└ ╩D─\_ ж3фаборт"r+6!Ю3\$\_ 4феррор"r+6!З3\$\` %4бл©+  ` :4	-траилингS4≤ с║┘&╠e%┘'╓$░┬╠&и ПхпФ%≤H╔%L≤пЙф'ф%Д≤La E4спацеr+?4?\a ┴4спацесr+║| ▒4й╧\r;\e ├6унлоцкr+╦█6В\h8И┘hИ ┘╘L│═╠┘х╠┘═║┘╠┘╔i┘░Ф╒L░f ╥6филе<,f  7преж.*Ь{.*  f 7б/буф©+═╠(ы" пхюпТ`:7═╠≥$ ┬Ь═╠e&┘&х╠e'┘'╜7┘(╜7┘) )7п╔i┘░Ф═╘e(│╔)i ▒LF╔(┘*╔)┘+║*┘(═╠*┘)(пL	  )7пБ║(│*═╠(▒*╜7│(╜"ЁAi\] ╛2дептхr+;╦"▀i\r+1$"└ ╞$
+ COMPILINGD╞$ OK\^ г2(яуитr+М1?О!Ы/ъ2bТЪ\^ 3'яуити0
+3^ 3яуитr+б"б0&3\^ ,3стандарди/оr+/*Тзд\^ C3'аборти0═^ a3абортr+,(cj3Q333\_ p3сцр.* _ ┬3р#.*  _ ■3(еррорr+Q3▒4ь +l #?▒7▒(╔(█7╔)█7Lc7j 7(дискеррr+╞$ERROR !  R TO RETRY ╞?╦
+Ri▀
+рi┴Ю3ABORTED\j а7дискерри0л7j 8р/ви00lr+╦Z"┐└J A╦"#└3 2Т2Q3╦ZТA"ф█"║8└ ╞$WRITE 8bшЪ
+─ТT#─\r+A╦ЕTВ\r+╦{82Т2Q3пТз"ВТ
+ВZ╠ех╠Е═░L	  ├⌠Ю3STACK EMPTY\\ ∙1.статуси0цT.*ОО;\\ Ц1└пусхr+О▀╦п"пЯ1пп\\ Щ1лоадr+щ≥sд!2д!;╦!2╦!ВМ1Ы/\] 2+лоадr+д!"В#2\] C2тхруr+#▀i
+ %#2й╧\] Y2+тхруr+#▀i
+ %K2й╧\] v2C-->r+╪д![╦!ВМ1\] ■2рдептхr+б
+╪8└ ╞$READ 8bыЪО\r+7╦"└ "╦A"⌠i└ЙЪ7█6╦!8\r+AпИ;з"ВA;ОTВ7ю6\r+7"╦└ ╦Z"┐└НЪ\r+7"╦"≥└ЖЪZ"┐\l 8цоре?r+87ч║\m F9(буфферr+87х8Н8bЬЪ\m Z9(блоцкr+87х8┴8Н8bЖЪ\▐9═╠Hх╠Lm t9буфферr+█9d9r+а)/╔0!К(═╠Hх╠┘h┘═L Z ╣0(исr+О╦Aп";\r+"/и/"Тi▀/╦/"i┴Ю3NOT DEFERRED\Z щ0Bисr+;/╦С0+1$"└
+ 6!Ц0!D;\.* r+о2
+ -Ю3TIGHT STACKE1й≥└ ⌠E1Д⌠Ю3DICTIONARY FULL╞$STILL FULL \[ "1?стацк═1═8╔Ях╔Яп	═ ├H1\▌G1═\m °9блоцкr+█9}9\n ╞9упдатеr+
+─7"Z#Д\n а9саже-буфферсr+7█69щ└ !8bТЪ7ю6\n щ9емпты-буфферсr+7█67"щ└
+ ╦{8bРЪ7ю6\n :флусхr+Л9:\r+╦█9N9└ 7"{8,9└ Л9з"В▀╥9┘┘;й9\r+Л9пТВТ[пИО1└$ УО║| ⌠/ЧЪУ	/нотфоунди0ъ/X ╬/но.еьтенсионсr+З3хAEH?\X о/	интерпретr+╦/\ r+·1$У.щ└ ╪1└ ≈╦/Ю3COMPILE ONLY┐/sP'≥└ и/╦/\r+·1$У.щ└ <└ ≈╦/!╦/┐/sP'щ└ <└ ▀^^b и/╦/\Y М/A[r+/ 0Ц0╨/1$В\Y {0]r+/;0Ц0╨/1$Е\r+⌠Ю3цRASH\Z ▒0деферИH:й╧b О║| ИH:╪╪Уй╧Л9ч\o 8:цопыr+╪v:\o т:цонжеыr+▀#ф█i╦<┴Ю3NEINv:\p Е:лимит©+ ─p ;фирст.*Ь{p ;аллотбуфферr+#;"б"i%7As%7╓#;[#;"╦{87"Т;7;\p );
+фреебуфферr+#;";%7i└. #;"!87╦"#;"i└ "bНЪ#$▒╔8И┘╟ф╔&х
+0≤IЪ╗х≤│╘Ъ$┼═▒L	 V 1.финдr+д,╦"Т┘"i└ ┘|"9.└ j■.DТ√,A[└
+ ▀┘bчЪj║\V Н.'r+$У.≥Ю3хAEH?\V 7/и[цомпиле]r+;/!\V O/ц[']r+;/^\V e/нуллстринг?r+╦й≥╦└ j\х╠i┘х╠i ┘═L	 W u/
+>интерпрет∙/ 0X ╚;""▀;%7#;[\p k;алл-буфферсr+#;"7;#;"i└РЪ\r+й
+ 1\r+Й*|#▀■(\r+─(%"пО"щ└^ ╦пзiпО"пТg╦▀AЙ*1└. ■(└зЪAэ;└ ТAГ;└ Aс*AПb╤Ъ9b°Ъ\m<═╠≥$ ┬Ь═╠i┘*х╠i ┘+═║$┘,╠$┘-,П5╔,е*╔-Е+░╔,е&╔-"╢,;\r+"┘╘*+\S ╠-ордерr+р,i %к-/ЧЪШ╧ф╓4╢,к-\S ы-вордсr+д,""╦║>≥1└ ╧>╦A+▒4bФЪ─\T .(финд;.═╠≥$ ┬Ь║&)┘(═ ╠$╙х╠$┘%├$$п═╒ L▄х╠$)е(пЮ╘e$┘)╘ e%┘*╓(╠&я)пк┬пВ═╔*▒┬╔)▒┬╒ L┴√.║┘$╠┘%║$┘&)8e$┘$░Ф%╔&) п	╔$│╔%Lб.║$│╠Е'L╡<╔(е,╔)Е-╟║,│$╠,▒$Lг<╔,┘$╔-┘%L┴<L²r+%"щ└ ╦пзik<ОbЙЪ\r+}#╦"}i└( И"▀ь ╞└ ╦"#"Т;gb "bнЪч\r+%k<р,i  И%"Z╞└
+ /k-%;/ЧЪШ╧И╢,"Z╞└
+ /k-╢,;\s ╨;цустом-реможеи0═r+ТК<'=м<{=─(▀iI(л;║~';\t k=+√,╦"ВA\r+√,Aд,\Q ╨,алсоr+√,"
+
+-З3жOCABULARY STACK FULLд,"ф√,[д,;\Q ч,тоссr+/ЧЪ√,[\R -
+жоцабуларыr+а)║!║!ь %"!%;К(Lю(д,;\R /-фортхV-,u,u  R a-онлы└-!@!@o-К(Lю(║√,;д,;Е,\R s-	онлыфортхr+z-i-Е,©-\S ≈-дефинитионсr+д,MOНKтапеинит║0DНKфлоппы?╞$тYPE 'HELP' TO GET HELP?╞$тYPE '64KB' TO USE 64KB\r+/ ░/ ■/ ю█Ki-▒$цоде
+п3Ki-▒$едитор
+п3Ki-▒$дебуг
+/п3Ki-▒$хелп
+
+╪3Ki-▒$тапеинит
+з3K/═Ц0o@/xLЦ0≤@НKедиторНKедибоард╪▌3;║≥3;E>/ z/П{/ ─█K\ ???\r+╦;iф█╜
+
+В"i1п█╜
+В"i1└
+ ───D/;+;╜
+
+В;╦
+В╜#;╜
+В;A\r+x$б"У.└ ≈b l #?╞$ UNSATISFIED33\r+6!НK\$\ 3J64кбr+/3"/ Щiщ└ ?х5╞$	TOO SMALLD;/ Щi└ / ─/ └/ Щ█K\ #Lц16демоr+?╞$C16-дE~Jсп©+ | ┴Jип©+ | ■Jн©+$ | ÷Jпута©+ | ╘Jв©+ | ╤Jсетуп©+с| юJнеьт©+	 | нJьынеьт©+HA| шJпоптво©+Т | ЙJпоп©+²r+?б"╦У.j|≥└	 ╞$NOT ╞$FOUND: l #?\.* r+ф█K└
+ ───D╦/K"i└ @:╞$	 иNSERT #╦╧5╞?─╦/K;─╞$ SCR#╦╧5?#2K≥З3╜Ъ	█Ъ█?ЪX`⌠ +Iц64инит╕I `ILHA  ┘├┤┴┼▀▄┬■  Iц64фкеысмI╒й0	╫╛I²]LоILHA{ юIC(64r+$l ≥Ю3
+ц) MISSING"/ц)i└ЦЪ\{ ЮIBц)r+\{ JC(16r+\{ Jфортх-83r+\| "J	ассемблерV-dd─-|   пусха©+| IJпусх0а©+| WJпусх©+| fJрп©+ | sJуп©+ | индеьr+#▀i! ?%ф└5%╥9#
+%#?║>└ └й╧\▐ ┼Hфиндеьr+цG└ чD#▀i1 ?%ф└5Х ╦%33НF&Gп#
+%#?О║>└ └й╧ЕG\░ ©Hинк-пот.*ЖЖ НЖ ЖЖ ▓ Iинит-сыстем;I╒В LHA█>Ъ█VI▌XI╘IH╘\H╨╫H╘ ╒ LЁЭ█?Ъ@x█>Ъ╘I█ЪЪ╘A█ЧЪ └Ъ ┼Ъ╜I█Ъ╜I█Ъ╜I█@╘─█@GЩE≈DD
+ZE▒$U2:13,0,l ЩEЬFЩE≈D┌6YF\▌ ]Gдископенr+D
+pE
+#АE≈DYF\▌ ╦G	дискцлосеr+D
+┬E≈D\▌ ыG1541р/вr+▀Ю3NO FILEZD6╦D;п[└ ╧5╞$BEYOND CAPACITYjDцG└ ─jD║▀33зёi. ─И%└
+ НF&Gb НFkGпGВО╦└ └й╧ZчЕG\▐ ТGVr+╦┤F└	 
+6DпВ╦▀F└ ┤Fi
+6
+ВD╦▐F└ ▀Fi
+6
+ВD▐Fi
+6
+В\r+⌠F#▀\r+Ф2T%║э4E5─
+,е4E5М4\©+ █ OF
+реадсецторr+D
+ZE▒$U1:13,0,l ЩEЬFЩE≈D┌6YFsD
+нEG7F≈D║\█ Gвритесецторr+D
+ZE▒$B-P:13,0l ЩE≈DD
+ZE\≈E├ ╘ с╔& лD╔&█>Ъ ╢Ъ█?Ъ╔$	`┘╜█>Ъ √Ъ█?Ъ╕&├≤LHA┼ }Eбусинr+┬D█6∙E\▀ фEбус!ЦE║█>Ъ ╗Ъ█?ЪL≥▀ зEбустыпеr+ё| %йАEй╧┌6\▀ СEбус@F█>Ъ ╔Ъ█?ЪL▀ Fбусинпутr+ё| F%Дй╧┌6\▀ ,Fдеррор?r+D
+нEF╦
+0i└ ?F╦РAi└ТЪ≥?≥≈D\©+e©+Й©+фф≥D█>Ъ лЪ█?Ъ═╒  ├┬Dю6\╒ ═ ├≈D7ю6⌠Ю3	NO DEVICE\├░┘╝█>Ъ ╠Ъ█?Ъ╘`█>Ъ ⌠Ъ█?Ъ█>Ъ ╝Ъ█?Ъ╔░ПhhL╞D`ЫD║ лD╔i┘░ФL╒D┴ ▌D?дежицеr+┬D█6ВD\$E├ ╘ с╔& лD╔&█>Ъ ╠Ъ█?Ъ╔$	`█>Ъ ⌠Ъ█?Ъ╕&├≥LHA┼ Eбусоутr+┬D█6"E\┼ QEбусопенr+
+ПZE\┼ fEбусцлосеr+
+ЮZE≈D bCц64тыпе╓C╘ с═ д$П╠& ╣B╟╘.█>Ъ LЪ█?ЪхL╚CL╗B├ ≤CдисплаыШ>НBC╒CC5CHCkC\ХC█>ЪLRЪ┤ йCб/блк©+ ┤ ПCблк/држ©+╙ ┤ ЧC(држ.*  r+D"
+В\┤ Dдрижеr+D$з;\┤ (D>дрижеr+D$Вз"i\┤ >Dдрж?r+з"ВDH\┤ YDдржинитr+═\┬ pDи/о.*  ┬ ┌Dбусо	Ъ█?Ъ╔i┘░Ф├к├о═ ├┌6\и─╟и `иЮ╟ию``└ ┴B
+принтабле?жB║ ╣B░й┼L┘ гBц64емитПB║ ╣B╟╘.L■B┘ ДBц64црr+РA░B\┘ ЧBц64делr+
+²░B▒4
+²░B\┘ Cц64пагеr+
+⌠░B\┘ +Cц64атJC╘ с╕&╓$█>Ъ ПЪ█?ЪLHA┘ @Cц64ат?mC╔8И┘╟ф┼▒8█>Ъ ПЪ█?Ъю(≤░И(H┼╒ │hL├
+Ъ╔иi И█ЪL	 ┌ ▀Aцурофф╤A╘Ъ█Ъ█ЪL	 ┐ ╚Aц64кеыr+⌠A┌6[A└ЗЪ╢AuA\┐ цA#бс©+ ┐ ЮA#цр©+ ┐ ЛA	ц64децодеr+ФA@└ ╦└ .?gDРA@└
+ ╦я!;DпИВ▀ДО?#\┐ ЬA	ц64еьпецтr+я!;║╦я!"└
+ ╞?и?bНЪч▒4\┐ @Bкеыбоард·?лA[ABLB\└ pBцон!▓B║█>Ъ L
+3Ц0(3zD√@/.";/═Ц0l3x3\═╧9≥ ┬В╜ i┘╜!i ┘═╠┘х╠┘═
+╠┘х╠┘╒ ═┼│▒`z ▀@цолдA `I╜ i┘$╜!i ┘%═ ╧▒$хпЬ ╬@ ├9Iq@\z З@рестарт9A `I ╬@ ├9I @\╒ ═L	 │ -Aц64кеы?]A╔О]П╘ЪHL│ QAгеткеыwA█>Ъ щК█?Ъи═п╘ L┌ lAцурон∙A╔йeх█ю(;\v ▐?кеы~? v ╘?кеы?~?v ╢?децоде~?v ю?еьпецт~?w   сеалr+║/z-+;\w э?$онлыz-w С?%фортхi-w Ч?%вордс	.w 
+@$алсоЕ,w @+дефинитионс©-r+%"╦┘"Тзi;"щ≥└ЙЪ\r+║7;;#;;х;\x н?'цолди0═r+1@Q@ё-m@:?l #?? @\x e@'рестарти0xLr+/r+╩?└ ┘>┘>║\u ≥>?црr+j?6
+
+i[└ ?\r+а)╦!AК(Lю(йТ"В╩\v Ё>оутпут:r+R+К(Lю(Т;\v К>емитз> v ?црз>v ?тыпез>v ?делз>v (?пагез>v 3?атз>
+v ??ат?з>v I?ровr+O?─\v T?цолr+O?j\r+а)╦!AК(Lю(й"В╩\v d?инпут:r+R+К(Lцлеарr+ь ╦}=л;\t ║=(форгетr+╦■(Ю3	IS SYMBOLЫ;=\t ╩=форгетr+;/╦/$"Ю3	PROTECTED╘*╦■(└ Й*b ┘┘е=\t ъ=емптыr+/$"}=/2"0;\u >сажеr+ь }=%"╦┘┘"Т┘;"щ≥└ЙЪ}╜/ д\u >>быеr+Л9ФC\r+╞?пi└ ⌠9\u w>стоп?  ЗJенд-цодеr+д,┘"д,;\ └Mиндеь.*		─	───── ───────,.*  ÷Mмоде:r+а)!К(Lю(йиM;\ оM.аъM  ЛM#ъMъM ЖM,ьъM N,ыъM Nь)ъM N)ыъM  N)ъMr+└ иM"
+иM;╪иM"
+1щ└ ║i
+ ╦Вй╧Т#"1≥\ *Nцпуr+а)!К(Lю О?#D─\" ]дигитс·?лA[A&]LB\r+жV"║i
+ ФA░Bй╧║эV"║i
+ -Xй╧╦sэV╥UЮW▀pWk\─\r+#?
+<?⌡Vgj?i╓4\r+2Ve[O?~Z╪║D?╞$REPLACE WITH: O?эV╥Uц]║║D?╞$>     SEARCH: O?жV╥Uц]║фИD?фV"п≤5ИD?ь #п{]в?я!"щ└ ь |Д_'─фV;D?фV"п  &\\r+`\▌3"╥9┴W└ ПZ─▌3"╥9CWй9
+\r+k\
+\r+░\
+\r+▌3"╥9W╨VВV:\║\r+k\─╪▌3[╕\\r+k\─⌠▌3[╕\\r+k\─╡V"╦╕[j[┴└ ╓▌3[╕\\r+k\─╤V"▌3"╤V;▌3;╕\\" ╤Z	дигдецодеr+ФA@└ ╦└ .?gDРA@└
+ ╦я!;D╖"╦j%└ ─пИВ▀Д аWХ ⌡V3даW⌡V3
+═╗ \r+Х аW⌡V3д\r+╥9┘"\r+⌠A┌6╩?└ЗЪ╢A\r+▌3"з"ВD▐▀\r+O?e[~Z║║D?╕[╞$сCR # ╧5╞$дRV ╧5▌3"▄[≥└	 ╞$NOT ╞$UPDATED╪╪D?/÷Zl #?ф╓4/╦Zl 
+1#?▓ZD?√[~[║\r+O?▀⌡V#$В≥3;\r+≥3"╦⌡V#X⌡ViiЬCgк⌡V#6▀D?\r+V
+ r+╨VВ║\ ┼Vржсонr+
+░B\ vZржсоффr+
+▓░B\ ┴Z***ултрафортх83***	  ²ZRфортх-геселлсцхафтr+%\ ╘Vстамп$.*                  r+эZ#l аW⌡VВТi▀pW║\ сZгетстампr+2{BэZЕ?╞$YOUR STAMP: ~Z
+╓4Z?
+D?эZA
+в?▓Zя!"эZ#Д\r+эZйs[\r+ РY\r+▒X╦s
+░B\r+йV╥UВ#пV"╣Wк[╦sЮWййV╥UВД╪йVA[\r+─Yщs▒X\r+─YщsqY\r+йVA"≥щs-X╦s⌠йVA[йV╥UВйЮWД\r+пV╥UВ╣W[╦sкWпV╥UВ⌡Vд⌡VпVA[\r+ПYщstX\r+ПYщs%Y\r+⌡V╓пVA[пV╥UВкW⌡Vд\r+пVA"≥щsOY╦s.Z\r+╨VЕ║\ s!X\r+бV"≥Z?÷V┘[1╦s
+░B\r+	X╦s
+░B\r+аWёVQ4jёVgк⌡V6▀D?║\r+║
+
+║i ─▒X╦└ └й╧\r+
+║i 
+²░Bй╧║\r+Z?║D?V╨VВtX\r+кW⌡V?4╗ ║\r+ЮW⌡Vj?i?4╗ ║\r+кW╦⌡VВ▀аW/юВ╦пТiдО⌡V?4╗ ║\r+ОW┴щsкW╦⌡VВаWёVВТi VrW╘ с┬д$пL(V╠( @V▒&хпО▀W≤ с├&╜>┘'╒═'╠$ @Vя&П╘ЪL┬О ЖVйпГ┼Lr+;⌡V3i\цW┼H╜>LмW╔йи(┼░╘'eхH╔иi LБW╔йeхH╔иi Lr+аW/юВ⌡VQ4j≥бV"\r+ЮWаWёVВgiбV"≥1\r+╬Vй░B║\r+	Xщs⌠кW⌡VВgй?4i┴1ОW┴1╦s
+■░B\r+	Xщs╨V"└ -Xщ  ZVсцр>цбм~V║ /V│L	  rVедиторV-ХcХcEJ©+( ©+ ©+Х   схадов.*U .* .*  .*U .*ЪЪ.* .*Iv  .*≥v  .* Ыu.* !v©+х ©+й ©+Ъ©+;©+Ъ╔$i)┘$░Ф%╔&i(┘&░Ф'`W≤ с├&╜>┘'╒═'╠$ @V▒&┬Ж ЖVйпН╜;² ² 	² 
+² ХпЯL(VEW≤ с├&╜>┘'╒═ ╠& /V▒$хю(░ТйП
+╘ ▒$ ЖVLRWL( ║&а*П╗═╠≥$ ┬Ь╔$пф%ф$Ф&пФ'LУT ъT2!·U≤ с═╠▒$┬Ы═LТ ≈U2@╧U║┘$╠┘%╔8И┘╟ф═╠$▒┬ЫLHA ╡U	2жариаблеr+а)зЩ \ зU	2цонстантr+а)!!К(Lю(╥U\ РUунлинкr+║║/Н°U\╒ ═L	 ┘*)?*$*	─p	@`┘*)и ░и@░)$*	@`╘.` Vцбм>сцрfV║ @V│L	  +ь 
+	В/ ─[Ю3NOT HERE/>Ъ├P\ nTрамr+/?Ъ├P\ ≤Tсысr+tT/Q·T\. ZT.блкr+д!"щ└ ╞$ бLK х5╧>\ ╪T(сеарцхКT═╠≥$ ┬Ь╔()Пi╔$%Пc║&а*П╔$пф%ф$Ф&пФ'LШT═╧$ ▒┬ЬФ&пФ'Ф*пФ+╔$пф%ф$╔(пф)ф(╔()п╔i┘░Ф═╔'▒╔&┬▒┬L┴╔$%п╔i┘░Ф═L▄ 	ZSвдецr+╦_P8R√QТ#═P╧Q═P\ wS;ц:r+└/Q▐M∙0║~';║\ nL	ассемблерr+?JЩM\ ╡SE;цодеr+)/ЩЪЩ  +/ЧЪЩ ╬S\ хSцодеr+а)ь ╦┘;╬S\ ХS>лабелr+ь h)а)Ч'▀!зI(─(╪1I(ь зi─(зд─(~'"l 
+1В;л;К(Lю("1$"└ ^\ Tлабелr+ь 
+T╬S\ √Sромr 
+нотr+
+ N\
+ wRбеяr+DRQ\
+ ┬Rбмиr+[RQ\
+ ≤Rбнеr+8RQ\
+ ╗Rбплr+ORQ\
+ ╦Rбццr+"RQ\
+ хRбжцr+fRQ\
+ ьRбцсr+-RQ\
+ ХRбжсr+qRQ\ ЬR2инцr+╦_P²NфЗM+P╦├P"R√Q▀#╜P╧Q\ S2децr+╦_PBOфЗMyP╦├P-R√Q▀#═P╧Q\ 1Sвинцr+╦╜P8R√Q▀#╜P╧Q\  Q?]r+!ь #iNQ!\	 zQ?[r+!ь ║!\	 ▒Q?[[r+√Q▀\	 ╓Q]?r+ь Тй└
+ ▀;b Т#iNQ▀Д\	 ╢Q][r+ь #╪<Q▀ь Т#iNQ▀Д\	 щQ]]r+<Q\	  R]]?r+<Q╧Q\
+ Rцс©+░ 
+ Rцц©+╟ 
+ (R0=©+п 
+ 3R0<>©+П 
+ >R0<©+ 
+ JR0>=©+0 
+ URжс©+P 
+ aRжц©+p 
+ lR  sPста╠O─l ─Pасл╠O █Pдец╠Oа  Pинц╠OА ╖Pлср╠OA ╢Pрол╠O! аPрор╠Oa нPсть╠O│ шPцпь╠OЮ├ ХPцпы╠Oю├ УPлдь╠O╒√ Qлды╠O═▌ Qсты╠O─▄ Qйср╠O─ )Qймп╠O@─└ 6Qбит╠O └r+╦=
+[Ю3OUT OF RANGE \	 CQ[[r+ь \	 m OтьаN┼ ~OтьсN  ┴OтыаN≤ ■Oм/цпуr+а)!!К(Lю(╦#"
+─1└	 
+иM[Т/ Ъ11N1N└ ЩM⌠Ю3INVALIDйиM"╖MВйВ!иM"
+1└ иM"
+1
+у└ !b !ЩM\ ÷Oадц╠O`n %Pанд╠O n 2Pцмп╠Oюn ?Pеор╠O@n LPлда╠O═n YPора╠O n fPсбц╠OЮn (й!ЩM\ qNбркN  ▄NцлцN ≈NцлдNь ╒NцлиNX ╜NцлжN╦ ╦NдеьNй цNдеыN┬ нNиньNХ ыNиныNх ДNнопNЙ ОNпхаNH ЗNпхпN OплаNh OплпN( OртиN@ &OртсN` 1OсецN8 <OседNЬ GOсеиNx ROтаьN╙ ]OтаыN╗ hOтсьN╨ s!≤5{BИD?жVA"⌡V┘j?iв?я!"щ└ жV;D?жV╥Uц]ИD?эVA"⌡V┘j?iв?я!"щ└ эV;D?эV╥Uц]▓Z~[D?\r+╕\─жV╥U≥3"▌3"╥9ВЬC≥3"iИT≥└ ║b
+ ▌3"╥9i≥3;:\\r+k\─ь]б^≥3"└' ╞?╦
+Ri└ ┤]щ└ jDпiщsbсЪ╕[jфV"i║>≥1щ└ ┐└
+ ╪\─b л\─b! ╫Ъ╕*╓+`╟╘ H╔░)©█?ЪL ╖mцсажеdn╘ n╘, ьЪLIn Znцлоад}n╘ n╘  уЪH≤H┼H═ ╔8И┘╟фh▒хh▒h(LIn sn.ерр╠n║0╙й█>Ъ T├┬х╠$) рЪ(Т█?ЪLHA ╗nдерр?r+╦└ ?╦х5╞n╞$ERROR╦
+Ъ1
+i┴D"⌠-1└ YFD"║щD;\.*ОО;\ рn┘стореr+О▀╦п"! +;Пцh\  mрдневr+Bm▀Bm▀И/ i[Ю3RANGE!ТПhТ;m▀i
+i;(m║║иl\r+└ ╞$ERROR \ Pmрдцхецкr+╒lPi╦"╦║ЬC
+В╞┴■mВ╦?х5╦"╦п≤5▒4└+ ╦A"D▐╪≤5╞$:ф≤5╦зВ
+#?║>sb╛Ъ■ii■m\ с█>Ъ╘─ ░Ъ╘ ┘░╔$8И█D╟й▌D╕$╓%╘ ╨Ъ╕(╓)╔&!3NO FILE▀sj/jЬCi└ ≥└ ┼ib ┼i▀ЬCдb$ ≥└ Ljj┼iЬC⌠kЙkb ╦┼i▀/jHkl║\ 'l.рдr+Цh"х5Pi─■iх5
+#iх5тil #?\ °lид!r+
+ тiДтil ?4╗ 
+тiпВN ▒$рд.l тi#▀д\ цlид"r+
+"Й#иl\ Шlрдусеr+Цh;\ mрдделr+Pi"╦фi;зi;■iВ\r!дJk k╠()╗╙╘ ▒&┬Шх8┼e&┘&░Ф'Luk ъj▒&Ф&пФ'Ф(пФ)ф$пнф%пйL0k ?kцомпресс∙k k╠(и пХпй┼▒&Ф&пФ'╒─LлkЮ─0H┼▒&Ф&пФ'╒h лj▒&Ф&пФ'Ф(пФ)ф$пбф%п╬Ю─0	┼▒&Ф&пФ'L0kr+┼i|Вg╦й
+[└
+ И[└КЪ#▀ij\r+|ВЬCi?4╗ \ ┬kрамр/вr+ф█≥j└ ЧGbX ▀Ю!етеr+yi╦"|Вyi╖iТiд╓╠i\ Cjсеарцхr+Pi╦"В╦"└ ИA"i└ХЪeiдi;\r+D\ иhбинарыr+╦з"В≥js╦╥9─й9LjjЬCj\и─`ию░иЮ╟i═`)`и`╟`И═` ёjц>7Яj║ лjL  Иj7>цk║ ъjL ╘ с╔&┘*╔'┘+┬╒╔$п╔%пhh╘ LL/kФ%`8╔&Е*H╔'Е+L Шjеьпан!/iрдr+5i≥Ю3
+NO рAMDISK\r+Щhфi;\ Kiадрr+ф#i\ siдатаr+yiзВ\r+з#i\ ┐iбехиндr+■iзВ\r+зi[\ ·iблк#r+
+i\ ╫iидr+
+i\r+■i
+#iЬCiзi[Ю3рAMDISK FULL\r+■ieiщi\r+щ≥sдi"■iA;зВ╦■i;╠i■iВ\r+yi"╦≥sзi\ оiдел!!??╞$аBER OHNE хANDBUCH?╞$UND DIE хILFE DER?╞$фортх-гESELLSCHAFT?╞$BLEIBT фортх EIN аджентуре!?\ &hмемтоп©+ Щ ╨hрамдискV-jjjjd   (рд.*   щhплен©+1  Иhадр>r+Цh"i\ Жh>адрr+Цh"В\ 	iадр@r+i"i\ iрд?r+Цh"╦╦"Пhi1\ !"
+≤5\r+╦йп└5\r+
+$j?i║щ╓4\6 Оfсr+;g▒4Xgз╓4╦l #?╦йВ#dg\6 wgнr+;gKgф╓4╦"╘*+Adg\6 ⌡gкr+;gKgAdg\7 ╧gдr+И▀;gп╓4▀║i
+ Xg#й╧з╓4Z#?dg\7 кgцr+╪оg\7 Ыgбr+;gKg╦"ТВ
+≤5Adg\
+ $gхелпr+п█b?╞$пROBIER' RUHIG WEITER!8"@└
+ +"fD"/Lюi└
+ "пВD╘*+╞$CAN'T BE дебугGED33\5 ╘dнестr+Dd""f─<dЕ\5 ∙fуннестr+4dЕ8dВ\5 ╟fендлоопr+Dd"зВ4d;\5 гf%унбугc5 Цf(дебугr+f╠d<dВ@dЕHdВ	dПe\5 dдебугr+;/Ьf\5 gтраце'r+;/╦Ьf≈c\r+╧>╦з≤5╞$:\r+╦! <dВО8d24d2╦┘╠dHd2╪Hd[п eп2Т2┘╦Dd;?Hd"╓4╦з≤5"╦
+≤5▒4╘*+
+j?i║щ╓4в51$2д!2╦!2/(32/╨/2O!2щ!O!"jdб2Ёб;/┼dЦ0(333\Рe╘e┘╘┘╘L┘L	 r+╦"/l+"@└ +D/╞?"@└ +й"В"fD/#?"@└ +йТ"В"fD/!	бО▀д\1   цпусхr+ОZТпЁТ#i╦бN Ldпп\r+
+RЩ {BтCМ1▒4О!Ы//╝ЪЩ 9\1 bdрангеr+8dВ╦4d;#╦"/\i└РЪN8d;\вd╘Ъ█Bd█Cd║┘╠┘╔i┘░Ф╜2d┘╜3d┘L 2.*уd\╔i┘░Ф╜BdПФ╜>dп╔м6d╔М7d░у╔м:d╔М;d╟иL9e▌>d▌Bd▌Cd╔█2d╔█3d ├<d"└"!
+╨VВ?DРA@└< ╨VВc╦я!"[└ ─я!"ё| ИВ%й|V▀Д#й╧╦я!;D╦╬VД
+Ц_≈5`─\- @c	едиеьпецтr+о`я!;║╦я!"└
+ ╞?и?bНЪч▒4\- ╤cедибоард·?лA[ALcбc\/ жbтоолсV-hh≥V0 ╙Tвцмпr+Т_P╦EP▀#_P#yP\.*  .*Ъ▐.*У▐.*К▐.*ъ▐.*с▐.*г▐.*Ёl ИВ! ╞$, SAVED
+1└ ╞$	, LOADING?▌3"≥3"la\, Яaлr+≥3ВЬa\, ┴bрr+▌3"Ьa\, ≥b+лr+▌3"В█b\, ╘bжr+;/╘*щ└ зi"\, ╪bжиевr+юbщ└ █bb ╞$FROM KEYBOARD\,r+БV"ФVйВ\, I`цурлинr+
+░B
+J░B c
+░B
+K░B
+░B cТi\- c	едидецодеr+
+█@└
+ !Ы/\* 9aсховлоадr+▌32▌3В≥32/С`ъ`;AaЦ`\r+IВ╦йЙVД╦#йРVДAйНVД\r+з┬a
+⌠░B╕\─бVВ╞?╦╬VД║Ц_≈5`щ└ЛЪ║║D?%Y─бVЕ║┬a║/ЙД\+ aaедитr+кI▌3;Y[о`╙a
+║D?╕[╞$сCR ╧5╞$дRV ╧5╦ф1≥└	 ╞$NOT ╞$CHANGED╦з1└ Л9╦
+1
+i└!⌡V3В╦жVA;⌡VВ╦эVA;⌡VВ╦йV;⌡V3ВпV;йVAВпVAВ/÷Zl пжVA"дОжV;/╦Zl 
+1пэVA"дОэV;\r+Х P`"isT`\©+#$r+/Dъ`;▓Z╢A\r+д!"щ≥└ Ц`D╦!"g≥3;▓Z╢A~Z▌3"Тi└ ▌3;╕\╪║D?М1:\⌠A─\* r](лоадr+╦!2╦!;щ≥sд!2д!;М1!╖Ъ⌠\r+?$
+@i\.*▓█┘┴├┼÷▀┤┬▄²▒⌠■	Ъ.*╪\л\э\Ч\Ч^ZСXСX`\k\░\⌡\OY%YHZ"ZПZ╨[╝Y╨YфY╪XшX▒XtX!X!X!X═X-X!XqYYY`ZjZZXЕ_╘ с╓$┬х╧r_иЪПе&пТ≤
+╗╧≥_H╧ _Lr+ЙVД┌6
+─║i й╧\r+ЙV2║`╪`║`╪`\r+╦⌠i└ `≥\( [(пад.*  r+Х ╦P`;"п oпп\r+О╣2└ О oi└ ОО;bХЪп\ ,o┴(ресторе"r+x$▀└ п,(ОJo╩D─\ noхресторе"r+6!zo\$\ ≤oдежице.*  ╞o	цоммодореr+╪╦o;\ ╬oфлоппыr+
+╦o;\ жoблоадr+╦o"{nзnzoLOAD\ Лoбсажеr+╦o"bnзnzoSAVE\ 	pн"r+
+"Й#\ &pсаже"#/п╥l\S 'nинфронтr#/пиl\S <nцолоредr#▀┌lВД\T Rn	спрцолорсr#~l#Д~lД\T jn	сетспритеr#|п
+\nsm|mnvlиlО
+al╥l\."├n."√∙."▀∙."│∙r#
+d}\U ├nхеадингr#╪n"\U оn
+сетхеадингr#╪n;\U Цnригхтr#╪n"▀i/hX╪n;\U Зnлефтr#╪n"В/hX""бкЛpW )q"тсqr#xl.Тi╓,#77\r#69q\\r#9qфORTH гESELLSCHAFT E.ж.\r#9q*** ULTRAфортх-83 ***\r#9q(C) 1985/86/879q!бERND пENNEMANN  кLAUS сCHLEISIEK9qгEORG рEHFELD  дIETRICH вEINECK9q
+цLAUS жOGT\r#9qRAINER MERTINS9qANTILOPENSTIEG 679q200"0  HAMBURG 54\r#╞7пi└ЬЪ\ Qh	.мессаге1r#Т_:7wq7⌠q79qдAS кOPIEREN UND жERSCHENKEN9q"DIESES пROGRAMMS IST AUSDRUECKLICH79q* ERLAUBT ! *79qйEGLICHEN мISSBRAUCH ZUM9qзWECKE DER бEREICHERUNG9qWERDEN WIR NACH BESTEN кRAEFTEN9qVERFOLGEN UND VERHI"NDERN.79qдIE мITGLIEDER DERYq`8r\ Hr	.мессаге2r#:79qдU HAST JETZT EIN9qARBEITSFAEHIGES сYSTEM MIT9qеDITOR, дEBUGGER UND аSSEMBLER!9q нACH еINLEGEN EINER FORMATIERTEN9qдISKETTE KANNST дU ES MIT9qсажесыстем <NAME> (Z.б. фортх)9qALS пROGRAMMFILE "ABSPEICHERN.7wq79qбEZUG UND мITGLIEDSCHAFT IN DERYq9qUEBER:7Шq8r\ Nsлиниенr#jfСhГh⌠i⌡g/@║i% /@║i %
+фQ║Еj
+#Ш╧
+#Ш╧\ ntмоиреr#jf i╥h⌠i⌡g/@║i %
+ф/?%i║ЕjпШ╧
+г║i /?
+ф%i║%ЕjфШ╧\║ ╢tсхапес."╙╙╙∙UV∙UV∙╙"╙∙─ ∙─ ∙╙═∙U`∙U`∙╙═∙─ ∙─ ∙─ ∙─ ∙─ ∙─ ∙─ ╙─          ╙╙─	U`%UX∙iV∙┌V∙┌V∙┌V∙┌V∙┌V∙┌V∙┌V∙┌V∙┌V∙┌V∙iV%UX	U`╙─         ╙╙╙─∙U`∙UX∙╘V∙┌V∙┌V∙╘V∙UX∙U`∙╔`∙╔`∙┴X∙┴X∙┌V∙┌V∙┌V∙┌V╙┌╙         ╙╙╙╙∙UV∙UV╙V╙V V V V V V V V V V V V V ╙          ╙╙┌╙∙┌V∙┌V"∙┌V∙┌V∙┌V∙╙V∙UV∙UV∙╙V∙┌V∙┌V∙┌V∙┌V∙┌V∙┌V∙┌V╙┌╙         ╙║ uинитr#h:7ГhciГh╫i
+║i u%
+@$В%щlй╧шh╚hvn
+║i %║║╚h%▓nй╧
+║i %n%еm%vl╥l%0nй╧\╒ Zvыпосr#┬m─\╒ мvьпосr#┬mj\╒ чvдистанце©# ╒ Оv1+0-1r#╦≥┴▀┐3#1\╒  "	wфоллов-спритеr#п
+ЕvgЕvЗvВТiwВ/Xк9m┌.тvgтvТiwВО
+\m┌.\ё wфоллов-цурсорr#п
+Еvj7
+$
+!ВТiwВ9m┌.тvZ7
+$
+;ВТiwВО
+\m┌.\ё pwфолловr#┌.╦└ .wb ─w\ё дwкиллспритесr#║alД\ё Цwслиде-спритесr#
+║i %мw%"нодравr#│g:7\V +p"лт!oV >p"ртoV Gp$сетхПnV Pp"пдщoV [p"пуОoW dpтлинеr#п
+п
+п
+лeО
+лeО
+лeО
+лeЕj\W mpфорвардr#п
+╢n"╦n"Т╪n"ЯcдnВ╦╢n;Т╪n"╥cО
+дnВ╦╦n;юn"└ upb чч\W ▒pбацкr#╓⌡p\W Еpтуртлестатеr#юnйfй╦
+1▀
+H\W Жp"фд⌡pW  q##║i
+ %мwй╧й╧\таск   xeтнеьт4x2 [x(неьтстеп[²Y[[2 excв1-Tx2 ╡Z$степчZ134,13oxлине⌠Z1 ┼x%цпуллUZ0 ≤x'#спацесQZ0 ╓x%ласт'MZ0 ╟x%трап?IZ0 ╪x%нест?EZ0 фx#ип>AZ0 пx#<ип=Z0   "(в9Z	 ≥V&ранге?╓VB B {┌<{ЪЪЬz ЬzЬx {$_д⌡ЗмодеS _гетдискr#7╞бI 5инитr+??╞$	тAPE2.00 Рs/0lЦ08╪0D&u"└ &uВbp\╔Ё█D8╔²Е╡█E╔·ЕЁ█F╘ █G█H█I█J█Ъ╘┘`┘b╘2┘_╘K┘a╘Ъ┘ы╘x┘ь█Ъ╘█	Ъ╘* ьr ╒p$╜╘x┘ы╘4┘ь█Ъ╔╡┘_╔Ё┘`╔²┘a╔·┘b█?Ъ╘е ьr ╒pL╜p2 r	супертапеr+
+╦o;/╟q/.;/=s/0;╞$ст2.20 \r+╦!4o+p\2 Фsбтлr+/┌p/"
+}r\r+Х 
+?4╗ t
+Х ▀д┤rl Х 
+
+В▀дХ 
+\2 'tстсажсысr+╦o4o╪╦o;-t9tp
+╦o;╜
+i-t─tp-tjь +pp\ itC\ифr+$У.≥└ С$─\ ╙t
+сажесыстемr+▌34o╪▌3;≥34o║≥3;эZ4oэZВP`4oP`ВE>╦o"
+i└ ttD╜
+iь +pp\ дtаутолоад.*   uтапе".s█>Ъ`╔╝иП	8)пL╓Я╨├з s Ц╟Дx dЦ █Ц ╒p╔╜█B╔╡█C╔Ё█D8╔²Е╡█E╔·ЕЁ█F╘ █G█H█I█J█Ъ╘┘`┘b╘2┘_╘K┘a╘Ъ┘ы╘x┘ь█Ъ╘█	Ъ╘* ьr ╒p$╜╘x┘ы╘4┘ь█Ъ╔╡┘_╔Ё┘`╔²┘a╔·┘b█?Ъ╘е ьr ╒pL╜p2 r	супертапеr+
+╦o;/╟q/.;/=s/0;╞$ст2.20 \r+╦!4o+p\2 Фsбтлr+/┌p/"П
+╜C┘_╜D┘`╜Ee_┘a╜Fe`┘b╘O█х╜B0╘╣█х█?Ъ╘е ЪpL╜p ©q░  ©q░ L, Tpг----.*G726E ⌠r═FW░╔ы█х╘,	ЪПШ ▒p╔I┘╟╘,	ЪПШ ▒p╔I┘Lтr╔]i ┘]╔^i ┘^╔ь█х┬п╬`H╒@╘┘W ░rйпЖh┘W ░r═ └]└^╠_┘W ⌠rФ_пФ` ⌠r╔_еaпЙ╔`еbпД╔]╕^┘W ░r┼┘W ░rL░r╘ ═≥2┬пЗ╓╚█?Ъ┬0╠╞≥2L"^═ яp┬пЗ┘Ъ╔]┘c╔^┘d яp яp╔⌠п╔Ъ▒_ яp яp╔Ъя_ПХ яp яpФ_пФ` яp яp┘Ъ╔`еbпц╔_еaп╫╔ЪеcП	╔░	`┘░L╟p═ яp┬пЗеdпКЮ П╘┘░L╤p`┘⌠╘ ┘░╔╝иПLPП╨├з Ц╟Хx╔⌠H╘ ┘⌠ `Я █Ц ╒p dЦ ┌p╘╣█х╘* Ъp═c йК═ ╧2 рЪхюпУ═Ъхд╚П(█?Ъ╠╞█>Ъы2ПНи?ПЙ╜B)П╘─┘░LЁp xЦLрqLЭqh┘⌠ ┴Я╔╢┘_╔╣┘`╔╜"рамдискr+Pi╖iтil p\ 6pлоадрамдискr+5i≥└
+ BmцhXmPi▒$рд.l Тo─\╘┘`┘b╘2┘_╘K┘a`╜х█Ъ╘ █Ъ╘█	Ъ`╒ ═ йпЩ┬пЗ`╘ ,╘,╘,╘,╘█>ЪH ╟Ц xЦ╕зh ╕_╓`иX`╘,	ЪПШ╔)еXП┘XfW╔WФ]пФ^╔)еXПЬ┘X ▒p╔W`┘Y╒  яpипЫ╒═ яp┬пЗипКйпЯ═ яp┬пЗиПТеYПиеПт╘┘░L╟p╘ ┘]┘"╪n;\U o"цсjfU 7o"пцыiU @o"бг╫iU Io*фуллсцреен⌡gU Ro+сплитсцреенюgV coьцорr#╢n"лe\V uoыцорr#╦n"лe\V ┬oсетьr#Qe╢n;\V ⌡oсетыr#Qe╦n;\V ╝oсетьыr#╣o╒o\V аoпендовнr#юnЕ\V сoпенупr#юnВ\V Гoхомеr#
+═
+`иo
+ZПnщo\V Ыoдравr#jf p
+юg\V p#
+
+ ·(2064)    ЙL9ЙL99L{ й. { { ёB  
+ м;├:╗+ЕA                                                                                                                                                                                                          #TTE дISKETTE #╧-╞
+EINLELд⌡ й..y.y4z4y  
+ с;!R╗`	f                                                                                                                                                                                                          #инпут<$ Ы	еррорхандлер<$ 
+жоц-линк<$ 
+удп<$ *
+сп@=
+╔┘$╔┘%╒$╔8И┘╟ф╣▒╣ ╒ L  5
+сп!g
+║╙╠┘├╒ L	  _
+уп@
+╒LG
+ w
+┐уп!▌
+╒╠∙┬╠∙ ╒ ═╔i┘░ФL	  ├
+рп@╣
+╒LG
+ ╜
+┐рп!д
+╒L░
+ ╪
+┌>рр
+╔8И┘╟ф║│╠▒L²
+ к
+┌р>Я
+╔8И┘╟ ╞└3 ─7╞кILL THE дEMO? N/Y ╞7╖
+ыi╦┴└ .7.7.7└≤Ъ┤z\ |zдемонстратионr#ё%h/бzЦ(0/┤zЦ(o8Mz`┌.зvz;/ДzЦ((+/╗+
+;/═	Ц(l+Trwt│g╞7─╪t│g╞7─╞HELPZ7g║D7x+\                                                                                #i┘░ФL	  ъцтогглеr#|йN▀Д\ @$║┘$╠┘%╠$▒║$L  !=║┘$╠┘%х╠│$х╠═▒$LТ 7+!]║┘$╠┘%х╠a$│$х╠═q$LO Vдроп²
+ yсвап█╠╙═╠┘$┼▒╔$═▒х╒ ╠┘$║▒┬╔$L  └дуп╨╔8И┘╟ф═╠═▒х╠┬L  ╡?дупъ║пL	 L╨ жожерЖ#0∙║е$╠Е%L┤' яу<║┘$╠┘%╔i┘░Ф║е$╠Е%╟L┴L▄( Щ>r#▀у\( )0>r#╓┐\( 70<>r#≥┴\( Fу>r#▀\( V=r#i≥\( eд0=r#≥\( sд=r#╣Уy\( ┐д<r#Иi└ -jjb ч\r#9└ ▀─\) ■минr#И-╣\) емаьr#Иу╣\) в#Б+Ых║q▒┬╠═q▒L≥
+  Сорх║▒┬╠═▒L≥
+  анд3х║1▒┬╠═1▒L≥
+  +ьорPх║Q▒┬╠═Q▒L≥
+! H-kх╠8А▒х╠═Я═▒L≥
+! eнот▀┼А│┼Я▒L	 ! ┐негате╕8╟Ц" ⌡днегате╥х8┼Я▒х┼Я▒┼А│═┼Я▒L	 
+╙╗┬╠≥$ ┬Ь┼e┘░Ф╒ ═`" ╚#	┘═L	 + б├(+лоопЩ║a│╠q▒jQ╔i┘░Ф(дL	 , Р│и'═ ╔8И┘╟ф╠ххq│┬╠ххq═▒L	 , !│йS═пр- M├бранцхd╔a┘$╔q┘╔$┘L	 - Y┤?бранцх├║╔i┘░Ф(ПкLD. z>маркr#ь║\. ·>ресолжеr#ьТi▀;\. ╡<маркr#ь\. м<ресолж#$ Юоффr#║▀;\% Я└цлит╔8И┘╟ф║│┼▒ФпФL	 % ┐лит1╔8И┘╟ф╠▒║│╔i┘░ФL	 % )глитералr#╦/ Ъ1└
+ 6/D6
+\& T0<┘╠╘Ъ$┼▒L & ~0=⌡║ПХпИ& ■увитхин╠╘ с═║е$╠Е%╟
+║е&╠Е'╟╫L▄' ╔<в║┘$╠┘%╔i┘░Ф╔%Q#еr#ьi\. щ?паирсr#iЮ+UNSTRUCTURED\и H╘ЪLH╘ ╙╔8И┘╟ф┼═▒h╒ L / Тцасе?B╘ с╔$ап	╔%япL┴┼L0 8бифr#6└╕╪\0 \дтхенr#=╪Щ╫\0 oделсеr#╪Щ6b╕▀╫⌠\0 └ебегинr#уф\0 ║евхилеr#фЩф6└╕/ЧЪх\r#Х╦/ЧЪi└
+ ─╫#                                 ."ULTRAфортх-83 3.80-ц64  █ЪЪ╠┘╜ЪЪ┘╔i┘╟lЪЪФ╟Ы   	енд-трацеe	╘╔┘╘┘╘i┘╘┘L	  W	рецожер."h┘h┘╔пффLr# z	нооп	  ≥	оригин©# ╓	с0<$ Ё	р0<$
+ ╫	дп<$ г	оффсет<$ я	басе<$ ъ	оутпут<$ К	#                           m┌╓ Щwдемо©#4y╓ 8zслидеr#?zw`avxbЭЪ\╓ Ezендслидеr#Яw?zw`≥_\."_z	 _zкиллдемоr#ЯwjzТ_Zs/╤?Ц(0/═	Ц(o8/═	Ц(≤8/
++Ц((+]h/$_е5E6
+_\r#vz"║щ╦n╥h\n⌠vz[al*Яw╤?\r#М)7ОЫ'1"└ ╞
+ COMPILINGb
+ ╞ Uф83vz"┐╦#ф║│╠▒╘e┘░ФL	  Й
+р@╔8И┘╟ф╠▒║L  ┘рдроп 1еьитF║┘╠┘L =уннест^║┘╠┘L S?еьитu║╔i┘░Ф(п╬L	  kеьецуте≥║┘╠┘╔i┘░ФL  █перформr#"≈\ ╠ц@л║┘$╠┘%╘ ▒║$L  ец!Ф║┘$╠┘%х╠│$┬╔#GЩE≈DD
+ZE▒$U2:13,0,l ЩEЬFЩE≈D┌6YF\▌ ]Gдископенr+D
+pE
+#АE≈DYF\▌ ╦G	дискцлосеr+D
+┬E≈D\▌ ыG1541р/вr+▀Ю3NO FILEZD6╦D;п[└ ╧5╞$BEYOND CAPACITYjDцG└ ─jD║▀33зёi. ─И%└
+ НF&Gb НFkGпGВО╦└ └й╧ZчЕG\▐ ТG#╔8И┘╟ф═╠│х╠═▒L	  Мрот═╠┘%═╠═▒═╠┘$╔%▒═╔$▒х╠┘%║▒═╠│╔%▒═L	  -ротr#\ Sнипr#▀─\ dундерr#▀Т\ tпицкr##3;
+В"\ ├роллr#╦п
+█;
+╦AО
+#3Р─\ ²2свапr#п
+О
+\ ю2дропТ ж2дупr#ТТ\  #умаьr#И╣\) Иуминr#И[╣\) Эеьтендr#╦┐\) дабсr#└ ╣\) "абсr#└ ╓\r#9О
+A╦п
+п
+▀п
+п
+\* 7┐(доr#ТiI\* c└(?доr#Тiщ└ IО
+╦"Вп
+─\* uбоундсr#ТВ▀\*  ┤ендлооп╩╘L+ ╞┘(лоопл╘a│░╠i ▒░L	 ═╠┘┬╠#д+В╘ сх╠e&▒х╠e'▒║e$│═╠e%▒L	 # П1+%╘a╟L │╠i ▒L	 # 2+C╘пЮ# <3+P╘псV╘пм\╘пг# I1-i8║И░L │╠И ▒L	 # b2-┤░Ю$ ─труе©#ЪЪ$ ▄фалсе©#  $ ≥"-1⌠$ ╖!0║$ ╟1©# $ ╦2©# $ б3©# $ л4©# $ жонr#⌠▀;\

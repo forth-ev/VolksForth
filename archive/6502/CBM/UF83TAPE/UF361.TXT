@@ -1,0 +1,1358 @@
+gedruckt mit NEC-P7 (Epson-kompatibel)
+Prfungsbedrftiges mit //////// gekennzeichnet
+
+                                                       clv13aug87
+x1
+                                    //////////
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ ultraFORTH 3.55 ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³                                                                   ³
+³                     Erg„nzungen zum Handbuch                      ³
+³            ultraFORTH 3.5 fuer Commodore C64 und SX64             ³
+³                                                                   ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+                                +
+                              Diese
+                            Erg„nzung
+                           ist Teil des
+                          Handbuchs und
+                          unterliegt den
+                             gleichen
+                          Urheber-Rechten
+                               und
+                        Gesch„ftsbedingungen.
+                                +
+
+ÚÄÄÄÄINHALT:ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³       o Die ersten Schritte in ultraFORTH                         ³
+³       o Erl„uterungen zu ultraFORTH auf C16,C116 und Plus4        ³
+³       o ultraFORTH fr Kassettenrekorder                          ³
+³       o Der neue Tracer                                           ³
+³       o Noch ein Wort zum Multitasker                             ³
+³       o nderungen genber Version 3.5                            ³
+³       o Schwer erkennbare Ursachen von System-Crashs              ³
+³       o Was tun bei System-Fehlern                                ³
+³       o Korrekturen zum Handbuch                                  ³
+³       o Erg„nzungen / Berichtigungen des Glossars                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+                                +
+                           ultraFORTH
+                            ist ein
+                      Public-Domain-Produkt
+                       und kostet ca.50.-DM
+                            Infos bei
+                        den Adressen unten.
+                                +
+
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ Zur Notation in dieser Erg„nzung.
+ Folgende Schriftarten werden verwendet:
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+     W1o šberschriftenW0
+        W1- UnterberschriftenW0
+
+  -1Seiten-Angaben, die sich auf das Handbuch beziehen-0
+
+  Normaler Text und -1Stichw”rter-0
+
+  x0Beispiele und Programm-Bestandteilex1
+  x0mit variablen und -1festen-0 Bestandteilenx1
+
+  x0<zuDrckendeTaste>x1
+
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ Bezugnahmen:-1ultraFORTH rev 3.5 - Handbuch fr Commodore C64 und SX64-0
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ      ³
+    Georg Rehfeld           Reinbeker Weg 32  D-2050 Hamburg 80
+    Bernd Pennemann         Treitschkestr.20  D-1000 Berlin 41
+    Claus Vogt              Blowstr.67       D-1000 Berlin 30
+
+Mitglieder der FORTH-GESELLSCHAFT Friedensallee 92  D-2000 Hamburg 50
+
+
+     W1o Die ersten Schritte in ultraFORTHW0
+     W1  in ultraFORTH                    W0
+
+Diese Beispielssitzung soll die ersten Schritte in ultraFORTH
+etwas erleichtern. Sie soll allerdings nicht das Handbuch ersetzen,
+auf das an entsprechenden Stellen nur verwiesen wird.
+Sie lesen jetzt etwas ber:
+
+- Arbeit mit Forth-Disketten-Formaten und-Blockmechanismus, Back-Up
+- Definieren einzelner Worte
+- Systemabstrze verschiedener Art
+- Hexadezimal und Dezimal
+- Editor
+- Laden von Quellscreens
+- wichtige Informationen aus dem System holen
+- Speicherbelegung
+- Erstellen eines ultraFORTH Arbeitssystems
+
+Sie sind nunmehr stolzer Besitzer von ultraFORTH. Herzlichen
+Glckwunsch zu dieser Entscheidung!
+
+Als erstes sollten sie Ihren C64,C16,C116 oder Plus 4 aus und
+wieder einschalten, um einen definierten Ausgangszustand zu haben.
+Sollten Sie an einem C16 oder C116 sitzen und nun in der
+Einschlaltmeldung etwas ber so ca. '14000 bytes free' lesen,
+mssen wir Sie entt„uschen: Ihr Rechner ist zu klein.
+Lesen Sie bitte das Kapitel ber 'Hardware-Anforderungen beim C16'.
+
+Alle anderen schalten jetzt Ihr Floppy-Laufwerk ein.
+Falls Sie kein Floppy-Laufwerk haben, mssen wir Sie ebenfalls
+entt„uschen, denn zumindest fr die erste Sitzung brauchen Sie eins
+(wo wollen Sie denn sonst Ihre Disketten reinschieben, Sie
+Schlawiner!).  Jene Leser und Leserinnen, die sp„ter mit
+Kassettenrekorder arbeiten m”chten, sollten nach dieser
+Beispielssitzung nochmal die 'Kassetten-Beispielssitzung'
+durchexerzieren, bevor Sie sich auf den mhevollen Weg des
+Hinberkopierens machen. Auáerdem sollten sie sich mit dem(r)
+Eigentmerin des Laufwerks anfreunden. Sie werden es noch ”fter
+brauchen.
+
+So, es geht weiter.  Nun wird die erste Diskette eingeschoben.  Achten
+Sie darauf, daá der Klebestreifen sicher auf der 'write-protect'-Kerbe
+klebt, Sie werden ihn noch brauchen.  Die Directory wird von Basic aus
+mit:  x0-1LOAD,"$",8-0x1 mit anschlieáendem x0-1RUN-0x1
+gelistet.  Sie bekommen nun mehrere Files gelistet, von denen sie sich
+das File fr Ihren Rechner aussuchen sollten.
+x0-1LOAD,"-0filename-1",8-0x1
+Hierbei sei gleich bemerkt, daá auf den anderen drei Disketten- Seiten
+keine Files sind.  ultraFORTH benutzt seine eigene
+Disketten-Verwaltung, daher k”nnen Sie auch nur mit solchen
+Kopierprogrammen BACK-UPs erstellen, die alle Bl”cke einer Diskette
+kopieren.  Mehr dazu am Ende der Sitzung.
+
+Wenn Sie sich das geladene Programm x0-1LIST-0x1en lassen wrden,
+wrden Sie jetzt nur eine einzige Zeile vorfinden. Aber tun
+Sie's lieber nicht. beim x0-1LIST-0x1en zerst”rt Basic
+manche Programme. Geben Sie lieber endlich x0-1RUN-0x1 ein.
+
+Es drfte jetzt - ev nach etwas Demonstration - die Einschaltmeldung
+'ultraFORTH ...'
+erscheinen. Wenn Sie jetzt ein paarmal x0-1<return>-0x1 drcken,
+máte jedesmal 'ok' gedruckt werden (sofern die Demoversion nicht
+etwa anderes stattdessen ausdruckt).
+
+W”rter, die sie jetzt sinnvollerweise ausprobieren, sind:
+x0-1words-0x1 oder x0-1order-0x1. Ihre Bedeutung finden
+Sie im Handbuch.
+
+Als n„chstes wird das obligatorische Miniprogramm eingegeben:
+x0-1: test      ." hallo" ;-0x1
+Bei Ausfhrung von x0-1test-0x1 drfte 'hallo ok' auf
+dem Bildschirm erscheinen.
+Des Miniprogramms erweiterte Variante:
+x0-1: test      BEGIN ." hallo" REPEAT ;-0x1
+gibt beim Compilieren die Warnung 'TEST exists' aus.  Beim Ausfhren
+von x0-1test-0x1 erscheinen unz„hlige 'hallo' auf dem Bildschirm
+und alle Tastatureingaben werden ignoriert - das System befindet sich
+in einer Endlos-Schleife.  Wie Sie wissen, ist Forth eine so
+maschinennahe Sprache, daá bei Fehlbedienung oft SYSTEMABSTšRZE
+auftreten.
+
+Das macht aber nichts: Am C64 wird jetzt x0-1<run/stop>+<restore>-0x1
+gedrckt (am besten richtig draufrumh„mmern), bis das sinnlose
+'hallo' verschwunden ist.
+Am C16 wird jetzt x0-1<stop>-0x1 zusammen mit der x0-1<reset>-0x1-Taste
+gedrckt. Es meldet sich der Monitor, von dem mit x0-1G1014-0x1 ein
+Forth-Restart ausgefhrt werden kann.
+Nun sollte mit x0-1word-0x1 berprft werden, ob die beiden x0-1test-0x1s
+noch da sind.
+
+Mit x0-11 list-0x1 k”nnen Sie sich die FORTH-INHALTSVERZEICHNISSE
+der Disketten angucken. Wenn Sie danach eine andere Diskette einlegen,
+werden Sie feststellen, daá x0-11 list-0x1 immer noch das Inhaltsverzeichnis
+der letzten Diskette zeigt. Das liegt daran, daá die virtuelle
+Diskettenverwaltung des Forth (auch BLOCKMECHANISMUS genannt) einige
+Bl”cke vorr„tig h„lt, um die Diskettenzugriffe zu minimieren. Daher
+sollten Sie, um Kuddel-Muddel zu vermeiden, unbedingt vor jedem
+Diskettenwechsel x0-1flush-0x1 eingeben.
+
+Probieren Sie mal x0-11 edit-0x1.  Falls der Editor vorhanden ist,
+drften Sie den gleichen Screen sehen.  Falls der Editor nicht
+vorhanden ist, suchen Sie sich aus den Forth-Inhaltsverzeichnissen den
+Editorloadscreen heraus.  Sie k”nnen ihn nun mit x0ScreenNummer-1
+load-0x1 laden, wobei statt ScreenNummer die im Inhaltsverzeichnis
+angegebene Nummer eingesetzt wird.  Die Diskette drfte jetzt ca.  5
+Minuten laufen, w„hrend die Block-Nummern ausgegeben werden, die grade
+geladen werden.  Sie haben also genug Zeit, den folgenden Text in Ruhe
+zu lesen.  Sollte die Diskette gleich wieder zur Ruhe kommen und der
+Prompt 'ok' kommen, so haben sie mit groáer Wahrscheinlichkeit die von
+x0-1list-0x1 erzeugte Zeilennumer statt der ScreenNummer genommen.
+(Zumindest ist das bei mir immer so.) Sie haben also einen falschen
+Block geladen.  (Hoffentlich nichts schlimmes.)
+
+An dieser Stelle sollten Sie im Handbuch das Kapitel ber den Editor lesen.
+Falls Sie schon drin sind und verzweifelt versuchen herauszukommen, drfen
+Sie ihn jetzt mit x0-1<run/stop>-0x1 verlassen.
+
+Laden Sie nun nach Belieben Dinge, die Ihnen wichtig erscheinen und
+schauen Sie sich mit dem Editor die Quell-Screens an.
+
+Vor allem sollten Sie sich die sogenannten 'Loadscreens' ansehen.
+Hier sind oft am Ende der Seite mit \\ wegkommentierte
+Forth-Worte wie x0-1save-0x1 zu finden.
+Das x0-1save-0x1 soll andeuten, daá die geladene
+Anwendung gewisse Vektoren verbogen hat. Sie sollten
+dann x0-1save-0x1 eingeben. (Das schadet nicht und auáerdem
+schtzt es vor einigen 'schwer erkennbaren Ursachen von System-Crashs'.)
+
+Einige Ladeversuche brechen mit Meldungen der Form '?! CODE ?!' ab.
+Diese soll zum Ausdruck bringen, daá vorm Laden der Anwendung erst
+der Assembler geladen werden muá.
+
+Wenn Sie zuviel geladen haben, laufen Sie irgendwann auf
+die Fehlermeldung ' ...wirre Zeichen.. DICTIONARY FULL'. Dann
+haben Sie Glck gehabt. Es h„tte auch passieren k”nnen, daá
+(aus Grnden, die hier nicht diskutiert werden) stattdessen
+' is Symbol' gemeldet worden w„re, was nicht nur schwer verst„ndlich
+ist, sondern als Nebeneffekt das System v”llig blockiert.
+
+In letzterem Fall Booten Sie am besten neu und informieren sich in
+Zukunft ab und zu ber die SPEICHERBELEGUNG ihres Systems.  Dazu
+dienen die Worte x0-1origin here s0 r0 first limit-0x1, die Sie
+wieder im Handbuch beschrieben finden.
+Es sei nur fr C16/C116/+4-Benutzer mit 64kB Ram erw„hnt, daá ihre
+ultraFORTH-Version vermutlich nur 32kB benutzt.  Das prfen Sie mit
+x0-1limit u.-0x1 (Bitte den Punkt nicht vergessen).  Wenn hier
+$8000 steht, werden nur 32kB benutzt.  Sie „ndern das (wenn
+gewnscht) mit x0-$fd00 ' limit >body !  cold-0x1 Fr die weitere
+Ver„nderung der Systembelegung finden sie einen Screen 'relocate the
+System' im Lieferumfang, dem sie auch seine Benutzung entnehmen.
+
+šbrigens erfolgen alle Ein-/Ausgaben HEXADECIMAL.  Wem das nicht
+gef„llt:x0-decimal-0x1 eingeben!
+
+Im folgenden beschreiben wir, wie Sie ein eigenes ARBEITSSYSTEM
+(oder als Spezialfall eine Stand-Alone-Anwendung) erzeugen
+k”nnen. Die meisten dazu n”tigen Schritte kennen Sie schon:
+
+1.) Booten des nackten Forth-Kerns (FileName:' ___ultraFORTH__')
+2.) Prfen der Speicherbelegung.
+    Die Differenz zwischen x0-1here u. -0x1 und x0-1s0 @ u.-0x1 sollte
+    mindestens ca. 1 kB betragen. Wenn Sie alle Quellen aller
+    Diskettenseiten laden wollen, sollten Sie schon mit 5-6 kB rechnen.
+3.) ggf. ndern der Speicherbelegung.(s. relocate-screen).
+4.) Laden der gewnschten Quellen. Da Sie als Anf„nger/in vermutlich
+    noch nicht so recht wissen, was Sie eigentlich brauchen, hier ein
+    paar Beispiele:  Editor, Assembler, Tracer, Kassettenversion.
+    Falls Sie den Assembler wirklich dauerhaft im System haben wollen,
+    sollten Sie nicht den 'transienten' Assembler laden. Dieser
+    verschwindet n„mlich beim n„chsten  x0-1save-0x1 wieder.
+5.) Auf jeden Fall mssen Sie x0-savesystem-0x1 laden.
+6.) Falls Sie m”chten, daá Ihr zu erstellendes System bei jedem
+    Laden gleich irgendetwas ausfhrt (z.B. unz„hlige Male 'Hallo'
+    ausdruckt), dann ist es jetzt n”tig, x0-1'cold-0x1 oder x0-1'restart-0x1
+    umzudefinieren. Das nennt sich dann 'Stand-Alone-Anwendung'.
+7.) Aufruf von  x0-1savesystem-0x1
+
+Als Beispiel wird hier ein Stand-Alone-System vorgestellt, das
+permanent 'hallo' druckt:
+
+1.) neu Booten:
+x0-1LOAD,"-0filename-1",8-0x1
+x0-1RUN-0x1
+2.) und 3.) entf„llt da unsere Anwendung kaum Speicher braucht.
+4.) Die 'Quelle' geben wir von Hand ein:
+x0-1: test      BEGIN ." hallo" REPEAT ;-0x1 (das bekannte Programm)
+5.) Nun x0-savesystem-0x1 laden.
+6.) Einen Vektor verbiegen:
+x0-1' 'cold >body @ Alias old'cold-0x1 (den Vorbesitzer von 'cold merken)
+x0-1: new'cold   old'cold test ;-0x1
+x0-1' new'cold   Is 'cold-0x1          (new'cold installieren)
+7.) Aufruf von  x0-1savesystem-0x1
+x0-1savesystem-0 hallo-systemx1
+
+Das File 'hallo-system' k”nnen Sie jetzt immer laden, wenn Sie
+mal wieder jemand brauchen, der 'hallo' zu Ihnen sagt. Sonst kann
+es leider nichts. Falls es noch nichtmal das kann, liegt der
+Fehler mit an Sicherheit grenzender Wahrscheinlichkeit in Punkt 6.)
+begraben. Lassen Sie diesen Schritt fr die n„here Zukunft lieber weg.
+Das Verbiegen von Deferred Worten ist eine ziemlich gef„hrliche Sache.
+Der kleinste Fehler und alles ist im Eimer.
+
+Nun sollten Sie - vermutlich haben Sie bereits einige System-Abstrze
+hinter sich - BACK-UPs erstellen.  Falls Sie stolze(r) Besitzer(in)
+von zwei Diskettenlaufwerken sind, laden Sie dazu am besten das Wort
+x0-1copy2disk-0x1.  Es braucht allerdings ca.  eine halbe Stunde
+pro Diskettenseite.  Alle anderen kramen in ihren Diskettenk„sten nach
+dem schnellsten Kopierprogramm.  Aber Achtung:  Nicht alle
+Kopier-Programme kopieren wirklich die ganze Diskette.  Es
+funktionieren z.B.  'Quickcopy' und 'sd.backup.xx', das bei neueren
+Laufwerken von Commodore mitgeliefert wird.  Grunds„tzlich gilt:  Wenn
+das Programm irgendwelche Filenamen wissen will, ist es schlecht.
+Wenn es was von 'allocated blocks' oder 'whole Disk' erz„hlt ist es
+gut.  (Wenn es was von 'wholy' oder 'hole' Disk spricht, ist sein
+Englisch schlecht oder es ist garkein Kopierprogramm.) Wenn Sie nicht
+fr jede Diskettenseite mindestens 4 Diskettenwechsel machen mssen,
+ist es entweder ein Superprogramm oder es taugt nichts.
+
+Viel Spaá mit ultraFORTH.
+
+
+
+     W1o Erl„uterungen zu ultraFORTHW0
+     W1  auf C16,C116 und Plus4W0
+
+Die im folgenden kurz C16-Version genannte Anpassung von ultraFORTH
+an die oben genannten Rechner verfolgt folgende Ziele:
+
+- Sie soll eine einfache, billige und trotzdem gute Sprache fr
+  diese Rechner zur Verfgung stellen. Tats„chlich gibt es bis jetzt
+  (April '87) auáer dem eingebauten Basic nur noch drei Assembler
+  (mit spezifischen Schw„chen) und einen (mir unbekannten)
+  Basic-Compiler. UltraFORTH k”nnte diese preiswerten Rechner etwas
+  attraktiver machen.
+
+- Sie soll zwecks Portabilit„t und Wartbarkeit m”glichst geringe
+  nderungen gegenber der C64-Version haben. Dies ist gelungen
+  (mehr dazu s. u.).
+
+- Die im C-16-System vorhandenen Funktionen sollten weitestm”glich auch
+  zusammen mit ultraFORTH nutzbar bleiben. Und zwar in folgender Wichtung:
+
+  - I/O-Routinen&Interrupt-Handling des Betriebssystems (ist integriert)
+  - Kernal/Betriebssystem (ist von/mit ultraFORTH weiterhin voll nutzbar)
+  - Monitor               (ist von/mit ultraFORTH weiterhin voll nutzbar)
+  - Grafik                (bisher nicht nutzbar, ev. m”glich)
+  - Basic                 (bisher nicht nutzbar, ev. m”glich)
+  - +4-Software           (bisher nicht berprft)
+
+Im folgenden werden nur die Unterschiede der C16-Version zur C64-Version
+behandelt.
+
+        W1- HardWare-AnforderungenW0
+
+UltraFORTH fr C16 l„uft auf folgenden Rechnern:
+
+   Plus4                             mit Diskettenlaufwerk
+   C16 oder C116 mit 32kB oder 64kB  mit Diskettenlaufwerk
+   C16 oder C116 mit 64kB oder Plus4 mit Kassettenrekorder
+
+Die Ursprungsversion des C16 mit 16kB ist nicht ultraFORTH-f„hig,
+da allein der FORTH-Kern von $1000 bis $4b00 geht.
+Der Umbau auf 64kB kostet im Selbstbau ca. 30DM, fertig gekauft
+ab 60DM und lohnt sich eigentlich immer.
+
+Ein Diskettenlaufwerk ist sehr empfehlenswert.
+Ein Diskettenlaufwerk 1551 kostet derzeit (April '86, letzte Phase der
+C16/116/+4 Verramschung) ca. 300 DM. Wer sich ein solches Laufwerk
+kauft, sollte berlegen, ob er nicht gleich 400 DM hinlegt und
+dafr einen PLUS4 dazunimmt. Das spart die Speichererweiterung.
+
+Eine ROM-Version, die mit dem 16kB-Speicher ausk„me, befindet sich
+in der šberlegung. Ein M„zen, der mir einen anst„ndigen Arbeitslohn
+dafr bezahlt, k”nnte das ganze sehr beschleunigen.
+  Die folgende Beschreibung bezieht sich auf die Benutzung mit
+Diskettenlaufwerk. Besonderheiten bei Kassettenbenutzung befinden
+sich im entsprechenden Abschnitt.
+
+
+        W1- BenutzungW0
+
+-1Aufrufen des ultraFORTH:-0
+
+Die einfachste Methode ist das Laden und Starten von x0-1RUNME-0x1.
+
+Andere Methoden:
+Laden:  vom Basic   aus mit x0LOAD"..",8,1x1 funktioniert immer
+        vom Monitor aus mit x0   L"..",8  x1 funktioniert immer
+        vom Basic   aus mit x0DLOAD"..." oder LOAD"...",8x1 funktioniert,
+          wenn vorher kein Grafik-Bereich eingerichtet war.
+
+Starten vom Basic   aus mit x0RUNx1
+                       oder x0SYS (4112)x1  -     Kaltstart
+                            x0SYS (4116)x1  -     Restart
+        vom Monitor aus mit x0G1010x1       -     Kaltstart
+                            x0G1014x1       -     Restart
+
+Hinweis: Beim ersten Aufruf muá ein Kaltstart durchgefhrt werden.
+
+Der C16 hat im Gegensatz zum C64keine RESTORE-Taste.
+
+Es gibt folgende M”glichkeiten,  ultraFORTH zu
+-1verlassen oder abzubrechen-0:
+- Das Forth-Wort x0BYEx1 schlieát die ultraFORTH-Bereiche  und
+startet den Monitor.
+- Das Festhalten der x0<Run/Stop>x1-Taste mit gleichzeitigem Drcken der
+x0<Reset>x1-Taste fhrt zu einem Reinitialisieren der I/O-Funktionen ohne
+Schlieáen der ultraFORTH-Bereiche und startet den Monitor. Bei einem
+anschlieáenden Restart von ultraFORTH ist alles so, wie vorher verlassen.
+- Die normale Benutzung des MONITORS schadet den von ultraFORTH benutzen
+Bereichen nicht.
+- Das Drcken der RESET-Taste ohne x0<Run/Stop>x1-Taste oder der
+Monitor-Befehl x0-1Xx1-0 fhren ins BASIC. Da ultraFORTH und BASIC
+die gleichen Speicher-Bereiche verschieden benutzen, folgt danach i.a.
+bald ein System-Absturz beider Sprachen oder unsinnige Reaktionen.
+
+Die -1Benutzung des FORTH-0 ist wie im Handbuch beschrieben. Selbst
+W”rter wie x0-1C64initx1-0 heiáen weiterhin genauso.
+Der verfgbare Speicher ist um fast 16kB gr”áer als der der C64-Version.
+Das Wort x0-1C64fkeysx1-0 ist neu hinzugekommen. Es installiert
+auf einem C16 die Funktionstastenbelegung des C64.
+
+-1S.155-0Die -1Benutzung des EDITORS-0 hat sich etwas ge„ndert, da Commodore
+die Ein/Ausgabe-Routinen ge„ndert hat.
+Die x0<F_>x1-Tasten sind etwas anders beschriftet.
+Die im Handbuch erw„hnte x0<Ctrl>+@x1-Funktion liegt beim C16 auf x0<Ctrl>+&x1
+
+Im Gegensatz zu der Bemerkung des Handbuchs -1S149-0  k”nnen Zeilen nach
+unten aus dem Bildschirm geschoben werden.
+Dies geschieht unter folgenden Umst„nden:
+  - Es wird in die 40. Bildschirmspalte einer beliebigen Spalte ein
+    beliebiges Zeichen geschrieben. ( Wenn hier eine logische
+    Bildschirmzeile aufh”rt, schiebt die I/O-Routine eine neue Zeile ein)
+  - Es wird x0<ESC> Ix1 eingegeben oder eine andere x0<Esc> _x1-Kombination,
+    die eine Zeile aus dem Bildschirm schiebt.
+
+Die -1C16 ESCAPE-Tasten-Funktionen-0 k”nnen benutzt werden, fhren
+aber zusammen mit Editor-Funktionen zu sonderbaren Bildschirm-Reaktionen.
+
+-1S.29-0  -1Zur DRUCKER-Benutzung-0:
+Bisher habe ich nur den -1Treiber VC1526-0 getestet. Er funktioniert mit
+meinem -1CITIZEN-100-DM-Drucker-0, soweit in Zusammenhang mit diesem
+Drucker von 'funktionieren' die Rede sein kann. Da die meisten
+mir bekannten C16-Besitzer den gleichen Billig-Drucker haben, hier ein
+paar M”glichkeiten zur Fehlereinschr„nkung beim CITIZEN:
+Zur Verminderung der erheblichen St”rstrahlungen:
+- Drucker-Kabel dick mit Alu-Folie umwickeln
+- Diskette bei Drucker-Benutzung ausschalten und umgekehrt.
+
+-1Andere DRUCKER-Treiber:-0 Alle mitgelieferten Treiber, die den
+User-Port des C64 benutzen, máten angepaát werden. Ich habe nichts
+angepaát, da ich die entsprechenden Drucker nicht habe. Wenn
+jemand  was anpaát: Bitte die Quellen schicken - wird verbreitet.
+
+-1Benutzung der GRAFIK:-0
+Die Grafik ist bisher nicht angepaát und l„uft daher nicht. Wer
+sich daran versuchen m”chte, fordere bitte die ersten
+Grafik-Test-Quellen bei Claus Vogt an.
+
+S„mtliche -1TOOLS-0 der System-Diskette sind angepaát, bzw.
+funktionieren ohne nderung.
+
+
+Die -1Benutzung des Assemblers-0 hat sich nicht ge„ndert. Es muá nur
+beachtet werden, daá ultraFORTH das ROM abschaltet. Daher mssen
+Lesezugriffe ins ROM etwas anders organisiert werden.
+Beispiel:
+Die Sequenz   x0ffd2 -1jsrx1-0  springt eine Ram-Routine an.
+Die Sequenz   x0-1ff3e sta-0 ffd2 -1jsr ff3f stax1-0 springt
+eine ROM-Routine an. Sie funktioniert nur, wenn sie im unteren
+RAM-Bereich (<$8000) steht. Sonst folgen undefinierte Reaktionen.
+
+        W1- ImplementationW0
+
+-1S.48-0 -1Speichermodell:-0
+
+Der ultraFORTH-Assembler-Scratchbereich von $029 aufw„rts sollte
+max. bis inclusive $76 genutzt werden, da sonst Monitor&Kernal-Bereiche
+berschrieben werden.
+
+Zus„tzlich zu den im Handbuch beschriebenen Bereichen benutzt die
+C16-Version den Bereich von $0700 - $071E fr eine Interrupt-Routine.
+
+Statt x0-1SYS(2064)x1-0 steht x0-1SYS(4112)x1-0
+
+Der FORTH-Kern belegt nicht wie beim C64 den Bereich von
+$800 bis x0limitx1, sondern von $1000  bis x0limitx1
+
+x0limitx1 liegt nicht automatisch unterhalb von $E000
+sondern bei $fd00 (64kb RAM) bzw. $8000 (32kb RAM).
+
+In $FFFE/F steht im RAM der Zeiger auf die neue Interrupt-Routine.
+
+-1Bank-Switching:-0
+
+Da beim C16 das Bank-Switching etwas anders funktioniert, muáten
+folgende nderungen vorgenommen werden:
+- ultraFORTH schaltet bei der Initialisierung das komplette ROM aus.
+- Daher mssen alle Lese-Zugriffe (auch x0JSRx1)ins ROM
+   mittels Makro und/oder Umleitungsroutine implementiert werden.
+- Daher muáte die Interrupt-Behandlung umgeleitet werden.
+
+Aus der ver„nderten Interrupt-Behandlung ergibt sich eine geringe
+Verlangsamung des Systems.  Ca.  1 Promille der CPU-Zeit verbringt das
+System zus„tzlich in der neuen Interrupt-Routine.  Weiterhin fhrt ein
+x0-1BRKx1-0-Befehl zwar wie gewohnt in den MONITOR, allerdings mit
+falschem Registerdump, da der Monitor jetzt die Daten der
+Interrupt-Routine auf dem Stack vorfindet.
+
+-1Initialisierung:-0
+
+Die Initialisierung des ultraFORTH beginnt beim C16 mit einer
+Routine, die nicht von ultraFORTH aus aufrufbar ist namens x0C16INITx1.
+Sie macht folgendes:
+- Installation der Interrupt-Umleitungs-Routine
+- Umschalten auf RAM.
+
+erst sp„ter wird C64init aufgerufen, daá „hnliche Prozesse wie
+beim C64 ausl”st.
+
+-1S.63f-0 und -1S.197f-0 -1Anpassung.. Targetcompiler...-0
+
+Die mitgelieferte Quelle des Systems gilt fr drei Versionen:
+
+Die C64-Version
+Die C16-Version -64kB mit Interrupt-Handling.
+Eine leicht abgemagerte C16-Version, die nur 32kB nutzen kann und
+dafr keine INTERRUPT-Umleitung braucht.
+
+Zur Kennzeichnung dieser Vielfalt dienen folgende Worte:
+(die Definitionen gelten, wenn Code fr C16+ erzeugt werden soll.)
+fr alle Commodore-Rechner      x0-1: (c                ; immediatex1-0
+fr C64                         x0-1: (c64  [compile] ( ; immediatex1-0
+fr C16/C116 & Plus4            x0-1: (c16              ; immediatex1-0
+fr C16/C116 & Plus4 -64k       x0-1: (c16+             ; immediatex1-0
+fr C16/C116 & Plus4 -32k       x0-1: (c16- [compile] ( ; immediatex1-0
+die Schlieáende Klammer         x0-1: )                 ; immediatex1-0
+
+Vor der Target-Compilierung mssen sie ggf. umdefiniert werden
+(s. Scr 9 der Quelldiskette).
+Bei der Arbeit mit diesen Worten muá man h”llisch aufpassen.
+Beispiele
+1.)    x0-1(c-0 : xx  ( wort---1)-0  .... ; )-0 x1-0
+2.)    x0CODE xx  (c16 ..... )-0   (c64 ..... -1)-0  next -1jmp-0 end-code x1-0
+3.)    x0-1(c-0 CODE yy  .... SP -1)Y-0 lda .... )x1-0
+Am h„álichsten ist 2.), weil es beim Ausfhren ohne jede Meldung zu
+einem todsicheren System-Zusammenbruch fhrt.  Daher wird in der
+Quelle in einem solchen Fall eher x0 ..  -1(c16-0 ...  -1( )-0 ..
+x1 geschrieben.  Wer die Beispiele nicht versteht, bedenke, daá
+x0-1)Yx1-0 und x0-1)x1- Worte des Assemblers sind oder teste
+sie aus.
+
+     W1o ultraFORTH fr KassettenrekorderW0
+
+Die Kassetten-Version ist fr C16/C116 (mit 64kB) und Plus4 entwickelt
+worden, da K„ufer dieser Billigrechner oft vor dem Kauf des
+vergleichsweise teuren Diskettenlaufwerks zurckschrecken.  Trotzdem
+sei noch einmal darauf hingewiesen, daá ein Diskettenlaufwerk fr
+ultraFORTH dringend zu empfehlen ist, da einige (viel Speicher
+beanspruchende) Anwendungsf„lle mit Kassettenrekorder garnicht zu
+bearbeiten sind und da vor allem kleine Fehleingaben leicht zum
+Zerst”ren der selbst geschriebenen - in der Kassetten-Version
+speicherresidenten - Quellen fhrt.  Also bitte wenigstens ”fter
+abspeichern!
+
+Da Kassettenrekorder ebenso wie Peripherie-Ger„te bestimmter Firmen
+frchterlich langsam sind (einer bekannten Heim-Computer-Firma wird
+nachgesagt, daá man mit ihren Ger„ten kein Programm geladen kriegt,
+bevor es hoffnungslos veraltet ist) haben wir uns aus
+Benutzer(innen)freundlichkeit von folgenden Ideen leiten lassen:
+  - Ein Kassettenschnellader muá her! Supertape.
+  - Wer schon 10 Minuten warten muá,
+    soll wenigstens spazieren gehen k”nnen, statt alle
+    17 Sekunden eine Taste drcken zu mssen!
+    Der Ladevorgang kann ebenso wie der Sicherungsvorgang
+    an einem Stck erfolgen. Diese Automatisierung erfordert
+    einige Fehler-Prfungen, die hoffentlich alle funktionieren.
+  - Die (notgedrungen) speicherresidenten Quelltexte sollen
+    auch einen normalen Systemabsturz berleben!
+
+Die Kassetten-Version besteht aus 4 Teilen:
+   - Dem ultraFORTH Kern
+   - Einer Ramdisk, die im Speicher ein Laufwerk simuliert.
+   - Einer Kassettenschnittstelle
+  - Dem Programm Supertape, einem Kassettenschnelllader, der mit 3600
+    baud ca.  10 mal so schnell ist wie die Commodore-Routine.  Es
+    wird von der Zeitschrift 'ct fr alle g„ngigen Rechner angeboten.
+    Supertape ist bisher leider nur fr C16-kompatible angepaát.  Wir
+    bedankgen uns beim Heise-Verlag fr die freundliche Genehmigung,
+    Supertape weiterzuverbreiten.
+
+Fr Hinweise, die zur Verbesserung der Benutzung oder zur Aufdeckung
+von Fehlern dienen, wird zwar keine Belohnung ausgesetzt,
+aber mein Dank wird Euch auf ewig verfolgen.
+
+Da ich grade beim Danksagen sind, m”chte ich mich nochmal bei
+Doerte bedanken, die mich mit mit intensiven Gespr„chen
+immer wieder in die schn”de Realit„t zurckholte und trotz aller
+Eifersucht den Rechner bisher nicht aus dem Fenster warf.
+
+        W1- eine BeispielssitzungW0
+
+Sie befinden sich bereits in Forth. Ansonsten laden Sie es erstmal.
+Als erstes muá ein Teil des Speichers fr die Ramdisk ger„umt werden.
+Er muá mindestens ca. 500 bytes lang sein. Empfehlenswert sind
+ca. 16kB. Anschlieáend muá dort eine Ramdisk eingerichtet werden.
+Alle Blockzugriffe auf Drive 1 und folgende gehen jetzt in die Ramdisk.
+
+Beispiel:
+x0-1$c000 ' limit >body ! cold-0x1     $c000 bis $fd00 werden ger„umt
+x0-1$c000 $fd00 rdnew-0x1        .. eine Ramdisk erzeugt
+x0-11 drive-0x1                        .. auf Drive 1 geschaltet
+x0-11 list-0x1                         .. und ein Screen gelistet.
+x0-1supertape-0x1                      Aktuelles Ger„t setzen
+
+Fr den C64 heiáen die entsprechenden Adressen z.B. $9000 und $c000.
+Falls im folgenden das System abstrzt, k”nnen Sie es einfach
+neu laden. Die Ramdisk bleibt bestehen, wenn Sie nicht schon
+zerschossen ist und wenn das anschlieáend geladene System sie
+nicht zerschieát. Letzteres heiát: Sie mssen ein
+System laden, in dem x0-1limit-0x1 bereits herabgesetzt ist,
+und das nicht gleich eine neue Ramdisk l„dt oder sonstwelche
+Prozesse initiiert, die den Ramdisk-Bereich ver„ndern.
+Vgl. hierzu auch: x0-1rduse 'cold 'restart-0x1.
+
+Wenn der Editor geladen ist, geben Sie ein:
+x0-12 l-0x1.
+
+Sie k”nnen jetzt z.B. den folgenden Text eingeben wobei
+Commodore-Benutzer/innen statt '\' ein Pfundzeichen ('œ') eingeben:
+
+x0-1 \ Mein erster LadeScreen
+x0-1 savesystem erster Versuch"-0x1
+
+x0-1 id" meine kleine Ramdisk"-0x1
+x0-1 saveramdisk-0x1
+x0-1 autoload on-0x1
+x0-1 savesystem Mit autoload"-0x1
+x0-1 saveramdisk-0x1
+x0-1 savesystem Mit autoload"-0x1
+x0-1 autoload off-0x1
+x0-1 saveramdisk-0x1
+
+Wenn Sie nun mit x0-1<home>-0x1 in die linke obere Ecke des
+Bildschirms gehen und x0-1<ctrl>+l-0x1 eingeben, wird der
+beschriebene Screen auf die Ramdisk zurckgeschrieben und geladen.
+Sie k”nnen nun am Bildschirm verfolgen, wie lange sowas dauert.
+Sie haben (wenn alles glatt gegangen ist) auf ihrem Rekorder:
+
+erster Versuch    - ein Forthsystem (z.B. fr Systemabstrze)
+RD.meine kleine   - Die Ramdisk mit dem geschriebenen Screen
+Mit autoload      - Ein Forthsystem mit Autoload
+RD.meine kleine   - Die Ramdisk mit dem geschriebenen Screen
+Mit autoload      - Ein Forthsystem mit Autoload
+RD.meine kleine   - Die Ramdisk mit dem geschriebenen Screen
+
+Hierzu sei bemerkt:
+- Da Filenamen bei Commodore maximal 16 Zeichen lang sein drfen,
+  fehlt bei langen Namen der Rest.
+- Der Name einer Ramdisk beginnt immer mit RD. .
+- Es ist natrlich nicht n”tig alles zweimal abzuspeichern,
+  aber sicherer.
+- Die Forthsysteme bestehen (falls Supertape benutzt wird) im Grunde
+  genommen aus drei einzelnen Files (s.u.).
+- Die beiden identischen Systeme "Mit autoload" werden, wenn
+  sie geladen werden gleich beim Kaltstart die n„chstfolgende
+  Ramdisk laden, sofern x0-1tapeinit-0x1 als x0-1'restart-0x1
+  installiert ist. Dies prfen Sie mit x0-1' 'restart >body @ >name .name-0x1
+  und erzwingen es mit x0-1' tapeinit Is 'restart-0x1
+
+Wenn Sie mehrere Ramdisks im Speicher haben m”chten, erzeugen Sie sie
+wieder mit x0-1rdnew-0x1 und schalten mit x0-1rduse-0 ( addr--)x1 um.
+Informationen ber die aktuelle Ramdisk erhalten Sie mit:
+x0-1.rd-0x1 und x0-1rdcheck-0x1.
+
+Wenn Sie Quelltexte von Diskette auf Kassette kopieren m”chten,
+benutzen Sie x0-1copy convey-0x1 (im Handbuch nachlesen!!).
+Leider passen nicht sonderlich viele Quellscreens in eine Ramdisk.
+Pro Diskettenseite mssen Sie schon mit 2-6 Ramdisks … 20 kB rechnen.
+Wenn sie auch noch bin„re Bl”cke (x0-1binary-0x1) wird es besonders
+teuer. Aber auf den ultraFORTH-Disketten befindet sich nur ein
+einziger bin„rer Block mit Sprite-Daten fr den C64.
+
+        W1- Benutzung der RamdiskW0
+
+Bei Ausfhrung von x0-1tapeinit-0x1 wird x0-1r/w-0x1 mit  x0-1ramR/W-0x1 neu besetzt.
+Daher brauchen fr die Benutzung keine speziellen Worte benutzt
+werden.  Blockzugriffe auf Drive 1, 2, 3 etc.  gehen automatisch in
+die Ramdisk.  Einige Worte der Ramdisk sind im Vokabular
+x0-1ramdiskx1-0.  Beim Lese-Zugriff auf einen nicht vorhandenen
+Block der Ramdisk wird ein leerer Block geliefert.
+
+  Die Ramdisk benutzt ein komprimierendes Format: aufeinanderfolgende
+Blanks werden in ein Zeichen ($7f+AnzahlDerBlanks) umgesetzt. Dies
+zerst”rt Bin„rdaten und funktioniert nur mit normalen Quelltexten.
+  Es kann zu Probleme fhren, wenn - aus Versehen - Bytes >$80 in
+den Ramdisk-Bereich geschrieben werden. Dann werden beim n„chsten
+Blockzugriff auf den kaputten Block zuviele Bytes an den
+Blockmechanismus bergeben.
+Dieser reagiert beim n„chsten x0-1flushx1-0 i.A. mit x0-0" no File"x1-0
+und beim n„chsten x0-1empty-buffersx1-0 mit System-Zusammenbruch. In diesem
+Fall sollte x0-1coldx1-0 eingeben werden, die Ramdisk bleibt unver„ndert.
+Zur Korrektur von Fehlern,
+muá man das Speicherformat der Ramdisk kennen.  Es ist auf den Shadows
+der Quell-texte beschrieben.  Da Fehlerkorrektur sehr mhsam ist,
+sollte die Ramdisk lieber oft genug gesichert werden.
+
+Bin„re Bl”cke werden zerst”rt, wenn sie nicht mit x0-1binary-0x1
+extra deklariert werden.
+
+Die Ramdisk ist voll, wenn weniger als $400 bytes frei sind.
+
+        W1- Die KassettenschnittstelleW0
+
+Fast alle Worte sind im Vokabular x0-1tapex1-0. Wichtige Worte:
+
+Umschalten des aktuellen Ger„ts fr alle
+folgenden load/save-Operationen mit:
+x0-1commodorex1-0   x0-1supertapex1-0 x0-1floppyx1-0    default: x0-1supertapex1-0
+-1Speichern:-0
+x0-1savesystemx1-0                     sichert ultraFORTH-Bereich
+x0-1saveRamdiskx1-0                      sichert Ramdisk
+
+-1Laden:-0
+x0-1loadRamdiskx1-0                         l„dt Ramdisk
+
+Ein mit x0-1savesystemx1-0 gesichertes System wird folgendermaáen geladen:
+Rechner aus- und wieder einschalten.
+x0-1MONITOR-0x1 aufrufen.
+Mit x0-1L-0x1 laden.
+W„hrend der Meldung PRESS PLAY ON TAPE k”nnen schon mal bis zu
+8 Zeichen im Voraus eingetippt werden. (z.B. um dann Kaffe trinken zu
+gehen.)
+Wenn das System im Supertape-Format gesichert ist, wird jetzt nur
+der Supertape-Teil des Systems geladen.
+geladen worden. In diesem Fall muá der (im Filenamen versteckte)
+Monitorbefehl x0-1G####x1-0 abgeschickt werden.(z.B. mit x0-1<up> <up> <return>-0x1).
+Es werden zwei weitere Teile des Systems geladen.
+Wenn das System im Commodore-Format geladen war:
+x0-1G1010x1-0  Kalt-Start von ultraFORTH.  (bei C64: x0-1G801x1-0).
+
+Falls ein Ladefehler aufgetreten ist, wird bei Commodore-Format
+eine Fehlermeldung ausgegeben. Bei Supertape-Format wird ein
+Monitor-Break erzeugt.
+
+Es besteht die M”glichkeit nach Laden des Systems gleich weitere Prozesse
+auszul”sen. Vgl. x0-1autoload 'restartx1-0.
+
+        W1- SupertapeW0
+
+Worte wie x0-1c64init coldx1-0 oder x0-1<Run/stop>+<Reset>x1-0
+reinitialisieren die I/O-Routinen.  Daher muá anschliepend nochmal
+x0-1supertapex1-0 eingegeben werden.
+
+     W1o Der neue Tracer W0
+
+Im folgenden soll die nderung im Konzept des Tracers kurz erl„utert
+werden.
+
+Eine der zentralen Fragen fr einen Debugger fr Forth-Worte ist:  Wie
+entscheidet der Tracer anhand der Systemvariablen, ob das grade
+auszufhrende Wort getraced werden soll (d.h.  ob der
+Ausfhrungsstatus ausgedruckt werden soll) oder nicht.  Die einfachste
+M”glichkeit, n„mlich grunds„tzlich alles mitzudrucken, scheidet aus,
+da sich der Tracer dann auch selbst Tracen wrde und auáerdem
+frchterlich viel uninteressantes Zeug auf dem Bildschirm landen
+wrde.
+Der alte Tracer w„hlte die M”glichkeit, eine vorgegebene H”he des
+Returnstacks als Kriterium zu nehmen.  Das funktioniert zwar im
+allgemeinen gut, da so i.a.  nur innerhalb des zu untersuchenden
+Wortes getraced wird, schafft aber Probleme, wenn Worte wie z.B.
+x0-1DO >r rdropx1-0 auftreten, da sie den Return-Stack ver„ndern.
+In einem solchen Fall muáten bisher von Hand Worte zur Korrektur der
+vorgegebenen Returnstack-H”he eingegeben werden.
+
+Der neue Tracer nimmt als Kriterium einen vorgegebenen Bereich des
+Instruction-Pointer.  Dadurch ist er erheblich einfacher zu bedienen.
+
+Die neuen und ge„nderten Worte des Tracers finden Sie unter
+'nderungen im Glossar'.
+Die nderungen, die sich fr die Beschreibung im Handbuch ergeben,
+finden Sie unter 'Korrekturen im Handbuch'.
+
+     W1o Noch ein Wort zum MultitaskerW0
+
+In dieser Version wurde das Wort x0-1listx1-0 dahingehend
+ge„ndert, daá es angehalten und abgebrochen werden kann, also Eingaben
+von der Tastatur liest, was fr Drucker-Spooler, also einen typischen
+Fall von Multitasking, gewisse Probleme mit sich bringt.  Wir haben
+diese Gelegenheit beim Schopf gegriffen, ein paar weitere
+Erl„uterungen zum Multitasking niederzuschreiben.
+-1Eingabe bei Multitasking-0 schafft Probleme, da natrlich nur eine
+Task die Eingaben des Benutzers verarbeiten kann.  Daher sollte jede
+Task, die keine Eingaben empfangen will, ihren Eingabe-Vektor so
+definieren, daá Sie keine Eingaben erhalten kann.  Dies erscheint
+etwas unsinnig, da beim Programmieren ja klar ist, ob Eingabe-Worte
+verwendet werden. Es ergibt sp„testens dann Sinn, wenn bedacht wird,
+daá Worte wie x0-1list indexx1-0 etc. ja vielleicht die Stop-Taste
+abfragen. So ein Nicht-Input-Vektor k”nnte folgendermaáen aussehen:
+x0-1: halt  ." Task halt!" BEGIN REPEAT ;x1-0
+Das Wort halt legt die Task (nach einer Fehlerausgabe) v”llig auf
+Eis.      x0-1Input: nulIn x1-0  Ein Nicht-Input wird definiert
+x0-1  halt       x1-0  ersetzt key  ( --char)
+x0-1  false      x1-0  ersetzt key? ( --flag)
+x0-1  drop       x1-0  ersetzt decode ( adr1 +n1 char--adr2 +n2)
+x0-1  halt       x1-0  ersetzt expect ( adr n--)
+x0-1[            x1-0  Ende der Definition.
+//// nochmal berprfen
+Bei x0-1keyx1-0  lieáe sich noch berlegen, immer ein
+bestimmtes (ungef„hrliches) Zeichen zu senden. Diese
+Entscheidung sollte aber beim Programmieren getroffen werden -
+wer weiá schon welches Zeichen immer und berall ungef„hrlich
+ist. Bei x0-1expectx1-0 l„át sich schwerlich eine bessere L”sung
+finden, da von x0-1expectx1-0 die Variable x0-1spanx1-
+ver„ndert werden soll und es unangenehm werden k”nnte, wenn zwei Tasks
+gleichzeitig an der gleichen Variablen rumpfuschen.
+  Jede Task, der jetzt am Anfang x0-1nulIx1- ausfhrt, bekommt
+keine Eingaben und wird schlimmstenfalls stillgelegt.
+
+     W1o nderungen gegenberW0
+     W1  Version 3.5W0
+
+Die Worte x0-1(bload (bsave x1-0 wurden aus dem System entfernt.
+Ihre Funktion wird von den Worten x0-1cload csave x1-0 bernommen.
+Die Worte x0-1(64 (16 C) Create:x1-0 sind neu hinzugekommen.
+Das Wort x0-1c64fkeysx1-0 ist fr die C16-Version neu hinzugekommen.
+Das Wort x0-1freebuffer x1-0 wurde korrigiert.
+Das Wort x0-1(drvx1-0 ist nicht mehr verdeckt.
+Der Tracer wurde auf ein neues Konzept umgestellt und ist jetzt
+erheblich einfacher zu bedienen.In Zusammenhang damit
+compiliert x0-1;x1-0 jetzt x0-1unnestx1-0 statt x0-1exitx1-0.
+Zur einfacheren Benutzung mehrerere Laufwerke ergaben sich
+nderungen in x0-1listx1-0 und im Editor.
+Auáerdem kann x0-1listx1-0 jetzt mit jeder Taste angehalten und mit
+x0-1<run/stop>x1-0 abgebrochen werden.
+Einige Worte sind zum Lieferumfang hinzugekommen oder wurden ge„ndert.
+Eine Kassettenversion ist zum Lieferumfang hinzugekommen.
+
+     W1o Schwer erkennbare UrsachenW0
+     W1  von System-CrashsW0
+
+Oft h„ngen System-Crashs mit Referenzen auf nicht mehr existierende
+Worte zusammen. Beispiel:
+
+x0 ...  100 >label LAB     ....      : WORT ........ LAB ...... ; x1
+x0>labelx1 erzeugt eine Date auf dem Heap. x0Wortx1 benutzt x0LABx1.
+Wenn sp„ter der Heap mittels x0clearx1 oder x0savex1 gel”scht wird und das
+Wort x0WORTx1 aufgerufen wird, so wird eine Referenz auf ein nicht mehr
+existierendes Wort benutzt.
+
+Zweites Beispiel:
+
+x0... ' .blk Is .status  ......... cold ..... x1
+
+Das deferred Wort x0.statusx1 referenziert x0.blkx1. Nach x0coldx1 (oder x0emptyx1)
+ist x0.blkx1 gel”scht, die Referenz existiert weiterhin.
+
+Bei beiden Beispielen arbeitet das System erstmal wie gewohnt weiter.
+Erst viel sp„ter (nach berschreiben des ehemaligen Speicherbereichs
+von x0LABx1 bzw x0.blkx1) fhrt der Aufruf von x0.statusx1 bzw
+x0Wortx1 zu undefinierten Reaktionen (i.A.  System-Crashs).
+
+Abhilfe:  Keine mit x0>labelx1 deklarierten Worte in Forth-Worten
+benutzen.  Nach Belegung eines deferred Wortes x0savex1 eingeben
+oder aufpassen.
+
+
+     W1o Was tun bei System-FehlernW0
+
+Wenn Ihr denkt, daá Ihr einen Fehler im ultraFORTH gefunden habt, dann
+tut bitte folgendes:
+- šberprft, ob die Ursache vielleicht in "Schwer erkennbare Ursachen
+  von Systemcrashs" beschrieben ist.
+- Fahrt Euer System nochmal ganz neu hoch, bis Ihr die
+  minimale Konfiguration erreicht habt, bei der der Fehler noch auftritt.
+  Schreibt auf, was Ihr ladet.
+- H„ngt alle Zusatzger„te ab, die gerade nicht ben”tigt werden.
+- Schickt eine genaue Beschreibung an den Autor Eurer ultraFORTH-Version.
+  Ggf. ber die Forth-Ges. HH.
+- Schreibt dazu, welchen Rechner Ihr habt, (ggf. Zusatzausrstung) und
+  welche Zusatzger„te angeschlossen waren.
+- Wenn die Programme, die den Fehler verursachten, l„nger als ein oder
+  zwei Screens sind, kopiert sie auf eine Diskette und schickt sie mit.
+- Beschreibt den Ladeprozeá der Fehler-Konfiguration so genau wie
+  m”glich (am besten mit einem Lade-Screen, der alles automatisch
+  hochf„hrt).
+- Schreibt dazu, wo Ihr den Fehler vermutet.
+
+-1Wir tun unser bestes, aber versprechen k”nnen wir nichts.-0
+
+     W1o Korrekturen zum HandbuchW0
+
+-1Handbuch S.45/46:-0 x0-1passx1-0
+statt x0-12 background passx1-0 muá hier x0-1background 2 passx1-0 stehen.
+
+Aufgrund des neuen Tracers ergeben sich folgende nderungen im Handbuch:
+-1Handbuch S.55/56:-0 Ab dem Absatz x0-1(?DO ist ein von..x1-0 wird
+bis incl. des ersten Satzes auf S.56 alles gestrichen.
+-1Handbuch S.56:-0 Ab x0-12d3a 273f 2-......x1-0 wird
+bis inclusive der Zeile x0-12d42 22a2 >R......x1-0 alles gestrichen.
+In der folgenden Zeile muá x0-1unnestx1-0 statt x0-1exitx1-0 stehen.
+-1Handbuch S.57:-0 Der erste Absatz wird gestrichen.
+In der folgenden Zeile muá x0-1unnestx1-0 statt x0-1exitx1-0 stehen.
+Der Absatz x0-1+R mssen Sie...x1-0 bis inclusive
+x0-1...natrlich ebenfalls -R eingebenx1-0
+wird ersetzt durch: 'Sie finden Sie in der Erg„nzung zum Handbuch'.
+Der letzte Satz: x0-1Wenn man sich eingearbeit hat, ist der
+Tracer...x1-0 wird ver„ndert zu: x0-1Der Tracer ist...x1-0  .
+
+Alle Stellen im Handbuch, wo -1C64-0 steht, sind durch
+-1C64,C16,C116 und Plus 4 -0 zu ersetzen.  Alle Stellen im Handbuch,
+wo -1serieller Bus-0 steht, sind durch -1serieller Bus (bzw.  beim
+C16,C116 und Plus4 ggf.  der parallele Floppybus)-0 zu ersetzen.
+Ausgenommen davon sind jene Stellen im Handbuch, fr die das Gesagte
+augenscheinlich nicht gilt.  'Augenscheinlich' ist alles, was fr mich
+augenscheinlich ist.  Falls Sie diesen Absatz nicht verstehen,
+vergessen Sie ihn sofort wieder!
+
+     W1o Erg„nzungen / Berichtigungen W0
+     W1  des GlossarsW0
+
+Im folgenden werden nderungen und Erg„nzungen des Glossars
+zusammengefaát. Hierbei wurden auáer Worten des Forth-Kerns
+auch einige andere - im Lieferumfang enthaltene - Worte
+mitaufgenommen, um die šbersicht zu verbessern.
+Diese Worte haben eine der folgenden Gruppen-Bezeichnungen:
+
+        Tape      -   Kassettenversion
+        Tools     -   Hilfsmittel zur Fehlersuche etc.
+        MassSpUti -   Hilfsworte zur Benutzung von Massenspeichern
+        AsmUti    -   Hilfsworte fr den Assembler
+
+Bei der Einteilung in Gruppen wurde hierbei nicht von
+Wirkung und Zweck der Worte ausgegangen, sondern von der
+Fundstelle auf den Quelldisketten. Die Gruppen sind nur unvollst„ndig
+erfaát.
+Alle anderen Gruppen-Bezeichnungen entsprechen denen im Handbuch.
+
+
+--- Gruppe: Dat-Typ --- Datentypen ---------------------------------------
+
+x0-1Createx1-0              ( -- )          83
+
+Ein definierendes Wort, das in der Form x0-1Create-0 namex1 benutzt wird.
+Es erzeugt einen Kopf fr x0namex1. Bei Ausfhrung von x0namex1 wird die
+Compilations-Adresse von x0namex1 auf den Stack gebracht, sofern nicht
+z.B. mittels x0-1Does>x1-0 eine andere Arbeitsweise spezifiziert wurde.
+
+x0-1Create:x1-0             ( -- )
+
+Ein definierendes Wort, das in der Form x0-1Create:-0 name .. ; x1benutzt wird.
+Es wirkt wie x0:x1 mit der Ausnahme, daá bei Ausfhrung von  x0namex1 nur die
+Compilations-Adresse von x0namex1 auf den Stack gebracht wird.
+
+
+--- Gruppe: C64 --- C64- und C16-spezifische Worte ----------------------------
+
+x0-1(bloadx1-0               ( -- )
+
+Dieses Wort der Version 3.5 wurde aus dem System genommen.
+
+x0-1(bsavex1-0               ( -- )
+
+Dieses Wort der Version 3.5 wurde aus dem System genommen.
+
+x0-1(drvx1-0                 ( --addr )
+
+addr ist die Adresse einer Variablen, die das aktuelle Laufwerk
+enth„lt.  Der Inhalt ist i.a.  gleich 0.  Wenn Diskettenzugriffe nicht
+ber den Blockmechanismus, sondern z.B.  ber x0-1readsector
+writesectorx1-0 gehen, sollte x0-1(drvx1-0 gesetzt werden.
+
+x0-1(64x1-0                  ( -- )          I
+x0-1(16x1-0                  ( -- )          I
+
+Diese Worte erm”glichen es maschinenspezifische Teile in einer
+gemeinsamen Quelle zu vereinigen.  Typische Benutzung:
+     x0     ....WorteFrAlleMaschinen..x1
+     x0-1(64x0-0 ......WorteNurFrC64....... x0-1C)x1-0
+     x0-1(16x0-0 ......WorteNurFrC16....... x0-1C)x1-0
+     x0     ....WorteFrAlleMaschinen..x1
+Beim C64 bewirkt x0-1(64-0x1 nichts, x0-1(16x1-0 ignoriert alles bis x0-1C)x1-0.
+Beim C16 bewirkt x0-1(16-0x1 nichts, x0-1(64x1-0 ignoriert alles bis x0-1C)x1-0.
+
+x0-1C)x1-0                   ( -- )          I
+
+Tut nichts und zwar sofort. Vgl. x0-1Noop (16 (64x1-0.
+
+x0-1c64fkeysx1-0             ( -- )
+
+Dieses Wort gibt es nur auf dem C16. Es stellt die Funktionstasten-
+belegung des C64 her.
+
+
+--- Gruppe: Disk --- Massenspeicher --------------------------------------
+
+x0-1freebufferx1-0           ( -- )
+
+Dieses Wort arbeitete in Version 3.5 fehlerhaft und wurde korrigiert.
+
+x0-1listx1-0                 Disk            ( u-- )
+
+Dieses Wort wurde gegenber der Version 3.5 ge„ndert und kann jetzt
+angehalten und abgebrochen werden. Diese Eigenschaft ist bei
+Multitasking (insb. Print-Spools) zu beachten.
+
+--- Gruppe: Tools --- Hilfsmittel zur Fehlersuche etc.  ------------------
+
+x0-1(debugx1-0               ( addr-- )
+
+Der zu tracende Bereich geht nach Ausfhrung von addr bis zum n„chsten
+Wortende. addr ist im allgemeinen der cfa des zu untersuchenden
+Wortes. Vgl.: x0-1debug-0x1
+
+x0-1cpushx1-0                ( addr u -- )
+
+Es werden analog x0-1pushx1-0 u bytes ab inclusive addr gesichert.
+Beim n„chsten x0-1exitx1-0 oder x0-1unnestx1-0 werden sie
+zurckgespeichert.
+
+x0-1debugx1-0                ( -- )
+
+Benutzt in der Form: x0-1debug-0 <name> x1. Hierbei ist x0-1-0 <name> x1
+ein ausfhrbares Wort. Der zu tracende Bereich deckt anschlieáend den
+Bereich von x0-1-0 <name> x1 ab,
+sodaá bei Ausfhrung von x0-1-0<name>x1 der Debugger aktiviert wird.
+Beispiel:x0-1debug words     words-0x1.
+
+x0-1endloopx1-0              ( -- )
+
+Weist den Tracer an, daá angezeigte Wort auszufhren und erst
+ab dem n„chsten Wort wieder zu tracen. Dient zum berspringen
+von x0-1endloop branch x1-0 etc.
+
+x0-1nestx1-0                 ( -- )
+
+Weist den Tracer an, das angezeigte Wort ebenfalls zu tracen.
+
+x0-1trace'x1-0               ( -- )
+
+Benutzt in der Form: x0-1Trace'-0 <name> x1. Wirkt wie x0-1debug-0 <name> <name>x1.
+
+x0-1unnestx1-0               ( -- )
+
+Weist den Tracer an, das getracete Wort zuende auszufhren und erst
+ab dem rufenden Wort wieder zu tracen.
+
+x0-1unbugx1-0                ( -- )
+
+Schaltet den Tracer ab. Die Ausfhrung wird ungetraced fortgesetzt.
+
+x0-1wcmpx1-0                 ( addr1 addr2 -- )
+
+Dieses Assembler-Makro assembliert eine Sequenz, die bei
+Ausfhrung den Inhalt des Wortes an addr1 mit dem Inhalt des
+Wortes an addr2 vergleicht.
+Anschlieáend ist das Carry-Flag high, wenn der Inhalt von addr1
+gr”áer oder gleich dem Inhalt von addr2 ist.
+Es werden AR, CF, ZF, OF, NF ver„ndert.
+
+--- Gruppe: AsmUti --- Hilfsworte fr den Assembler -----------------
+
+x0-1ramx1-0                  ( -- )
+
+Makro. Schaltet bei Ausfhrung auf eine andere Speicherbank. Die
+genaue Wirkungsweise ist maschinenabh„ngig.
+
+x0-1romx1-0                  ( -- )
+
+Makro. Schaltet bei Ausfhrung auf eine andere Speicherbank. Die
+genaue Wirkungsweise ist maschinenabh„ngig.
+
+x0-1sysx1-0                  ( addr-- )
+
+Makro. Schaltet bei Ausfhrung auf eine Speicherbank mit Systemroutinen
+und fhrt x0-1jsrx1-0 aus.
+Die genaue Wirkungsweise ist maschinenabh„ngig.
+
+--- Gruppe: Tape --- Kassettenversion ------------------------------------
+
+x0-1\IFx1-0                 ( -- )           I
+
+Benutzt in der Form x0-1\if-0 <name>  <worte> .. x1.
+Wenn x0<name>x1 in der aktuellen Suchreihenfolge gefunden wird,
+werden die folgenden Worte bis zum Zeilenwechsel ausgefhrt, sonst
+geschieht nichts. Gegenstck zu x0-1\needs-0x1
+
+x0-1(rdx1-0                 ( --addr )
+
+addr ist die Adresse einer Variablen, die die Anfangsadresse der
+aktuellen Ramdisk enth„lt bzw. 0 wenn explizit keine Ramdisk existiert.
+Zum Format der Ramdisk vgl. die Shadows des Quelltextes.
+Vgl. auch x0-1rdx1-0
+
+x0-1.rdx1-0                  ( -- )
+
+Druckt zentrale Informationen ber die Ramdisk aus.
+
+x0-17>cx1-0                 ( 8b--7b)  (sprich: "seven-to-char")
+
+Zur Rck-Umwandlung von mit x0-1c>7x1-0 erzeugten 7-bit-Buchstaben
+in Buchstaben.
+Funktioniert nur fr den von ultraFORTH benutzten
+Zeichensatz sicher.
+
+x0-1autoloadx1-0            ( --addr)
+
+addr ist die Adresse einer Variablen. Wenn x0-1autoloadx1-0 ungleich
+0 ist, wird beim n„chsten tapeinit eine Ramdisk geladen. Wird
+i.a. nur vor x0-1savesystemx1-0 benutzt.
+
+x0-1binaryx1-0              ( u--u )
+
+u ist die BlockNummer eines Blockes, der nicht komprimiert werden
+soll.  Dies ist fr bin„re Ramdisk-Bl”cke erforderlich, da sie sonst
+beim ver„ndert wrden. Der Block belegt ab Deklaration ca. $400 bytes.
+
+x0-1bloadx1-0               ( addr1 addr3 8b-- addr2)
+
+Ab addr1 wird ein File mit dem Namen an addr3 der L„nge 8b vom mit
+x0-1devicex1-0 gesetzten Ger„t gelesen.  Diverse Fehlerbedingungen
+werden behandelt.  addr2 ist die Endadresse des geladenen Files plus 1
+.  Beim C16/C64 hat der Benutzer bei allen Lade-Operationen Sorge zu
+tragen, daá genug Platz vorhanden ist.  Sonst folgen undefinierte
+Resultate.  (System-Absturz)
+
+x0-1bsavex1-0               ( addr1 addr2 addr3 8b--)
+
+Der Bereich von addr1 bis exklusive addr2 wird mit dem Namen an addr3
+der L„nge 8b auf das mit x0-1devicex1-0 gesetzte Ger„t
+geschrieben.  Diverse Fehlerbedingungen werden behandelt.
+
+x0-1c>7x1-0                 ( 8b--7b)  (sprich: "char-to-seven")
+
+Zur Umwandlung von Buchstaben in 7-bit-Buchstaben.  Die
+Zurckverwandlung mit x0-17>cx1-0 funktioniert nur fr den von
+ultraFORTH benutzten Zeichensatz sicher.
+
+x0-1commodorex1-0           ( -- )
+
+Setzt den Kassettenrekorder im Commodore-Format als aktuelles
+Ausgabeger„t. Vgl.: x0-1device supertape floppyx1-0.
+
+x0-1compressx1-0             ( addr1 addr2 u1--u2 )
+
+Zum Komprimieren von Forth-Quelltexten.  Der Speicherbereich ab addr1
+der L„nge u1 wird nach addr2 komprimiert.  Die L„nge des komprimierten
+Bereichs wird in u2 zurckgegeben.  Sie betr„gt i.a.  ca.  30-50% der
+Ursprungsl„nge.  Vgl.:  x0-1expandx1-0
+
+x0-1devicex1-0              ( --addr)
+
+addr ist die Adresse einer Variablen, die im niederwertigen byte die
+Ger„te-Nummer des aktuellen Ger„tes enth„lt und im h”herwertigen byte
+die Sekund„radresse (i.a.=0). Vgl.: x0-1commodore supertape floppyx1-0.
+
+x0-1expandx1-0               ( addr1 addr2 u1--u2 )
+
+Zum Expandieren von komprimierten Forth-Quelltexten.
+Der Speicherbereich ab addr1
+der L„nge u1 wird nach addr2 expandiert. Die L„nge des expandierten
+Bereichs wird in u2 zurckgegeben. Vgl.: x0-1compressx1-0
+
+x0-1floppyx1-0              ( -- )
+
+Setzt das Diskettenlaufwerk als aktuelles Ausgabeger„t.
+Vgl.: x0-1device commodore supertapex1-0.
+
+x0-1id"x1-0                 ( -- )
+
+Benutzt in der Form x0-1id"-0 <text>-1"x1-0.
+Setzt den Namen der aktuellen Ramdisk auf x0-1RD.-0<text>-1x1.
+
+x0-1loadramdiskx1-0         ( -- )
+
+Es wird eine neue Ramdisk eingerichtet und vom aktuellen Ger„t
+geladen.  Beim C16/C64 hat der Benutzer bei allen Lade-Operationen
+Sorge zu tragen, daá genug Platz vorhanden ist.  Sonst folgen
+undefinierte Resultate.  (System-Absturz)
+
+x0-1n"x1-0                  ( --addr 8b )
+
+Ist identisch der Sequenz x0-1Ascii " parsex1-0. Der Quelltext
+bis exklusive dem n„chsten x0-1"x1-0 wird nicht ausgefhrt,
+sondern als name verstanden, dessen Adresse in addr und dessen
+L„nge in 8b zurckgegeben wird.
+
+x0-1ramR/Wx1-0               ( addr1 u addr2 flag--flag )
+
+x0-1r/wx1-0 wird bei Benutzung der Ramdisk auf x0-1ramR/Wx1-0 gesetzt.
+Von da an wird bei Blockzugriffen auf Drive 0 weiterhin auf ein
+Diskettenlaufwerk zugegriffen. Blockzugriffe auf Drive 1 und folgende
+greifen auf die aktuelle Ramdisk zu.
+Zur Benutzung der Ramdisk vgl.:x0-1drive >drive drv? copy conveyx1-0.
+
+x0-1rdx1-0                  ( --addr )
+
+addr ist die Anfangsadresse der aktuellen Ramdisk.  Wenn keine gltige
+Ramdisk eingerichtet ist, wird eine Fehlerbehandlung eingeleitet.  Zum
+Format der Ramdisk vgl. die Shadows des Quelltext. Vgl. auch x0-1(rdx1-0
+
+x0-1rdcheckx1-0             ( -- )
+
+Druckt Informationen ber die Ramdisk aus und prft die zentralen Zeiger.
+
+x0-1rddelx1-0                ( -- )
+
+L”scht alle Bl”cke der aktuellen Ramdisk.
+
+x0-1rdnewx1-0               ( addr1 addr2-- )
+
+Richtet eine neue Ramdisk von addr1 bis maximal addr2-1 ein und
+setzt sie als aktuell. Eine Fehlerbedingung liegt vor, wenn
+der Speicherbereich von addr1 bis addr2 bereits anders belegt ist.
+
+x0-1rdusex1-0                ( addr-- )
+
+Erkl„rt die Ramdisk an addr zur aktuellen.  Eine Fehlerbedingung liegt
+vor, wenn addr nicht die Anfangsadresse einer Ramdisk ist.
+
+x0-1restore"x1-0             ( -- )
+
+Wirkt wie x0-1abort"x1-0, mit der Ausnahme, daá vorher mit
+x0-1storex1-0 gesicherte Bereiche zurckgespeichert werden.
+
+x0-1saveramdiskx1-0         ( -- )
+
+Die aktuelle Ramdisk wird auf das aktuelle Ger„t gesichert.
+Eine Fehlerbedingung liegt vor, wenn keine Ramdisk eingerichtet war.
+
+x0-1storex1-0                ( addr -- )
+
+Wirkt wie x0-1pushx1-0, mit der Ausnahme, daá bei einem anschlieáenden x0-1restore"x1-0
+der gesicherte Bereich zurckgespeichert wird.
+
+x0-1supertapex1-0           ( -- )
+
+Setzt den Kassettenrekorder im Supertape-Format als aktuelles
+Ausgabeger„t.  Supertape ist eine Schnell-Lade-Routine, die von der
+Zeitschrift c't fr alle g„ngigen Mikro-Rechner angeboten wird.  Wir
+danken dem Heise-Verlag fr die freundliche Genehmigung, es in
+ultraFORTH integrieren und weiterverbreiten zu drfen.
+Vgl.: x0-1device commodore floppyx1-0.
+
+x0-1tapeinitx1-0             ( -- )
+
+Initialisiert die Kassettenversion.
+Wenn x0-1autoloadx1-0 ungleich 0 ist, wird eine Ramdisk
+geladen. Wird im allgemeinen als x0-1'restartx1-0 installiert.
+
+
+--- Gruppe: MassSpUti --- Hilfsworte zur Benutzung von Massenspeichern ---
+
+x0-12disk1551x1-0           ( -- )
+
+Sendet beim C64/C16 einen Befehl ber den Bus, der ein anwesendes
+Diskettenlaufwerk 1551 auf Unit 9 umstellt. Alle nicht gemeinten
+Laufwerke sind vorher auszuschalten.
+
+x0-1cloadx1-0                ( addr1 addr3 8b u1--addr2 u2 )
+
+Laedt ab addr1 das File mit dem
+8b langen Namen, der bei addr3 steht von dem Ger„t der Nummer u1.
+u1 enth„lt beim C16/C64 im unteren Byte die Ger„te-Nummer und
+im oberen Byte die Sekund„radress (i.a.=0).
+addr2 ist die Endadresse+1 des geladenen Files.
+u2 ist eine Fehlerbeschreibung, die zum Aufruf von x0-1derr?x1-0
+benutzt werden sollte.
+Beim C16/C64 hat der Benutzer bei allen Lade-Operationen
+Sorge zu tragen, daá genug Platz vorhanden
+ist. Sonst folgen undefinierte Resultate. (System-Absturz)
+
+x0-1copy2diskx1-0            ( -- )
+
+Kopiert eine Diskette von einem Laufwerk auf ein anderes.
+Die Directory wird mitkopiert, daher auch fr Files zu verwenden.
+
+x0-1copydiskx1-0             ( -- )
+
+Kopiert eine Diskette auf einem Laufwerk. Die Directory wird nicht
+mitkopiert, daher nur fr Forth-Bl”cke zu verwenden.
+
+x0-1csavex1-0                ( addr1 addr2 addr3 8b u1--u2 )
+
+Sichert den Speicherbereich von addr1 bis exklusive addr2 unter dem
+8b langen Namen, der bei addr3 steht auf das Ger„t der Nummer u1.
+u1 enth„lt beim C16/C64 im unteren Byte die Ger„te-Nummer und
+im oberen Byte die Sekund„radresse (i.a.=0).
+u2 ist eine Fehlerbeschreibung, die zum Aufruf von x0-1derr?x1-0
+benutzt werden sollte.
+
+x0-1derr?x1-0                ( u--flag )
+
+Wird nach x0-1cloadx1-0 und x0-1csavex1-0 benutzt.
+Falls ein Fehler aufgetreten ist, gibt es eine u entsprechende
+Fehlermeldung aus. flag ist true, wenn ein Fehler aufgetreten ist,
+sonst false.
+
+x0-1formatdiskx1-0           ( -- )
+
+Formatiert eine Diskette fr die Benutzung unter Forth.
+Beim C16/C64 benutzt in der Form: x0-1formatdisk-0 [<name>-1,-0[<id>]]x1.
+Neue Disketten mssen mit x0-1,-0[<id>]x1 formatiert werden.
+Beispiel: x0-1formatdisk-0 hallo,xxx1-0.
+
+x0-1savesystemx1-0           ( -- )
+
+Benutzt in der Form x0-1savesystem-0 <name> x1.  Das
+ultraFORTH-System wird bis x0-1herex1-0 auf einen externen
+Massenspeicher gesichert.  Vorher wird es in den Zustand versetzt, in
+dem es beim n„chsten Kaltstart sein soll.  Insbesondere werden die
+aktuellen Parameter von User-Variablen in den User-Kaltstart-Bereich
+kopiert.  Nicht gesichert werden Block-Puffer.  Hinweis zur
+Arbeitsweise:  i.a.  wird ca.  einmal w”chenlich ein Forth-Kern
+geladen, seine Speicherbelegung den aktuellen Bedrfnissen angepaát,
+diverse Quellen geladen (z.B.  Editor, debugger...) und das ganze mit
+x0-1savesystemx1-0 gesichert.  Mit diesem Arbeitssystem wird dann
+weitergearbeitet.  Das spart die Zeit, die sonst zum Laden der
+Quelltexte draufginge.  Auf gleiche Art k”nnen Stand-Alone-Anwendungen
+gesichert werden.  Jede gr”áere zusammenh„ngende Anwendung hat i.a.
+ihr eigenes x0-1savesystemx1-0, in dem erst zur Anwendung
+geh”rende Variablen und Vektoren "Boot-like" gemacht werden und
+anschlieáend das letzte x0-1savesystemx1-0 aufgerufen wird.  Jedes
+Arbeitssystem sollte x0-1savesystemx1-0 enthalten.
+
+\IF                       Tape            ( -- )
+(16                       C64             ( -- )
+(64                       C64             ( -- )
+(bload                    C64             ( -- )
+(bsave                    C64             ( -- )
+(debug                    Tools           ( addr-- )
+(drv                      C64             ( --addr )
+(rd                       Tape            ( --addr )
+.rd                       Tape            ( -- )
+2disk1551                 MassSpUti       ( -- )
+7>c                       Tape            ( 8b--7b)
+autoload                  Tape            ( --addr)
+binary                    Tape            ( u--u )
+bload                     Tape            ( addr1 addr3 8b-- addr2)
+bsave                     Tape            ( addr1 addr2 addr3 8b--)
+C)                        C64             ( -- )
+C64fkeys                  C64             ( -- )
+c>7                       Tape            ( 8b--7b)
+cload                     MassSpUti       ( addr1 addr3 8b u1--addr2 u2 )
+commodore                 Tape            ( -- )
+compress                  Tape            ( addr1 addr2 u1--u2 )
+copy2disk                 MassSpUti       ( -- )
+copydisk                  MassSpUti       ( -- )
+cpush                     Tools           ( addr u -- )
+Create                    Dat-Typ         ( -- )
+Create:                   Dat-Typ         ( -- )
+csave                     MassSpUti       ( addr1 addr2 addr3 8b u1--u2 )
+debug                     Tools           ( -- )
+derr?                     MassSpUti       ( u--flag )
+device                    Tape            ( --addr)
+endloop                   Tools           ( -- )
+expand                    Tape            ( addr1 addr2 u1--u2 )
+floppy                    Tape            ( -- )
+formatdisk                MassSpUti       ( -- )
+freebuffer                Disk            ( -- )
+id"                       Tape            ( -- )
+list                      Disk            ( u-- )
+loadramdisk               Tape            ( -- )
+n"                        Tape            ( --addr 8b )
+nest                      Tools           ( -- )
+ram                       AsmUti          ( -- )
+ramR/W                    Tape            ( addr1 u addr2 flag--flag )
+rd                        Tape            ( --addr )
+rdcheck                   Tape            ( -- )
+rddel                     Tape            ( -- )
+rdnew                     Tape            ( addr1 addr2-- )
+rduse                     Tape            ( addr-- )
+restore"                  Tape            ( -- )
+rom                       AsmUti          ( -- )
+saveramdisk               Tape            ( -- )
+savesystem                MassSpUti       ( -- )
+store                     Tape            ( addr -- )
+supertape                 Tape            ( -- )
+sys                       AsmUti          ( addr-- )
+tapeinit                  Tape            ( -- )
+trace'                    Tools           ( -- )
+unbug                     Tools           ( -- )
+unnest                    Tools           ( -- )
+wcmp                      Tools           ( addr1 addr2 -- )
+

@@ -1,9 +1,9 @@
-README.TXT      zu museum/ultra4th  fÅr Commodore C16, C64, Plus4         clv2000
+README.TXT      zu museum/ultra4th  f√ºr Commodore C16, C64, Plus4         clv2000
 
         Claus.Vogt@Berlin.de       --- http://www.home.pages.de/~clv
 
-        Dieser Bereich enthÑlt Software fÅr Commodores C64, C16 und Plus4
-        und ein bi·chen Software, um ultraForth-Screens auf PC und Atari ST weiterzunutzen.
+        Dieser Bereich enth√§lt Software f√ºr Commodores C64, C16 und Plus4
+        und ein bi√üchen Software, um ultraForth-Screens auf PC und Atari ST weiterzunutzen.
 
         Es handelt sich um das Forth-System ultraForth 3.8,
         dessen Portierung auf C16/+4 ich ca. 1987 vornahm.
@@ -17,13 +17,13 @@ README.TXT      zu museum/ultra4th  fÅr Commodore C16, C64, Plus4         clv200
         - Klaus Schleisieck,
         - Ulrich Hoffmann.
 
-        Es existierte fÅr ultraForth eine Kassettenversion, die sich
-        auf einer dieser Disketten-Abbilder befinden kînnte.
-        Da ich grade keinen C16 zur VerfÅgung habe, kann ich leider
+        Es existierte f√ºr ultraForth eine Kassettenversion, die sich
+        auf einer dieser Disketten-Abbilder befinden k√∂nnte.
+        Da ich grade keinen C16 zur Verf√ºgung habe, kann ich leider
         nicht sagen, auf welchem :-( Vielleicht befindet sie sich aber
         auch noch im Karton im Keller ...
 
-        Weitere ErlÑuterung zu ultraForth und den verwendeten
+        Weitere Erl√§uterung zu ultraForth und den verwendeten
         Dateiformaten am Ende dieser Datei.
 
 ULTRA4TH.ZIP ======= Archivdatei zum Download
@@ -35,32 +35,32 @@ ULTRA4TH.ZIP ======= Archivdatei zum Download
 
 UF83_380\ =================================================================================
 
-UF83_380\UF38-1.        Image fÅr C16/64: Disk1 Lieferumfang ultraForth 3.8 C16/C64
-UF83_380\UF38-2.        Image fÅr C16/64: Disk2 Lieferumfang ultraForth 3.8 C16/C64
-UF83_380\UF38-3.        Image fÅr C16/64: Disk3 Lieferumfang ultraForth 3.8 C16/C64
-UF83_380\UF38-4.        Image fÅr C16/64: Disk4 Lieferumfang ultraForth 3.8 C16/C64
+UF83_380\UF38-1.        Image f√ºr C16/64: Disk1 Lieferumfang ultraForth 3.8 C16/C64
+UF83_380\UF38-2.        Image f√ºr C16/64: Disk2 Lieferumfang ultraForth 3.8 C16/C64
+UF83_380\UF38-3.        Image f√ºr C16/64: Disk3 Lieferumfang ultraForth 3.8 C16/C64
+UF83_380\UF38-4.        Image f√ºr C16/64: Disk4 Lieferumfang ultraForth 3.8 C16/C64
 
-                ultraForth ist das volksForth fÅr C16, C64 und Plus4
+                ultraForth ist das volksForth f√ºr C16, C64 und Plus4
 
-UF83_380\TC38.           Image fÅr C16/C64: Targetcompiler fÅr das ultraForth 3.8 C16/C64
+UF83_380\TC38.           Image f√ºr C16/C64: Targetcompiler f√ºr das ultraForth 3.8 C16/C64
 
 UF83TAPE\ =================================================================================
 
-        Dieses Verzeichnis enthÑlt einige Dokumentationen
-        zum ultraForth, die so oder in Åberarbeiteter Form
-        zum Lieferumfang hinzugefÅgt oder zur Werbung genutzt wurden.
+        Dieses Verzeichnis enth√§lt einige Dokumentationen
+        zum ultraForth, die so oder in √ºberarbeiteter Form
+        zum Lieferumfang hinzugef√ºgt oder zur Werbung genutzt wurden.
 
 
 
 
 UF83TAPE\UFTAPE.TXT         7.217  24.11.87  17:29 UFTAPE.TXT
 
-        ZÑhlerstÑnde und Tonkopfeinstellung fÅr die Kassettenversion.
+        Z√§hlerst√§nde und Tonkopfeinstellung f√ºr die Kassettenversion.
         Bestandteil des Lieferumfangs.
 
 UF83TAPE\VF83T.TXT         4.431  01.12.87  17:14 VF83T.TXT
 
-        Kundeninformation 'Notlîsungen zur Kassettenversion'
+        Kundeninformation 'Notl√∂sungen zur Kassettenversion'
 
 UF83TAPE\UF361.DOC        62.456  13.08.87  19:33 UF361.DOC
 
@@ -71,7 +71,7 @@ UF83TAPE\UF361.DOC        62.456  13.08.87  19:33 UF361.DOC
 
         - Arbeit mit Forth-Disketten-Formaten und-Blockmechanismus, Back-Up
         - Definieren einzelner Worte
-        - SystemabstÅrze verschiedener Art
+        - Systemabst√ºrze verschiedener Art
         - Hexadezimal und Dezimal
         - Editor
         - Laden von Quellscreens
@@ -87,7 +87,7 @@ UF83TAPE\RAMDISK.DOC         3.256  11.05.87  16:03 RAMDISK.DOC
 
 PRESSE\   =================================================================================
 
-                Einige ôffentliche ErklÑrungen und Briefe an die Presse
+                Einige √∂ffentliche Erkl√§rungen und Briefe an die Presse
 
 PRESSE\CBMWELT1 BRF         1.447  26.10.87  18:04
 PRESSE\EINLADUN             1.573  24.04.87  12:05
@@ -104,22 +104,22 @@ PRESSE\ZANDE1   BRF         1.737  05.02.88  15:23
 
 UF_TO_PC\ =================================================================================
 
-        Dieses Verzeichnis enthÑlt Utilities, um Forth-Quellen fÅr
+        Dieses Verzeichnis enth√§lt Utilities, um Forth-Quellen f√ºr
         Commodore auf Dos-PCs zu nutzen.
 
 UF_TO_PC\CBM.ART
 
-        DatenÅbertragung von Commodore-Plus4 auf den PC        clv03jul89
+        Daten√ºbertragung von Commodore-Plus4 auf den PC        clv03jul89
         Dieser Artikel erschien im Forth Magazin Vierte Dimension 2/1990
-        Er enthÑlt eine Bastelanleitung fÅr die Hardware
-        und die nîtige Software fÅr die serielle DatenÅbertragung vom C16 auf PC
+        Er enth√§lt eine Bastelanleitung f√ºr die Hardware
+        und die n√∂tige Software f√ºr die serielle Daten√ºbertragung vom C16 auf PC
 
 
 UF_TO_PC\CBM      COM        38.628  28.06.89  19:56 CBM.COM
 UF_TO_PC\CBM      SCR         6.144  04.07.89  14:27 CBM.SCR
 
-        AusfÅhrbares Forth-System und Quelle fÅr PC zur Nutzung
-        von Commodore-Quellen unter volksForth 3.8 fÅr PC
+        Ausf√ºhrbares Forth-System und Quelle f√ºr PC zur Nutzung
+        von Commodore-Quellen unter volksForth 3.8 f√ºr PC
 
         Beispiel:
 
@@ -155,7 +155,7 @@ UF_TO_PC\LIST-CBM.BAT            45  28.06.89  16:19 LIST-CBM.BAT
 UF_TO_PC\EPSONCBM.PRN        12.288  28.06.89  15:44 EPSONCBM.PRN
 UF_TO_PC\GRAPHIC.PRN         12.288  23.06.89  14:16 GRAPHIC.PRN
 
-        Treiber fÅr IBM Graphic Printer
+        Treiber f√ºr IBM Graphic Printer
 
 UF_TO_PC\CBM_ST.SCR
 
@@ -173,45 +173,45 @@ ERRHANDL\ERR      ART        16.946  04.07.89  19:37    Artikel
 ERRHANDL\ERR      SCR        18.432  04.07.89  19:14    ultraForth-Quelle
 ERRHANDL\FEHLERBH KON         7.102  01.03.88  19:40    Konzept
 
-        Dieses Verzeichnis enthÑlt einen (unverîffentlichten)
+        Dieses Verzeichnis enth√§lt einen (unver√∂ffentlichten)
         Artikel zum Thema 'Fehlerbehandlung in Forth'
         incl. Quellen.
 
         Es war noch ein kleines Fehlerchen drin und als ich
-        mich das nÑchste Mal drangesetzt habe, war es schon auf PC.
+        mich das n√§chste Mal drangesetzt habe, war es schon auf PC.
 
 
 CLV\ ====================================================================
 
 
 
-CLV\DSK-GRF.487     Image fÅr C16/C64. Unvollendet, ca. 1987
+CLV\DSK-GRF.487     Image f√ºr C16/C64. Unvollendet, ca. 1987
 
-                Tests fÅr die Basis eines Grafikpakets fÅr ultraForth C16.
+                Tests f√ºr die Basis eines Grafikpakets f√ºr ultraForth C16.
                 Das Bankswitching, das etwas anders als auf dem C64
                 organisiert war, machte da érger.
 
 
-CLV\EDIT.           Image fÅr C16/C64. Unvollendet, ca. 1987
+CLV\EDIT.           Image f√ºr C16/C64. Unvollendet, ca. 1987
 
                 Ein selbstgebauter Editor ultraForth 3.8 C16/C64.
-                Er sollte Dateien bearbeiten kînnen. Das konnte
-                er auch, war aber unertrÑglich langsam und
+                Er sollte Dateien bearbeiten k√∂nnen. Das konnte
+                er auch, war aber unertr√§glich langsam und
                 der Cursor war meistens weg ...
 
                 Dann begann auch bei mir zuhause die PC-éra ...
 
 
-CLV\EH-TERM.387     Image fÅr C16/C64
+CLV\EH-TERM.387     Image f√ºr C16/C64
 
                 Scr 5 .. 11 : Fehlerbehandlung 1.Entwurf
                 Scr12 .. 19 : Fehlerbehandlung 2.Entwurf
                 Scr20 .. 27 : Fehlerbehandlung
                 Scr33 .. 37 : Fehlerbehandlung mit tabort" Entwurf
                 Scr45 .. 59 : backup ... r/w
-                Scr60 .. 74 : Terminalprogramm fÅr serielle Schnittschelle
+                Scr60 .. 74 : Terminalprogramm f√ºr serielle Schnittschelle
 
-CLV\MENUE.          Image. Test fÅr ein MenÅsystem ultraForth 3.8. Unvollendet, clv1989
+CLV\MENUE.          Image. Test f√ºr ein Men√ºsystem ultraForth 3.8. Unvollendet, clv1989
 
 
 ====================================================================
@@ -220,7 +220,7 @@ CLV\MENUE.          Image. Test fÅr ein MenÅsystem ultraForth 3.8. Unvollendet, 
 
 ======= UltraForth83 3.8 erschien 1987
 
-        UltraForth83 ist das volksForth fÅr die kleinen Commodore-Rechner
+        UltraForth83 ist das volksForth f√ºr die kleinen Commodore-Rechner
         C16, Plus4 und C64.
 
         UltraForth83 bestand aus ca. 200 Seiten Handbuch in
@@ -228,23 +228,23 @@ CLV\MENUE.          Image. Test fÅr ein MenÅsystem ultraForth 3.8. Unvollendet, 
         - ausgeliefert auf zwei Disketten, die
         mittels Diskettenlocher beidseitig bespielbar wurden.
 
-        UltraForth83 war sicher das beste Forth-System fÅr den C64.
-        FÅr den C16/Plus4 war es die einzige enstzunehmende Programmiersprache
-        Åberhaupt. Sonst existierten dort Basic und Assembler.
+        UltraForth83 war sicher das beste Forth-System f√ºr den C64.
+        F√ºr den C16/Plus4 war es die einzige enstzunehmende Programmiersprache
+        √ºberhaupt. Sonst existierten dort Basic und Assembler.
 
         UltraForth83 ist eine komplette Programmierumgebung
-        Es enthÑlt einen Full-Screen-Editor, einen quelltextnahe Debugger,
+        Es enth√§lt einen Full-Screen-Editor, einen quelltextnahe Debugger,
         den Compiler/Interpreter und einen Assembler.
 
 
         UltraForth83 entspricht dem Forth83-Standard und existiert
-        in Ñhnlichen Versionen auf Atari ST, C16/64/+4, CP/M und PC
+        in √§hnlichen Versionen auf Atari ST, C16/64/+4, CP/M und PC
 
-        Der Name ultraForth wurde gewÑhlt, da auf dem
-        legendÑren C64 kein Programm geklaut
-        wurde, das nicht mindestens Super, Turbo oder eben Ultra hie·.
+        Der Name ultraForth wurde gew√§hlt, da auf dem
+        legend√§ren C64 kein Programm geklaut
+        wurde, das nicht mindestens Super, Turbo oder eben Ultra hie√ü.
 
-        Der Transport vom Netz zum Commodore und zurÅck ist nicht
+        Der Transport vom Netz zum Commodore und zur√ºck ist nicht
         ganz problemlos, daher hier ein paar Anmerkungen zum Format:
 
         - Bei den Images handelt es sich um Sektorkopien kompletter
@@ -252,47 +252,41 @@ CLV\MENUE.          Image. Test fÅr ein MenÅsystem ultraForth 3.8. Unvollendet, 
 
         - Bei den SCR-Dateien handelt es sich um Forth-Quellen im Blockformat.
           volksForth benutzte keine 'normalen' Dateien zur Speicherung von Quellen,
-          sondern Blîcke (Screens) von je 1024 bytes organisiert als
-          16 Zeilen mit je 64 Zeichen oder fÅr Commodore als
+          sondern Bl√∂cke (Screens) von je 1024 bytes organisiert als
+          16 Zeilen mit je 64 Zeichen oder f√ºr Commodore als
           25 Zeilen mit je 41 Zeichen (letzte Zeile nur 40 Zeichen).
 
-        - Bei COM-Dateien handelt es sich um ausfÅhrbare Dateien fÅr DOS-PCs.
+        - Bei COM-Dateien handelt es sich um ausf√ºhrbare Dateien f√ºr DOS-PCs.
 
-        Transport Richtung Commodore-Rechner ist praktisch nur Åber (selbstgebastelte) serielle Verbindungen
-        mîglich. Oft wird es sinnvoller sein, einen Commodore auf dem PC zu emulieren.
+        Transport Richtung Commodore-Rechner ist praktisch nur √ºber (selbstgebastelte) serielle Verbindungen
+        m√∂glich. Oft wird es sinnvoller sein, einen Commodore auf dem PC zu emulieren.
 
 
-======= Zur ErlÑuterung der Blîcke/Screens :
+======= Zur Erl√§uterung der Bl√∂cke/Screens :
 
-        ultraForth/volksForth verwendete wie viele damalige Forth-Systeme statt 'normalen' Dateien Blîcke.
-        Dabei handelt es sich um Disketten/Plattenbereiche fester Grî·e, im Forth-83-Standard
-        von jeweils 1024 bytes. Diese wurden ohne Betriebssystem-UnterstÅtzung auf die Platte geschrieben.
-        Nebenbei werden Forth-Compiler auch heute noch oft als Forth-'Systeme' bezeichnet, da sie ursprÅnglich
+        ultraForth/volksForth verwendete wie viele damalige Forth-Systeme statt 'normalen' Dateien Bl√∂cke.
+        Dabei handelt es sich um Disketten/Plattenbereiche fester Gr√∂√üe, im Forth-83-Standard
+        von jeweils 1024 bytes. Diese wurden ohne Betriebssystem-Unterst√ºtzung auf die Platte geschrieben.
+        Nebenbei werden Forth-Compiler auch heute noch oft als Forth-'Systeme' bezeichnet, da sie urspr√ºnglich
         ohne Betriebssystem liefen und daher leicht auf neue Hardware portiert werden konnten.
 
-        Die Forth-Quellen wurden in solchen Blîcken gespeichert. Sie hie·en auch Screens,
-        da sie mit 16 Zeilen zu je 64 Zeichen einen Bildschirm (fast) ausfÅllen.
+        Die Forth-Quellen wurden in solchen Bl√∂cken gespeichert. Sie hie√üen auch Screens,
+        da sie mit 16 Zeilen zu je 64 Zeichen einen Bildschirm (fast) ausf√ºllen.
 
-        Beim Commodore mit seinem 24x40-Bildschirm wurde ein anderes Format gewÑhlt.
+        Beim Commodore mit seinem 24x40-Bildschirm wurde ein anderes Format gew√§hlt.
         Hier wurden 23 Zeilen zu 41 Zeichen und eine letzte Zeile zu 40 Zeichen benutzt.
-        Das fÅllte den Bildschirm genau aus und bot noch eine (unsichtbare) Spalte mit
+        Das f√ºllte den Bildschirm genau aus und bot noch eine (unsichtbare) Spalte mit
         Leerzeichen.
 
-        Der Plattenzugriff in Blîcken ist leichter zu implementieren.
-        Auf Commodore bot er zusÑtzlich extreme Geschwindigkeitsvorteile.
+        Der Plattenzugriff in Bl√∂cken ist leichter zu implementieren.
+        Auf Commodore bot er zus√§tzlich extreme Geschwindigkeitsvorteile.
 
-        Das Schreiben in Block-Manier fÅhrte positiv zu kurzen Quelltext-Abschnitten und Åbersichtlicher Organisation der
-        Quellen. Zum Problem wurde es, wenn man doch noch ein paar Zeilen einfÅgen wollte.
-        Um einen Block einzuschieben, mu·te man alle anderen Blîcke um eins verschieben.
+        Das Schreiben in Block-Manier f√ºhrte positiv zu kurzen Quelltext-Abschnitten und √ºbersichtlicher Organisation der
+        Quellen. Zum Problem wurde es, wenn man doch noch ein paar Zeilen einf√ºgen wollte.
+        Um einen Block einzuschieben, mu√üte man alle anderen Bl√∂cke um eins verschieben.
         Dies geschah z.B. mit '10 50 11 CONVEY'. Ein Tippfehler und die Quellen waren weg.
-        Die Erinnerung an Convey dÅrfte alte Forthler immer noch erbleichen lassen.
+        Die Erinnerung an Convey d√ºrfte alte Forthler immer noch erbleichen lassen.
         Damit wurden wohl mehr Quellen vernichtet, als mit dem damaligen Dos-DISKCOPY.
-        Letzteres erforderte ungefÑhr 6 Diskettenwechsel. Jede Verwechslung
-        der Disketten fÅhrte zwangslÑufig zu Datenverlust.
-        'Legen Sie die Quelle ins Ziel' war eine gÑngige Verballhornung der Diskcopy-Meldungen.
-
-
-
-
-
-
+        Letzteres erforderte ungef√§hr 6 Diskettenwechsel. Jede Verwechslung
+        der Disketten f√ºhrte zwangsl√§ufig zu Datenverlust.
+        'Legen Sie die Quelle ins Ziel' war eine g√§ngige Verballhornung der Diskcopy-Meldungen.

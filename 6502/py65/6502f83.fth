@@ -20,7 +20,7 @@ ende 123
 
 \ *** Block No. 1, Hexblock 1
 
-\ volksFORTH Loadscreen                              cas 26jan06
+\ volksFORTH Loadscreen for py65 target           cas 15juli2020
 forth definitions
 : (C [compile] ( ; IMMEDIATE  \ : ) ; IMMEDIATE
 
@@ -58,7 +58,7 @@ HERE DUP ORIGIN!
 
 \ *** Block No. 3, Hexblock 3
 
-\ Coldstartvalues and user variables                 cas 26jan06
+\ Coldstartvalues and user variables              cas 15juli2020
 \
 
 0 JMP  0 JSR  HERE 2- >LABEL >WAKE
@@ -67,7 +67,7 @@ HERE DUP ORIGIN!
 0D6 ALLOT
 
 \ Bootlabel
-," VOLKSFORTH-83 3.8 COMPILED 26JAN06CS"
+," VOLKSFORTH-83 3.8 py65 15july2020 CS"
 
 
 
@@ -1692,7 +1692,7 @@ DEFER  NOTFOUND
 
 \ *** Block No. 89, Hexblock 59
 
-\ ?STACK                      08SEP84KS)               11jan13py
+\ ?STACK                      08SEP84KS)          cas 15july2020
 
 | : STACKFULL   ( -- )
  DEPTH 20 > ABORT" TIGHT STACK"
@@ -1702,7 +1702,7 @@ DEFER  NOTFOUND
 CODE ?STACK USER' DP # LDY
       SEC SP    LDA  UP )Y  SBC N STA  INY SP 1+ LDA  UP )Y SBC
   0= ?[ 1 # LDY ;C: STACKFULL ; ASSEMBLER ]?
-     USER' S0 # LDY UP )Y LDA SP    CMP INY
+     USER' S0 # LDY  UP )Y LDA SP    CMP INY
      UP )Y LDA SP 1+ SBC   1 # LDY  CS ?[  NEXT JMP ]?
      ;C: TRUE ABORT" STACK EMPTY" ; -2 ALLOT
 
@@ -2300,7 +2300,7 @@ HOST TARGET
 
 \ *** Block No. 121, Hexblock 79
 
-\ 'COLD                       07JUN85BP)             cas 26jan06
+\ 'COLD                       07JUN85BP)          cas 15juli2020
 | : INIT-VOCABULARYS   VOC-LINK @
      BEGIN  DUP  2- @  OVER 4 - ! @ ?DUP 0= UNTIL ;
 
@@ -2309,7 +2309,7 @@ HOST TARGET
 DEFER  'COLD    ' NOOP IS 'COLD
 
 | : (COLD INIT-VOCABULARYS  INIT-BUFFERS  PAGE 'COLD ONLYFORTH
-     ." volksFORTH-83  REV 3.8" CR   RESTART ; -2 ALLOT
+     ." volksFORTH-83  3.8 py65 202007" CR   RESTART ; -2 ALLOT
 
 DEFER 'RESTART  ' NOOP IS 'RESTART
 | : (RESTART ['] (QUIT IS 'QUIT

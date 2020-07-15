@@ -1,4735 +1,0 @@
-                              clv06jan88 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ Directory of uf-Ed-clv06jan clv02feb88 
-                                         
-                                         
-  3     files                            
-  4     .page in Forth                   
-  5     >scr  CBM-Screencode-Conversion  
-  6     scrAdr curAdr cols rows          
-  7- 9  screen Output-Vektor             
- 10-13  .page in Assembler               
- 16-19  .page 2.versuch                  
- 20     Edi-Test                         
- 40        "                             
- 60        "                             
- 85ff   shadows                          
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ test                        clv12jan88 
-                                         
-                                         
-$100 $100 Task testtask                  
-                                         
-multitask                                
-                                         
-: tt testtask activate                   
-  BEGIN $80 $c00 ctoggle pause REPEAT ;  
-                                         
-\ revers on/off at top left corner       
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ files                       clv20jan88 
-                                         
-| : skp  bus@ drop bus@ drop ;           
-| : wrd  bus@ bus@ $100 * + . ;          
-| : str                                  
-    BEGIN bus@ ?dup WHILE emit REPEAT ;  
-                                         
-: files \ Filename kann folgen           
- (drv @ 8 +                              
- dup 0 busopen                           
- " $0:" count  bustype                   
- bl parse bustype                        
- " *" count bustype                      
- busoff derror? ?exit                    
- dup 0 busin                             
-                                         
- skp skp \ Sector,Zeilenlink             
- BEGIN cr wrd str skp $90 c@ UNTIL       
-                                         
- 0 busclose derror? ?exit ;              
-                                         
-                                         
-                                         
-                                         
-                                        
-\ .line .page in Forth        clv11jan88 
-                                         
-: >count ( ad l ad+ l- --ad+ l- ad cnt)  
-  2swap 2 pick - ;                       
-                                         
-: .line ( adr len col--adr+ len- col)    
-  >r 2dup #cr scan >count                
-  r@ - swap r@ + swap                    
-  0 max cols umin type                   
-  dup IF 1- swap 1+ swap THEN r> ;       
-                                         
-: xpage  0 0 at  $0c00 $400 $2e fill ;   
-                                         
-: .page1 ( adr len col-- adr+ len- col)  
-  xpage  rows 1                          
-  DO .line cr LOOP .line ;               
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ >scr                        clv19jan88 
-                                         
-: Char: Create ;code ( char--char')      
- sp x) lda tax .a lsr .a lsr .a lsr      
- .a lsr .a lsr .a asl tay iny iny        
- txa  iny W )y and  dey W )y ora         
- 0 # ldx sp x) sta                       
- 1 # ldy next jmp  end-code              
-                                         
-Char: >scr (  +--or---+ +---and--+ )     
- ( $0-1f) Ascii .   c,         0 c,      
- ( 20-3f) %00000000 c, %11111111 c,      
- ( 40-5f) %00000000 c, %00011111 c,      
- ( 60-7f) %00000000 c, %01011111 c,      
- ( 80-9f) Ascii .   c,         0 c,      
- ( a0-bf) Ascii .   c,         0 c,      
- ( c0-df) %00000000 c, %01011111 c,      
- ( e0-ff) Ascii .   c,         0 c,      
-                                         
-\needs scrAdr -->                        
-                                         
-\\ : C> Create does> ( char--char')      
-     >r dup 2/ 2/ 2/ 2/ 2/ 2* r> +       
-     dup c@ -rot 1+ c@ and or ;          
-                                        
-\ scrAdr curAdr cols rows     clv11jan88 
-                                         
- $0c00 Constant scrAdr                   
-       Variable curAdr  scrAdr curAdr !  
-   &40 Constant cols                     
-   &25 Constant rows                     
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ screen Output-Vektor        clv11jan88 
-                                         
-                                         
-                                         
-                                         
-\needs >scr   5  load \ CBM-Screencodes  
-                      \ & scrAdr ..      
-            1 2 +thru                    
-                                         
-                                         
-                                         
-                                         
-\\ curon/off muss gepatched werden, da   
-   dummerweise nicht vektorisiert        
-                                         
-' c64key >body      Constant >curon      
-' c64key >body $a + Constant >curoff     
-                                         
-: scrOn  screen keyboard                 
-  ['] scrcur dup >curon ! >curoff !      
-  save ;                                 
-                                         
-: scrOff display [ editor ] ediboard     
-   ['] curon  >curon  !                  
-   ['] curoff >curoff !  save ;         
-\ ..screen..                  clv11jan88 
-                                         
-                                         
-: scrpage scrAdr [ cols rows * ] Literal 
-          bl fill  scrAdr curAdr ! ;     
-                                         
-: scroll                                 
-  scrAdr dup cols + swap                 
-  [ cols rows 1- * ] Literal cmove       
-  [ scrAdr  cols rows 1- * + ] Literal   
-  cols bl fill  cols negate curAdr +! ;  
-                                         
-: ?scroll                                
-  [ scrAdr  cols rows * + ] Literal      
-  curAdr @ - ?exit scroll ;              
-                                         
-: scrcur                                 
-  ?scroll $80 curAdr @ ctoggle ;         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ ..screen                    clv11jan88 
-                                         
-: scrat?    ( --row col)                 
- curAdr @  scrAdr -  cols u/mod  swap ;  
-                                         
-: scrat     ( row col--)                 
- swap  cols * +  scrAdr +  curAdr !      
- ?scroll ;                               
-                                         
-: scrcr scrat? drop 1+ 0 scrat ;         
-                                         
-: scremit ( char--) >scr \ cbmScreenCode 
-  ?scroll curAdr @ c!  1 curAdr +! ;     
-                                         
-: scrtype  ( adr +n--)                   
-  bounds ?DO I c@ scremit LOOP ;         
-                                         
-: scrdel                                 
-  -1 curAdr +! bl scremit -1 curAdr +! ; 
-                                         
-Output: screen                           
- scremit scrcr scrtype scrdel scrpage    
- scrat scrat? ;                          
-                                         
-                                        
-\ .page                       clv14jan88 
-                                         
-Onlyforth                                
-                                         
-\needs >scr   5  load \ CBM-Screencodes  
-                                         
-' >scr >body >Label scrtab               
-                                         
-Label (>scr ( AR=char;char') \ XR<>      
- \ converts char to CBM-Screencode       
- pha .a lsr .a lsr .a lsr .a lsr .a lsr  
- .a asl                                  
- tax pla inx scrtab ,x and               
- dex scrtab ,x ora                       
- rts end-code                            
-                                         
-\  N:curCol  +2:len    +4:adr  +6:actLn  
-\ +8:tmpCol  +a:exitSp YR=col            
-                                         
--->                                      
-                                         
-                                         
-                                         
-                                         
-                                        
-\ (emit  3.vers               clv14jan88 
-                                         
-Label neg ( XR=adr;) \ 2erKompl von adr  
-    sec 0 # lda  0 ,x sbc 0 ,x sta       
-        0 # lda  1 ,x sbc 1 ,x sta rts   
-                                         
-Label pClr ( N+6:curLn,YR=col)           
- \ clears end of Line, exit on screenEnd 
- bl # lda                                
-  [[ cols # cpy 0<>                      
-    ?[[ N 6 + )y sta  iny ]]?            
- clc  cols # lda N 6 + adc  N 6 + sta    
- CS ?[ N 7 + inc ]?  0 # ldy             
- scrAdr cols rows * + $100 u/mod  N 6 +  
- dup 1+ lda  swap # cmp CC ?[ rts ]?     
-        lda       # cmp CC ?[ rts ]?     
- N $a + ldx  txs \ Screen:End reached    
- N 2+ # ldx neg jsr  0 # ldx             
- 3 # lda  \ setback to stack             
- .A asl tay [[ SP dec  dey 0= ?] tay dey 
- [[ N ,y lda  SP )y sta dey 0= ?] iny    
- next jmp end-code                       
--->                                      
-                                         
-                                        
-\ pPut pGet pCol              clv11jan88 
-                                         
-Label pPut ( AR=char;)                   
- \ puts char on screen. Noop if beyond   
- cols # cpy  CC                          
- ?[ (>scr jsr  0 # ldx  N 6 + )y sta iny 
-    ]? rts end-code                      
-                                         
-Label pGet ( ;AR:char,Z:char==#cr)       
- \ char from RAM. Ends Page if exhausted 
- N 4 + winc  N 2+ winc                   
- 0<> ?[ N 4 + x) lda  #cr # cmp rts ]?   
- [[ pClr jsr ]] end-code  \ stream:end   
-                                         
-Label pCol \ skips cols left of screen   
- N 8 + N 2dup  lda sta  1+ lda 1+ sta    
- N 8 +  dup winc  # ldx neg jsr 0 # ldx  
- [[ N 8 + winc 0= ?[ rts ]?              
-    pGet jsr 0=                          
-    ?[ pClr jsr  pCol jmp ]? ]] end-code 
-                                         
-                                         
--->                                      
-                                         
-                                        
-\ .page                       clv14jan88 
-                                         
-Code .page ( adr len col--ad+ len- col)  
-                                         
-\ displays text at adr/len               
-\ interprets #cr,skips col (left of scr) 
-                                         
-\ setup of N... y                        
- 3 # lda  setup jsr  N 2+ # ldx neg jsr  
-\ setup of actLn                         
- N 6 +  ' scrAdr >body  2dup             
-    lda    sta                           
- 1+ lda 1+ sta                           
- tsx  N $a + stx  \ Exit SP              
- 0 # ldx  0 # ldy                        
- N 4 + wdec N 2+ wdec                    
-\ MainLoop                               
- [[ pCol jsr                             
-    [[ pGet jsr 0<> ?[[ pPut jsr ]]?     
-    pClr jsr ]]  end-code                
-                                         
-                                         
-                                         
-                                         
-                                        
-\ .page 2.Versuch mit fOut/In clv25jan88 
-                                         
-Onlyforth                                
-                                         
-\needs >scr   5  load \ CBM-Screencodes  
-                                         
-' >scr >body >Label scrtab               
-                                         
-Label (>scr ( AR=char;char') \ XR<>      
- \ converts char to CBM-Screencode       
- pha .a lsr .a lsr .a lsr .a lsr .a lsr  
- .a asl                                  
- tax pla inx scrtab ,x and               
- dex scrtab ,x ora                       
- rts end-code                            
-                                         
-\  N:scrCol  +2:adr    +4:none  +6:actLn 
-\ +8:tmpCol  +a:exitSp YR=col            
-                                         
--->                                      
-                                         
-                                         
-                                         
-                                         
-                                        
-\ (emit  3.vers               clv25jan88 
-                                         
-Label neg ( XR=adr;) \ 2erKompl von adr  
-    sec 0 # lda  0 ,x sbc 0 ,x sta       
-        0 # lda  1 ,x sbc 1 ,x sta rts   
-                                         
-Label pClr ( N+6:curLn,YR=col)           
- \ clears end of Line, exit on screenEnd 
- bl # lda                                
-  [[ cols # cpy 0<>                      
-    ?[[ N 6 + )y sta  iny ]]?            
- clc  cols # lda N 6 + adc  N 6 + sta    
- CS ?[ N 7 + inc ]?  0 # ldy             
- scrAdr cols rows * + $100 u/mod  N 6 +  
- dup 1+ lda  swap # cmp CC ?[ rts ]?     
-        lda       # cmp CC ?[ rts ]?     
- N $a + ldx  txs \ Screen:End reached    
- SP 2dec  0 # ldx 1 # ldy                
- N 2+ lda  SP x) sta                     
- N 3+ lda  SP )y sta                     
- next jmp end-code                       
--->                                      
-                                         
-                                         
-                                        
-\ pPut pGet pCol              clv25jan88 
-                                         
-Label pPut ( AR=char;)                   
- \ puts char on screen. Noop if beyond   
- cols # cpy  CC                          
- ?[ (>scr jsr  0 # ldx  N 6 + )y sta iny 
-    ]? rts end-code                      
-                                         
-Label pGet ( ;AR:char,Z:char==#cr)       
- \ char from RAM. Ends Page if exhausted 
- N 2+ winc                               
-                                         
- N 2+ lda  fOut cmp 0= \ fOut reached?   
- ?[ N 3 + lda  fOut 1+ cmp 0=            
-    ?[ N 2+ fIn 2dup   \ ..use fIn       
-       lda sta 1+ lda 1+ sta ]? ]?       
- N 2+ lda  fEnd cmp 0= \ fEnd reached?   
- ?[ N 3 + lda  fEnd 1+ cmp 0=            
-    ?[ [[ pClr jsr ]] ]? ]? \ ..clrPg    
- N 2 + x) lda  #cr # cmp                 
- rts end-code                            
--->                                      
-                                         
-                                         
-                                        
-\ .page                       clv29jan88 
-                                         
-Label pCol \ skips cols left of screen   
- N 8 + N 2dup  lda sta  1+ lda 1+ sta    
- N 8 +  dup winc  # ldx neg jsr 0 # ldx  
- [[ N 8 + winc 0= ?[ rts ]?              
-    pGet jsr 0=                          
-    ?[ pClr jsr  pCol jmp ]? ]] end-code 
-                                         
-Code .page2 ( adr col--ad+)              
-\ uses fOut,fIn,fEnd                     
-\ displays text at adr/len               
-\ interprets #cr,skips col (left of scr) 
-\ setup of N...                          
- 2 # lda  setup jsr                      
-\ setup of actLn                         
- N 6 +  ' scrAdr >body  2dup             
- lda sta  1+ lda 1+ sta                  
- tsx  N $a + stx  \ Exit SP              
- 0 # ldx  0 # ldy                        
- N 2 + wdec                              
-\ MainLoop                               
- [[ pCol jsr                             
-    [[ pGet jsr 0<> ?[[ pPut jsr ]]?     
-    pClr jsr ]]  end-code               
-                              clv11jan88 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-                              clv11jan88 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ Edi-Test-3                  clv22feb88 
-                                         
-\ mit Transfers-Luecke, .page in Forth,  
-\ ziemlich langsam                       
-: tt limit $e800 -                       
-  IF $e800 ['] limit >body ! &20 buffers 
-     THEN ;                              
-tt  forget tt                            
-                                         
-Onlyforth                                
-: rl [ blk @ ] Literal l ;               
-                                         
-\needs   memtop  $fd00 Constant memtop   
-                                         
-                  1 +load \ Variables    
-\needs >scr       5  load                
-              2 &19 +thru                
-                                         
-                                         
-\ forget initFile 2 &19 +thru            
-: .x over u. ." :" type ;                
-: .. fBeg @ fOut @ over - .x             
-     fIn @  fEnd @ over - .x cr ;        
-                                         
-                                        
-\ Variables                   clv25jan88 
-                                         
-Variable lastKey                         
-Variable curPos                          
-Variable scrBeg     Variable scrCol      
-                                         
-Variable exitRP                          
-                                         
-Variable tab        \ key-Tab            
-                                         
-                                         
-Create   fName      $20 allot            
-Variable fBeg       Variable fEnd        
-Variable fOut       \ Beginn von room    
-Variable fIn        \ Ende   von room    
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ edi-test info               clv25jan88 
-                                         
-: wait    BEGIN key? UNTIL ;             
-                                         
-                                         
-: sat cols 1- min swap rows 1- min swap  
-  at ;                                   
-: .at 0 10 at 2dup swap . . ." AT" sat ; 
-Defer 'at   ' .at Is 'at                 
-                                         
-: wderror?  derror? dup IF wait THEN ;   
-Defer 'derror?  ' wderror? Is 'derror?   
-                                         
-: .v ( adr--) base push hex cr dup       
-  @ 5 u.r ."  " 2- >name .name ." !" ;   
-: .i  cr .s  curPos .v scrCol .v fbeg .v 
-  scrbeg .v fOut .v fIn .v fend .v       
-  cr fbeg @ 1- c@ . fend @ @ . cr ;      
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ fileOut/In                  clv25jan88 
-                                         
-: fType ( from u --)                     
-  fOut @ 2dup +  ( fr u fOut@ fOut@+u )  
-  dup fIn @ u> abort" no room"  fOut !   
-  ( fr u fOut@) swap cmove ;             
-: fEmit ( char--)  sp@ 1 fType drop ;    
-: fCr   #cr fEmit ;                      
-: fDel  fOut @ 1- fBeg @ umax fOut ! ;   
-: fPage                                  
-  fBeg @ fOut @ over - ( from count)     
-  over fIn @ fOut @ - + swap cmove>      
-  fBeg @  dup fOut !                     
-  fIn @ fOut @ -  +  fIn ! ;             
-: fAt 2drop ;       : fAt? 0.0 ;         
-Output: fileOut                          
- fEmit fCr fType fDel fPage fAt fAt? ;   
-                                         
-: fKey? ( --flag) fIn @ fEnd @ u< ;      
-: fKey  ( -- 8b)                         
-  fKey? IF fIn @ c@  1 fIn +! exit THEN  
-  $1a ;                                  
-Input: fileIn                            
- fKey fKey? c64decode c64expect ;        
-                                        
-\ tva cr? fe?                 clv30jan88 
-                                         
-\needs Code .( ??! Code ??!) quit        
-Assembler                                
-\needs wcmp .( ??! wcmp[debug] ??!) quit 
-                                         
-Code cr? ( adr--adr flag)                
- SP x) lda N sta SP )y lda N 1+ sta      
- N x) lda  #cr # cmp 0<> ?[              
-Label (fe?                               
- N  fEnd  wcmp       CC  ?[              
- N  fBeg  wcmp       CS  ?[              
-   0 # lda  pushA jmp  ]? ]? ]?          
- $ff # lda  pushA jmp   end-code         
-Code fe?                                 
- SP x) lda N sta SP )y lda N 1+ sta      
- (fe? jmp                                
-Code c?  ( adr--adr flag)                
- SP x) lda N sta  SP )y lda N 1+ sta     
- N  fIn   wcmp       CC  ?[              
- N  fOut  wcmp       CS  ?[              
-   0 # lda  pushA jmp  ]? ]?             
- $ff # lda  pushA jmp   end-code         
-                                         
-                                        
-\ c? bl? ..< ..>              clv30jan88 
-                                         
-\ fuer Laufzeitmessung:                  
-: cr? cr? ; : fe? fe? ; : c? c? ;        
-                                         
-( adr--adr flag)                         
-: bl? cr? over c@ bl = or ; \ space      
-                                         
-( adr--adr)                              
-: c<  1- c? ?exit drop fOut @ 1- ;       
-: c>  1+ c? ?exit drop fIn  @ ;          
-: bl> BEGIN c> bl? not UNTIL ;           
-: cr> c> ;                               
-: w<  BEGIN c< bl? UNTIL ; \ word        
-: w>  BEGIN c> bl? UNTIL ;               
-: l<  BEGIN c< cr? UNTIL ; \ line        
-: l>  BEGIN c> cr? UNTIL ;               
-: p>  rows 0 DO l> LOOP ;                
-: p<  rows 0 DO l< LOOP ;                
-                                         
-: l<? ( cur--cur col) dup dup l< 1+ - ;  
-\\                                       
-: fe? dup fBeg @ fEnd @ uwithin not ;    
-: cr? dup c@ #cr = swap fe? or ;         
-: c?  dup fOut @ fIn @ uwithin not ;    
-\ initFile                    clv30jan88 
-                                         
-: initFile $100 \ cursorRoom             
-  fBeg @ 2dup +  over fEnd @ swap -      
-  cmove>                                 
-  fBeg @  dup fOut !  over + fIn !       
-  fEnd +!  $0d0d fEnd @ !                
-  fOut @ curPos ! ;                      
-                                         
-: moveroom ( curAdr --)                  
-  dup curPos ! c? not IF drop exit THEN  
-  fOut @ u<                              
-  IF curPos @  fIn @ fOut @ - curPos @ + 
-     fOut @ curPos @ -                   
-     dup negate dup fOut +!  fIn +!      
-     cmove>                              
-  ELSE fIn @  fOut @  curPos @ fIn @ -   
-     dup        dup fOut +!  fIn +!      
-     fOut @ curPos !  cmove THEN ;       
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ baseMovements               clv25jan88 
-                                         
-: <<  ( --curAdr)  curPos @ ;            
-: >>  ( curAdr--)                        
-      fBeg @ umax fEnd @ umin moveroom ; 
-                                         
-                                         
-\ : c+  ( col+ cur-)                     
-\     1- l> >> << l< 1+ + ;              
-                                         
-: <<c ( --col lin)                       
-      << dup l< under - swap ;           
-: c>> ( col lin--) l> >> << l< + >> ;    
-: c+  ( col lin col+--col lin)           
-      rot + swap ;                       
-: c=  ( col lin col=--col lin)           
-      swap rot drop ;                    
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ executables                 clv28jan88 
-                                         
-( --)                                    
-                                         
-: begLn  <<  l< cr>  >> ;                
-: endLn  <<  l>  >> ;                    
-: up     <<c l<  c>> ;                   
-: down   <<c l>  c>> ;                   
-: lastPg <<c p<  c>> ;                   
-: nextPg <<c p>  c>> ;                   
-: begPg  <<c drop scrBeg @ c>> ;         
-: endPg  <<c drop scrBeg @ p> l< c>> ;   
-: beg    <<c drop fBeg @ c< c>> ;        
-: end    <<c drop fEnd @ l< c>> ;        
-: right  <<c  1 c+ c>> ;                 
-: left   <<c -1 c+ c>> ;                 
-                                         
-: begScr <<c scrCol @ c= c>> ;           
-: endScr <<c scrCol @ cols + 1- c= c>> ; 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ ..exe                       clv28jan88 
-                                         
-: doChar  << dup fOut @ - 0 max 0        
-          ?DO bl fEmit LOOP              
-          lastKey @ fEmit c> >> ;        
-: backDel curPos @  fOut @ =             
-          IF fdel THEN left ;            
-: delChar right backDel ;                
-: exitEd  exitRp @ rp! ;                 
-: info    at? 5 0 at                     
-          2dup swap cr . . ."  at" .i    
-          wait at ;                      
-: help    tab @ BEGIN count WHILE        
-             dup @ >name .name 2+ REPEAT 
-          drop wait ;                    
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ leer                        clv28jan88 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ writeFile readFile          clv25jan88 
-                                         
-Onlyforth                                
-                                         
-: writeFile  0 (drv !                    
- 8 2 busopen  fName count bustype        
- " ,p,w" count bustype  busoff           
- 'derror? ?exit                          
- 8 2 busout   0 0  bus! bus!             
- fEnd @ fBeg @                           
- BEGIN 2dup - WHILE                      
-       dup c@ bus! c> REPEAT busoff      
- 8 2 busclose 'derror? ?exit ;           
-                                         
-: readFile   0 (drv !                    
- 8 2 busopen  fName count bustype        
- " ,p,r" count bustype  busoff           
- 'derror? ?exit fBeg @                   
- 8 2 busin   bus@ drop bus@ drop         
- BEGIN bus@ over c! 1+ $90 c@ UNTIL      
- fEnd ! busoff                           
- 8 2 busclose 'derror? ?exit initFile ;  
-                                         
-                                         
-                                        
-\ files                       clv25jan88 
-                                         
-| : skp  bus@ drop bus@ drop ;           
-| : wrd  bus@ bus@ $100 * + . ;          
-| : str                                  
-    BEGIN bus@ ?dup WHILE emit REPEAT ;  
-                                         
-: files \ Filename kann folgen           
- (drv @ 8 +                              
- dup 0 busopen                           
- " $0:" count  bustype                   
- bl parse bustype                        
- " *" count bustype                      
- busoff derror? ?exit                    
- dup 0 busin                             
- skp skp \ Sector,Zeilenlink             
- BEGIN cr wrd str skp $90 c@ UNTIL       
- 0 busclose 'derror? ?exit wait ;        
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ loadFile                    clv28jan88 
-                                         
-\\ noch alt                              
-                                         
-: fLine  #tib @ >tib @ + 1+              
-  dup fEnd @ u> IF drop rdrop exit THEN  
-  dup 1- l> over - #tib !  >tib !        
-  >in off ;                              
-: .fLine                                 
-  cr >tib @ dup 5 u.r space              
-  #tib @ type space ;                    
-                                         
-: xx                                     
-  >tib push  #tib push >in push r0 push  
-  ['] 'quit >body push                   
-  ['] unnest Is 'quit                    
-  ['] .status >body push                 
-  rp@ r0 ! page                          
-  ['] .fLine Is .status                  
-  curPos @ >tib ! -1 #tib !              
-  BEGIN fLine .status interpret REPEAT ; 
-                                         
-: loadFile                               
-  curPos ! >r xx r> curPos @ wait ;      
-                                        
-\ fconvey                     clv28jan88 
-                                         
-\ noch ungetestet                        
-                                         
-: fConvey ( [from to]--)                 
-  1+ swap     \ curPos @ -rot            
-  ?DO rows 0                             
-      DO #cr fEmit                       
-         J block  I c/l * +  c/l fType   
-         LOOP 1 fDel LOOP ( drop ) ;     
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ .page 4.Ver Forth           clv30jan88 
-                                         
-: pPut ( char--)                         
-  >scr curAdr @ c!  1 curAdr +! ;        
-                                         
-: pSpc ( u--) \ puts u spaces            
-  curAdr @ over bl fill curAdr +! ;      
-                                         
-: leap  rdrop rdrop rdrop rdrop ;        
-                                         
-: .line ( col adr--col ad+)              
-  over 0 ?DO c> cr?                      
-             IF cols pSpc leap THEN LOOP 
-  cols 0  DO c> cr?                      
-             IF cols I - pSpc leap THEN  
-             dup c@  pPut LOOP l> ;      
-                                         
-: .page  ( adr col--ad+)                 
-  \ interprets cr,skips cols left of scr 
-  scrAdr curAdr !                        
-  swap  rows 0 DO .line LOOP nip ;       
-                                         
-\ -&21 #entries +! forget pPut 0 4 +thru 
-                                         
-                                        
-\ redraw show                 clv29jan88 
-                                         
-: redraw curPos @                        
-  BEGIN scrBeg @ scrCol @ .page          
-        over u< WHILE                    
-        dup p< scrBeg ! REPEAT drop ;    
-                                         
-: cursor curPos @                        
-        scrBeg @    -1 -rot              
-        BEGIN rot 1+ -rot                
-              l> 2dup u< UNTIL           
-        drop l<? scrCol @ -              
-        rot swap ( col+ @ + ) 'at drop ; 
-: ?sR?  curPos @                         
-        l<? ( col+ @ + ) dup cols - 1+   
-        scrCol @ max min scrCol ! drop ; 
-: ?sB?  curPos @ scrBeg @  u> ?exit      
-        curPos @ l< scrBeg ! ;           
-: show  ?sB? ?sr? key? ?exit             
-        redraw    key? ?exit cursor ;    
-                                         
-\ 0 3 +thru                              
-                                         
-                                         
-                                        
-\ maintab                     clv25jan88 
-                                         
-: A+ [compile] Ascii + ;                 
-: Ctr -$40 A+ ;  : Cbm $60 A+ ;          
-: Ct+  $40 A+ ;                          
-: => c, ' , ;                            
-                                         
-Create maintab  \ <key> c, ' word ,      
-  Ctr ] => right      Ct+ ] => left      
-  Ctr q => down       Ct+ q => up        
-  Ctr u => begLn      Ctr i => endLn     
-  Ctr h => begPg      Ctr j => endPg     
-  Ctr g => lastPg     Ctr k => nextPg    
-  Ctr b => beg        Ctr n => end       
-  Ctr f => files    \ Ctr l => loadFile  
-  Ctr c => exitEd                        
-  Ctr t => backDel    Ctr d => delChar   
-  Ctr w => writeFile  Ctr r => readFile  
-  Ctr o => info                          
-  Ctr p => help                          
-  Ctr [ => redraw   \ ESC                
-      0 => doChar                        
-\ 0 2 +thru                              
-                                         
-                                        
-\ editop                      clv30jan88 
-                                         
-: dokey                                  
-  lastKey @   tab @ 3 -                  
-  BEGIN 3+ dup c@ WHILE 2dup c@ = UNTIL  
-  nip 1+ @ execute ;                     
-                                         
-: editop                                 
-  rp@  exitRP ! \ fuer exitEd            
-  maintab tab !                          
-  BEGIN                                  
-    key? 0= IF show THEN                 
-    key lastKey ! dokey REPEAT ;         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ edi3 test                   clv22feb88 
-                                         
-: init                                   
-  limit 1+                               
-  dup fBeg !    dup fEnd !               
-  dup curPos !                           
-  drop                                   
-  $0d fBeg @ 1- c!                       
-  0 scrCol !  fBeg @ 1- scrBeg !         
-  initFile ;                             
-                                         
-: red  editop                            
-  page ." end of edit" ;                 
-: edit bl parse $20 umin fName place     
-  init ( readFile ) red ;                
-                                         
-\needs new  \\                           
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ Edi-Test-1                  clv22feb88 
-\ ohne read/write                        
-: tt limit $e000 -                       
-  IF $e000 ['] limit >body !  20 buffers 
-     THEN ;                              
-                                         
-tt  forget tt                            
-                                         
-                                         
-Onlyforth                                
-                                         
-\needs   memtop  $fd00 Constant memtop   
-                                         
-\needs .page  &10  load                  
-                1 +load \ Variables ..   
-              &12 +load \ Test           
-            2 &10 +thru                  
-              &11 +load \ Test           
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ Variables                   clv14jan88 
-                                         
-Variable curPos  Variable scrCol         
-Variable scrBeg  Variable scrEnd         
-Variable fBeg    Variable fEnd           
-                                         
-Variable xroom   Variable xroomlen       
-Variable tab                             
-                                         
-Variable col+                            
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ room                        clv11jan88 
-                                         
-                                         
-: ?enough ( n--n)                        
-  dup xroomlen @ > abort" no room" ;     
-                                         
-: ?range ( adr n -- adr n)               
-  over xroom @ u> abort" beyond room" ;  
-  \ kriegt spaeter die verschieberei     
-: decroom ( n--n)                        
-  dup fEnd  +!                           
-  dup xroom +!  dup negate xroomlen +! ; 
-                                         
-: room ( adr n -- adr n)                 
-  ?enough ?range 2dup over +             
-  ( ad n ad=fr ad'=to )                  
-  xroom @ 2 pick - move ( adr n)         
-  decroom ;  \\                          
-: room ( adr n -- adr)                   
-  ?enough ?range                         
-  2dup + -rot >r   ( ad'=to ad)          
-  xroom @ over - ( ad' ad=fr cnt)        
-  2 pick swap move ( ad' )               
-  r> decroom ;                           
-                                        
-\ insert back                 clv14jan88 
-                                         
-: fType ( adr from u -- adr')            
-  swap >r  room                          
-  2dup r> -rot cmove  + ;                
-                                         
-: fEmit ( adr char--adr')                
-  >r rp@ 1 fType rdrop ;                 
-                                         
-: fDel ( adr u -- adr')                  
-  2dup -  fBeg @ u< ( a u a'<beg? )      
-  IF drop  dup fBeg @ -  0 min THEN      
-  negate room  + ;                       
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ cursor-movement             clv14jan88 
-                                         
-( adr--adr')                             
-\ setzt #cr vor und nach File voraus     
-                                         
-: ?b  fBeg @ umax ; : ?e  fEnd @ umin ;  
-                                         
-Code (cr>                                
- sp x) lda  N sta   sp )y lda  N 1+ sta  
- #cr # lda [[ N winc  N x) cmp 0= ?]     
- N lda  sp x) sta   N 1+ lda  sp )y sta  
- next jmp end-code                       
-Code (cr<                                
- sp x) lda  N sta   sp )y lda  N 1+ sta  
- [[ N wdec  #cr # lda N x) cmp 0= ?]     
- N lda  sp x) sta   N 1+ lda  sp )y sta  
- next jmp end-code                       
-                                         
-: cr<  ?b (cr< ;    : cr>  ?e (cr> ;     
-: pg<       rows    0 DO cr< LOOP ;      
-: pg>    1- rows 1- 0 DO cr> LOOP ;      
-\\                                       
-: cr<    ?b BEGIN 1- cr? UNTIL ;         
-: cr>    ?e BEGIN 1+ cr? UNTIL ;         
-                                        
-\ move-Base                   clv14jan88 
-                                         
-: leftchars ( adr--adr u)                
-  dup dup cr< 1+ - ;                     
-: rightchars ( adr--adr u)               
-  dup 1- cr> over - ;                    
-                                         
-: savCol dup dup cr< -  col+ +! ;        
-: useCol dup cr> over - col+ @ over -    
-         dup 0< IF + 0 THEN col+ ! + ;   
-: noCol  col+ off ;                      
-: cr? ( adr--adr flag) dup c@ #cr = ;    
-: ?eL ?e dup 1- cr> fEnd @ - ?exit cr< ; 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-\\                                       
-\ 0 6 +thru                              
-                                         
-                                         
-                                         
-                                        
-\ executables                 clv14jan88 
-                                         
-( rp char adr--rp char adr')             
-                                         
-: begLn  noCol cr< 1+ ;                  
-: endLn  noCol 1- cr> ;                  
-: up     savCol cr< cr<    useCol ;      
-: down   savCol 1- cr> ?eL useCol ;      
-                                         
-: lastPg savCol pg<     useCol ;         
-: nextPg savCol pg> ?eL useCol ;         
-: begPg savCol drop scrBeg @ 1- useCol ; 
-: endPg  begPg nextPg ;                  
-: beg    savCol drop fBeg @ 1- useCol ;  
-: end    savCol drop fEnd @ cr< useCol ; 
-: right  cr? IF 1 col+ +! ELSE 1+ THEN ; 
-: left   col+ @                          
-         IF -1 col+ +! ELSE 1- ?b THEN ; 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ ..exe                       clv14jan88 
-                                         
-: doChar  col+ @ 0  ?DO bl fEmit LOOP    
-          noCol  over fEmit ;            
-: backDel col+ @                         
-          IF left ELSE 1 fDel THEN ;     
-: delChar right backDel ;                
-                                         
-: wait key drop ;                        
-                                         
-: exitEd  nip swap rp! ;                 
-: info    at? 5 0 at                     
-          2dup swap cr . . ."  at" .i    
-          wait at ;                      
-: help    tab @ BEGIN count WHILE        
-             dup @ >name .name 2+ REPEAT 
-          drop wait ;                    
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ redraw show                 clv14jan88 
-                                         
-: redraw BEGIN scrBeg @ fEnd @ over -    
-         scrCol @ .page drop drop        
-         over u< WHILE                   
-         dup pg< 1+ scrBeg ! REPEAT ;    
-( adr--adr')                             
-: cursor \ dup curPos ! \ test           
-        scrBeg @ 1-   -1 -rot            
-        BEGIN rot 1+ -rot                
-              cr> 2dup u> not UNTIL      
-        drop leftchars scrCol @ -        
-        rot swap col+ @ + 'at ;          
-: ?sR?  leftchars col+ @ + dup cols - 1+ 
-        scrCol @ max min scrCol ! ;      
-: ?sB?  dup scrBeg @  u< not ?exit       
-        dup begLn scrBeg ! ;             
-: show  ?sB? ?sr? redraw  cursor ;       
-                                         
-\\                                       
-: ?sE?  scrBeg @ pg> over u> ?exit       
-        dup pg< 1+ scrBeg ! ;            
-: show  ?sB? ?sr? ?se? redraw cursor ;   
-\ 0 3 +thru                              
-                                        
-\ maintab                     clv14jan88 
-                                         
-: A+ [compile] Ascii + ;                 
-: Ctr -$40 A+ ;  : Cbm $60 A+ ;          
-: Ct+  $40 A+ ;                          
-: => c, ' , ;                            
-                                         
-Create maintab  \ <key> c, ' word ,      
-  Ctr ] => right      Ct+ ] => left      
-  Ctr q => down       Ct+ q => up        
-  Ctr u => begLn      Ctr i => endLn     
-\ Ctr y => lastLn     Ctr o => nextLn    
-  Ctr h => begPg      Ctr j => endPg     
-  Ctr g => lastPg     Ctr k => nextPg    
-  Ctr b => beg        Ctr n => end       
-                                         
-  Ctr c => exitEd                        
-  Ctr t => backDel  \ del-Taste          
-  Ctr d => delChar                       
-  Ctr e => info                          
-  Ctr w => help                          
-  Ctr r => redraw                        
-      0 => doChar                        
-\ 0 2 +thru                              
-                                        
-\ editop                      clv14jan88 
-                                         
-: dokey ( adr char --adr)                
-  tab @ 3 -                              
-  BEGIN 3+ dup c@ WHILE 2dup c@ = UNTIL  
-  1+ @ ( adr char cfa )                  
-  >r swap r> execute nip ;               
-                                         
-: editop ( adr--adr)                     
-  rp@  swap   \ fuer exitEd              
-  BEGIN                                  
-    key? 0= IF show THEN                 
-    key maintab tab ! dokey REPEAT ;     
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ edi1 test                   clv14jan88 
-                                         
-                                         
-: init limit $e000 u> abort" limit!!"    
-                                         
-  0 dup scrCol !  col+ !                 
-  limit 1+                               
-  dup scrBeg !  dup scrEnd !             
-  dup fBeg !    dup fEnd !               
-  dup curPos !                           
-                                         
-  $0d fBeg @ 1- c!  $0d0d fEnd @ !       
-                                         
-  dup $2 + xroom !                       
-  memtop xroom @ -  xroomlen !           
-  drop                                   
-  ;                                      
-                                         
-: red  curPos @ editop curPos !          
-  page ." end of edit" ;                 
-: edit init red ;                        
-                                         
-                                         
-                                         
-                                        
-\ edi1test info               clv14jan88 
-                                         
-Defer 'at                                
-                                         
-: sat cols 1- min swap rows 1- min swap  
-  at ;                                   
-                                         
-: .at 0 10 at 2dup swap . . ." AT" sat ; 
-' sat Is 'at                             
-                                         
-: nc curoff begin stop? until ;          
-                                         
-: .v ( adr--) base push hex  cr          
-  dup @ 5 u.r ."  " 2- >name .name ." !" 
-  ;                                      
-                                         
-: .i  cr .s                              
-      scrCol .v                          
-      fbeg .v  scrbeg .v                 
-      scrend .v fend .v                  
-      xroom .v  xroomlen .v  col+ .v     
-      cr fbeg @ 1- c@ . fend @ @ .       
-  cr ;                                   
-                                         
-                                        
-                              clv20jan88 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-                              clv20jan88 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-                              clv20jan88 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-                              clv20jan88 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-                              clv20jan88 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-                              clv20jan88 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ edi1test info               clv20jan88 
-                                         
-Defer 'at                                
-                                         
-: sat cols 1- min swap rows 1- min swap  
-  at ;                                   
-                                         
-: .at 0 10 at 2dup swap . . ." AT" sat ; 
-' sat Is 'at                             
-                                         
-: nc curoff begin stop? until ;          
-                                         
-: .v ( adr--) base push hex  cr          
-  dup @ 5 u.r ."  " 2- >name .name ." !" 
-  ;                                      
-                                         
-: .i  cr .s                              
-      curPos .v                          
-      scrCol .v                          
-      fbeg .v  scrbeg .v                 
-      fend .v                            
-      xroom .v  xroomlen .v  col+ .v     
-      cr fbeg @ 1- c@ . fend @ @ .       
-  cr ;                                   
-                                        
-\ Edi-Test-3                  clv22feb88 
-                                         
-\ schnell, obwohl room am Ende           
-                                         
-: tt limit $e000 -                       
-  IF $e000 ['] limit >body !  20 buffers 
-     THEN ;                              
-                                         
-tt  forget tt                            
-                                         
-                                         
-Onlyforth                                
-                                         
-\needs   memtop  $fd00 Constant memtop   
-                                         
-\needs .page  &10  load                  
-            1 &19 +thru                  
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ Variables                   clv20jan88 
-                                         
-Variable curPos  Variable scrCol         
-Variable scrBeg  \ Variable scrEnd       
-Variable col+                            
-                                         
-Create   fName   $20 allot               
-Variable fBeg    Variable fEnd           
-Variable fPos                            
-                                         
-Variable exitRP                          
-                                         
-Variable xroom   Variable xroomlen       
-Variable tab                             
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ room                        clv11jan88 
-                                         
-                                         
-: ?enough ( n--n)                        
-  dup xroomlen @ > abort" no room" ;     
-                                         
-: ?range ( adr n -- adr n)               
-  over xroom @ u> abort" beyond room" ;  
-  \ kriegt spaeter die verschieberei     
-: decroom ( n--n)                        
-  dup fEnd  +!                           
-  dup xroom +!  dup negate xroomlen +! ; 
-                                         
-: room ( adr n -- adr n)                 
-  ?enough ?range 2dup over +             
-  ( ad n ad=fr ad'=to )                  
-  xroom @ 2 pick - move ( adr n)         
-  decroom ;  \\                          
-: room ( adr n -- adr)                   
-  ?enough ?range                         
-  2dup + -rot >r   ( ad'=to ad)          
-  xroom @ over - ( ad' ad=fr cnt)        
-  2 pick swap move ( ad' )               
-  r> decroom ;                           
-                                        
-\ fType/Emit/Del              clv20jan88 
-                                         
-: initRoom   fEnd @                      
-  $0d0d over !   $2 + xroom !            
-  memtop xroom @ -  xroomlen ! ;         
-                                         
-                                         
-                                         
-: fType ( adr from u -- adr')            
-  swap >r  room                          
-  2dup r> -rot cmove  + ;                
-                                         
-: fEmit ( adr char--adr')                
-  >r rp@ 1 fType rdrop ;                 
-                                         
-: fDel ( adr u -- adr')                  
-  2dup -  fBeg @ u< ( a u a'<beg? )      
-  IF drop  dup fBeg @ -  0 min THEN      
-  negate room  + ;                       
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ fKey/fExpect/fDecod         clv20jan88 
-                                         
-\\ noch unfertig:                        
-                                         
-: fPtr? ( --adr) fPos @ ;                
-: fKey? ( --flag) fPtr? fEnd @ u< ;      
-: fKey  ( -- 8b)                         
-  fKey? IF fPtr? c@ ELSE oldIn THEN ;    
-: c64decode                              
- ( addr cnt1 key -- addr cnt2)           
-  #bs case?  IF  dup  IF del 1- THEN     
-                            exit  THEN   
-  #cr case?  IF  dup span ! exit THEN    
-  >r  2dup +  r@ swap c!  r> emit  1+ ;  
-                                         
-: c64expect ( addr len1 -- )             
- span !  0                               
- BEGIN  dup span @  u<                   
- WHILE  key  decode                      
- REPEAT 2drop space ;                    
-                                         
-Input: fIn                               
- c64key true c64decode c64expect ;       
-                                         
-                                        
-\ edi1test info               clv20jan88 
-                                         
-Defer 'at                                
-                                         
-: sat cols 1- min swap rows 1- min swap  
-  at ;                                   
-                                         
-: .at 0 10 at 2dup swap . . ." AT" sat ; 
-' sat Is 'at                             
-                                         
-: nc curoff begin stop? until ;          
-                                         
-: .v ( adr--) base push hex  cr          
-  dup @ 5 u.r ."  " 2- >name .name ." !" 
-  ;                                      
-                                         
-: .i  cr .s                              
-      curPos .v                          
-      scrCol .v                          
-      fbeg .v  scrbeg .v                 
-      fend .v                            
-      xroom .v  xroomlen .v  col+ .v     
-      cr fbeg @ 1- c@ . fend @ @ .       
-  cr ;                                   
-                                        
-\ cursor-movement             clv14jan88 
-                                         
-( adr--adr')                             
-\ setzt #cr vor und nach File voraus     
-                                         
-: ?b  fBeg @ umax ; : ?e  fEnd @ umin ;  
-                                         
-Code (cr>                                
- sp x) lda  N sta   sp )y lda  N 1+ sta  
- #cr # lda [[ N winc  N x) cmp 0= ?]     
- N lda  sp x) sta   N 1+ lda  sp )y sta  
- next jmp end-code                       
-Code (cr<                                
- sp x) lda  N sta   sp )y lda  N 1+ sta  
- [[ N wdec  #cr # lda N x) cmp 0= ?]     
- N lda  sp x) sta   N 1+ lda  sp )y sta  
- next jmp end-code                       
-                                         
-: cr<  ?b (cr< ;    : cr>  ?e (cr> ;     
-: pg<       rows    0 DO cr< LOOP ;      
-: pg>    1- rows 1- 0 DO cr> LOOP ;      
-\\                                       
-: cr<    ?b BEGIN 1- cr? UNTIL ;         
-: cr>    ?e BEGIN 1+ cr? UNTIL ;         
-                                        
-\ move-Base                   clv20jan88 
-                                         
-: leftchars ( adr--adr u)                
-  dup dup cr< 1+ - ;                     
-: rightchars ( adr--adr u)               
-  dup 1- cr> over - ;                    
-                                         
-: savCol dup dup cr< -  col+ +! ;        
-: useCol dup cr> over - col+ @ over -    
-         dup 0< IF + 0 THEN col+ ! + ;   
-: noCol  col+ off ;                      
-: cr? ( adr--adr flag) dup c@ #cr = ;    
-: ?eL ?e dup 1- cr> fEnd @ - ?exit cr< ; 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ executables                 clv20jan88 
-                                         
-( char adr-- char adr')                  
-                                         
-: begLn  noCol cr< 1+ ;                  
-: endLn  noCol 1- cr> ;                  
-: up     savCol cr< cr<    useCol ;      
-: down   savCol 1- cr> ?eL useCol ;      
-                                         
-: lastPg savCol pg<     useCol ;         
-: nextPg savCol pg> ?eL useCol ;         
-: begPg savCol drop scrBeg @ 1- useCol ; 
-: endPg  begPg nextPg ;                  
-: beg    savCol drop fBeg @ 1- useCol ;  
-: end    savCol drop fEnd @ cr< useCol ; 
-: right  cr? IF 1 col+ +! ELSE 1+ THEN ; 
-: left   col+ @                          
-         IF -1 col+ +! ELSE 1- ?b THEN ; 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ ..exe                       clv21jan88 
-                                         
-: doChar  col+ @ 0  ?DO bl fEmit LOOP    
-          noCol  over fEmit ;            
-: backDel col+ @                         
-          IF left ELSE 1 fDel THEN ;     
-: delChar right backDel ;                
-                                         
-: wait BEGIN key? UNTIL ;                
-                                         
-: exitEd  curPos ! drop exitRp @ rp! ;   
-: info    at? 5 0 at                     
-          2dup swap cr . . ."  at" .i    
-          wait at ;                      
-: help    tab @ BEGIN count WHILE        
-             dup @ >name .name 2+ REPEAT 
-          drop wait ;                    
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ leer                        clv20jan88 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ writeFile                   clv20jan88 
-                                         
-Onlyforth                                
-                                         
-: writeFile                              
- 8 2 busopen  fName count bustype        
- " ,p,w" count bustype  busoff           
- derror? ?exit                           
- 8 2 busout   0 0  bus! bus!             
- fBeg @ fEnd @ over - bustype  busoff    
- 8 2 busclose                            
- 0 (drv ! derror? ?exit ;                
-                                         
-: readFile                               
- 0 (drv !                                
- 8 2 busopen  fName count bustype        
- " ,p,r" count bustype  busoff           
- derror? ?exit fBeg @                    
- 8 2 busin   bus@ drop bus@ drop         
- BEGIN bus@ over c! 1+ $90 c@ UNTIL      
- fEnd ! busoff                           
- 8 2 busclose derror? ?exit initroom ;   
-                                         
-                                         
-                                        
-\ leer                        clv20jan88 
-                                         
-                                         
-| : skp  bus@ drop bus@ drop ;           
-| : wrd  bus@ bus@ $100 * + . ;          
-| : str                                  
-    BEGIN bus@ ?dup WHILE emit REPEAT ;  
-                                         
-: files \ Filename kann folgen           
- (drv @ 8 +                              
- dup 0 busopen                           
- " $0:" count  bustype                   
- bl parse bustype                        
- " *" count bustype                      
- busoff derror? ?exit                    
- dup 0 busin                             
-                                         
- skp skp \ Sector,Zeilenlink             
- BEGIN cr wrd str skp $90 c@ UNTIL       
- 0 busclose derror? ?exit ;              
-                                         
-                                         
-                                         
-                                         
-                                        
-\ leer                        clv20jan88 
-                                         
-: fLine  #tib @ >tib @ + 1+              
-  dup fEnd @ u> IF drop rdrop exit THEN  
-  dup 1- cr> over - #tib !  >tib !       
-  >in off ;                              
-                                         
-: .fLine                                 
-  cr >tib @ dup 5 u.r space              
-  #tib @ type space ;                    
-                                         
-: xx                                     
-  >tib push  #tib push >in push r0 push  
-  ['] 'quit >body push                   
-  ['] unnest Is 'quit                    
-  ['] .status >body push                 
-  rp@ r0 ! page                          
-  ['] .fLine Is .status                  
-  curPos @ >tib ! -1 #tib !              
-  BEGIN fLine .status interpret REPEAT ; 
-                                         
-: loadFile                               
-  curPos ! >r xx r> curPos @ wait ;      
-                                         
-                                        
-\ leer                        clv20jan88 
-                                         
-: fConvey ( [from to]--)                 
-  1+ swap  curPos @ -rot                 
-  ?DO rows 0                             
-      DO #cr fEmit                       
-         J block  I c/l * +  c/l fType   
-         LOOP 1 fDel LOOP drop ;         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ redraw show                 clv20jan88 
-                                         
-: redraw BEGIN scrBeg @ fEnd @ over -    
-         scrCol @ .page drop drop        
-         over u< WHILE                   
-         dup pg< 1+ scrBeg ! REPEAT ;    
-                                         
-( adr--adr')                             
-                                         
-: cursor \ dup curPos ! \ test           
-        scrBeg @ 1-   -1 -rot            
-        BEGIN rot 1+ -rot                
-              cr> 2dup u> not UNTIL      
-        drop leftchars scrCol @ -        
-        rot swap col+ @ + 'at ;          
-: ?sR?  leftchars col+ @ + dup cols - 1+ 
-        scrCol @ max min scrCol ! ;      
-: ?sB?  dup scrBeg @  u< not ?exit       
-        dup begLn scrBeg ! ;             
-: show  ?sB? ?sr? redraw  cursor ;       
-                                         
-                                         
-                                         
-                                         
-                                        
-\\ leer \\\\\\\\\\\\\\\\\\\\\ clv21jan88 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\                                      \ 
-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-\ maintab                     clv21jan88 
-                                         
-: A+ [compile] Ascii + ;                 
-: Ctr -$40 A+ ;  : Cbm $60 A+ ;          
-: Ct+  $40 A+ ;                          
-: => c, ' , ;                            
-                                         
-Create maintab  \ <key> c, ' word ,      
-  Ctr ] => right      Ct+ ] => left      
-  Ctr q => down       Ct+ q => up        
-  Ctr u => begLn      Ctr i => endLn     
-  Ctr h => begPg      Ctr j => endPg     
-  Ctr g => lastPg     Ctr k => nextPg    
-  Ctr b => beg        Ctr n => end       
-  Ctr f => files      Ctr l => loadFile  
-  Ctr c => exitEd                        
-  Ctr t => backDel    Ctr d => delChar   
-  Ctr w => writeFile  Ctr r => readFile  
-  Ctr o => info                          
-  Ctr p => help                          
-\ Ctr ? => redraw                        
-      0 => doChar                        
-\ 0 2 +thru                              
-                                         
-                                        
-\ editop                      clv20jan88 
-                                         
-: dokey ( adr char --adr)                
-  tab @ 3 -                              
-  BEGIN 3+ dup c@ WHILE 2dup c@ = UNTIL  
-  1+ @ ( adr char cfa )                  
-  >r swap r> execute nip ;               
-                                         
-: editop                                 
-  rp@  exitRP ! \ fuer exitEd            
-  curPos @                               
-  BEGIN                                  
-    key? 0= IF show THEN                 
-    key maintab tab ! dokey REPEAT ;     
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ edi3 test                   clv21jan88 
-                                         
-: init limit $e000 u> abort" limit!!"    
-                                         
-  0 dup scrCol !  col+ !                 
-  limit 1+                               
-  dup scrBeg !                           
-  dup fBeg !    dup fEnd !               
-  dup curPos !                           
-  drop                                   
-  $0d fBeg @ 1- c!                       
-  initroom ;                             
-                                         
-                                         
-: red  editop                            
-  page ." end of edit" ;                 
-: edit bl parse $20 umin fName place     
-  init readFile red ;                    
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-                              clv20jan88 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ editop                      clv13jan88 
-                                         
-: dokey ( char--)                        
-  tab @ 3 -                              
-  BEGIN 3+ dup c@ WHILE 2dup c@ = UNTIL  
-  1+ @ ( char cfa ) execute drop ;       
-                                         
-                                         
-: (editop                                
-  rp@ exitRp ! \ fuer exitEd             
-  BEGIN key dokey REPEAT ;               
-                                         
-                                         
-: editop                                 
-  tab push  maintab tab !                
-  show   \ Task initialisieren           
-  (editop                                
-  noshow ;                               
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ leer                        clv06jan88 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-0ï°E$±Â%lá' QU<°Ö$±Ö%•…Öê
-Ê°E$±Â%∞lâlå( ˝>“+ãU\( )0>“
-+§É\( 70<>“+ôâ\( fU>“+ã\( v
-=“+…ô\( ≈D0=“+ô\( ”D=“+µıŸ
-\( ÉD<“+È…Ñ -  ¬ ﬁ\“+9
-Ñ ãÄ\) îMIN“+È-µ\) EMAX“+È
-Uµ\) WIB“+\!"\; W!QUERY“+›!
-pW?
-Q!"o!;∏!˜D!˜\< Á!SCAN“+P∏Ñˇ ÙJ
-…Ñ «ã#ã¬‰ˇ9\< "SKIP“+P∏Ñ
-ˇ ÙJ…Ñ «ã#ã¬‰ˇ9\< ;"/STRIN
-G“+ÙˇÙ˜z…\IaêI{∞I¬ê)ﬂI[∞	Ä`=
-  "CAPITAL©"° Ü"Ål	 > ù"
-CAPITALIZED"°
-Ö$±Ö%°$Ö&àD&P†l	¬Óˇ\0 ≥FREPEAT“+
-F˝6!¬Q\0 ÌEUNTIL“+F˝6!ÑQ\1 B
-DO“+6!…ˇ¶P\1 C?DO“+6!‹ˇ¶P\1 1DLO
-OP“+P˝6!Jˇ6!πˇΩ\1 eE+LOOP“+P˝6!˚ˇ6
-!πˇΩ\1 `ÖLEAVE“+πˇÔÖ∏"˜P\2 ‹U
-M*†±Ö$°Ö%HÜ&Ü'¢'&&&%&$ê±≈'Ö'H±à≈
-&Ö&êÊ%PÊ$JP|•'ëH•&ë†•$ë•…ÖêÊl
-	  ﬂCTOGGLE“+‹Jnã‰\ˇ @$°Ö$±
-Ö%±$ë°$l ˇ !=°Ö$±Ö%H±Å$H±†ë$l
-Ùˇ 7+!]°Ö$±Ö%H±¡$Å$H±†—$lo v
-DROPù ŸSWAPç±™†±Ö$äë•$†ëH¢ ±
-Ö$°ëà•$l  ÑDUP∫•8ÈÖ∞F†±†ë
-H±àl  ≤?DUPﬂ°Pl	 l∫ VOVERˆ
-
- û(4112)    ÍlaÍl9al¥P J6 ◊ÆPÆT≠√
-  
- VcŸ¡®3t                            
-                                         
-                                         
-                                         
-                                         
-                                       
-    .*ultraFORTH-83 3.80-C16+ çˇˇ±Ö≠ˇˇ
-Ö•…Ö∞ÃˇˇÊ∞˘   	END-TRACE≈©•Ö©Ö
-©…Ö©Öl	  wRECOVER.*»Ö»Ö•PFFl
-“+ ⁄NOOP	  ôORIGINø+ §S0<, ≥
-R0<,
- ΩDP<, GOFFSET<, QBASE<
-, ﬂOUTPUT<, ÎINPUT<, ˘ERROR
-HANDLER<, VOC-LINK<, ˇUDP<,ˇ *
-SP@=•Ö$•Ö%¢$•8ÈÖ∞Fµëµ ¢ l  5
-SP!«°™±ÖÜ¢ l	  _UP@¢lg ◊É
-UP!é¢±ïà±ï ¢ †•…ÖêÊl	  ÜRP
-@µ¢lg ≠ÉRP!D¢lê ºÇ>RR•8ÈÖ∞
-F°Å±ëlù KÇR>Ò•8ÈÖ∞F°Å±
-ë©≈ÖêÊl	  ÍR@•8ÈÖ∞F±ë°
-l  ÖRDROP 1EXITf°Ö±Öl =
-UNNEST^°Ö±Öl s?EXIT’°•
-…ÖêÊ(Pæl	  ÀEXECUTEô°Ö±Ö•…
-ÖêÊl  çPERFORM“+"ó\ ±C@L°Ö
-$±Ö%© ë°$l  EC!Ê°Ö$±Ö%H±Å$à•
-5Äwith”hadowsÄ>ramdiská4of4Å61Å63Çno”ha
-dowsÄ>ramdiská4of4Ä138Ä143Çno”hadowsÄ>ram
-diská3of4Å46Å46Äwith”hadowsÄ>ramdiskánowÄ
->fileˇC-->ìµ \Ä..makecopyÄ2of4åclv20nov8
-7©nowÄrddelÅ"Ä1Äuf-quelle"ÄnewŒameá2of4Ç0
-Å30Çno”hadowsÄ>ramdiskánowÄ>fileHnowÄrdde
-lÅ"Ä2Äuf-qaitÄdisk#Ä1of4Ä...àclv20nov87
-©:ÄwaitÄkeyÄdropÄ;Ä\ÄwartetÄaufÄtaste≠÷ar
-iableÄlastdisk¿:ÄbitteÄcrÄ."ÄbitteÄ"Ä;ë:Ä
-reinÅ."Åeinlegen!"ÄkeyÄdropÄ;∞:Ädisk:Å√re
-ateÄlastÄ@Ä,ôƒoes>Ä@ÄdupÄlastdiskÄ@Ä-ê…∆Ä
-bitteÄdupÄ.nameÄreinÄ‘»≈ŒålastdiskÄ!Ä;ædi
-sk:ÄfilefloppyÇdisk:Ä1of4ãdisk:Ä2of4Ådi
-sk:Ä3of4Ådisk:Ä4of4≠:ÄnodiskÄlastdiskÄoff
-Ä;Änodiskä:Ädisk#Å0.0ÄlastdiskÄ@ÄconvertÄ
-2dropÄ;™:ÄsourcetapeÄbitteÄ."Ä—uell-‘ape"
-ÄreinÄ;Ä:ÄdesttapeÇbitteÄ."Ä⁄ielÄ-‘ape"Är
-einÄ;∞ \Ä>ramdiskÄ>fileçclv20nov87©:Ä.s
-crsÉ(ÄfÄtÄ--)ñcrÄlastdiskÄ@Ä.nov87©»ier
-ÄistÄderÄ(fast)ÄkompletteÄÀopier-Évorgang
-ÄvonÄƒisketteÄrevÄ3.8ÄaufàÀassetteÄnieder
-gelegt.ªƒasÄÀopierenÄistÄeineÄleidigeÄ”ac
-he,ÑichÄhoffe,ÄichÄhabeÄnichtsÄvergessen.
-¨∆allsÄ…hrÄdenkt,ÄdassÄetwasÄaufÄ≈urerÉÀa
-ssetteÄfehlt,ÄgucktÄbitteÄhierÄnach.Çƒer
-Äsupertape"ÄnewŒameÖ4of4Ä32Ä50Äwith”had
-owsÄ>ramdiskânowÄ>fileHnowÄrddelÅ"Äramdis
-k"ÄnewŒameã4of4Ä21Ä31Äwith”hadowsÄ>ramdis
-kânowÄ>fileHnowÄrddelÅ"Ätape"ÄnewŒameé4of
-4Å0Å5Äwith”hadowsÄ>ramdiskâ4of4Ä13Ä20Äwit
-h”hadowsÄ>ramdiskânowÄ>fileHnowÄrddelÅ"Äd
-ecompiler"delÅ"Äinfos"ÄnewŒameç1of4Å0Ä1
-3Äwith”hadowsÄ>ramdiskâ2of4Å0Ä1Éno”hadows
-Ä>ramdiskâ3of4Å0Ä1Éno”hadowsÄ>ramdiskâ4of
-4Å0Ä1Éno”hadowsÄ>ramdiskânowÄ>fileHnowÄrd
-delÅ"Ädisk"ÄnewŒameé1of4Ä26Ä36Äwith”hadow
-sÄ>ramdiskânowÄ>fileHnowÄrddelÅ"Äkleinkra
-m"ÄnewŒameâ1of4Å14Å2.multitasker"Ödocop
-yÜnowÅ"Ä“ƒ.printer"âdocopyÜnowÅ"Ä“ƒ.c16Äs
-upertape"ÉdocopyÜnowÅ"Ä“ƒ.ramdisk"âdocopy
-ÜnowÅ"Ä“ƒ.tape"ådocopyÜnowÅ"Ä“ƒ.decompile
-r"ÜdocopyÜnowÅ"Ä“ƒ.c64Ä1-grafik"ÑdocopyÜn
-owÅ"Ä“ƒ.c64Ä2-grafik"ÑdocopyÜnowÅ"Ä“ƒ.c64
-Ägrafdemo"ÑdocopyÜnowÄ;AØ \ÄwameïswapÄ
-.Ä.†¡sciiÄ"Äemitú[Ä“amdiskÄ]ÄidÄ1+Ä&16Äty
-peé¡sciiÄ"ÄemitÄ;A:Ä>ramdiskÄ(Ä[fromÄto]Ä
-shadow∆lag--)Ü>rÄ2dupÄ.scrsõoverÄdisk#Äbl
-k/drvÄ*Ä+Är>è…∆Ä."Äshadows"Äsconveyï≈Ã”≈Ä
-conveyÄ‘»≈ŒÄ;∫:Ä>fileÅfilefloppyÄsaveramd
-iskÄ;\\õclv21nov87©ƒieÄwichtigstenÄ◊
-veyÄ;G'ÄtrueÅ¡liasÄwith”hadowsè'ÄfalseÄ
-¡liasÇno”hadowsÆ ≠ \Ä»elpóclv20nov87©”ieÄ
-sindÄimÄ≈ditor!!AverlassemÄmit:Ä<run/stop
->êaufrufenÄmit:ÄÃÄ(Äscr--)òz.¬.:Ä1ÄÃæŒaec
-hsteÄ”eite:Ä<ctrl>+ŒívorigeÄ”eite:Ä<ctrl>
-+¬í”hadow-”eite:Ä<ctrl>+◊É \\ÄzuÄ‘ape-√
-opyéclv20newŒameå3of4Ä47Ä56Äwith”hadows
-Ä>ramdiskânowÄ>fileHnowÄrddelÅ"Ämultitask
-er"ÄnewŒameá3of4Ä57Ä62Äwith”hadowsÄ>ramdi
-skânowÄ>fileHnowÄrddelÅ"Äprinter"ÄnewŒame
-ã3of4Ä63Ä84Äwith”hadowsÄ>ramdiskânowÄ>fil
-eH-->À∑ \Ä..makecopyÄ4of4Ä1.‘eilÑcclv20n
-ov87©nowÄrddelÅ"Äc16	f4Åclv20nov87´2Å6Ä+
-thruÅ\ÄkleinkramÄladen€floppyÄ\ÄwirdÄnach
-herÄaufÄ‘apeÄgespult´:ÄmakecopyÄ\Äkopiert
-ÄalleÄƒiskettenÖnowÅ0ÄdriveúbaseÄpushÄdec
-imaló[Ä“amdiskÄ]ùlimitÄ$c000Äu>Äabort"Äno
-Äroom"ä$c000ÄmemtopÄrdnewˇˇˇ∞-->®¥ \Ä..m
-akecopyÄ1of4åclv20nov87©nowÄrd
-owÅ"Ä“ƒ.k
-leinkram"ádocopyÜnowÅ"Ä“ƒ.1Äuf-quelle"Ödo
-copyÜnowÅ"Ä“ƒ.2Äuf-quelle"ÖdocopyÜnowÅ"Ä“
-ƒ.3Äuf-quelle"ÖdocopyÜnowÅ"Ä“ƒ.4Äuf-quell
-e"ÖdocopyÜnowÅ"Ä“ƒ.5Äuf-quelle"ÖdocopyÜno
-wÅ"Ä“ƒ.assembler"ádocopyÜnowÅ"Ä“ƒ.editor"
-ädocopyÜnowÅ"Ä“ƒ.tracer"ädocopyÜnowÅ"Ä“ƒ
-orteÄsind:∏makecopyÄ-ÄerzeugtÄausÄdemÄ”
-creen-â∆ormatÄderÄ4Äƒisk-”eitenÄ“amdisks,
-ÜdieÄwiederÄaufÄƒisketteÄstehen∞copy>tape
--ÄkopiertÄdieÄ”ystem-∆ilesàundÄdieÄ“amdis
-k-∆ilesÄvonèƒisketteÄaufÄÀasette∫∆uerÄbei
-desÄbrauchtÄ…hrÄeinçƒiskettenlaufwerkæ-->
-\æ \Ätapetã…∆ÄcompileÄ(disk"Ä,"ó≈Ã”≈Än
-"Ä(diskÄ‘»≈ŒÄ;ÄimmediateÆ\\Äz.¬.§disk"Äs:
-file"Å\ÄloeschtÄfileZ Æ \ÄsconveyÄwith/no
-”hadowsÖclv19nov87©:ÄsconveyÄ(Ä[fromÄto]Ä
-destination--)Ü2ÄpickÅ2ÄpickÅ2Åpickëconve
-y¢[Ä≈ditorÄ]ÄshadowÄ@Ä>rír@Ä+ÄrotÅr@Ä+Äro
-tÅr@Ä+Ärotårdrop£conowsÄ>ramdiskánowÄ>f
-ileÒ-->™∂ \Ä..makecopyÄ3of4åclv20nov87©n
-owÄrddelÅ"Äassembler"ÄnewŒameâ3of4Å2Ä13Äw
-ith”hadowsÄ>ramdiskânowÄ>fileHnowÄrddelÅ"
-Äeditor"ÄnewŒameå3of4Ä14Ä18Äwith”hadowsÄ>
-ramdiskâ3of4Ä19Ä45Äwith”hadowsÄ>ramdiskân
-owÄ>fileHnowÄrddelÅ"Ätracer"ÄnnÄbeiÄein
-emÄdieserÄ◊orteÄetwasáschiefÄgeht,Äbesteh
-tÄdieÄÕoeglichkeitÉanÄderÄ”telle,ÄwoÄderÄ
-∆ehlerÄauftratÑfortzufahren.ÄƒazuÄdientÄd
-aså◊ort:Q√œŒ‘ÒaberÄ÷orsicht:Ä◊ennÄihrÄetw
-asãveraendertÄhabt,ÄkannÄ√œŒ‘…Œ’≈ÄdasÜnic
-htÄwissen.ı ≥ \ÄkopierenÄaufÄ“amdisksÄ1o
-diskâ4of4Ä90Ä100Åno”hadowsÄ>ramdiskânow
-Ä>fileHnowÄrddelÅ"Äc64Ägrafdemo"ÄnewŒameÜ
-4of4Ä144Ä164Åno”hadowsÄ>ramdiskà165Äbinar
-yû4of4Ä165Ä169Åno”hadowsÄ>ramdiskànowÄ>fi
-leHnowÄ;iø \Ä..tapecopyëclv20nov87©super
-tapeHnowÅ"Ä“ƒ.infos"ãdocopyÜnowÅ"Ä“ƒ.disk
-"ådocopyÜn                               
-                                         
-                                         
-                                         
-                                         
-                                         
-                     ˇ  bv16h4††††††††††
-                tv††††††††††††††         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\\ zu Files                   clv06jan88 
-                                         
-SKP ignoriert 2 bytes                    
-WRD gibt 2 bytes als Zahl aus            
-STR gibt einen 0-terminated string aus   
-                                         
-Kanal-Nummer 0 gibt die aufbereitete     
- Version der Directory.                  
-                                         
-Der Rest ist auch zur Ausgabe jedes      
- Basic-Files brauchbar, da gleichs Form. 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-           Ä1 @$Ë' =´  ˇ ˇ ˇ RD.maket2 
-                      ®¥ \Ä..makecopyÄ1o
-f4åclv20nov87©nowÄrddelÅ"Äinfos"ÄnewŒameç
-1of4Å0Ä13Äwith”hadowsÄ>ramdiskâ2of4Å0Ä1Én
-o”hadowsÄ>ramdiskâ3of4Å0Ä1Éno”hadowsÄ>ram
-diskâ4of4Å0Ä1Éno”hadowsÄ>ramdiskânowÄ>fil
-eHnowÄrddelÅ"Ädisk"Ä2Åno”hadowsÄ>ramdis
-kânowÄ>fileHnowÄrddelÅ"Äc64Ä2-grafik"Änew
-ŒameÜ4of4Ä64Å89Åno”hadowsÄ>ramdiskâ4of4Ä9
-0Ä100Åno”hadowsÄ>ramdiskânowÄ>fileHnowÄrd
-delÅ"Äc64Ägrafdemo"ÄnewŒameÜ4of4Ä144Ä164Å
-no”hadowsÄ>ramdiskà165Äbinaryû4of4Ä165Ä16
-9Åno”hadowsÄ>ramdiskànowÄ>file0Å5Äwith”
-hadowsÄ>ramdiskâ4of4Ä13Ä20Äwith”hadowsÄ>r
-amdiskânowÄ>fileHnowÄrddelÅ"Ädecompiler"Ä
-newŒameà4of4Ä51Ä60Çno”hadowsÄ>ramdiskânow
-Ä>fileˇÏ-->”∏ \Ä..makecopyÄ4of4Ä2.‘eilÑc
-clv20nov87©nowÄrddelÅ"Äc64Ä1-grafik"ÄnewŒ
-ameÜ4of4Å0Ç1Åno”hadowsÄ>ramdiskâ4of4Å6Å1
-oomÉroomÄoff∏:ÄdocopyÄ(ÄstringÄ--)ïroom
-Ä@ÄswapÄ2dupòfromÅcountÄbloadÄswapítoÉcou
-ntÄbsaveÄ;Â:Äeot•$1000Ä$1001Ä"Äend-of-tap
-e"Äcountà3ÄpickÄ3ÄpickÄ3ÄpickÄ3Äpickç$020
-7ÄcsaveÄderr?Ädropí$0201ÄcsaveÄderr?Ädrop
-ê;â± \Ä>fileÄnewŒameÄ>ramdiskÖclv05dec87
-©:ÄnewŒameÄ(Ästring--)ï[Ä“amdiskÄ]ÄidÄ4
-Ä+Ä&28ÄblÄfilläcountÄ&28ÄuminÄ[Ä“amdiskÄ]
-ÄidÄ4Ä+áswapÄcmoveÄ;Ï:Ä.scrsÉ(ÄfÄtÄ--)ñcr
-ÄlastdiskÄ@Ä.nameïswapÄ.Ä.†¡sciiÄ"Äemitú[
-Ä“amdiskÄ]ÄidÄ1+Ä&16Ätypeé¡sciiÄ"ÄemitÄ;A
-:Ä>ramdiskÄ(Ä[fromÄto]Äshadow∆lag--)Ü>rÄ2
-dupÄ.scrsõoverÄdisk#with”hadowsÄ>ramdis
-kânowÄ>fileH-->À∑ \Ä..makecopyÄ4of4Ä1.‘e
-ilÑcclv20nov87©nowÄrddelÅ"Äc16Äsupertape"
-ÄnewŒameÖ4of4Ä32Ä50Äwith”hadowsÄ>ramdiskâ
-nowÄ>fileHnowÄrddelÅ"Äramdisk"ÄnewŒameã4o
-f4Ä21Ä31Äwith”hadowsÄ>ramdiskânowÄ>fileHn
-owÄrddelÅ"Ätape"ÄnewŒameé4of4ÅÄ(disk"Ä"
-litÄcountÄ(diskÄ;Ärestrict≠:Ädisk"ÅstateÄ
-@Ä\ÄstringÄfolgtã…∆ÄcompileÄ(disk"Ä,"ó≈Ã”
-≈Än"Ä(diskÄ‘»≈ŒÄ;ÄimmediateÆ\\Äz.¬.§disk"
-Äs:file"Å\ÄloeschtÄfile0≤ \ÄdocopyÄroomÄ
-fromÄtoÄeofÑclv03dec87©ƒeferÄfromÅ'ÄnoopÄ
-…sÄfroméƒeferÄtoÉ'ÄnoopÄ…sÄtoπ÷ariableÄr
-
-Äblk/drvÄ*Ä+Är>è…∆Ä."Äshadows"Äsconveyï
-≈Ã”≈ÄconveyÄ‘»≈ŒÄ;∫:Ä>fileÅfilefloppyÄsav
-eramdiskÄ;Z ∞ \ÄsconveyÄwith/no”hadowsÖcl
-v19nov87©:ÄsconveyÄ(Ä[fromÄto]Ädestinatio
-n--)Ü2ÄpickÅ2ÄpickÅ2Åpickëconvey¢[Ä≈ditor
-Ä]ÄshadowÄ@Ä>rír@Ä+ÄrotÅr@Ä+ÄrotÅr@Ä+Ärot
-årdrop£con14Ä18Äwith”hadowsÄ>ramdiskâ3o
-f4Ä19Ä45Äwith”hadowsÄ>ramdiskânowÄ>fileHn
-owÄrddelÅ"Ätracer"ÄnewŒameå3of4Ä47Ä56Äwit
-h”hadowsÄ>ramdiskânowÄ>fileHnowÄrddelÅ"Äm
-ultitasker"ÄnewŒameá3of4Ä57Ä62Äwith”hadow
-sÄ>ramdiskânowÄ>fileHnowÄrddelÅ"Äprinter"
-ÄnewŒameã3of4Ä63Ä84ÄpyãnowÄ"Äc16ultrafo
-rth83"ÄdocopyãnowÄ"Äc64ultraforth83"Ädoco
-pyãnowÄ"Äc16demo"àdocopyãnowÄ"Äc64demo"àd
-ocopyãeot•nowÄ;%¨ \Ädisk"ïcclv20nov87©:Ä
-(diskÇ(ÄaddrÄlen--)ó\ÄsendetÄdenÄstringÄa
-nÄdieÄƒiskÖ8Ä&15ÄbusopenÄbustypeÄbusoffåd
-error?Ädropú8Ä&15ÄbuscloseÄ;ø:veyÄ;G'Ät
-rueÅ¡liasÄwith”hadowsè'ÄfalseÄ¡liasÇno”ha
-dowsœ Æ \ÄnowÄcontãclv03decclv05dec87©÷ar
-iableÄlastnowA:ÄnowÇr@ÄlastnowÄ!Ä;í:Äcont
-ÅlastnowÄ@Ä>rÄ;ªhereÄ2-ÄlastnowÄ!≠ \Äre
-locatingÄtheÄsystemá20oct87re©‹Ä:Ärelocat
-e-tasksÅ(Änew’–Ä--Ä)âup@Ädup°¬≈«…ŒÅ1+Äun
-4Å91Ä120Çno”hadowsÄ>ramdiskánowÄ>fileHn
-owÄrddelÅ"Ä5Äuf-quelle"ÄnewŒameá2of4Ä121Ä
-169Çno”hadowsÄ>ramdiskánowÄ>fileÒ-->™∂ \
-Ä..makecopyÄ3of4åclv20nov87©nowÄrddelÅ"Äa
-ssembler"ÄnewŒameâ3of4Å2Ä13Äwith”hadowsÄ>
-ramdiskânowÄ>fileHnowÄrddelÅ"Äeditor"Änew
-Œameå3of4Ä	copyÜnowÅ"Ä“ƒ.c64Ä1-grafik*"É
-docopyÜnowÅ"Ä“ƒ.c64Ä2-grafik*"ÉdocopyÜnow
-Å"Ä“ƒ.c64Ägrafdemo*"ÉdocopyÜnowÅ"Ä“ƒ.make
-tape*"ádocopyÜ-->Ú º \Ä..copy>tapeÄsystem
-∆ilesÑclv21nov87©[']ÄfloppyÄ…sÄfromñ[']Äs
-upertapeÄ…sÄtoænowÄ"Äc16tapeforth83"Ådoco
-py¥nowÄ"Ärunme"ädocoderÄ@Ä2dupÄ-ê◊»…Ã≈Å
-rotÄdropÅ“≈–≈¡‘Å2dropÄ!Ä;Æ:ÄrelocateÅ(Äst
-acklenÄrstacklenÄ--Ä)ÑswapÅoriginÄ+ö2dupÄ
-+Äb/bufÄ+Ä2+ÅlimitÄu>éabort"Äbuffers?"ódu
-pÇpadÅ$100Ä+Åu<Äabort"Ästack?"ÑoverÅudpÄ@
-Ä$40Ä+Åu<Äabort"Ärstack?"ÉflushÄemptyùund
-erÅ+ÇoriginÄ$¡Ä+Ä!á\Är0ÑdupÄrenowÄrddel
-Å"Ä1Äuf-quelle"ÄnewŒameá2of4Ç0Å30Çno”hado
-wsÄ>ramdiskánowÄ>fileHnowÄrddelÅ"Ä2Äuf-qu
-elle"ÄnewŒameá2of4Å31Å60Çno”hadowsÄ>ramdi
-skánowÄ>fileHnowÄrddelÅ"Ä3Äuf-quelle"Änew
-Œameá2of4Å61Å90Çno”hadowsÄ>ramdiskánowÄ>f
-ileHnowÄrddelÅ"Ä4Äuf-quelle"ÄnewŒameá2of
-                              clv06jan88 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-ausä[[Äp√assÄldaÄ$10Ä#ÄandÅz¬itÄcmpÄ0<>
-Ä?]Åz¬itÄstaÄtimer¬”tartÄjsrê$17Ä#ÄldaÄsn
-d√ÄstaÄ\Ä”oundÄeinäz¬yteÄldaÄrtsÄend-code
-∫√odeÄjustageùclslÄ#ÄldaÅclcÅinitsÄjsrè[[
-ß0Ç#ÄldaÅsndÄstaÅ\Äfalschå[[ÄbitÃesenÄjsr
-Äc”ync¬yteÄ#ÄcmpÄ0=Ä?]É$ffÄ#ÄldaÅsndÄstaÅ
-\Ärichtigã)ácrÄ.(Ätape>diskÄ\ÄkopiertÄn
-urÄ“amdisks!)©‹Ä:ÄrcopyÅ(Äblk--)ôblk/drvÄ
-u/modÄ#diskïdupÄ1Ä>driveÄswapÄ0Ä>driveÄco
-pyÄ;¨:Äramdisk>Ä(Ä--)ô[Ä“amdiskÄ]Ärdö¬≈«…
-ŒÄdupÄ@Ä+ÄdupÄ@Ä◊»…Ã≈ê(ÄadrÄ)ÄdupÄ2+Ä@Ärc
-opyÄ“≈–≈¡‘ädropÄ;J:Ätape>diskü¬≈«…ŒÄloadr
-amdiskÄramdisk>Ä“≈–≈lv05dec87ˇ§’tilityÄ
-zurÄƒisksteuerungˇˇÖ”creen-ƒisksÖaufÄ∆ile
--ƒisk≤∆ile-ƒiskàaufÄ‘apeé“amdisksÄvonÄ‘ap
-eÄaufÄ”creen-ƒisksØ≈rstellenÄdesÄ‘ape≈´ 
-\ÄƒirectoryÄmaketapeâclv05dec87©ƒieseÄ“am
-diskÄdientÄkopierenåaufÄÀassette.Ddisk"è2
-írelocateå3ínowÄcontå4ílastdis ?üplaÄpla
-†ÃabelÄexitsûx√assÕotorœffÄjsrÅx√ass–rtœf
-fÄjsrÜcliÄramÄxyŒextÄjmpH \Äjustageîclv
-03dec87©ÃabelÄbitÃesenÄ\Äakt.¬yteÄinÄ¡“Äz
-urueckÇ$10Ä#ÄldaÄ[[Äptimer¬ctrlÄbitÄ0<>Ä?
-]Öp√assÄldaÅ$10Ä#ÄandÅz¬itÄcmpä0<>Ä?[Äclc
-Ä]?áz¬itÄstaã$10Ä#ÄldaÄsnd√ÄstaÄ\Ä”oundÄ
-\\ altlasten                  cclv1jan88 
-                                         
-Code >scr ( char--char')                 
- sp x) lda tay .a lsr .a lsr .a lsr      
- .a lsr .a lsr .a asl                    
- tax tya inx scrtab ,x and               
- dex scrtab ,x ora 0 # ldx sp x) sta     
- 1 # ldy next jmp  end-code              
-                                         
-                                         
-                                         
-: t  $18 0 at  $100 0                    
-  DO cr I dup . dup emit                 
-    >scr dup .     $fc8 c!   LOOP ;      
-\\                                       
-: t0 $80 0 DO $100 0 DO I                
- (  9 sec)    noop  drop LOOP LOOP ;     
-: t1 $80 0 DO $100 0 DO I                
- ( 60 sec)    >scr  drop LOOP LOOP ;     
-: t2 $80 0 DO $100 0 DO I                
- ( 10 sec)  cbm>scr  drop LOOP LOOP ;    
-: t3 $80 0 DO $100 0 DO I                
- ( 10 sec)     >scr3 drop LOOP LOOP ;    
-                                         
-                                        
-Ädrop∂emptyÄ-1Ä+loadÅrunme&tonkopfãempt
-yÅ1Ä+loadÅtestsignaléemptyÄ\needsÄrelocat
-eÄ3ÄloadµdecimalÉ'ÄtapeinitÄ…sÄ'restartás
-upertapeÅsavesystemÄultraforth83"ÆemptyÄ&
-16ÄloadÄcopy>tape4ˇ \\ÄzuÄmaketapeèclv03
-dec87©»ierÄistÄderÄ(fast)ÄkompletteÄÀopie
-r-ÉvorgangsonstigeÄ”ystemadressen¥$07c8
-â>ÃabelÄs‘ime∂\äÀonstantenª$b5Ä>ÃabelÄcls
-lô$ffÄ>ÃabelÄclsshÉ$78Ä>ÃabelÄclsslÑ$16Ä>
-ÃabelÄc”ync¬yteHG \ÄwaitÄdelayÄinits/exà
-clv03dec87©ÃabelÄwaitü$10Ä#ÄldaÄ[[Äp‘imer
-¬√trlÄbitÄ0<>Ä?]ÑÃabelÄtimer¬”tartòs‘imeÄ
-ldaâp‘imer¬ÖstaÖ0Ç#ÅoomÄ@Äu>Äabort"ÄnoÄ
-room"≤[']ÄfloppyÄ…sÄfromñ[']ÄsupertapeÄ…s
-ÄtoÁ-->EØ \ÄlastdiskÄwaitÄdisk#Ä1of4Ä...
-clv05dec87©÷ariableÄlastdisk¿:ÄwaitÄkeyÄd
-ropÄ;Ä\ÄwartetÄaufÄtaste≠:ÄbitteÄcrÄ."Äbi
-tteÄ"Ä;ë:ÄreinÅ."Åeinlegen!"ÄkeyÄdropÄ;∞:
-Ädisk:Å√reateÄlastÄ@Ä,ôƒoes>Ä@code≠C \
-Ämaketapeìclv05dec87©:Ätest§$8800ÄlimitÄ=
-Änotó$8206Äs0Ä@Å=ÄnotÄorÄabort"ÄnoÄroom"Ç
-;ÄtestÇforgetÄtestΩ\Ä“amdiskü\ÄrdÄ$8800Äo
-verÄbehindÄswapÄ-ÄmoveÜ\Ä$8800Ärduseõ\Ä$8
-800Ä'ÄlimitÄ>bodyÄ!ë\Ä\needsÄrelocateÄ$1b
-Äloadé\Ä1ÄbuffersF.(Ä…nsertÄŒew‘ape)Äkey
-\\ Altlasten                  clv10jan88 
-                                         
-\ geht:                                  
-Code x>scr ( char--char')                
- sp x) lda (>scr jsr  0 # ldx  sp x) sta 
- 1 # ldy  next jmp end-code              
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\\ altes                      clv10jan88 
-\ geht:                                  
-Code xemit ( char--char flag)            
- N 6 +  curAdr  2dup                     
- lda sta  1+ lda 1+ sta                  
- sp x) lda  (emit jsr  0 # lda           
- CS ?[ $ff # lda ]?                      
- pushA jmp end-code                      
-Label endPg [[ (clrLn jsr CS ?]          
-Label endPg1                             
- 3 # lda  .A asl      tay                
- [[ SP dec  dey 0= ?] tay dey            
- [[ N ,y lda  SP )y sta dey 0= ?]        
- iny next jmp end-code                   
-Code .page2 ( adr len col--ad+ len- col) 
- 3 # lda  setup jsr  dey                 
- curAdr   ' scrAdr >body  2dup           
-    lda    sta  N 6 + sta                
- 1+ lda 1+ sta  N 7 + sta                
- N 4 + wdec  N 2+ winc                   
- [[ N 4 + winc  N 2+ wdec  endPg beq     
-    0 # ldx  N 4 + x) lda                
-    (emit jsr endPg1 bcs ]]              
- end-code                                
-                                        
-\\ altes                      clv10jan88 
-                                         
-\\                                       
-Code t 1 # lda  setup jsr                
-       N wdec  N lda pha N 1+ lda        
-       push jmp  end-code                
-                                         
-Assembler also definitions               
-: wdec2 ( adr--)   funktioniert nicht    
-  dup dec 0= ?[ swap 1+ dec ]? ;         
-                                         
-Onlyforth                                
-Code t2 1 # lda  setup jsr               
-       N wdec2  N lda pha N 1+ lda       
-       push jmp  end-code                
-                                         
-: tt 0 BEGIN 0 0 at dup 4 u.r            
-             t stop? UNTIL drop ;        
-: tt2 0 BEGIN 0 0 at dup 4 u.r           
-             t2 stop? UNTIL drop ;       
-                                         
-                                         
-                                         
-                                         
-                                        
-\\ altes                      clv10jan88 
-                                         
-: >count ( ad l ad+ l- --ad+ l- ad cnt)  
-  2swap 2 pick - ;                       
-                                         
-\ : clrLn cols col DO bl emit LOOP ;     
-                                         
-: .line ( adr len col--adr+ len- col)    
-  >r 2dup #cr scan >count                
-  r@ - swap r@ + swap                    
-  0 max cols umin type                   
-  dup IF 1- swap 1+ swap THEN r> ;       
-                                         
-: xpage  0 0 at  $0c00 $400 $2e fill ;   
-                                         
-                                         
-: .page ( adr len col-- adr+ len- col)   
-  xpage  rows 1                          
-  DO .line cr LOOP .line ;               
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-CLEAR“+X ∏}=L;\‘ °=(FORGET“+∏î
-(‡3	is symbol˘;=\‘ ª=FORGET“+;/∏/$"
-‡3	protected©*∏î(Ñ Í*¬ ÖÖE=\‘ 
-ﬂ=EMPTY“+/$"}=/2"0;\’ >SAVE
-“+X }=%"∏ÖÖ"ÙÖ;"›ôÑÍˇ}≠/
- D\’ >>BYE“+Ï9Êc\“+Ø?P…Ñ ì9\
-’ ◊>STOP?ÄanschliessendÅ25ÄÃœ¡ƒÄeinÇta
-pe>disk-ÄkopiertÄalleÄ“amdisksãvomÄ‘apeÄi
-nÄ”creen-ƒisks¥◊ennÄbeiÄeinemÄdieserÄ◊ort
-eÄetwasáschiefÄgeht,ÄbestehtÄdieÄÕoeglich
-keitÉanÄderÄ”telle,ÄwoÄderÄ∆ehlerÄauftrat
-Ñfortzufahren.ÄƒazuÄdientÄdaså◊ort:Ä√œŒ‘û
-aberÄ÷orsicht:Ä◊ennÄ ¬cC64TYPE§c© S†
- D$±& µb∞©.ç>ˇ lˇç?ˇHl´cl®bÜ òcDISPLA
-Y˚>Óbc¢cc5chcÀc\Ëcç>ˇlrˇá JcB/BLKø+ 
-á cBLK/DRVø+™ á ˛c(DRV.*  “+d"
-˜\
-á dDRIVE“+d$Z;\á (d>DRIVE“+d$˜
-Z"…\á >dDRV?“+Z"˜dh\á ydDRVI
-NIT“+†\à –dI/O.*◊à ÇdBUSO	Â'l≤<•(E,
-•)Â-∞°,Å$±,ë$lG<•,Ö$•-Ö%lâ<lù“+%"›Ñ
- ∏PZ…À<Ô¬Íˇ\“+}#∏"}…Ñ( È"
-ãX ØÑ ∏"#"Ù;«¬ "¬Nˇﬁ\“+
-%À<R,…ˇ  È%"zØÑ
- /À-%;/˛ˇ˚ˇπˇÈ
-¥,"zØÑ
- /À-¥,;\” ∫;CUSTOM-REMOVE
-I0†“+ÙÎ<'=M<{=Ä(ã…i(L;°~';\‘ À=
-\ room                        clv06jan88 
-                                         
-                                         
-: ?enough ( n--n)                        
-  dup lastroom @ @ > abort" no room" ;   
-                                         
-: ?range ( adr n -- adr n)               
-  over lastroom @ u> abort" beyond room" 
-  ; \ kriegt spaeter die verschieberei   
-                                         
-: room ( adr n -- adr')                  
-  ?enough ?range                         
-\ 2dup + -rot  dup fEnd +!               
-  >r dup dup r@ +  ( adr adr adr to)     
-  lastroom @ dup @ ( " oldroom oldlen)   
-  r@ - over r> +   (   oldrm nlen nrm)   
-  dup lastroom ! ! ( adr adr to oldrom)  
-  rot - move ;                           
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\\ unfertig                   clv25jan88 
-                                         
-User inFcb          User outFcb          
-User >fcb                                
-                                         
-: Fcb  Create $40 allot ;                
-: Fcb: Create dup c, does> c@ >fcb + ;   
-                                         
-: fName ( adr cnt fcb--)                 
-                                         
-0 Fcb: fName  $20 +                      
-  Fcb: fBeg 2+      Fcb: fEnd 2+         
-  Fcb: fOut     \ Beginn von Room        
-  Fcb: fIn      \ nach Room              
-drop                                     
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-jêbjy
-êb
-kêb
-êbjyÙ…\- zy	EDIDE
-CODE“+
-ç@Ñ
- m˜?dÚa@Ñ< m˜√y∏Q!
-"[Ñ ÄQ!"£ˇ‹ˇ È˜%JFlã‰#Jˇπˇ∏
-Q!;d∏m‰
-.vóÄvÄ\- äy	EDIEXPECT“
-+ˇwQ!;°∏Q!"Ñ
- Ø?I?¬Óˇﬁë4\-  zE
-DIBOARDû?La[añyz\ˇ !y
-SAVESYSTEM“+é32º
-é3;ô32° #$˜ô3;\“+ô3"∏Âl#xÂl…
-…¯c«KÂl#6ãd?\“+ƒl
-—r\“+´ré3"∑
-9SmÑ ;qÄé3"∑9çmJ9
-\“+∂r
-\“+
-€r
-\“+é3"∑9wmm˜ƒlÖr°\“+∂rÄºé3
-[Òr\“+∂rÄìé3[Òr\“+∂rÄ¸l"∏Òq [â
-Ñ §é3[Òr\“+∂rÄ m"é3" m;é3;Òr\
-" q	DIGDECODE“+Êa@(•()Pˇ•…ÖêÊ†
-•'ë•&àëàlâ•$%P•…ÖêÊ†lå°&A*
-®†±ô$ à¯•$PF%F$Ê&PÊ'l?k )k2!Ëkò S
-†±ë$à˘†lÙ ·k2@l°Ö$±Ö%•8ÈÖ∞F
-†±$ëà˘lha ¸k	2VARIABLE“+A)Z˝ \ $l
-	2CONSTANT“+A)!!Î(l¿(l\ <lUNLINK“+°
-°/ÓÊk\¢ †l	 Ö*)?*$*	ÄF1ôÑ
-	 Ø$not Ø$changed∏Z1Ñ Ï9∏
-1
-
-…Ñ Ø$, saved
-1Ñˇ Ø$	, loading?é3
-"ô3"∑w\, <xL“+ô3˜cx\, TxR“+é3"cx\
-, ‰x+L“+é3"˜Xx\, ÙxV“+;/©*›Ñ Z…
-"\, yVIEW“+y›Ñ Xx¬ Ø$from key
-board\“+,m"0mJ˜\, îvCURLIN“+
-êb
-
-\ @tva                        clv29jan88 
-                                         
-Assembler also definitions               
-                                         
-: tva  ( source  dest--)                 
-  swap 2dup    lda sta 1+ lda 1+ sta ;   
-: @tva ( source^ dest--)                 
-  swap 2dup x) lda sta )y lda 1+ sta ;   
-                                         
-Onlyforth                                
-                                         
-\\ alt                                   
-Label (cr?                               
- N x) lda  #cr # cmp 0<> ?[              
-Label (fe?                               
- fBeg  N 2+  tva                         
- N  N 2 + wcmp  CS  ?[                   
- fEnd  N 2+  tva                         
- N  N 2 + wcmp  CC  ?[                   
-   0 # lda  pha  push jmp  ]? ]? ]?      
- $ff # lda  pha  push jmp   end-code     
-                                         
-                                         
-                                         
-                                        
-≠ˇ	çˇç?ˇx`ì +iC64INIT¶i `ilha  
-ÖÜáâäãåàî öiC64FKEYSMi¢J0	Ω¨iù]lOi
-lha{ ¿ic(64“+$Ã ô‡3
-C) missing"/C)…Ñ
-„ˇ\{ ‡ibC)“+\{ jc(16“+\{ jFORTH-83
-“+\‹ "j	ASSEMBLERv-¥¡¥¡Ä-‹   PUSHAø+‹
- ijPUSH0Aø+‹ wjPUSHø+‹ ∆jRPø+ ‹ ”
-jUPø+ ‹ vºqv°qvºqv\“+∏ì…Ñ »v
-ô\( wq(PAD.*  “+Ë ∏õv;Âl3˜∏ ma;
-Âl˜∏&ma;Âl˜∏m;Âl3˜ˇm;ma˜ˇma
-˜/ÍpÃ P ma"DÔ m;/qÃ 
-1P&
-ma"DÔ&m;\“+Ë õv"…”üv\ø+#$“+/
-d*w;›p¥a\“+D!"›ôÑ .wd∏!"«ô3;›
-p¥aIpé3"Ù…Ñ é3;	¿˜∏PÙ…DÔÂl
-?4® °\“+:nâ›”n∏Âl˜nÌl˜Ù…Úpo\
-“+|n∏”
-êb\“+ml˜#ˇm" nK[∏”+
-nJml˜‰ºma[\“+Ko›”|n\“+Ko›”
-ºo\“+ma"ô›”ÿn∏”ìma[ml˜J+
-n‰\“+ˇml˜ n[∏”nˇml˜ÂlDÂlˇma[
-\“+;p›”øn\“+;p›”–o\“+Âl
-INDEX“+#
-ã…ˇ! ?%FÑ5%∑9#
-%#?°>Ñ ÑJˇπˇ\è 
-ähFINDEX“+CgÑ ﬁd#ã…ˇ1 ?%FÑ5Ë ∏
-%33Óf&gP#
-%#?Ô°>Ñ ÑJˇπˇÂg\ê 
-øhINK-POT.*ˆˆ Óˆ ˆˆ í iINIT-SYSTEM;
-i¢˜ölhaç>ˇçviéxi©ih©\h∫Ωh©¢ l≥¸ç?ˇ@ÿç>
-ˇ©içˇˇ©aç˛ˇ Ñˇ äˇ≠içˇ≠içˇ≠iç@©Äç@
-P…›”¬SˇÒq m"…°>ô1›Ñ ÉÑ
-
- sÄ¬ sÄ¬ßˇì\“+?$
-@…\.*í
-çÖâÜäüãáàåùëìî	ˇ.*ss'sis
-iu¡p>o>o´r∂r€rÊröo–oìpÕp;qr˘oppo&o|nø
-nÃnÃnÃnÎnÿnÃnºopo^o´pµp•n0v© S§$àHπΩuIˇ
-E&PÙò
-®π‰uhπÂul“+4m‰Ç6
-Ä°…ˇ Jˇπˇ\
-“+4m2°qnÂl˜«J?4…â1:nâ1∏”
-
-îêb\“+tn›”m"Ñ ÿn›”Ãn\“+m"ô
-z?ÈlÖ[1∏”
-êb\“+tn∏”
-êb\“+nÌ
-lq4 Ìl«KÂl6ãd?°\“+°
-
-°…ˇ Ä|n∏
-Ñ ÑJˇπˇ\“+
-°…ˇ 
-ùêbJˇπˇ°\“+z?
-°d?ƒlm˜øn\“+nÂl?4® °\“++nÂl ?…?4®
- °\“+n∏Âl˜ãn/ô3;'q∏2˜õv∏2
-˜e>
-F–e°Í#˝eë$,p,wÃ ˝eód
-Fze≠
-
-…∏/ èã·e·eX Ù…˝eód
-Fàe°d;y
-f‡3
-save-error\ ˙jEND-CODE“+D,Ö"D,;
-\ ‡zINDEX.*		Ä	ÄÄÄÄÄ ÄÄÄÄÄ
-ÄÄ,.*  ˚zMODE:“+A)!Î(l¿(J%[;\ +
-[.A;[  h[#;[;[ r[,X;[d?m"Pò
-5Èd?X #PFsW?Q!"›Ñ X ‹‰_'Äm;d?
-m"Pò5{bÈd? ma"ÂlÖ ?…W?Q!"›Ñ  
-m;d? mltÈd?&ma"ÂlÖ ?…W?Q!"›Ñ 
-&m;d?&mlt›pIqd?\“+ÒrÄ mlô3"é3"∑9˜
-¯cô3"…3kôÑ °¬
- é3"∑9…ô3;Ör\“+
-∂rÄ#tuô3"Ñ' Ø?∏
-r…Ñ Rs›Ñ  d
-\ cursor-movement             clv22jan88 
-\\ alt                                   
-( adr--adr')                             
-\ setzt #cr vor und nach File voraus     
-                                         
-: ?b  fBeg @ umax ; : ?e  fEnd @ umin ;  
-                                         
-Code (cr>                                
- sp x) lda  N sta   sp )y lda  N 1+ sta  
- #cr # lda [[ N winc  N x) cmp 0= ?]     
- N lda  sp x) sta   N 1+ lda  sp )y sta  
- next jmp end-code                       
-Code (cr<                                
- sp x) lda  N sta   sp )y lda  N 1+ sta  
- [[ N wdec  #cr # lda N x) cmp 0= ?]     
- N lda  sp x) sta   N 1+ lda  sp )y sta  
- next jmp end-code                       
-                                         
-: cr<  ?b (cr< ;    : cr>  ?e (cr> ;     
-: pg<       rows    0 DO cr< LOOP ;      
-: pg>    1- rows 1- 0 DO cr> LOOP ;      
-\\                                       
-: cr<    ?b BEGIN 1- cr? UNTIL ;         
-: cr>    ?e BEGIN 1+ cr? UNTIL ;         
-                                        
-\ move-Base                   clv25jan88 
-                                         
-\\ alt                                   
-                                         
-                                         
-: leftchars ( adr--adr u)                
-  dup dup cr< 1+ - ;                     
-: rightchars ( adr--adr u)               
-  dup 1- cr> over - ;                    
-                                         
-: savCol dup dup cr< -  col+ +! ;        
-: useCol dup cr> over - col+ @ over -    
-         dup 0< IF + 0 THEN col+ ! + ;   
-: noCol  col+ off ;                      
-: cr? ( adr--adr flag) dup c@ #cr = ;    
-: ?eL ?e dup 1- cr> fEnd @ - ?exit cr< ; 
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-	F°Å±ë©≈ÖêÊl	  ÍR@•8È
-Ö∞F±ë°l  ÖRDROP 1EXITf°Ö
-±Öl =UNNEST^°Ö±Öl s?EXI
-T’°•…ÖêÊ(Pæl	  ÀEXECUTEô°
-Ö±Ö•…ÖêÊl  çPERFORM“+"ó\
- ±C@L°Ö$±Ö%© ë°$l  EC!Ê°Ö$±Ö
-%H±Å$à•e 2 --  Quelltext des Systems
- »ç640 a‹ô" Seite 3 --  Forth-Quelle
-xte yÜô" - 6502-Assembler ’êô" - Full
--Screen-Editor éöô" - Debugging Tools £
-§ô" - Multitasker ºÆô" - Drucker-Trei
-ber F∏ô:ô:ô ÂBô" Seite 4 --  Grafik/T
-ape Lô" - Grafik 
-…ÖêÊl	  ﬂCTO
-GGLE“+‹Jnã‰\ˇ @$°Ö$±Ö%±$ë°$l
- ˇ !=°Ö$±Ö%H±Å$H±†ë$lÙˇ 7+!]
-°Ö$±Ö%H±¡$Å$H±†—$lo vDROPù Ÿ
-SWAPç±™†±Ö$äë•$†ëH¢ ±Ö$°ëà•$l
-  ÑDUP∫•8ÈÖ∞F†±†ëH±àl  ≤
-?DUPﬂ°Pl	 l∫ VOVERˆ•8ÈÖ∞
-F†±ÅH±†ël	  ÌROT†±Ö%†±†
-ë†±Ö$•%ë†•$ëH±Ö%°ë†±Å•%ë†l	
-  -ROT“+\ sNIP“+ãÄ\ ƒUN
-DER“+ãÙ\ ‘PICK“+#3;˜"\ ÜRO
-LL“+∏Pç;∏aÔ#3ÚÄ\ ù2SWAP“+
-PÔ\ ¿2DROPÙ V2DUP“+ÙÙ\  
-File c16ultraforth83 - Systemkern f"ô
-" - File c64ultraforth83 - Systemkern ’,
-ô" - File c16demo - Arbeitssystem mit Ta
-pe §6ô" - File c64demo -      ''       
-  Grafik J@ô" - Hilfstexte & Kontaktadr
-essen Êjô" - Diskettenutilities Ïtô 
-^ô" Seit‚+˘H°—ëà±†—ëlô  Û
-ORH°ëà±†ëlô  AND3H°1ë
-à±†1ëlô  +XORpH°qëà±†qëlô
-! h-ÀH±8·ëH±†Ò†ëlô! ≈NOTã
-ä·ÅäÒël	 ! ÉNEGATE¶8∞„" õDNEGAT
-E∑H8äÒëHäÒëä·Å†äÒël	 
-™®à±ô$ à
-¯ä≈ÖêÊ¢ †`" ´D+˜© SH±≈&ë
-H±≈'ë°≈$Å†±≈%ël	 # 1+%©¡∞l
- Å±… ël	 # 2+c©P‡# <3+p©PSv
-©PM\©PG# i1-…8°Èêl Å±È ël	 #
- ¬2-áê‡$ ÄTRUEø+ˇˇ$ åFALSEø+  $ ô
-"-1ì$ ß!0°$ ∞1ø+ $ ∏2ø+ $ B3ø
-+ $ L4ø+ $ VON“+ìã;\t sein ei
-genes 3H ô" Diskettenverwaltungssystem, 
-daher [R ô" bitte immer die ganzen Diske
-tten Ü| ô" kopieren und nicht nur die Fi
-les!!! åÊ ô ß ç 640:è seitenvorschub G
-˙ ô" Die Disketten enthalten: Mô 
-ô" Seite 1 --  System-Diskette ô" - 
-\ writeFile                   clv22jan88 
-                                         
-\\ noch alt                              
-                                         
-Onlyforth                                
-                                         
-: writeFile                              
- 8 2 busopen  fName count bustype        
- " ,p,w" count bustype  busoff           
- derror? ?exit                           
- 8 2 busout   0 0  bus! bus!             
- fBeg @ fEnd @ over - bustype  busoff    
- 8 2 busclose                            
- 0 (drv ! derror? ?exit ;                
-                                         
-: readFile                               
- 0 (drv !                                
- 8 2 busopen  fName count bustype        
- " ,p,r" count bustype  busoff           
- derror? ?exit fBeg @                    
- 8 2 busin   bus@ drop bus@ drop         
- BEGIN bus@ over c! 1+ $90 c@ UNTIL      
- fEnd ! busoff                           
- 8 2 busclose derror? ?exit initFile ;   
-                                        
-Í#ﬁ\d L$b.(“+
-)Í##?\d ›$a\“+∏!"6h
-#6$∏!;\d Ô$b\\“+¯c∏!;\d %\NEEDS
-“+$ı. Ñ Û$\d %HEX“+
-Ê;\d 7%D
-ECIMAL“+
-
-Ê;\e j%DIGIT?“+
-0…∏
-	[
-Ñ 
-á…∏
-	[Ñ Ê"Ù[›”Ä°\e 
-¡%
-ACCUMULATE“+ãPãÊ"ûÄÊ"ûıÔ
-\e †%CON%Ål	 3 òM*“+∏É∏PÑ §
-ã∏ÉÑ
- §ÔâPûÔÑ µ\3 Î*“+ûÄ
-\3  2*5°
-Å±*ël	 “+ì‡3division 
-overflow\4 .UM/MOD…°Ö)±Ö(•…ÖêÊ
-°Ö%±Ö$H±Ö'H±Ö&¢∆*8•%Â)®•$Â(∞&*êÖ
-$Ñ%&'&&&%&$JPﬂ†∆$∆%ê Üb\•&ëH•%ëH•$
-ë†•'l 5 ^M/MOD“d¬‡ˇ \“+Ã 
-1
-˜\n °*NAME>“+∏S*ãJ
- 1Ñ "\n ‚*
->BODY“+a\n +.NAME“+›Ñ ∏î(Ñ Ø$
-|Ã 
-1#?¬ Ø$???ë4\o +CREATE:“+A)ï
-'¥,"D,;ï0°\o h+:“+r+Î(•8ÈÖ∞F•Å
-•ë•…Öä≈Öl	 o »+A;“+°˝6!\0¥'\
-o ñ+CONSTANT“+A)!Î(•8ÈÖ∞ D“+µ#Â"\
-b Q#PARSE“+Pµ#∏!"‘"ÙãÔ"PÙ…∏Ôl
-…∏![\b ‚#NAME“+?4X#B"d\c $STATE.
-*  c )$eASCII“+?4X##J1$"Ñ ^\c 7$,
-"“+
-"Í#X Ù#˝ n \c w$Ñ"LIT“+ÔÔ‹Ã ˜
-PP\c —$Ç("“+ÿ$\c å$A"“+6!ë$\$\d ô$É(
-."“+ÿ$Ã #?\d ©$B."“+6!Ø$\$\d ª$a(“+
-)
-¬Óˇ\0 ≥FREPEAT“+F˝6!¬Q\0 ÌEUNT
-IL“+F˝6!ÑQ\1 BDO“+6!…ˇ¶P\1 C?
-DO“+6!‹ˇ¶P\1 1DLOOP“+P˝6!Jˇ6!πˇΩ\
-1 eE+LOOP“+P˝6!˚ˇ6!πˇΩ\1 `ÖLEAVE“+π
-ˇÔÖ∏"˜P\2 ‹UM*†±Ö$°Ö%HÜ&Ü'¢
-'&&&%&$ê±≈'Ö'H±à≈&Ö&êÊ%PÊ$JP|•'ëH•
-&ë†•$ë•¥,""!$J∏º
- Øâ‡3inv
-alid nameX ~';#˝ à)^)"Ñ º^)[∏)!
-û(
- Z')L;¬ &)Ä¥'°!Î(lﬂ(3*°Ö(±Ö
-)•…ÖêÊ°Ö&±Ö'&Plå±&ëÖ%°&ÅÖ$%
-Pl	 •$…Ö$êÊ%°$h8)≈$Ö$êÊ%») 
-±$h°$Ö
-$»Ö%•$E(P∞•%E)P™lcn ∏)>NAME“+%"∏Ñ 
-ÈZ…ã1*›Ñ zﬁ H±$ Ü"ë$lQ"Á"Ü*†±
-ô$ à¯†≠∫!≈&Ö&≠ª!≈'Ö'8•$Ì∫!Ö$•%Ìª!Ö%∞
-°ç∫!±çª!lŸ#†•$%=°&QPÊ&PÊ'•$PF%F$
-l$#•&Ö(•'Ö)°&QÊ&PÊ'•$PF%F$(Ê*•$%P‚
-8†•&Òç∫!H•'Òçª!©≈ÖêÊ†±ÅÖ$H±†
-ëÖ%à•*ë$±(HF*˜© ë$†l	 b µ"SOURCE“+D!
-"›Ñ ∑9¯cd›!o!"\b ¨#WORE“+X …!
-\. ›?PAIRS“+…‡3unstructured\I h©ˇ
-lh© ™•8ÈÖ∞Fä†ë»¢ l / ÙCASE?b
-© S•$AP	•%QPlâäl0 8BIF“+6!Ñ¶º
-\0 \DTHEN“+=ˇº˝Ω\0 œDELSE“+º˝6!¬
-¶ãΩì\0 ÑEBEGIN“+UF\0 °EWHILE“+
-F˝F6!Ñ¶/˛ˇH\“+Ë∏/˛ˇ…Ñ
- ÄΩ
-\ altes .line                 clv30jan88 
-                                         
-                                         
-                                         
-  BEGIN over WHILE swap 1- swap c>       
-    dup cr? IF nip pClr exit THEN        
-    REPEAT  nip cols swap                
-  BEGIN over WHILE swap 1- swap c>       
-    dup cr? IF nip pClr exit THEN        
-    dup c@ >scr curAdr @ c! 1 curAdr +!  
-    REPEAT  nip l> ;                     
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ .page 3.Ver Forth           clv29jan88 
-                                         
-\needs >scr   5  load \ CBM-Screencodes  
-                                         
-: pPut ( char--)                         
-  >scr curAdr @ c!  1 curAdr +! ;        
-: xmod mod ;                             
-: pClr curAdr @ dup scrAdr - cols xmod   
-  cols swap - 2dup + curAdr ! bl fill ;  
-: pGet ( adr--adr+ char) c> dup c@ ;     
-: pCol ( col adr--col ad+)               
-  over 0                                 
-  ?DO c> dup cr? IF c< leave THEN LOOP ; 
-                                         
-: .page  ( adr col--ad+)                 
-\ interprets #cr,skips col (left of scr) 
-  scrAdr curAdr !    swap rows 0         
-  DO pCol  cols 0                        
-     DO pGet over cr?                    
-        IF drop pClr c< leave THEN       
-           pPut LOOP l>                  
-     LOOP nip ;                          
-                                         
-\ forget pPut 0 4 +thru                  
-                                        
-F†±ÅH±†ël	 o ¨+VARIABLE“+A)F˝
- \p |+UALLOT“+∏0"˜
-ˇ[‡3Userarea 
-full0"ã0[\p Û+USER“+A)F¸+!Î(•8È
-Ö∞F†±≈ÅäH≈†ël	 p ),ALIAS“+A)
-~'"∏J
- 1Ñ /˛ˇ˝ ¬ 
- Z'S*;\q ]
-,VP.* ‹-À-À-ﬂl      q ë,CURRENT.*À-q ™
-,CONTEXT“VERT“+#Ã  %Ñ ≠%¬Ùˇ«\“+º
-&"ô\“+Ã ìº&[\“+«Ã \f M%DPL.*ˇˇ“+
-Ñ 9ﬁÄ9°\“+Ñ  9ÄÔÑ µÄ&"
-#›”Äì\“+
-&@Ñ	 
-
-ìd
-$@Ñ	 
-
-ìd
-H@Ñ	 
-ìd
-%@Ñ Fìd°\
-“+
-,Ù…ã
-.…\“+&"ì…”º&[\.
-*  g &NUMBER?“+Ê+∏P=ˇÙÉÑ ‹˜
-ã«ÉÑ §ÙÑ ã˜ã«9\5 X2/
-±
-± ë° l 6 /MOD“+PˇÔ‡\6 /
-/“+6 \6 dMOD“+6Ä\6 r*/MOD“+P
-Ô‡\6 ¬*/“+  \6 ÿU/MOD“+°ã«\
-6 áUD/MOD“+P°«ÔãP«Ô\7 õCM
-OVEF© SàD$P	F%†l	 ±(ë&HP4π>D!"›
-Ñ é3;∏!"ô3;33\_ ü3á(ABORT"“+ÿ$ãÑ
- P,(ÔªdÄ\“+ÿ$ãÑ ªdÄ\_ V3
-FABORT"“+6!‡3\$\_ 4FERROR"“+6!˙3\$\` %
-4BLø+  ` :4	-TRAILINGs4ò S°Ö&±≈%Ö'§$
-êà±&I HPÊ%òh•%lòPÍF'F%‰òl¡ e4S
-PACE“+?4?\¡ â4SPACES“+°‹ˇ ë4Jˇπˇ\“
-\ altes                       clv13jan88 
-                                         
-: redraw                                 
-  scrBeg @ 1+  fEnd @ over -             
-  scrRow @ .page drop drop               
-  scrEnd ! ;                             
-( adr--adr)                              
-: cursor                                 
-        scrBeg @ 1-   -1 -rot            
-        BEGIN rot 1+ -rot                
-              cr> 2dup u> not UNTIL      
-        drop leftchars scrRow @ -        
-        rot swap  'at ;                  
-: ?sE?  scrBeg @ pg> over u> ?exit       
-        dup pg< 1+ scrBeg ! ;            
-: ?sR?  leftchars dup cols - 1+          
-        scrRow @ max min  scrrow ! ;     
-: ?sB?  dup scrBeg @  u< not ?exit       
-        dup begLn scrBeg ! ;             
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ altes                       clv13jan88 
-                                         
-                                         
-$100 $100 Task showTask                  
-                                         
-multitask                                
-                                         
-: (show                                  
-  ?sB?      key? ?exit                   
-  ?sR?      key? ?exit                   
-  ?sE?      key? ?exit                   
-  redraw    key? ?exit cursor curon ;    
-                                         
-: show  showTask activate                
-  BEGIN curPos @ (show drop              
-        pause REPEAT ;                   
-                                         
-                                         
-: noshow showTask activate               
-  clearstack  r0 @ rp! stop ;            
-                                         
-                                         
-                                         
-                                         
-                                        
-º8Ñ Ø$read 8¬YˇÔ\“+7∏"Ñ 
-"∏a"ì…ÑÍˇ7ç6∏!8\“+aPÈ;Z"
-˜a;Ôt˜7¿6\“+7"∏Ñ ∏z"É
-ÑÓˇ\“+7"∏"ôÑˆˇz"É\Ã 8CORE?“
-+87ﬁ°\Õ f9(BUFFER“+87H8Ó8¬¯ˇ\Õ z9(
-BLOCK“+87H8â8Ó8¬ˆˇ\è9†±hH±lÕ ‘9BU
-FFER“+ç9ƒ9$ë•8ÈÖ∞F•&H
-0òiˇ®HòÅ
-©ˇ$ä†ël	 v 1.FIND“+D,∏"ÙÖ"…Ñ
- Ö‹"9.Ñ  î.dÙñ,a[Ñ
- ãÖ¬ﬁˇ 
-°\v Ó.'“+$ı.ô‡3Haeh?\v 7/I[COMPIL
-E]“+;/!\v o/C[']“+;/^\v ≈/NULLSTRING
-?“+∏Jô∏Ñ  \H±…ÖH±… Ö†l	 w 
-’/
->INTERPRETï/ 0x ´	7ë(•(ç7•)ç7l√7  
-7(DISKERR“+Ø$error !  r to retry Ø?∏
-
-r…ã
-R…â‡3aborted\  A7DISKERRI0L
-7  8R/WI0˛g“+∏z"ÉÑj a∏"#Ñ3 
-2Ù2q3∏zÙa"Fç"°8Ñ Ø$write 
-8¬€ˇ
-ÄÙt#Ä\“+a∏Ât˜\“+∏{8
-2Ù2q3PÙZ"˜Ù
-˜z
-"¥,;\“
-+"Ö©*+\s ±-ORDER“+R,…ˇ %K-/˛ˇ˚ˇπˇ
-F§4¥,K-\s Y-WORDS“+D,""∏°>ô1Ñ π
->∏a+ë4¬ÊˇÄ\t .(FIND;.†±ô$ à¯°&
-)Ö(† ±$™H±$Ö%Ü$$P†¢ låH±$)E(P‡©≈$
-Ö)© ≈%Ö*§(±&Q)PKàP˜†•*ëà•)ëà¢ lâñ.°Ö
-$±Ö%°$Ö&)8≈$Ö$êÊ%•&) P	•$Å•%lB.°$Å±
-;\≈ Ü6UNLOCK“+∏ç6˜\»8ÈÖ»È Ö©lÅ
-†±ÖH±Ö†°Ö±Ö•…ÖêÊ¢lê∆ ∑
-6FILE<,∆  7PREV.*¯{.*  ∆ 7B/BUFø+†
-±(Y" PH¿PÙ`:7†±ô$ à¯†±≈&Ö&H±≈'Ö
-'≠7Ö(≠7Ö) )7P•…ÖêÊ†©≈(Å•)… ë
-lf•(Ö*•)Ö+°*Ö(†±*Ö)(Pl	  )7P‚°(Å*†±
-(ë*≠7Å(≠+ñ,∏"˜a\“+ñ,aD,\q ∫,A
-LSO“+ñ,"
-
--˙3Vocabulary stack fullD,"
-Fñ,[D,;\q ﬁ,TOSS“+/˛ˇñ,[\r ˇ-
-VO
-CABULARY“+A)°!°!X %"!%;Î(l¿(D,;
-\r /-FORTHv-kzkz  r ¡-ONLYÑ-!@!@œ-Î(l¿
-(°ñ,;D,;Â,\r ”-	ONLYFORTH“+⁄-…-Â,ø-\
-s ó-DEFINITIONS“+D,√ §5.“+ˇ©5\√ µ5
-U.“+°©5\ƒ C5.S“+;∏"Ù…
- ˇ£ˇ‹ˇ %
-"H5F˚ˇπˇ\ƒ R5C/Lø+) ƒ ˛5L/Sø+ ƒ 
-6
-LIST“+é3;Ø$Scr é3"∏dxH5Ø$Dr `dπ5
-6°…ˇ. °>Ñ Ñ?%FÑ5ë4é3"∑9%6$˜6
-«q4#?Jˇπˇ?\≈ 6PAUSE	 ≈ ⁄6LOCK“+∏"
-}…Ñ Äd∏"Ñ Ç6¬Ùˇ}ãˇCLEAR“+X
- ∏}=L;\‘ °=(FORGET“+∏î(‡3	is symb
-ol˘;=\‘ ª=FORGET“+;/∏/$"‡3	prote
-cted©*∏î(Ñ Í*¬ ÖÖE=\‘ ﬂ=EMPTY“+/
-$"}=/2"0;\’ >SAVE“+X }=%"
-∏ÖÖ"ÙÖ;"›ôÑÍˇ}≠/ D\’ >>
-BYE“+Ï9Êc\“+Ø?P…Ñ ì9\’ ◊>STOP?
-+Ë Ö\¬ õ4HOLD“+ì¥4[¥4"‰\¬ æ4<#
-“+¥4¥4;\¬ W4#>“+ﬁ¥4"¥4Ù…\¬ Ë4SIG
-N“+ÉÑ 
--E4\¬ ˇ4#“+Ê"§
-	ÙUÑ
- 
-á˜
-0˜E4\¬ 5#S“+5ÈŸÑ¯ˇ\√ @5
-D.R“+z‹)ˇ|4e55Ì4Ù›Ù…§4#?\√ u
-5.R“+ãˇ[5\√ 5U.R“+°ã[5\√ í5D.
-“+°[5ë4\ˇ\óeÜö© S•& Ld•&ç>ˇ ¥ˇç?ˇ•$
-	`Ö≠ç>ˇ ñˇç?ˇ¶&Üòlhaä }eBUSIN“+àdç6ïe\ã
- FeBUS!„e°ç>ˇ ®ˇç?ˇlôã ZeBUSTYPE“+£ˇ‹
-ˇ %J·eJˇπˇÇ6\ã ÛeBUS@fç>ˇ •ˇç?ˇlã
- fBUSINPUT“+£ˇ‹ˇ f%‰JˇπˇÇ6\ã ,fDE
-RROR?“+d
-Nef∏
-0…Ñ ?f∏Úa…ÑÙˇ
-ô?ôód\ø+≈ø+Íø+ˇnÂl˜«J?4…â1
-:nâ1∏”
-îêb\“+tn›”m"Ñ ÿn›”Ãn
-\“+m"ôz?ÈlÖ[1∏”
-êb\“+tn∏”
-
-êb\“+nÌlq4 Ìl«KÂl6ãd?°\“+°
-
-°
-…ˇ Ä|n∏Ñ ÑJˇπˇ\“+
-°…ˇ 
-ùêbJˇ
-πˇ°\“+z?°d?ƒlm˜øn\“+nÂl?4® °\“++
-nÂl ?…?4® °\“+n∏Âl˜ãn/ˇ FFôdç>ˇ L
-ˇç?ˇ†¢  Üàd¿6\¢ † Üód7¿6ì‡3	no dev
-ice\ÜêÖÆç>ˇ ±ˇç?ˇ©`ç>ˇ ìˇç?ˇç>ˇ Æˇç?ˇ•ê
-»»lØd`˘d° Ld•…ÖêÊl¢dâ éd?DEVICE“
-+àdç6˜d\$eÜö© S•& Ld•&ç>ˇ ±ˇç?ˇ•$	`ç>ˇ
- ìˇç?ˇ¶&Üôlhaä eBUSOUT“+àdç6"e\ä qeBU
-SOPEN“+
-ze\ä ∆eBUSCLOSE“+
-‡zeód
-ˇ
-ù ËPÒl“lèmò SÜ&≠>Ö'¢† ±& Ÿlë$H¿(êÙ
-J
-© ë$ @mlúml“lºm© SàD$Pl“l±( älë&HPÔ
-Umò SÜ&≠>Ö'¢†'±$ älQ&©ˇlàÔ @mJPÁä
-l“+;Âl3…\näh≠>ln•JI(äê©'≈Hh•
-I… l-n•J≈Hh•I… l“+n/¿˜Âlq4 ôm
-"\“++nnÌl˜«…m"ô1\“+mJêb°\
-“+tn›”ìˇ ¬cC64TYPE§c© S† D$±& µb
-∞©.ç>ˇ lˇç?ˇHl´cl®bÜ òcDISPLAY˚>Óbc¢c
-c5chcÀc\Ëcç>ˇlrˇá JcB/BLKø+ á cBLK/D
-RVø+™ á ˛c(DRV.*  “+d"
-˜\á dDRIV
-E“+d$Z;\á (d>DRIVE“+d$˜Z"…\á
- >dDRV?“+Z"˜dh\á ydDRVINIT“+†\à
- –dI/O.*◊à ÇdBUSOˇ–	@`Ö*)I êI@ê)
-$*	@`©.` [lCBM>SCR∞l° älÅl	  §lSC
-R>CBMHl° ŸlÅl	  ºlEDITORv-2z2zejø+( ø
-+ ø+Ë   SHADOW.*u .* .*  .*d .*ˇˇ.*
- .*¿[  .*\  .* –[.* ò[ø+H ø+J ø+ˇø+;
-ø+ˇ•$…)Ö$êÊ%•&…(Ö&êÊ'`ymò SÜ&≠>Ö'¢
-†'±$ älë&àˆ @mJPÓ≠;ù ù 	ù ˇˇç?ˇ•…
-ÖêÊÜKÜO† ÜÇ6\IÄ∞I `I‡∞I¿``Ñ âb
-P
-RINTABLE?Vb° µbêJälÖ GbC64EMITb° µ
-b∞©.lîbÖ ‰bC64CR“+Úaêb\Ö ˛bC64DEL“+
-
-ùêbë4
-ùêb\Ö cC64PAGE“+
-ìêb\Ö +cC64
-ATjc© S¶&§$ç>ˇ ˇç?ˇlhaÖ @cC64AT?Õc•
-8ÈÖ∞Fäë8ç>ˇ ˇç?ˇ¿(òêÈ(hä¢ Å»lÜ
-ˇ(•()Pˇ•…ÖêÊ†•'ë•&àëàlâ•$%P
-•…ÖêÊ†lå°&A*®†±ô$ à¯•$PF%F$Ê
-&PÊ'l?k )k2!Ëkò S†±ë$à˘†lÙ ·k2
-@l°Ö$±Ö%•8ÈÖ∞F†±$ëà˘lha ¸k	2V
-ARIABLE“+A)Z˝ \ $l	2CONSTANT“+A)!!Î(
-l¿(l\ <lUNLINK“+°°/ÓÊk\¢ †l	 Ö*
-)?*$*	Äˇˇ•I… Èçˇl	 Ç ãaCUROFF∂a©ˇ
-çˇçˇl	 É ´aC64KEY“+ìaÇ6[aÑ˙ˇ¥a’a\É C
-a#BSø+ É ‡a#CRø+ É Ïa	C64DECODE“+Êa@
-Ñ ∏Ñ .?«dÚa@Ñ
- ∏Q!;dPÈ˜ã
-‰Ô?#\É ¯a	C64EXPECT“+Q!;°∏Q!"
-Ñ
- Ø?I?¬Óˇﬁë4\É @bKEYBOARDû?La[ablb
-\Ñ –bCON!íb°ç>ˇ lˇ~jSPø+ ‹ âjIPø+
- ‹ îjNø+$ ‹ üjPUTAø+ ‹ ©jWø+ ‹ ∂jSE
-TUPø+S‹ ¿jNEXTø+	 ‹ NjXYNEXTø+ha‹ €jP
-OPTWOø+Ù ‹ ÍjPOPø+ù. 3j.BLK“+D!"›Ñ
- Ø$ Blk H5π>\ k(SEARCH5k†±ô$ à¯•
-()…•$%√°&A*•$PF%F$Ê&PÊ'lek†π$ ë
-à¯Ê&PÊ'Ê*PÊ+•$PF%F$•(PF)Fˇ
-3„0(3⁄d
-ñ@/.";/†„0Ã3ÿ3\†π9ô à˜≠ …
-Ö≠!… Ö†±ÖH±Ö†
-±ÖH±Ö¢ †äÅë`
-⁄ ã@COLDa `i≠ …Ö$≠!… Ö%† πë$HP¯ æ
-@ Ü9i—@\⁄ ˙@RESTART9a `i æ@ Ü9iö@\¢ 
-†l	 Å -aC64KEY?]a•Ô]©ˇhlÅ qaGETK
-EY◊aç>ˇ ›Îç?ˇI†P© lÇ ÃaCURONïa•J≈Hç
-\ cursor-movement             clv14jan88 
-                                         
-\ setzt #cr vor und nach File voraus     
-                                         
-( adr--adr')                             
-: ?b  fBeg @ umax ; : ?e  fEnd @ umin ;  
-: pg<    rows 0 DO cr< LOOP ;            
-: pg>    rows 0 DO cr> LOOP ;            
-\\                                       
-: cr? ( adr--adr flag) dup c@ #cr = ;    
-: cr<    ?b BEGIN 1- cr? UNTIL ;         
-: cr>    ?e BEGIN 1+ cr? UNTIL ;         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-\ executables                 clv14jan88 
-                                         
-( rp char adr--rp char adr')             
-                                         
-: lastLn cr< ?b ;   : nextLn cr> ?e ;    
-: begLn  cr< 1+ ;   : endLn  1- cr> ;    
-: lastPg pg< ?b ;   : nextPg pg> ?e ;    
-: begPg  drop scrBeg @ ;                 
-: endPg  begPg nextPg ;                  
-: beg drop fBeg @ ; : end drop fEnd @ ;  
-: right  1+ ?e  ;   : left  1- ?b ;      
-: wait key drop ;                        
-: exitEd  nip swap rp! ;                 
-: dochar  col+ off                       
-          over >r rp@ 1 insert rdrop ;   
-: backDel 1 back ;                       
-\\                                       
-: delChar ;                              
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
-z\CLDb\X ≈\CLIb\x –\CLVb\∏ {\DEX
-b\J Ü\DEYb\à ë\INXb\Ë ú\INYb\H ß\
-NOPb\Í ≤\PHAb\h Ω\PHPb\ H\PLAb\» 
-S\PLPb\( ﬁ\RTIb\@ È\RTSb\` Ù\SECb\
-8 ˇ\SEDb\¯ 
-]SEIb\ÿ ]TAXb\™  ]TA
-Yb\® +]TSXb\∫ 6]TXAb\ä a]TXSb\ö l]
-TYAb\ò	 w vºqv°qvºqv\“+∏ì…Ñ »v
-ô\( wq(PAD.*  “+Ë ∏õv;Âl3˜∏ ma;
-Âl˜∏&ma;Âl˜∏m;Âl3˜ˇm;ma˜ˇma
-˜/ÍpÃ P ma"DÔ m;/qÃ 
-1P&
-ma"DÔ&m;\“+Ë õv"…”üv\ø+#$“+/
-d*w;›p¥a\“+D!"›ôÑ .wd∏!"«ô3;›
-p¥aIpé3"Ù…Ñ é3;]M/CPU“+A)!!Î(l¿
-(∏#"
-Ä1Ñ	 
-%[[Ù/ ˇ1Ù[Ù[Ñ y[
-ì‡3invalidJ%["[˜J˜ﬂ[%["
-1Ñ 
-%["
-1
-UÑ ﬂ[¬ ‚[y[\	 ¬]ADC‘]`
-Œ	 Ë]AND‘] Œ	 ı]CMP‘]¿Œ	 ^EOR‘]@Œ
-	 ^LDA‘]†Œ	 ^ORA‘] Œ	 )^SBC‘]‡Œ	 
-6^STA‘]ÄÃ	 c^ASL‘]	 p^DP…›”
-¬SˇÒq m"…°>ô1›Ñ ÉÑ
- sÄ¬ 
-sÄ¬ßˇì\“+?$
-@…\.*íçÖâÜäü
-ãáàåùëìî	ˇ.*ss'sisiu¡p>o>o´r∂
-r€rÊröo–oìpÕp;qr˘oppo&o|nønÃnÃnÃnÎnÿn
-Ãnºopo^o´pµp•n0v© S§$àHπΩuIˇE&PÙò
-®π‰
-uhπÂul“+4m‰Ç6
-Ä°…ˇ Jˇπˇ\“+4m2°q
-\ altes                       clv13jan88 
-                                         
-: redraw                                 
-  scrBeg @ fEnd @ over -                 
-  scrRow @ .page drop drop               
-  scrEnd ! ;                             
-( adr--adr')                             
-: cursor \ dup curPos ! \ test           
-        scrBeg @ 1-   -1 -rot            
-        BEGIN rot 1+ -rot                
-              cr> 2dup u> not UNTIL      
-        drop leftchars scrRow @ -        
-        rot swap at ;                    
-: ?sE?  scrBeg @ pg> over u> ?exit       
-        dup pg< 1+ scrBeg ! ;            
-: ?sR?  leftchars dup cols - 1+          
-        scrRow @ max min scrRow ! ;      
-: ?sB?  dup scrBeg @  u< not ?exit       
-        dup begLn scrBeg ! ;             
-: show  ?sB? ?sr? ?se? redraw cursor ;   
-                                         
-\ 0 4 +thru                              
-                                         
-                                         
-                                        
-`BMI“+`c_\ \`BNE“+¸_c_\ Ã`BPL“+
-`c_\ ‹`BCC“+Ê_c_\ å`BVC“+*`c_\ ú
-`BCS“+Ò_c_\ ¨`BVS“+5`c_\ º`2INC“+∏
-"^`\Fv[Ó]∏i^Ê_z_ã#–^}_\ L`2DEC“+∏
-"^]Fv[<^∏i^Ò_z_ã#√^}_\ ı`WINC“+∏
-–^¸_z_ã#–^}_\ ¡WDEC“+∏"^¸_z_Ù#√
-^}_√^\ ;#$˜ô3;\“+ô3"∏Âl#xÂl…
-…¯c«KÂl#6ãd?\“+ƒl
-—r\“+´ré3"∑
-9SmÑ ;qÄé3"∑9çmJ9
-\“+∂r
-\“+
-€r
-\“+é3"∑9wmm˜ƒlÖr°\“+∂rÄºé3
-[Òr\“+∂rÄìé3[Òr\“+∂rÄ¸l"∏Òq [â
-Ñ §é3[Òr\“+∂rÄ m"é3" m;é3;Òr\
-" q	DIGDECODE“+Êa@	¡;C:“+ÑÚ^Îzï0°~'
-;°\ z¡RAM“+/?ˇi^\ ÷¡ROM“+/>ˇi^\
- à¡'NORMJSRÚ^ ö¡JSRI0æ¡ ®¡C16+JSR“+
-∏/ ¿[Ñ é¡Ú^‹¡¬ Ú^\ kz	ASSEMBLER“
-+?jy[\ |¡e;CODE“+)/˝ˇ˝ ö+/˛ˇ˝ Ë¡\ 
-Ú¡CODE“+A)X ∏Ö;Ë¡\ ¬>LABEL“+X »)A
-)ã!Zi(Ä(º1i(X Z…Ä(ZDÄ
-mp: Ip
-
-§4z?
-d?'qa
-W?›pQ!"'q#‰\“+'qJ”¬
-q\“+nË Âl3DnÂl3
-†® \“+Ë nÂl3D\
-“+∑9Ö"\“+ìaÇ6ª?Ñ˙ˇ¥a\“+é3"Z"˜d
-èã\“+o?∞qIp°°d?ÒqØ$Scr # π5Ø$Drv π
-5é3"WqôÑ	 Ø$not Ø$updatedººd?/ÍpÃ
- #?F§4/qÃ 
-1#?›pd?·qIq°\“+o?ãÂl
- ÷ô3;'q∏2˜õv∏2˜e>
-F–e°Í#˝eë$
-,p,wÃ ˝eód
-Fze≠
-…∏/ èã·e·eX Ù
-…˝eód
-Fàe°d;yf‡3
-save-error\, Tx
-R“+é3"cx\, ‰x+L“+é3"˜Xx\, ÙxV“+;/
-©*›Ñ Z…"\, yVIEW“+y›Ñ Xx¬ 
-Ø$from keyboard\“+,m"0mJ˜\, îvCURL
-IN“+
-êb
-§ˇma[ˇml˜nÂlD\“+ˇma"
-ô›”öo∏”Ÿp\“+mÂ°\“+m˜°\ Tl
-RVSON“+
-êb\ ApRVSOFF“+
-íêb\ Tp*
-**ULTRAFORTH83***	  ËprFORTH-GESELLSCHAF
-T“+%\ ÛlSTAMP$.*                  “+'
-q#Ã nÂl˜Ù…ã∫m°\ qGETSTAMP“+
-2{b'qÂ?Ø$your stajêbjy
-êb
-kêb
-
-êbjyÙ…\- zy	EDIDECODE“+
-ç@Ñ
- m˜?
-dÚa@Ñ< m˜√y∏Q!"[Ñ ÄQ!"£ˇ‹ˇ È
-˜%JFlã‰#Jˇπˇ∏Q!;d∏m‰
-.vóÄ
-vÄ\- äy	EDIEXPECT“+ˇwQ!;°∏Q!"Ñ
- 
-Ø?I?¬Óˇﬁë4\-  zEDIBOARDû?La[añyz\ˇ 
-!y
-SAVESYSTEM“+é32ºé3;ô32° ^[,Y;[
- »[X);[ “[)Y;[ ‹[);[ Ü[>CODES.
-*û[.*!!JX ˝ ;‰ è[NONRELOCATE“+ú[ò[
-;\“+A)!Î(l¿(Jò["˜"ó\N[ N[N[N[
-N[N[
-N[“+Ñ %["
-%[;º%["
-1›
-Ñ °…ˇ
- ∏˜JˇπˇÙ#"1ô\ Æ[CPU“+A
-)!Î(l¿(Jﬂ[y[\ 4\BRKb\  o\CLCb\ 
-F1ôÑ	 Ø$not Ø$changed∏Z1Ñ Ï
-9∏
-1
-…Ñ Ø$, saved
-1Ñˇ Ø$	, 
-loading?é3"ô3"∑w\, <xL“+ô3˜cx\, Tx
-R“+é3"cx\, ‰x+L“+é3"˜Xx\, ÙxV“+;/
-©*›Ñ Z…"\, yVIEW“+y›Ñ Xx¬ 
-Ø$from keyboard\“+,m"0mJ˜\, îvCURL
-IN“+
-êb
- >«C,“+6«O∆ºf«\ p«,“+6«˜
-∆Ff«\ √«,"“+
-"Í#∏u«‹V¬ã«f«\ ’«
-FILL“+z£ˇ‹ˇ ∏%O∆JˇπˇÄ\ ì«ERASE“+
-°ö«\ ¥«BLANK“+?4ö«\ F«HERE!“+H¬;\
-ˇ Ö∆RESOLVE“+Ù∏"¸√…Ñ ë4∏©*+Ø$e
-xists  a;ÄdPPa"›Ñ' ∏·∆È…‡3r
-esolve loop˜∆›ô ∆"›ôÑˇ\ 6∆
-V
-OCABULARY“+<-°!X @√"!@√;\ `∆	TRANS
-IENTv-9Ã9Ãæ¬     !@aT“+ë∆\ ü∆aH“+…-\
-   C@“+D√¡√J–√\ ∑∆C!“+D√¡√‰–√\ J∆
-@“+∏º∆ã#º∆£√\ ›∆!“+P√#O∆ÔO∆\
- Û∆CMOVE“+£ˇ‹ˇ ∏J%O∆#JˇπˇÄ\ «
-HERE“+V¬\ /«ALLOT“+H¬[\
- û(4
-112)    ÍlaÍl9al◊ J6 ◊ ◊ {9u   Vc}b®3ß
-m                                       
-                                         
-                                         
-                                         
-                                        
-$ forw¬ ¸√…‡3??Ø$ resa∏"
-ò5a
-"›Ñ5 ∏"¯√@Ñ Ø$ fdef¬ ¸√…‡3 
-??Ø$ rdefa"
-ò5\ =≈"H';/“+∏"¯√…Ù
-a"1Ñ
- Äì9d\“+a∏J
-1Ù˜J?
-4…Ñ Í*A≈Z˜"∏Ñ A≈Ä°\“+"›Ñ 
-∏·≈Ñ
- ∏a+π>¬Êˇ\ ∫≈.UNRESOLVED“+%
-"∏Z… PEATˆF§4∏·∆HÃ…Ãa\" ?ÕD“
-+ÈãÃã°…ˇ
- Õ#JˇπˇF§4zkÃ\# [ÕL“+
-Ã
-§4˛Ãa\# ÉÕC“+º_Õ\# òÕB“+Ã˛Ã∏
-·∆Ù˜
-ò5a\# ¶ÕDUMP“+£ˇ‹ˇ ?%
-_Õ
-Ä°>Ñ Ñ
-˚ˇπˇ\# CÕVIEW“+ÃHÃ›Ñ
- Z
-…·∆cx\$ ¶ REDEFINITION“+&√"Ñq ∏!2/
-∫/21$2D,23√"∏!;°!°!ÙaJº1º
-nPÙ…X Ù…ﬁ√Ä(˜ã;L;Ä(Ô˜˜
-\ V√GFIND“+∏PºÙ[ı.ìÔ[\ ïƒGH
-OST“+∏!"$ùƒÑ  dÄ∏!; ƒ\ µƒWORD,
-“+Ωƒó\ €ƒGDOES>“+Z˜∏"Ñ "dX ∏
-¯√!°!Zﬁ√L;Ä(∏;\ ÌƒG'“+$ùƒô
-‡3?\ (≈'.“+-≈∏"¯√@Ñ Ø$/ì∆9.
- ôÑ' ?Ø$Redefinition: X +3√"∏!;Ã+
-∏¬˘/°&√;\“+√"∏º∆˜#˜∆9\“+6!/&√"
-!6!Œ\%   E;CODE“+°˝ìŒ¥'9\% ßŒÂDOE
-S>ØŒ% øŒA;“+ö+9\& KŒ‚DO#& YŒ„?DO7& ‚Œ
-‰LOOPl& ÏŒ‚IF¡& ˜Œ‰THEN÷&  œ‰ELSEã& 
-œÂBEGIN©& œÂUNTIL& "œÂWHILEª& .œÊRE
- f√ROMOFF√√l	  x√ROMON“√l	  »√>BYT
-EÅ√±häë•8ÈÖ∞Fäë»l  ◊√BYTE>•√°
-h•…ÖêÊ»ël	  õ√>IMAGE“+Î¬"…î¬"
-˜\ ª√>HEAP“+Ä(Ù…º1˜∏i(Ä(ãD\ø
-+è»ø+¢»“+X 1$"Ñ
- D,"¬ ¥,"∏"!$∏
-Jº
-Øâ‡3inval.GnameºÙ[J#˝ X F
-ç…z¯√!“+Ã˛ÃF§4∏·∆HÃ…Ãa\" ?ÕD“
-+ÈãÃã°…ˇ
- Õ#JˇπˇF§4zkÃ\# [ÕL“+
-Ã
-§4˛Ãa\# ÉÕC“+º_Õ\# òÕB“+Ã˛Ã∏
-·∆Ù˜
-ò5a\# ¶ÕDUMP“+£ˇ‹ˇ ?%
-_Õ
-Ä°>Ñ Ñ
-˚ˇπˇ\# CÕVIEW“+ÃHÃ›Ñ
- Z
-…·∆cx\$ ¶ REDEFINITION“+&√"Ñq ∏!2/
-∫/21$2D,23√"∏!;(~'"Ã 
-1˜;L;
-Î(l¿("\ +¬LABEL“+Ë[4¬Ë¡\ ÿ¬IMAGE.
-* ¿ å¬TTOOLSv-ÕÕ„l ö¬DEFININGv-:œ:œ
-©¬ ≠¬TDP.*G¬ B¬THERE“+H¬"\ N¬DISP
-LACE.*¬ ‡¬?THEAD.*   Ò¬TLAST.*    √
-GLAST'.*   √TDOES>.*VO √>IN:.* $ 
-,√TVOC.*   9√	TVOC-LINK.*  Ωƒ!\“+£
-ˇ‹ˇ %º∆?Jˇπˇ\!   .NAME“+›Ñ ∏#ã
-º∆
-1kÃ¬	 Ø$??? ë4π>\“+∏Ñ% Èa∏º
-∆
-1˜#…Ñ a d·∆¬Yˇ\! ¡Ã>NAME“
-+@√"∏Ñˇ ‹Ö"ëÃ›Ñ  dã¬‚ˇ \“+
-∏Zò5Ø$:\“+∏·∆
-ò5\“+∏º∆PÑ5\" ¿Ã
-S“+Ãë4ÕP§4∏#Ùº∆kÃ∏º∆˜#\" ÕN
-
-AIRS“+…‡3unstructured\  bÀ>MARK“+V¬
-°««\  ¬À>RESOLVE“+V¬Ù…ã˜∆\  ÷À<MA
-RK“+V¬\  ëÀ<RESOLVE“+V¬…««\  °À	IMMED
-IATE“+√"›Ñ ∏º∆
-@ãO∆\  ∏ÀRESTR
-ICT“+√"›Ñ ∏º∆
-ÄãO∆\  ·À'“+-≈∏
-"¸√…‡3?a"\  	Ã|“+˙¬"”˙¬Â\  %Ã
-GCOMPILE“+                             
-    .*ultraFORTH-83 3.80-C16+ çˇˇ±Ö≠ˇˇ
-Ö•…Ö∞ÃˇˇÊ∞˘   	END-TRACE≈©•Ö©Ö
-©…Ö©Öl	  wRECOVER.*»Ö»Ö•PFFl
-“+ ⁄NOOP	  ôORIGINø+ §S0<, ≥
-R0<,
- ΩDP<, GOFFSET<, QBASE<
-, ﬂOUTPUT<, Î;X Ö;\  HPREB
-UILD“+°˝1 ∏PÑ ^6!? ¬ Ä6! Ωƒˆƒ
-!ÔÑ 6!7 °\ u DUMMY“+°\ ñ DO>“+
-)X P…6!"°ï0\.*u«««º∆6«f«˜∆O∆ X«	AS
-SEMBLER“+¿ ò[;Ë¡\ R >LABEL“+∏!"$ùƒ
-∏!;Ñ ÙÙ«∏Ä∑+\ Ï LABEL“+V¬ı ﬁ \
- ÀCODE“+ V¬a««ﬁ \  +À?PINPUT<,
- ˘ERRORHANDLER<, VOC-LINK<, ˇ
-UDP<,ˇ *SP@=•Ö$•Ö%¢$•8ÈÖ∞Fµë
-µ ¢ l  5SP!«°™±ÖÜ¢ l	  _UP@
-¢lg ◊ÉUP!é¢±ïà±ï ¢ †•…ÖêÊ
-l	  ÜRP@µ¢lg ≠ÉRP!D¢lê ºÇ>RR
-•8ÈÖ∞F°Å±ëlù KÇR>Ò•8ÈÖ∞
-$,p,wÃ ˝eód
-
-zeÎ¬"/ èã·e·eV¬Î
-¬"…ˇ %º∆·eJˇπˇ
-
-àe\ ,…(THEADER“
-+˙¬"Ñ º˙¬[V¬…d∏!"$ã∏!;∏Jº
-
- Øâ‡3inval. Tname∏J
-˜V¬˜…D!"««
-V¬…∏"««;V¬∏√;ÙJ#∏f««\ è…TH
-EADER“+√˜ö…Ωƒ∏√;V¬Ù«\“+∏\“+V¬!\
-“+∏!"A)∏!F°Å±ë©≈ÖêÊl	  Í
-R@•8ÈÖ∞F±ë°l  ÖRDROP 1
-EXITf°Ö±Öl =UNNEST^°Ö±Öl
- s?EXIT’°•…ÖêÊ(Pæl	  ÀE
-XECUTEô°Ö±Ö•…ÖêÊl  çPERFOR
-M“+"ó\ ±C@L°Ö$±Ö%© ë°$l  EC
-!Ê°Ö$±Ö%H±Å$à•Ñ›ˇÔÔ¸√Ù;a;
-\ˇ Í«RESDOES>“+ãˆƒ∏"¸√…Ñ a;dã
-Ù«\Î(l¿(∏"V¬;««\Î(l¿("««\ ƒ»MO
-VE-THREADS“+@√"r√"Ù›Ñ Ö"ÙÖ˜∆·∆ã
-"ã¬‰ˇ˙3some undef. Target-Vocs leftÄ
-\“+¥,"
-˜\“+
-ˇ1
-ˇ…Ñ ºf«\ ≠
-»SAVE-TARGET“+
-
-–e°Í#˝eëÖ†l	 + 
-BˇÜ(+LOOP˝ˇ°¡Å±—ë q•…ÖêÊ(
-Dl	 , ÚˇÅI'† •8ÈÖ∞F±HH—Åà±HH—
-†ël	 , !ÅJs†PR- mÜBRANCHƒ•¡Ö$•
-—Ö•$Öl	 - yá?BRANCHÜ°•…ÖêÊ
-(Kld. ⁄>MARK“+X °!\. û>RESOLVE“+
-X Ù…ã;\. ≤<MARK“+X \. M<RESOLV
-D“+µ#Â"\b Q#PARSE“+Pµ#∏!"‘"ÙãÔ"
-PÙ…∏Ôl…∏![\b ‚#NAME“+?4X#B"d\
-c $STATE.*  c )$eASCII“+?4X##J1$"Ñ
- ^\c 7$,"“+
-"Í#X Ù#˝ n \c w$Ñ"LIT“
-+ÔÔ‹Ã ˜PP\c —$Ç("“+ÿ$\c å$A"“+6!ë
-$\$\d ô$É(."“+ÿ$Ã #?\d ©$B."“+6!Ø$\$\d
- ª$a(“+
-) UMAX“+Èµ\) ÈUMIN“+È[
-µ\) ¸EXTEND“+∏É\) ˇDABS“+ˇÑ 
-µ\) "ˇABS“+ˇÑ §\“+9Ôa∏PPã
-PP\* 7ˇÉ(DO“+Ù…iˇ\* √ˇÑ(?DO“+Ù…›
-Ñ iˇÔ∏"˜PÄ\* ’ˇBOUNDS“+Ù˜ã\
-* öˇáENDLOOPªˇ©l+ ØˇÖ(LOOPLˇ©¡Åê
-±… ëêl	 †±Öà± H±$ Ü"ë$lQ"Á"Ü*†±
-ô$ à¯†≠∫!≈&Ö&≠ª!≈'Ö'8•$Ì∫!Ö$•%Ìª!Ö%∞
-°ç∫!±çª!lŸ#†•$%=°&QPÊ&PÊ'•$PF%F$
-l$#•&Ö(•'Ö)°&QÊ&PÊ'•$PF%F$(Ê*•$%P‚
-8†•&Òç∫!H•'Òçª!©≈ÖêÊ†±ÅÖ$H±†
-ëÖ%à•*ë$±(HF*˜© ë$†l	 b µ"SOURCE“+D!
-"›Ñ ∑9¯cd›!o!"\b ¨#WOR0ï°E$±
-Â%lá' QU<°Ö$±Ö%•…ÖêÊ°E$±Â%
-∞lâlå( ˝>“+ãU\( )0>“+§É\( 7
-0<>“+ôâ\( fU>“+ã\( v=“+…ô\
-( ≈D0=“+ô\( ”D=“+µıŸ\( ÉD<“
-+È…Ñ -  ¬ ﬁ\“+9Ñ ãÄ\
-) îMIN“+È-µ\) EMAX“+ÈUµ\) W
-IB“+\!"\; W!QUERY“+›!
-pW?Q!"o!;∏!
-˜D!˜\< Á!SCAN“+P∏Ñˇ ÙJ…Ñ «
-ã#ã¬‰ˇ9\< "SKIP“+P∏Ñˇ ÙJ…
-Ñ «ã#ã¬‰ˇ9\< ;"/STRING“+ÙˇÙ
-˜z…\IaêI{∞I¬ê)ﬂI[∞	Ä`=  "CAPITA
-L©"° Ü"Ål	 > ù"
-CAPITALIZED"°Ö$±Ö%°$Ö
-&àD&P†l	$ ‡OFF“+°ã;\% ÒÑCLIT
-•8ÈÖ∞F°ÅäëÊPÊl	 % ÉLIT1•8È
-Ö∞F±ë°Å•…ÖêÊl	 % )GLITERAL
-“+∏/ ˇ1Ñ
- 6!/!d6!
-!\& t0<Ö±
-©ˇ$äël & ~0=õ°ËPÈ& îUWITHIN±
-© S†°E$±Â%∞
-°E&±Â'∞Ωlå' •<W°
-Ö$±Ö%•…ÖêÊ•%q\: Q PAD“+X 
-b˜
-\: ‚ ALLOT“+L[\: ı ,“+X ;F˝ \: 
-!C,“+X ‰º˝ \: !áCOMPILE“+Ô∏aP"
-!\; ,!#TIB.* ; h!>TIB.*`!savesystem 
-bv16d1here . decimal                     
-                            ; u!>IN.* ;
- ≤!BLK.*  ; æ!SPAN.* ; J!TD+˜© 
-SH±≈&ëH±≈'ë°≈$Å†±≈%ël	 # 1+
-%©¡∞l Å±… ël	 # 2+c©P‡# <
-3+p©PSv©PM\©PG# i1-…8°Èêl Å
-±È ël	 # ¬2-áê‡$ ÄTRUEø+ˇˇ$ åFA
-LSEø+  $ ô"-1ì$ ß!0°$ ∞1ø+ $ ∏2ø
-+ $ B3ø+ $ L4ø+ $ VON“+ìã;\
-ÏÊ)Ê'lL7 ºCMOVE>Ù© S•%≈'Ö'•%≈)Ö
-)Ê%§$êà±(ë&òP¯F'F)F%P†l	 7 ÈMOVE“+P
-ÈÑ ÔÚdÔD\8 % PLACE“+ÙPÙ
-#Ô, ‰\8 f COUNTŒ °Ö$…Å±Ö%… ë•
-8ÈÖ∞FlT8 ƒ ERASE“+°® \9 è FILL™ 
-© Sà•$¶'
-ë(HP˚Ê)JPˆ¶&ë(HJP˙†l	 : ° 
-HERE“+L"‚+˘H°—ëà±†—ëlô  Û
-ORH°ëà±†ëlô  AND3H°1ë
-à±†1ëlô  +XORpH°qëà±†qëlô
-! h-ÀH±8·ëH±†Ò†ëlô! ≈NOTã
-ä·ÅäÒël	 ! ÉNEGATE¶8∞„" õDNEGAT
-E∑H8äÒëHäÒëä·Å†äÒël	 
-™®à±ô$ à
-¯ä≈ÖêÊ¢ †`" ´	+∏P=ˇÙÉÑ ‹˜
-ã«ÉÑ §ÙÑ ã˜ã«9\5 X2/
-±
-± ë° l 6 /MOD“+PˇÔ‡\6 /
-/“+6 \6 dMOD“+6Ä\6 r*/MOD“+P
-Ô‡\6 ¬*/“+  \6 ÿU/MOD“+°ã«\
-6 áUD/MOD“+P°«ÔãP«Ô\7 õCM
-OVEF© SàD$P	F%†l	 ±(ë&HP
-•8ÈÖ∞
-F†±ÅH±†ël	  ÌROT†±Ö%†±†
-ë†±Ö$•%ë†•$ëH±Ö%°ë†±Å•%ë†l	
-  -ROT“+\ sNIP“+ãÄ\ ƒUN
-DER“+ãÙ\ ‘PICK“+#3;˜"\ ÜRO
-LL“+∏Pç;∏aÔ#3ÚÄ\ ù2SWAP“+
-PÔ\ ¿2DROPÙ V2DUP“+ÙÙ\  
-%Ål	 3 òM*“+∏É∏PÑ §ã∏ÉÑ
- 
-§ÔâPûÔÑ µ\3 Î*“+ûÄ\3  2*
-5°
-Å±*ël	 “+ì‡3division overflow\
-4 .UM/MOD…°Ö)±Ö(•…ÖêÊ°Ö%±Ö$H
-±Ö'H±Ö&¢∆*8•%Â)®•$Â(∞&*êÖ$Ñ%&'&&&%&
-$JPﬂ†∆$∆%ê Üb\•&ëH•%ëH•$ë†•'l 5
- ^M/MOD“…ÖêÊl	  ﬂCTOGGLE“+‹J
-nã‰\ˇ @$°Ö$±Ö%±$ë°$l ˇ !=
-°Ö$±Ö%H±Å$H±†ë$lÙˇ 7+!]°Ö$±Ö%H
-±¡$Å$H±†—$lo vDROPù ŸSWAPç±
-™†±Ö$äë•$†ëH¢ ±Ö$°ëà•$l  ÑDUP
-∫•8ÈÖ∞F†±†ëH±àl  ≤?DUPﬂ°
-Pl	 l∫ VOVERˆ¬Óˇ\0 ≥FREPEAT“+
-F˝6!¬Q\0 ÌEUNTIL“+F˝6!ÑQ\1 B
-DO“+6!…ˇ¶P\1 C?DO“+6!‹ˇ¶P\1 1DLO
-OP“+P˝6!Jˇ6!πˇΩ\1 eE+LOOP“+P˝6!˚ˇ6
-!πˇΩ\1 `ÖLEAVE“+πˇÔÖ∏"˜P\2 ‹U
-M*†±Ö$°Ö%HÜ&Ü'¢'&&&%&$ê±≈'Ö'H±à≈
-&Ö&êÊ%PÊ$JP|•'ëH•&ë†•$ë•Í#ﬁ\d L
-$b.(“+
-)Í##?\d ›$a\“+∏!"6h#6$∏!;
-\d Ô$b\\“+¯c∏!;\d %\NEEDS“+$ı. Ñ
- Û$\d %HEX“+
-Ê;\d 7%DECIMAL“+
-
-
-Ê;\e j%DIGIT?“+
-0…∏
-	[Ñ 
-á…∏
-
-	[Ñ Ê"Ù[›”Ä°\e ¡%
-ACCUMULA
-TE“+ãPãÊ"ûÄÊ"ûıÔ\e †%CON
-E“+X …!\. ›?PAIRS“+…‡3unstructur
-ed\I h©ˇlh© ™•8ÈÖ∞Fä†ë»¢ l /
- ÙCASE?b© S•$AP	•%QPlâäl0 8BI
-F“+6!Ñ¶º\0 \DTHEN“+=ˇº˝Ω\0 œDEL
-SE“+º˝6!¬¶ãΩì\0 ÑEBEGIN“+UF\0
- °EWHILE“+F˝F6!Ñ¶/˛ˇH\“+Ë∏/˛ˇ
-…Ñ
- ÄΩ+ñ,∏"˜a\“+ñ,aD,\q ∫,A
-LSO“+ñ,"
-
--˙3Vocabulary stack fullD,"
-Fñ,[D,;\q ﬁ,TOSS“+/˛ˇñ,[\r ˇ-
-VO
-CABULARY“+A)°!°!X %"!%;Î(l¿(D,;
-\r /-FORTHv-uu  r ¡-ONLYÑ-!@!@œ-Î(l¿
-(°ñ,;D,;Â,\r ”-	ONLYFORTH“+⁄-…-Â,ø-\
-s ó-DEFINITIONS“+D,√ §5.“+ˇ©5\√ µ5
-U.“+°©5\ƒ C5.S“+;∏"Ù…
- ˇ£ˇ‹ˇ %
-"H5F˚ˇπˇ\ƒ R5C/Lø+) ƒ ˛5L/Sø+ ƒ 
-6
-LIST“+é3;Ø$Scr é3"∏dxH5Ø$Dr `dπ5
-6°…ˇ. °>Ñ Ñ?%FÑ5ë4é3"∑9%6$˜6
-«q4#?Jˇπˇ?\≈ 6PAUSE	 ≈ ⁄6LOCK“+∏"
-}…Ñ Äd∏"Ñ Ç6¬Ùˇ}ã F†±Å
-H±†ël	 o ¨+VARIABLE“+A)F˝ \p |+UAL
-LOT“+∏0"˜
-ˇ[‡3Userarea full0"ã0
-[\p Û+USER“+A)F¸+!Î(•8ÈÖ∞F†±
-≈ÅäH≈†ël	 p ),ALIAS“+A)~'"∏J
- 
-1Ñ /˛ˇ˝ ¬ 
- Z'S*;\q ],VP.* ‹-À
--À-À-      q ë,CURRENT.*À-q ™,CONTEXT“
-+Ë Ö\¬ õ4HOLD“+ì¥4[¥4"‰\¬ æ4<#
-“+¥4¥4;\¬ W4#>“+ﬁ¥4"¥4Ù…\¬ Ë4SIG
-N“+ÉÑ 
--E4\¬ ˇ4#“+Ê"§
-	ÙUÑ
- 
-á˜
-0˜E4\¬ 5#S“+5ÈŸÑ¯ˇ\√ @5
-D.R“+z‹)ˇ|4e55Ì4Ù›Ù…§4#?\√ u
-5.R“+ãˇ[5\√ 5U.R“+°ã[5\√ í5D.
-“+°[5ë4\d¬‡ˇ \“+Ã 
-1˜\n °*N
-AME>“+∏S*ãJ
- 1Ñ "\n ‚*>BODY“+a
-\n +.NAME“+›Ñ ∏î(Ñ Ø$|Ã 
-1#?
-¬ Ø$???ë4\o +CREATE:“+A)ï'¥,"D,;ï
-0°\o h+:“+r+Î(•8ÈÖ∞F•Å•ë•…
-Öä≈Öl	 o »+A;“+°˝6!\0¥'\o ñ+CONS
-TANT“+A)!Î(•8ÈÖ∞4π>D!"›Ñ é3;∏!
-"ô3;33\_ ü3á(ABORT"“+ÿ$ãÑ P,(Ôª
-dÄ\“+ÿ$ãÑ ªdÄ\_ V3FABORT"“+6
-!‡3\$\_ 4FERROR"“+6!˙3\$\` %4BLø+  ` 
-:4	-TRAILINGs4ò S°Ö&±≈%Ö'§$êà±&I 
-HPÊ%òh•%lòPÍF'F%‰òl¡ e4SPACE“+?4?
-\¡ â4SPACES“+°‹ˇ ë4Jˇπˇ\“¥,""!
-$J∏º
- Øâ‡3invalid nameX ~';#˝ à)
-^)"Ñ º^)[∏)!û(
- Z')L;¬ &)Ä
-¥'°!Î(lﬂ(3*°Ö(±Ö)•…ÖêÊ°Ö&±Ö'
-&Plå±&ëÖ%°&ÅÖ$%Pl	 •$…Ö$êÊ%°$h8)
-≈$Ö$êÊ%») 
-±$h°$Ö$»Ö%•$E(P∞•%E)P™lcn 
-∏)>NAME“+%"∏Ñ ÈZ…ã1*›Ñ zﬁ
-"≥a…\] ¨2DEPTH“+;∏"ã…\“
-+1$"Ñ Ø$
- compilingdØ$ ok\^ G2(QUI
-T“+Ì1?Ô!˘/ﬂ2¬Ùˇ\^ 3'QUITI0
-3^ 3QUI
-T“+B"B0&3\^ ,3STANDARDI/O“+/*ÙZ
-D\^ c3'ABORTI0†^ ¡3ABORT“+,(√ 3q333
-\_ –3SCR.* _ à3R#.*  _ î3(ERROR“+q3ë
-4X +Ã #?ëë•Å°…Öä—Ö©≈hä≈l
-“+Ô~'"Í*;\j å(EDOES>“+6!Î(
-l!6!¿(\
-“+∏
-ˇ1
-ˇ……\“+X 
-ˇ1
-ˇ…Ñ ∏∏
-#X Ù…#Úº~'[º˝ \k ˚(?HEAD.*  k v
-)|“+^)"”ì^);\l ƒ)WARNING.*  “+Ñ)"
-”~'"¥,"9. Ñ ë4~'"+Ø$exists π>\l
- ⁄)CREATE“+X D!"!±EH±Â†êl	  Ü
-ì‡3stack empty\\ ï1.STATUSI0k.*ÔÔ
-;\\ „1ÑPUSH“+Ôã∏P"PÒ1PP\\ ˝1L
-OAD“+›ô”D!2D!;∏!2∏!˜Ì1˘/\] 2+LO
-AD“+D!"˜#2\] c2THRU“+#ã…ˇ
- %#2Jˇπˇ
-\] y2+THRU“+#ã…ˇ
- %k2Jˇπˇ\] ÷2c-->“
-+ºD![∏!˜Ì1\] î2RDEPTH“+BRSIVE“+¥'
-\“+Ç'Ñ ‹JÙ‰Ä\h H'	IMMEDIATE“+
-
-@Z'\h Ú'RESTRICT“+
-ÄZ'\i 	(
-CLEARSTA
-CK.(†±ÖH±Ö†l	 i (HALLOT“+∏"Ù…
-ã;a∏…∏∏;FçÙ…, ,(∏;\i @(
-HEAP“+∏"z\i Ÿ(HEAP?“+Ä(}Ø\“+∏X Ù
-…∏i(Ä(ãDÄ(Ù…~'[¥'\•8ÈÖ∞F•
-	“+A)/•0!Î(†±hH±Ö»Ö†l z µ0(IS“
-+Ô∏aP";\“+"/I/"Ù…ã/∏/"…
-â‡3not deferred\z ›0bIS“+;/∏Û0+1$"Ñ
-
- 6!„0!d;\.* “+O2
- -‡3tight stack
-e1JôÑ ìe1‰ì‡3dictionary fullØ$st
-ill full \[ "1?STACK†1†8•ÒH•ÒP	† 
-Üh1\ég1†
-2∏Ã º&;&Â°P°°Ì%&˜%
-
--@Ñ 9ìPÌ%&˜%o&Ñ Ê;Ì%&˜% %ô
-&≠%®&Ì%)&˜% %ôÑˇ&î&ô&&˜Ì%)&˜%¬T
-ˇ\g B&'NUMBER?I0L&g e'NUMBER“+p'›ô‡3
-?ÉÑ ˇ\h v'LAST.*  “+~'"›\h ◊'H
-IDE“+Ç'Ñ Ö"¥,";\h é'REVEAL“+Ç'Ñ
-
- Ö¥,";\h ´'IRECU/NOTFOUNDI0ﬂ/x æ/
-NO.EXTENSIONS“+˙3Haeh?\x O/	INTERPRET“+
-∏/\ “+û1$ı.›Ñ º1Ñ ó∏/‡3compile
- onlyÉ/”p'ôÑ I/∏/\“+û1$ı.›Ñ <Ñ
- ó∏/!∏/É/”p'›Ñ <Ñ ã^^¬ I/∏
-/\y Ì/a[“+/ 0„0∫/1$˜\y {0]“+/;0„0∫/
-1$Â\“+ì‡3Crash\z ë0DEFERVERT“+#Ã
-  %Ñ ≠%¬Ùˇ«\“+º&"ô\“+Ã ìº&[\“+
-«Ã \f M%DPL.*ˇˇ“+Ñ 9ﬁÄ9°\“+Ñ 
- 9ÄÔÑ µÄ&"#›”Äì\“+
-&@Ñ
-	 
-
-ìd
-$@Ñ	 
-ìd
-H@Ñ	 
-ìd
-
-%@Ñ Fìd°\“+
-,Ù…ã
-.…\“
-+&"ì…”º&[\.*  g &NUMBER?“+Ê
-$ë•8ÈÖ∞F•&H
-0òiˇ®HòÅ©ˇ$ä†ë
-l	 v 1.FIND“+D,∏"ÙÖ"…Ñ Ö‹"9.
-Ñ  î.dÙñ,a[Ñ
- ãÖ¬ﬁˇ °\v Ó.
-'“+$ı.ô‡3Haeh?\v 7/I[COMPILE]“+;/!\
-v o/C[']“+;/^\v ≈/NULLSTRING?“+∏Jô∏
-Ñ  \H±…ÖH±… Ö†l	 w ’/
->INTERP
-RETï/ 0x ´;\≈ Ü6UNLOCK“+∏ç6˜\»8È
-Ö»È Ö©lÅ†±ÖH±Ö†°Ö±Ö•…Öê
-Ê¢lê∆ ∑6FILE<,∆  7PREV.*¯{.*  ∆ 7
-B/BUFø+†±(Y" PH¿PÙ`:7†±ô$ à¯†±
-≈&Ö&H±≈'Ö'≠7Ö(≠7Ö) )7P•…ÖêÊ†©
-≈(Å•)… ëlf•(Ö*•)Ö+°*Ö(†±*Ö)(Pl	  )
-7P‚°(Å*†±(ë*≠7Å(≠"¥,;\“+"Ö©*+\
-s ±-ORDER“+R,…ˇ %K-/˛ˇ˚ˇπˇF§4¥,K-\
-s Y-WORDS“+D,""∏°>ô1Ñ π>∏a+ë4¬
-ÊˇÄ\t .(FIND;.†±ô$ à¯°&)Ö(† ±$™H
-±$Ö%Ü$$P†¢ låH±$)E(P‡©≈$Ö)© ≈%Ö*§(
-±&Q)PKàP˜†•*ëà•)ëà¢ lâñ.°Ö$±Ö%°$Ö&)
-8≈$Ö$êÊ%•&) P	•$Å•%lB.°$Å±v“+∏áf
-Ñ	 
-6dP˜∏ãfÑ áf…
-6
-˜d
-∏èfÑ ãf…
-6
-˜dèf…
-6
-˜
-\“+ìf#ã\“+Ê2t%°|4e5Ä
-,E4e5Ì4\ø+
- ç of
-READSECTOR“+d
-zeë$u1:13,0,Ã ˝e
-¯f˝eódÇ6yf”d
-Neg7fód°\ç gWRITESE
-CTOR“+d
-zeë$b-p:13,0Ã ˝eódd
-ze
- \óeÜö© S•& Ld•&ç>ˇ ¥ˇç?ˇ•$	`Ö≠ç>ˇ ñˇ
-ç?ˇ¶&Üòlhaä }eBUSIN“+àdç6ïe\ã FeBUS!„e
-°ç>ˇ ®ˇç?ˇlôã ZeBUSTYPE“+£ˇ‹ˇ %J·eJ
-ˇπˇÇ6\ã ÛeBUS@fç>ˇ •ˇç?ˇlã fBUSINP
-UT“+£ˇ‹ˇ f%‰JˇπˇÇ6\ã ,fDERROR?“+d
-
-Nef∏
-0…Ñ ?f∏Úa…ÑÙˇô?ôód\
-ø+≈ø+Íø+FFôdç>ˇ Lˇç?ˇ†¢  Üàd¿6\¢ †
- Üód7¿6ì‡3	no device\ÜêÖÆç>ˇ ±ˇç?ˇ©`
-ç>ˇ ìˇç?ˇç>ˇ Æˇç?ˇ•ê»»lØd`˘d° Ld•…Ö
-êÊl¢dâ éd?DEVICE“+àdç6˜d\$eÜö© S•&
- Ld•&ç>ˇ ±ˇç?ˇ•$	`ç>ˇ ìˇç?ˇ¶&Üôlhaä eBU
-SOUT“+àdç6"e\ä qeBUSOPEN“+
-ze\ä ∆e
-BUSCLOSE“+
-‡zeód ¬cC64TYPE§c© S†
- D$±& µb∞©.ç>ˇ lˇç?ˇHl´cl®bÜ òcDISPLA
-Y˚>Óbc¢cc5chcÀc\Ëcç>ˇlrˇá JcB/BLKø+ 
-á cBLK/DRVø+™ á ˛c(DRV.*  “+d"
-˜\
-á dDRIVE“+d$Z;\á (d>DRIVE“+d$˜
-Z"…\á >dDRV?“+Z"˜dh\á ydDRVI
-NIT“+†\à –dI/O.*◊à ÇdBUSOˇç?ˇ•…
-ÖêÊÜKÜO† ÜÇ6\IÄ∞I `I‡∞I¿``Ñ âb
-P
-RINTABLE?Vb° µbêJälÖ GbC64EMITb° µ
-b∞©.lîbÖ ‰bC64CR“+Úaêb\Ö ˛bC64DEL“+
-
-ùêbë4
-ùêb\Ö cC64PAGE“+
-ìêb\Ö +cC64
-ATjc© S¶&§$ç>ˇ ˇç?ˇlhaÖ @cC64AT?Õc•
-8ÈÖ∞Fäë8ç>ˇ ˇç?ˇ¿(òêÈ(hä¢ Å»lÜ
-vÄftÂ°_°/Í‰\+ Ê^EDIT“+Kié3;›
-xt^/_
-°d?*yØ$Scr π5Ø$Drv π5∏F1ôÑ
-	 Ø$not Ø$changed∏Z1Ñ Ï9∏
-1
-
-…Ñ Ø$, saved
-1Ñˇ Ø$	, loading?é
-3"ô3"Ò^\, ÷_L“+ô3˜}_\, `R“+é3"}_
-\, `+L“+é3"˜`\, .`V“+;/©*›Ñ Z
-…"\, a`VIEW“+e`›Ñ `¬ Ø$from 
-keyboard\“+∆t" tJ˜\, N]CURLIN“+
-ê
-b
-jêbÑ`
-êb
-kêb
-êbÑ`Ù…\- î`	EDIDE
-CODE“+
-ç@Ñ
- >t˜?dÚa@Ñ< >t˜ù`∏Q!
-"[Ñ ÄQ!"£ˇ‹ˇ È˜%J tã‰#Jˇπˇ∏
-Q!;d∏bt‰
-»]ó∫]Ä\- D`	EDIEXPECT“
-+t^Q!;°∏Q!"Ñ
- Ø?I?¬Óˇﬁë4\- :¡
-EDIBOARDû?La[aP`f¡\“+}∏#‹"È…Ñ
- 
-Ä¬Ïˇﬁ;\ [`RELOCATE“+ã≠˜È˜%7
-˜a;[‡3buffers?∏Ë / ˜‡3stack?Ù
-0"
-@˜‡3rstack?@:$>‹˜≠
-
-˜;∏
-É¡}#"≠#;
-…≠
-˜;a\ ß¡
-BYTE
-S.MORE“+}≠…˜B"}…≤¡\ 	4¬BUFFER
-S“+%7$a;B"…ã…a¬\“+Uj/Ç6∏2;àd
-2àd˜˝e\ˇ y¬
-SAVESYSTEM“+é32ºé3;ô32
-ô3˜`x∏2˜U]∏2˜e>
-F–e°Í#˝eë$,p,
-wÃ ˝eód
-Fze≠
-…∏/ èã·e·eX Ù…
-{¬ód
-Fàe°d;yf‡3
-save-error\ ó¬BA
-MALLOCATE“+Cg”Ë 
-°&gôÑ Ë Z˜
-åó
- w Ë 
-°ÀgÄÂg
-
-zeë$i0Ã ˝eód\ *√
-
-FORMATDISK“+
-
-zeë$n0:Ã ˝e°Í#˝eódyf
-”8√\E“+ã≠˜È˜%7˜a;[‡3buffers?∏
-Ë / ˜‡3stack?Ù0"
-@˜‡3rstac
-k?@:$>‹˜≠
-
-˜;∏É¡}#"≠#;
-…≠
-
-˜;a\ ß¡
-BYTES.MORE“+}≠…˜B"
-}…≤¡\ 	Â'l≤<•(E,•)Â-∞°,Å$±,ë$lG<•,Ö
-$•-Ö%lâ<lù“+%"›Ñ ∏PZ…À<Ô¬Íˇ\
-“+}#∏"}…Ñ( È"ãX ØÑ ∏"#"Ù
-;«¬ "¬Nˇﬁ\“+%À<R,…ˇ  È%"zØ
-Ñ
- /À-%;/˛ˇ˚ˇπˇÈ¥,"zØÑ
- /À-¥,;
-\” ∫;CUSTOM-REMOVEI0†“+ÙÎ<'=M<{=Ä(ã
-…i(L;°~';\‘ À=
-;""ã;%7#;[\– 
-À;ALL-BUFFERS“+#;"7;#;"…ÑÚˇ\“+J
- 
-1\“+Í*‹#ãî(\“+Ä(%"PÔ"›Ñ^
- ∏PZ…PÔ"PÙ«∏ãaÍ*1Ñ
-. î(ÑZˇa|;Ñ ÙaÁ;Ñ aS*a
-¬∂ˇ9¬úˇ\Õ<†±ô$ à¯†±…Ö*H±… Ö+
-†°$Ö,±$Ö-,5•,E*•-Â+ê•,E&•-Èh:Jˇπˇ
-¬ Ô°‹ˇ Èh:ººıJˇπˇÏ9ﬁ\œ 8:COPY
-“+º÷:\œ T:CONVEY“+ã#Fç…∏<â‡3n
-ein÷:\– Â:LIMITø+ Ä– ;FIRST.*¯{– ;A
-LLOTBUFFER“+#;"B"…%7a”%7§#;[#;"
-∏{87"Ù;7;\– );
-FREEBUFFER“+#;"
-;%7…Ñ. #;"!87∏"#;"…Ñ "¬Óˇ#
-\\ altes                      clv11jan88 
-                                         
-                                         
-Code xpClr  ( curLn--)                   
- 1 # lda setup jsr                       
- N 6 +  N 2dup lda sta 1+ lda 1+ sta     
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
- 
- û(4112)    ÍlaÍl9al§ J6 ◊§®Yœ
-   Vc?z®3∆                            
-                                         
-                                         
-                                         
-                                         
-                                        
-    .*ultraFORTH-83 3.80-C16+ çˇˇ±Ö≠ˇˇ
-Ö•…Ö∞ÃˇˇÊ∞˘   	END-TRACE≈©•Ö©Ö
-©…Ö©Öl	  wRECOVER.*»Ö»Ö•PFFl
-“+ ⁄NOOP	  ôORIGINø+ §S0<, ≥
-R0<,
- ΩDP<, GOFFSET<, QBASE<
-, ﬂOUTPUT<, Î INPUT<, ˘ERROR
-HANDLER<, VOC-LINK<, ˇUDP<,ˇ *
-SP@=•Ö$•Ö%¢$•8ÈÖ∞Fµëµ ¢ l  5
-SP!«°™±ÖÜ¢ l	  _UP@¢lg ◊É
-UP!é¢±ïà±ï ¢ †•…ÖêÊl	  ÜRP
-@µ¢lg ≠ÉRP!D¢lê ºÇ>RR•8ÈÖ∞
-F°Å±ëlù KÇR>Ò•8ÈÖ∞ EECTOR“+È
-°_t9t&gctÂgº_t9tÀgctÂg\ Õt	COPY2DISK“
-+Ë ∏/˜;[‡3no room?Ø$Source=0, D
-est=1Ø?Ä?Ê2t%°/™…ˇ! %π5%9tπ5π5?
-
-ëêb∏%⁄tì˚ˇπˇÄ\ öt	2DISK1551“+@:
-
-
-–eë$%9Ã ˝eódyfÄ\?„r"›Ñ Pã«Ù
-Ô˜Ó:¬ …ˇ %∑9ÄJ9JˇπˇÏ9\ ≤rCOPY
-\ .page altes                 clv11jan88 
-                                         
-Code .page3 ( adr len col--ad+ len- col) 
-\ setup of N... y                        
- 3 # lda  setup jsr  N 2+ # ldy neg jsr  
-\ setup of actLn                         
- N 6+  ' scrAdr >body  2dup              
-    lda    sta                           
- 1+ lda 1+ sta                           
- tsx  N 9 + stx  \ Exit SP               
- 0 # ldx  0 # ldy                        
- N 4 + wdec N 2+ wdec  pCol jsr          
- [[ pGet jsr 0=                          
-    ?[ pClr jsr pCol jsr                 
-       ][ pPut jsr ]? ]] end-code        
-                                         
-: .page5 page .page3 ;                   
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                         
-                                        
- D˝ ÔJˇπˇﬁÎ(l¿(Ã Pã$˜Ô#?\èo
-*byadcandaslbccbcsbeqbitbmibnebplbrkbvcb
-vsclccldcliclvcmpcpxcpydecdexdeyeorincinx
-inyjmpjsrldaldxldylsrnoporaphaphpplaplpro
-lrorrtirtssbcsecsedseistastxstytaxtaytsxt
-xatxstyaèo  a z#  ((zz (èo             
-     ,x ,y A  ° ±5¬ “q  aa
-22A	    °    ¬q  aaˇ"22A   
- °.    ¬.*#0,.*Åaq2ë°“¬“+∏º1
-Ñ ô°d∏
-1|n˜Jã
-1Rn˜
-J\.*æ÷.*≥÷“+∏º1Ñ ∏
-â…Ñ ÄFÊ
-n¬ Pmã∏P1"o;o;\“+A)∏!
-ã°…ˇˇ P∏X##X  	‰ì˚ˇπˇÔ°d?÷l33\
- _mTOOLSv-ØpØpej“+A)°…ˇ ?4X#_'Ä!Jˇ
-πˇÎ(l¿(˜Ã ãJ\Cm    a%   2A
-    
-°    ¬2  aa(' (22(A    °(-    ¬
-(*    a!$ !22!A    °!    ¬!+    a)
-& )R2)A    °)/    ¬)    a2a162221A
-  °2±187    q qa a432 2 
-zlØ$z 
-
-£ˇ…ˇ %J?Jˇπˇ\“+È…Ñ &lFÑ55lë4
-\“+È…Ñ &lºÑ55l\“+ã∏/ˇ1ã
-1
-F°…ˇa ?
-§4%
-$
-£ˇ…ˇ
- %£lJˇπˇF
-§4%
-$
-£ˇ…ˇ
- %πlJˇπˇJˇπˇ˜\ –l
-DUMP“+Ê2=%Ml£ˇ‹ˇ %÷l°>Ñ Ñ
-˚ˇπˇ?
-\ /mZ“+z?ÖPdl
-ç
-˜/˘ˇ£ˇ…ˇ %
- et to moon with no return@:$>Ù˜≠˜≠
-
-
-˜;≠˜∏≠#;
-…≠
-˜;a\ k
-
-BYTES.MORE“+}≠…˜B"}…#k\ UkBUF
-FERS“+%7$a;B"…ã…‚k\  ˙kRVSON“+\
-  lRVSOFF“+\  ,lUNLINK“+\“+°|455
-Ì4#?ë4\“+£ˇ‹ˇ %JhlJˇπˇ\ ;lDLN“+?∏
-Zò5ë4∏
- ~jSPø+ ‹ âjIPø+ ‹ îjNø+$
- ‹ üjPUTAø+ ‹ ©jWø+ ‹ ∂jSETUPø+S‹ ¿
-jNEXTø+	 ‹ NjXYNEXTø+ha‹ €jPOPTWOø+Ù 
-‹ ÍjPOPø+ù  3j.ST“+D!"π5\ kRELOCA
-TE“+È˜%7˜a;≠…[‡3kills all buffer
-sÙË / ˜≠…‡3cuts the dictionary∏
-0"
-@˜‡3a tick ≠ˇ	çˇç?ˇx`ì +iC
-64INIT¶i `ilha  ÖÜáâäãåàî öiC64F
-KEYSMi¢J0	Ω¨iù]lOilha{ ¿ic(64“+$Ã ô‡3
-
-C) missing"/C)…Ñ„ˇ\{ ‡ibC)“+\{ jc
-(16“+\{ jFORTH-83“+\‹ "j	ASSEMBLERv-˙
-j˙jÄ-‹   PUSHAø+‹ ijPUSH0Aø+‹ wjPU
-SHø+‹ ∆jRPø+ ‹ ”jUPø+ ‹  INDEX“+#
-ã…ˇ! ?%FÑ5%∑9#
-%#?°>Ñ ÑJˇπˇ\è 
-ähFINDEX“+CgÑ ﬁd#ã…ˇ1 ?%FÑ5Ë ∏
-%33Óf&gP#
-%#?Ô°>Ñ ÑJˇπˇÂg\ê 
-øhINK-POT.*ˆˆ Óˆ ˆˆ í iINIT-SYSTEM;
-i¢˜ölhaç>ˇçviéxi©ih©\h∫Ωh©J¢ l≥¸ç?ˇ@ÿç>
-ˇ©içˇˇ©aç˛ˇ Ñˇ äˇ≠içˇ≠içˇ≠iç@©Äç@
-!F°Å±ë©≈ÖêÊl	  ÍR@•8È
-Ö∞F±ë°l  ÖRDROP 1EXITf°Ö
-±Öl =UNNEST^°Ö±Öl s?EXI
-T’°•…ÖêÊ(Pæl	  ÀEXECUTEô°
-Ö±Ö•…ÖêÊl  çPERFORM“+"ó\
- ±C@L°Ö$±Ö%© ë°$l  EC!Ê°Ö$±Ö
-%H±Å$à•! H±$ Ü"ë$lQ"Á"Ü*†±ô$ à¯†
-≠∫!≈&Ö&≠ª!≈'Ö'8•$Ì∫!Ö$•%Ìª!Ö%∞°ç∫!±çª!
-lŸ#†•$%=°&QPÊ&PÊ'•$PF%F$l$#•&Ö(•'Ö
-)°&QÊ&PÊ'•$PF%F$(Ê*•$%P‚8†•&Òç∫!
-H•'Òçª!©≈ÖêÊ†±ÅÖ$H±†ëÖ%à•*ë$
-±(HF*˜© ë$†l	 b µ"SOURCE“+D!"›Ñ ∑9
-¯cd›!o!"\b ¨#WOR! IB“+\!"\; W!QUER
-Y“+›!
-pW?Q!"o!;∏!˜D!˜\< Á!SCAN“+P
-∏Ñˇ ÙJ…Ñ «ã#ã¬‰ˇ9\< "SK
-IP“+P∏Ñˇ ÙJ…Ñ «ã#ã¬‰ˇ9\<
- ;"/STRING“+ÙˇÙ˜z…\IaêI{∞I¬ê
-)ﬂI[∞	Ä`=  "CAPITAL©"° Ü"Ål	 > ù"
-CAP
-ITALIZED"°Ö$±Ö%°$Ö&àD&P†l	!\: Q P
-AD“+X 
-b˜\: ‚ ALLOT“+L[\: ı ,“+X 
-;F˝ \: !C,“+X ‰º˝ \: !áCOMPILE“+
-Ô∏aP"!\; ,!#TIB.* ; h!>TIB.*`!s
-avesystem tvdold                         
-                                      ; u
-!>IN.* ; ≤!BLK.*  ; æ!SPAN.* ; J!T
-!ÏÊ)Ê'lL7 ºCMOVE>Ù© S•%≈'Ö'•%≈)Ö
-)Ê%§$êà±(ë&òP¯F'F)F%P†l	 7 ÈMOVE“+P
-ÈÑ ÔÚdÔD\8 % PLACE“+ÙPÙ
-#Ô, ‰\8 f COUNTŒ °Ö$…Å±Ö%… ë•
-8ÈÖ∞FlT8 ƒ ERASE“+°® \9 è FILL™ 
-© Sà•$¶'
-ë(HP˚Ê)JPˆ¶&ë(HJP˙†l	 : ° 
-HERE“+L"!+∏P=ˇÙÉÑ ‹˜ã«ÉÑ
- §ÙÑ ã˜ã«9\5 X2/±
-± ë
-° l 6 /MOD“+PˇÔ‡\6 //“+6 \
-6 dMOD“+6Ä\6 r*/MOD“+PÔ‡\6 ¬
-*/“+  \6 ÿU/MOD“+°ã«\6 áUD/M
-OD“+P°«ÔãP«Ô\7 õCMOVEF© S
-àD$P	F%†l	 ±(ë&HP!%Ål	 3 òM*“+∏É
-∏PÑ §ã∏ÉÑ
- §ÔâPûÔÑ µ\3
- Î*“+ûÄ\3  2*5°
-Å±*ël	 “+ì‡3
-division overflow\4 .UM/MOD…°Ö)±Ö(
-•…ÖêÊ°Ö%±Ö$H±Ö'H±Ö&¢∆*8•%Â)®•
-$Â(∞&*êÖ$Ñ%&'&&&%&$JPﬂ†∆$∆%ê Üb\•&
-ëH•%ëH•$ë†•'l 5 ^M/MOD“!¬Óˇ\0 ≥
-FREPEAT“+F˝6!¬Q\0 ÌEUNTIL“+F˝6!Ñ
-Q\1 BDO“+6!…ˇ¶P\1 C?DO“+6!‹ˇ¶P
-\1 1DLOOP“+P˝6!Jˇ6!πˇΩ\1 eE+LOOP“
-+P˝6!˚ˇ6!πˇΩ\1 `ÖLEAVE“+πˇÔÖ∏"˜
-P\2 ‹UM*†±Ö$°Ö%HÜ&Ü'¢'&&&%&$ê±
-≈'Ö'H±à≈&Ö&êÊ%PÊ$JP|•'ëH•&ë†•$ë•
-!E“+X …!\. ›?PAIRS“+…‡3unstructur
-ed\I h©ˇlh© ™•8ÈÖ∞Fä†ë»¢ l /
- ÙCASE?b© S•$AP	•%QPlâäl0 8BI
-F“+6!Ñ¶º\0 \DTHEN“+=ˇº˝Ω\0 œDEL
-SE“+º˝6!¬¶ãΩì\0 ÑEBEGIN“+UF\0
- °EWHILE“+F˝F6!Ñ¶/˛ˇH\“+Ë∏/˛ˇ
-…Ñ
- ÄΩ!Ö†l	 + BˇÜ(+LOOP˝ˇ°¡Å±
-—ë q•…ÖêÊ(Dl	 , ÚˇÅI'† •8ÈÖ
-∞F±HH—Åà±HH—†ël	 , !ÅJs†PR-
- mÜBRANCHƒ•¡Ö$•—Ö•$Öl	 - yá?BRA
-NCHÜ°•…ÖêÊ(Kld. ⁄>MARK“+X 
-°!\. û>RESOLVE“+X Ù…ã;\. ≤<MA
-RK“+X \. M<RESOLV!UMAX“+Èµ\) È
-UMIN“+È[µ\) ¸EXTEND“+∏É\) ˇDA
-BS“+ˇÑ µ\) "ˇABS“+ˇÑ §\“+9Ôa
-∏PPãPP\* 7ˇÉ(DO“+Ù…iˇ\* √ˇÑ(
-?DO“+Ù…›Ñ iˇÔ∏"˜PÄ\* ’ˇBOUND
-S“+Ù˜ã\* öˇáENDLOOPªˇ©l+ ØˇÖ(LOOPL
-ˇ©¡Åê±… ëêl	 †±Öà±!	0ï°E$±
-Â%lá' QU<°Ö$±Ö%•…ÖêÊ°E$±Â%
-∞lâlå( ˝>“+ãU\( )0>“+§É\( 7
-0<>“+ôâ\( fU>“+ã\( v=“+…ô\
-( ≈D0=“+ô\( ”D=“+µıŸ\( ÉD<“
-+È…Ñ -  ¬ ﬁ\“+9Ñ ãÄ\
-) îMIN“+È-µ\) EMAX“+ÈUµ\) W
-!
-$ ‡OFF“+°ã;\% ÒÑCLIT•8ÈÖ∞F
-°ÅäëÊPÊl	 % ÉLIT1•8ÈÖ∞F±ë
-°Å•…ÖêÊl	 % )GLITERAL“+∏/ ˇ1
-Ñ
- 6!/!d6!
-!\& t0<Ö±©ˇ$äël
- & ~0=õ°ËPÈ& îUWITHIN±© S†°
-E$±Â%∞
-°E&±Â'∞Ωlå' •<W°Ö$±Ö%•…
-ÖêÊ•%q!D+˜© SH±≈&ëH±≈'ë°≈
-$Å†±≈%ël	 # 1+%©¡∞l Å±… ë
-l	 # 2+c©P‡# <3+p©PSv©PM\©PG
-# i1-…8°Èêl Å±È ël	 # ¬2-áê
-‡$ ÄTRUEø+ˇˇ$ åFALSEø+  $ ô"-1ì$ ß
-!0°$ ∞1ø+ $ ∏2ø+ $ B3ø+ $ L4ø
-+ $ VON“+ìã;\!‚+˘H°—ëà±†
-—ëlô  ÛORH°ëà±†ëlô  A
-ND3H°1ëà±†1ëlô  +XORpH°qëà
-±†qëlô! h-ÀH±8·ëH±†Ò†ëlô
-! ≈NOTãä·ÅäÒël	 ! ÉNEGATE¶8∞„"
- õDNEGATE∑H8äÒëHäÒëä·Å†äÒël	 
-
-™®à±ô$ à¯ä≈ÖêÊ¢ †`" ´!•8ÈÖ∞
-F†±ÅH±†ël	  ÌROT†±Ö%†±†
-ë†±Ö$•%ë†•$ëH±Ö%°ë†±Å•%ë†l	
-  -ROT“+\ sNIP“+ãÄ\ ƒUN
-DER“+ãÙ\ ‘PICK“+#3;˜"\ ÜRO
-LL“+∏Pç;∏aÔ#3ÚÄ\ ù2SWAP“+
-PÔ\ ¿2DROPÙ V2DUP“+ÙÙ\  
-!…ÖêÊl	  ﬂCTOGGLE“+‹Jnã‰\ˇ 
-@$°Ö$±Ö%±$ë°$l ˇ !=°Ö$±Ö%H±
-Å$H±†ë$lÙˇ 7+!]°Ö$±Ö%H±¡$Å$H±
-†—$lo vDROPù ŸSWAPç±™†±Ö$äë
-•$†ëH¢ ±Ö$°ëà•$l  ÑDUP∫•8ÈÖ∞
-F†±†ëH±àl  ≤?DUPﬂ°Pl	 l∫
- VOVERˆ"D“+µ#Â"\b Q#PARSE“+Pµ#∏!"
-‘"ÙãÔ"PÙ…∏Ôl…∏![\b ‚#NAME“+
-?4X#B"d\c $STATE.*  c )$eASCII“+?4X##
-J1$"Ñ ^\c 7$,"“+
-"Í#X Ù#˝ n \
-c w$Ñ"LIT“+ÔÔ‹Ã ˜PP\c —$Ç("“+ÿ$\c
- å$A"“+6!ë$\$\d ô$É(."“+ÿ$Ã #?\d ©$B."“
-+6!Ø$\$\d ª$a(“+
-)"4π>D!"›Ñ é3;∏!
-"ô3;33\_ ü3á(ABORT"“+ÿ$ãÑ P,(Ôª
-dÄ\“+ÿ$ãÑ ªdÄ\_ V3FABORT"“+6
-!‡3\$\_ 4FERROR"“+6!˙3\$\` %4BLø+  ` 
-:4	-TRAILINGs4ò S°Ö&±≈%Ö'§$êà±&I 
-HPÊ%òh•%lòPÍF'F%‰òl¡ e4SPACE“+?4?
-\¡ â4SPACES“+°‹ˇ ë4Jˇπˇ\“" "≥a…
-\] ¨2DEPTH“+;∏"ã…\“+1$"Ñ Ø$
-
- compilingdØ$ ok\^ G2(QUIT“+Ì1?Ô!˘/
-ﬂ2¬Ùˇ\^ 3'QUITI0
-3^ 3QUIT“+B"B0
-&3\^ ,3STANDARDI/O“+/*ÙZD\^ c3'A
-BORTI0†^ ¡3ABORT“+,(√ 3q333\_ –3SCR.
-* _ à3R#.*  _ î3(ERROR“+q3ë4X +Ã #?ë
-"±EH±Â†êl	  Üì‡3stack empty\\
- ï1.STATUSI0k.*ÔÔ;\\ „1ÑPUSH“+Ôã∏
-P"PÒ1PP\\ ˝1LOAD“+›ô”D!2D!;∏
-!2∏!˜Ì1˘/\] 2+LOAD“+D!"˜#2\] c2T
-HRU“+#ã…ˇ
- %#2Jˇπˇ\] y2+THRU“+#ã…ˇ
-
- %k2Jˇπˇ\] ÷2c-->“+ºD![∏!˜Ì1\] î2
-RDEPTH“+B"“+A)/•0!Î(†±hH±Ö»Ö†l
- z µ0(IS“+Ô∏aP";\“+"/I/"Ù…ã
-/∏/"…â‡3not deferred\z ›0bIS“+;/∏
-Û0+1$"Ñ
- 6!„0!d;\.* “+O2
- -‡3t
-ight stacke1JôÑ ìe1‰ì‡3dictionary
- fullØ$still full \[ "1?STACK†1†8•Ò
-H•ÒP	† Üh1\ég1†"/NOTFOUNDI0ﬂ/x æ/
-NO.EXTENSIONS“+˙3Haeh?\x O/	INTERPRET“+
-∏/\ “+û1$ı.›Ñ º1Ñ ó∏/‡3compile
- onlyÉ/”p'ôÑ I/∏/\“+û1$ı.›Ñ <Ñ
- ó∏/!∏/É/”p'›Ñ <Ñ ã^^¬ I/∏
-/\y Ì/a[“+/ 0„0∫/1$˜\y {0]“+/;0„0∫/
-1$Â\“+ì‡3Crash\z ë0DEFER"$ë•8ÈÖ
-∞F•&H
-0òiˇ®HòÅ©ˇ$ä†ël	 v 1.FI
-ND“+D,∏"ÙÖ"…Ñ Ö‹"9.Ñ  î.dÙ
-ñ,a[Ñ
- ãÖ¬ﬁˇ °\v Ó.'“+$ı.ô‡3
-Haeh?\v 7/I[COMPILE]“+;/!\v o/C[']“+;
-/^\v ≈/NULLSTRING?“+∏Jô∏Ñ  \H
-±…ÖH±… Ö†l	 w ’/
->INTERPRETï/ 0x ´
-""¥,;\“+"Ö©*+\s ±-ORDER“+R,…ˇ %
-K-/˛ˇ˚ˇπˇF§4¥,K-\s Y-WORDS“+D,""∏
-°>ô1Ñ π>∏a+ë4¬ÊˇÄ\t .(FIND;.†
-±ô$ à¯°&)Ö(† ±$™H±$Ö%Ü$$P†¢ låH±$
-)E(P‡©≈$Ö)© ≈%Ö*§(±&Q)PKàP˜†•*ëà•)ë
-à¢ lâñ.°Ö$±Ö%°$Ö&)8≈$Ö$êÊ%•&) P	•$Å
-•%lB.°$Å±"+ñ,∏"˜a\“+ñ,aD,\q ∫,A
-LSO“+ñ,"
-
--˙3Vocabulary stack fullD,"
-Fñ,[D,;\q ﬁ,TOSS“+/˛ˇñ,[\r ˇ-
-VO
-CABULARY“+A)°!°!X %"!%;Î(l¿(D,;
-\r /-FORTHv-fœfœ  r ¡-ONLYÑ-∆∆œ-Î(l¿
-(°ñ,;D,;Â,\r ”-	ONLYFORTH“+⁄-…-Â,ø-\
-s ó-DEFINITIONS“+D,"F†±ÅH±†ël	 
-o ¨+VARIABLE“+A)F˝ \p |+UALLOT“+∏0"
-˜
-ˇ[‡3Userarea full0"ã0[\p Û+
-USER“+A)F¸+!Î(•8ÈÖ∞F†±≈ÅäH≈†
-ël	 p ),ALIAS“+A)~'"∏J
- 1Ñ /˛ˇ
-˝ ¬ 
- Z'S*;\q ],VP.* ‹-À-À-À-     
- q ë,CURRENT.*À-q ™,CONTEXT“"d¬‡ˇ \
-“+Ã 
-1˜\n °*NAME>“+∏S*ãJ
- 1Ñ
- "\n ‚*>BODY“+a\n +.NAME“+›Ñ ∏
-î(Ñ Ø$|Ã 
-1#?¬ Ø$???ë4\o +CR
-EATE:“+A)ï'¥,"D,;ï0°\o h+:“+r+Î(•8È
-Ö∞F•Å•ë•…Öä≈Öl	 o »+A;“+°˝
-6!\0¥'\o ñ+CONSTANT“+A)!Î(•8ÈÖ∞
-"	¥,""!$J∏º
- Øâ‡3invalid nameX
- ~';#˝ à)^)"Ñ º^)[∏)!û(
- Z')L
-;¬ &)Ä¥'°!Î(lﬂ(3*°Ö(±Ö)•…Öê
-Ê°Ö&±Ö'&Plå±&ëÖ%°&ÅÖ$%Pl	 •$…
-Ö$êÊ%°$h8)≈$Ö$êÊ%») 
-±$h°$Ö$»Ö%•$E(P∞
-•%E)P™lcn ∏)>NAME“+%"∏Ñ ÈZ…ã1*
-›Ñ zﬁ"
-ë•Å°…Öä—Ö©≈hä≈l
-“+Ô~'"Í*;\j å(EDOES>“+6!Î(
-l!6!¿(\
-“+∏
-ˇ1
-ˇ……\“+X 
-ˇ1
-ˇ…Ñ ∏∏
-#X Ù…#Úº~'[º˝ \k ˚(?HEAD.*  k v
-)|“+^)"”ì^);\l ƒ)WARNING.*  “+Ñ)"
-”~'"¥,"9. Ñ ë4~'"+Ø$exists π>\l
- ⁄)CREATE“+X D!"!"RSIVE“+¥'\“+Ç'Ñ 
-‹JÙ‰Ä\h H'	IMMEDIATE“+
-@Z'\h Ú'
-RESTRICT“+
-ÄZ'\i 	(
-CLEARSTACK.(†±Ö
-H±Ö†l	 i (HALLOT“+∏"Ù…ã;a∏
-…∏∏;FçÙ…, ,(∏;\i @(HEAP“+∏"
-z\i Ÿ(HEAP?“+Ä(}Ø\“+∏X Ù…∏i(Ä(ã
-DÄ(Ù…~'[¥'\•8ÈÖ∞F•"2∏Ã º&;
-&Â°P°°Ì%&˜%
--@Ñ 9ìPÌ%&˜%
-o&Ñ Ê;Ì%&˜% %ô&≠%®&Ì%)&˜% %ôÑˇ
-&î&ô&&˜Ì%)&˜%¬Tˇ\g B&'NUMBER?I0L&g
- e'NUMBER“+p'›ô‡3?ÉÑ ˇ\h v'LAST
-.*  “+~'"›\h ◊'HIDE“+Ç'Ñ Ö"¥,";
-\h é'REVEAL“+Ç'Ñ
- Ö¥,";\h ´'IRECU
-"VERT“+#Ã  %Ñ ≠%¬Ùˇ«\“+º&"ô\“+Ã
- ìº&[\“+«Ã \f M%DPL.*ˇˇ“+Ñ 9ﬁÄ
-9°\“+Ñ  9ÄÔÑ µÄ&"#›”Äì
-\“+
-&@Ñ	 
-
-ìd
-$@Ñ	 
-ìd
-H@
-Ñ	 
-ìd
-%@Ñ Fìd°\“+
-,Ù…ã
-
-.…\“+&"ì…”º&[\.*  g &NU
-MBER?“+Ê"Í#ﬁ\d L$b.(“+
-)Í##?\d ›$a
-\“+∏!"6h#6$∏!;\d Ô$b\\“+¯c∏!;\d
- %\NEEDS“+$ı. Ñ Û$\d %HEX“+
-Ê
-;\d 7%DECIMAL“+
-
-Ê;\e j%DIGIT?“+
-
-0…∏
-	[Ñ 
-á…∏
-	[Ñ Ê"Ù[›
-”Ä°\e ¡%
-ACCUMULATE“+ãPãÊ"ûÄ
-Ê"ûıÔ\e †%CON#+Ë Ö\¬ õ4HOLD“+ì
-¥4[¥4"‰\¬ æ4<#“+¥4¥4;\¬ W4#>“+ﬁ
-¥4"¥4Ù…\¬ Ë4SIGN“+ÉÑ 
--E4\¬ ˇ4
-#“+Ê"§
-	ÙUÑ 
-á˜
-0˜E4\¬ 5
-#S“+5ÈŸÑ¯ˇ\√ @5D.R“+z‹)ˇ|4e55Ì
-4Ù›Ù…§4#?\√ u5.R“+ãˇ[5\√ 5
-U.R“+°ã[5\√ í5D.“+°[5ë4\#FFôdç>ˇ L
-ˇç?ˇ†¢  Üàd¿6\¢ † Üód7¿6ì‡3	no dev
-ice\ÜêÖÆç>ˇ ±ˇç?ˇ©`ç>ˇ ìˇç?ˇç>ˇ Æˇç?ˇ•ê
-»»lØd`˘d° Ld•…ÖêÊl¢dâ éd?DEVICE“
-+àdç6˜d\$eÜö© S•& Ld•&ç>ˇ ±ˇç?ˇ•$	`ç>ˇ
- ìˇç?ˇ¶&Üôlhaä eBUSOUT“+àdç6"e\ä qeBU
-SOPEN“+
-ze\ä ∆eBUSCLOSE“+
-‡zeód
-#  ¬cC64TYPE§c© S† D$±& µb∞©.ç>ˇ lˇ
-ç?ˇHl´cl®bÜ òcDISPLAY˚>Óbc¢cc5chcÀc\Ë
-cç>ˇlrˇá JcB/BLKø+ á cBLK/DRVø+™ á ˛c
-(DRV.*  “+d"
-˜\á dDRIVE“+d$Z;
-\á (d>DRIVE“+d$˜Z"…\á >dDRV?“+
-Z"˜dh\á ydDRVINIT“+†\à –dI/O.*
-§à ÇdBUSO#ˇç?ˇ•…ÖêÊÜKÜO† ÜÇ6\I
-Ä∞I `I‡∞I¿``Ñ âb
-PRINTABLE?Vb° µbêJä
-lÖ GbC64EMITb° µb∞©.lîbÖ ‰bC64CR“+
-Úaêb\Ö ˛bC64DEL“+
-ùêbë4
-ùêb\Ö cC64
-PAGE“+
-ìêb\Ö +cC64ATjc© S¶&§$ç>ˇ ˇ
-ç?ˇlhaÖ @cC64AT?Õc•8ÈÖ∞Fäë8ç>ˇ ˇç
-?ˇ¿(òêÈ(hä¢ Å»lÜ#ˇ•I… Èçˇl	 Ç ãa
-CUROFF∂a©ˇçˇçˇl	 É ´aC64KEY“+ìaÇ6[aÑ˙
-ˇ¥a’a\É Ca#BSø+ É ‡a#CRø+ É Ïa	C64DE
-CODE“+Êa@Ñ ∏Ñ .?«dÚa@Ñ
- ∏Q!;d
-PÈ˜ã‰Ô?#\É ¯a	C64EXPECT“+Q!;
-°∏Q!"Ñ
- Ø?I?¬Óˇﬁë4\É @bKEYBOARD
-û?La[ablb\Ñ –bCON!íb°ç>ˇ l#
-3„0(3⁄d
-ñ@/.";/†„0Ã3ÿ3\†π9ô à˜≠ …
-Ö≠!… Ö†±ÖH±Ö†
-±ÖH±Ö¢ †äÅë`
-⁄ ã@COLDa `i≠ …Ö$≠!… Ö%† πë$HP¯ æ
-@ Ü9i—@\⁄ ˙@RESTART9a `i æ@ Ü9iö@\¢ 
-†l	 Å -aC64KEY?]a•Ô]©ˇhlÅ qaGETK
-EY◊aç>ˇ ›Îç?ˇI†P© lÇ ÃaCURONïa•J≈Hç
-#¿(;\÷ è?KEY~? ÷ ©?KEY?~?÷ ¥?DEC
-ODE~?÷ ¿?EXPECT~?◊   SEAL“+°/⁄-+;
-\◊ |?$ONLY⁄-◊ Û?%FORTH…-◊ ˛?%WORDS	.◊ 
-@
-$ALSOÂ,◊ @+DEFINITIONSø-“+%"∏Ö"ÙZ
-…;"›ôÑÍˇ\“+°7;;#;;H;\ÿ N?'C
-OLDI0†“+1@q@£-Õ@:?Ã #??ö@\ÿ ≈@'REST
-ARTI0†“+/#“+ª?Ñ Ö>Ö>°\’ ô>?CR“+ ?
-6
-
-…[Ñ ?\“+A)∏!aÎ(l¿(JÙ"˜ª
-\÷ ≥>OUTPUT:“+r+Î(l¿(Ù;\÷ Î>EMITZ> 
-÷ ?CRZ>÷ ?TYPEZ>÷ ?DELZ>÷ (?PAG
-EZ>÷ 3?ATZ>
-÷ ??AT?Z>÷ i?ROW“+o?Ä\
-÷ t?COL“+o? \“+A)∏!aÎ(l¿(J"˜ª
-\÷ ƒ?INPUT:“+r+Î(l#CLEAR“+X ∏}=L;
-\‘ °=(FORGET“+∏î(‡3	is symbol˘;=\‘ 
-ª=FORGET“+;/∏/$"‡3	protected©*∏î(
-Ñ Í*¬ ÖÖE=\‘ ﬂ=EMPTY“+/$"}=/
-2"0;\’ >SAVE“+X }=%"∏ÖÖ"Ù
-Ö;"›ôÑÍˇ}≠/ D\’ >>BYE“+Ï9Êc
-\“+Ø?P…Ñ ì9\’ ◊>STOP?#Â'l≤<•(E,
-•)Â-∞°,Å$±,ë$lG<•,Ö$•-Ö%lâ<lù“+%"›Ñ
- ∏PZ…À<Ô¬Íˇ\“+}#∏"}…Ñ( È"
-ãX ØÑ ∏"#"Ù;«¬ "¬Nˇﬁ\“+
-%À<R,…ˇ  È%"zØÑ
- /À-%;/˛ˇ˚ˇπˇÈ
-¥,"zØÑ
- /À-¥,;\” ∫;CUSTOM-REMOVE
-I0†“+ÙÎ<'=M<{=Ä(ã…i(L;°~';\‘ À=
-#;""ã;%7#;[\– À;ALL-BUFFERS“+#;"
-7;#;"…ÑÚˇ\“+J
- 1\“+Í*‹#ãî(
-\“+Ä(%"PÔ"›Ñ^ ∏PZ…PÔ"PÙ«
-∏ãaÍ*1Ñ. î(ÑZˇa|;Ñ 
-ÙaÁ;Ñ aS*a¬∂ˇ9¬úˇ\Õ<†±ô
-$ à¯†±…Ö*H±… Ö+†°$Ö,±$Ö-,5•,E*•-
-Â+ê•,E&•-#	Èh:Jˇπˇ¬ Ô°‹ˇ Èh:ºº
-ıJˇπˇÏ9ﬁ\œ 8:COPY“+º÷:\œ T:CONVEY“
-+ã#Fç…∏<â‡3nein÷:\– Â:LIMITø+ 
-¿– ;FIRST.*X´– ;ALLOTBUFFER“+#;"B"
-…%7a”%7§#;[#;"∏{87"Ù;7;\–
- );
-FREEBUFFER“+#;";%7…Ñ. #;"!87∏
-"#;"…Ñ "¬Óˇ##
-\Õ ú9BLOCK“+ç9}9\
-Œ Ø9UPDATE“+
-Ä7"z#‰\Œ A9SAVE-BU
-FFERS“+7ç69›Ñ !8¬Ùˇ7¿6\Œ ›9EMPTY
--BUFFERS“+7ç67"›Ñ
- ∏{8¬Úˇ7¿6\Œ 
-:FLUSH“+Ï9:\“+∏ç9n9Ñ 7"{8,9Ñ Ï9
-Z"˜ã∑9ÖÖ;J9\“+Ï9PÙ˜Ù[PÈ
-Ô1Ñ$ ıÔ°‹ˇ ì/˛ˇı#º8Ñ 
-Ø$read 8¬YˇÔ\“+7∏"Ñ "∏a"ì…
-ÑÍˇ7ç6∏!8\“+aPÈ;Z"˜a;Ô
-t˜7¿6\“+7"∏Ñ ∏z"ÉÑÓˇ\“+7"
-∏"ôÑˆˇz"É\Ã 8CORE?“+87ﬁ°\Õ 
-f9(BUFFER“+87H8Ó8¬¯ˇ\Õ z9(BLOCK“+87H8
-â8Ó8¬ˆˇ\è9†±hH±lÕ ‘9BUFFER“+ç9ƒ9
-#7ë(•(ç7•)ç7l√7  7(DISKERR“+Ø$error
- !  r to retry Ø?∏
-r…ã
-R…â‡3abo
-rted\  A7DISKERRI0L7  8R/WI0˛g“+∏z"
-ÉÑj a∏"#Ñ3 2Ù2q3∏zÙa"F
-ç"°8Ñ Ø$write 8¬€ˇ
-ÄÙt#Ä\
-“+a∏Ât˜\“+∏{82Ù2q3PÙZ"˜
-Ù
-˜z#;\≈ Ü6UNLOCK“+∏ç6˜\»8È
-Ö»È Ö©lÅ†±ÖH±Ö†°Ö±Ö•…Öê
-Ê¢lê∆ ∑6FILE<,∆  7PREV.*X´.*  ∆ 7
-B/BUFø+†±(Y" PH¿PÙ`:7†±ô$ à¯†±
-≈&Ö&H±≈'Ö'≠7Ö(≠7Ö) )7P•…ÖêÊ†©
-≈(Å•)… ëlf•(Ö*•)Ö+°*Ö(†±*Ö)(Pl	  )
-7P‚°(Å*†±(ë*≠7Å(≠#√ §5.“+ˇ©5\√ µ5
-U.“+°©5\ƒ C5.S“+;∏"Ù…
- ˇ£ˇ‹ˇ %
-"H5F˚ˇπˇ\ƒ R5C/Lø+) ƒ ˛5L/Sø+ ƒ 
-6
-LIST“+é3;Ø$Scr é3"∏dxH5Ø$Dr `dπ5
-6°…ˇ. °>Ñ Ñ?%FÑ5ë4é3"∑9%6$˜6
-«q4#?Jˇπˇ?\≈ 6PAUSE	 ≈ ⁄6LOCK“+∏"
-}…Ñ Äd∏"Ñ Ç6¬Ùˇ}ã\óeÜö© 
-S•& Ld•&ç>ˇ ¥ˇç?ˇ•$	`Ö≠ç>ˇ ñˇç?ˇ¶&Üòlhaä
- }eBUSIN“+àdç6ïe\ã FeBUS!„e°ç>ˇ ®ˇç?ˇ
-lôã ZeBUSTYPE“+£ˇ‹ˇ %J·eJˇπˇÇ6\ã Ûe
-BUS@fç>ˇ •ˇç?ˇlã fBUSINPUT“+£ˇ‹ˇ 
-f%‰JˇπˇÇ6\ã ,fDERROR?“+d
-Nef∏
-0
-…Ñ ?f∏Úa…ÑÙˇô?ôód\ø+≈ø+Íø+

@@ -1,6 +1,6 @@
 \ Mini OOF Example
 
-\needs class  INCLUDE" D:MINIOOF.F"
+\needs class  INCLUDE" D:MINIOOF.FTH"
 
 CR .( loading OOF Example )
 

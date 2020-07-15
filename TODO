@@ -13,3 +13,4 @@ VolksForth TODO
  * implement recognizders
  * implement mwords (Martin Bitter)
  * implement MARKER and CORNERSTONE
+ * implement pseudo register (from ColorForth) A/B

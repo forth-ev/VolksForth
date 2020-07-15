@@ -2,14 +2,9 @@ ERR.ART
 Korrektur clv03jul89
 Entwurf   clv01mar88
 
-set margins 1 40
-(mit c-t in Kommandozeile)
-
-
 Titel:
 
-Behandlung von Ausnahmesituationen in
-Forth83
+Behandlung von Ausnahmesituationen in Forth83
 
 Stichworte:
 
@@ -19,194 +14,114 @@ exception handling
 volksFORTH83
 returnstack
 
-Kurzfassung:
-Ausgehend von einer Analyse
-des BedÅrfnisses nach
-programmspezifische Fehlerbehandlung
-(die insbesondere zum erweiterten
-Begriff des 'Exception handling' fÅhrt)
-werden Konzepte aus verschiedenen Programmiersprachen
-sowie zu Forth83 vorgeschlagene Konzepte
-auf ihre Brauchbarkeit
-hin diskutiert. Es folgt eine unter
-ultraFORTH83 rev 3.8 auf einem C16
-entwickelte
-Lîsung des Autors, die abhÑngig von
-der AusfÅhrungsebene eine spezielle
-mittels FAILS..THEN installierte
-Behandlung der Worte ABORT" und ERROR"
-gestattet.
+Kurzfassung: Ausgehend von einer Analyse des Bed√ºrfnisses nach
+programmspezifische Fehlerbehandlung (die insbesondere zum erweiterten
+Begriff des 'Exception handling' f√ºhrt) werden Konzepte aus
+verschiedenen Programmiersprachen sowie zu Forth83 vorgeschlagene
+Konzepte auf ihre Brauchbarkeit hin diskutiert. Es folgt eine unter
+ultraFORTH83 rev 3.8 auf einem C16 entwickelte L√∂sung des Autors, die
+abh√§ngig von der Ausf√ºhrungsebene eine spezielle mittels FAILS..THEN
+installierte Behandlung der Worte ABORT" und ERROR" gestattet.
 
-o Die derzeitige Fehlerbehandlung
-  in Forth: ABORT"
+* Die derzeitige Fehlerbehandlung in Forth: ABORT"
 
-Im 83er-Standard ist das zentrale Wort
-zur Fehlerbehandlung ABORT". Es
-gibt den folgenden String als
-Fehlernachricht aus, versetzt das System
-in einen (einigerma·en) definierten
-Zustand und ruft das Top-Level-Wort QUIT
-auf, das Eingaben von der Tastatur
-entgegennimmt und verarbeitet.
-Jedes laufende Programm wird also ohne
-RÅcksicht auf Verluste gestoppt und
-gewisserma·en Forth neu gestartet.
-Eine Ñhnliche Wirkung haben die Worte
-ABORT und QUIT.
+Im 83er-Standard ist das zentrale Wort zur Fehlerbehandlung ABORT". Es
+gibt den folgenden String als Fehlernachricht aus, versetzt das System
+in einen (einigerma√üen) definierten Zustand und ruft das
+Top-Level-Wort QUIT auf, das Eingaben von der Tastatur entgegennimmt
+und verarbeitet. Jedes laufende Programm wird also ohne R√ºcksicht auf
+Verluste gestoppt und gewisserma√üen Forth neu gestartet. Eine √§hnliche
+Wirkung haben die Worte ABORT und QUIT.
 
-Im ultraFORTH83/volksFORTH83 gibt es
-ein Wort ERROR", das sich von ABORT" nur
-dadurch unterscheidet, da· der
-Datenstack nicht gelîscht wird.
-Desweiteren enthÑlt dieses Forth eine
-User-Variable ERRORHANDLER, die es
-ermîglicht, ein anderes Verhalten von
-ABORT" und ERROR" zu installieren.
+Im ultraFORTH83/volksFORTH83 gibt es ein Wort ERROR", das sich von
+ABORT" nur dadurch unterscheidet, da√ü der Datenstack nicht gel√∂scht
+wird. Desweiteren enth√§lt dieses Forth eine User-Variable
+ERRORHANDLER, die es erm√∂glicht, ein anderes Verhalten von ABORT" und
+ERROR" zu installieren.
 
+* Was soll eine Fehlerbehandlung k√∂nnen
 
-o Was soll eine Fehlerbehandlung
-  kînnen
-
-Diese Art der
-Fehlerbehandlung
-funktioniert zwar meistens recht gut,
-wirft aber einige Probleme auf.
-Im folgenden wird versucht, folgende
+Diese Art der Fehlerbehandlung funktioniert zwar meistens recht gut,
+wirft aber einige Probleme auf. Im folgenden wird versucht, folgende
 Stichworte zu diskutieren:
 
-    - Reservierte  Ressourcen
-      schlie·en
-    - Das Level, auf dem die Behandlung
-      erfolgt
-    - Informationen Åber den
-      Fehlerzustand erhalten.
-    - öbersichtliche Behandlung
-      selten auftretender Ereignisse
-    - Fehler auch wÑhrend der
-      Fehlerbehandlung (ohne
-      Endlosschleifen)
+    - Reservierte Ressourcen schlie√üen
+    - Das Level, auf dem die Behandlung erfolgt
+    - Informationen √ºber den Fehlerzustand erhalten.
+    - √úbersichtliche Behandlung selten auftretender Ereignisse
+    - Fehler auch w√§hrend der Fehlerbehandlung (ohne Endlosschleifen)
 
-Hierbei flie·en jeweils die Erfahrungen
-des Autors mit MS-DOS, Pascal,
+Hierbei flie√üen jeweils die Erfahrungen des Autors mit MS-DOS, Pascal,
 Modula-2, Fortran und TLC-Lisp mit ein.
 
-o Schlie·en von Ressourcen
+* Schlie√üen von Ressourcen
 
-Das Wort ABORT" (so es im Quelltext
-vorliegt) zeigt bereits da· im
-Fehlerfalle gewisse Systemressourcen
-wieder freigegeben werden mÅssen.
-Zumindest dÅrfte in jedem System der
-Return-stack entleert werden, oft auch
-der Datenstack, vielleicht werden
-sogar gewisse Systemvektoren restauriert
-(insb. fÅr die Standard-Ein/Ausgabe
-scheint das geraten).
-Falls das Programm gewisse
-weitere Ressourcen
-reserviert hat, werden sie nicht wieder
-frei gegeben. Dies kînnte ein geîffnetes
-File sein, das nicht geschlossen wird;
-ein Semaphor, das gelockt bleibt; ein
-menÅartiger Bildschirm, der weiter in
-allen Farben des Spektrums blinkt; eine
-hoffnungslos verdrehte Schnittstelle
-etc.. Am auffÑlligsten ist eine z.B. auf
-den Drucker umgeleitete Standardausgabe,
-wenn sie von ABORT" nicht restauriert
-wird.
-In diesem Fall wird schon die Ausgabe
-der ABORT"-Meldung (auf den Drucker)
-fehlschlagen, insb. wenn die gewÅnschte
-Fehlermeldung "Drucker ausgeschaltet"
-hei·en mag. Dieser Effekt wird in jedem
-intelligenten Forth-System natÅrlich
-abgefangen, unter MS-DOS lÑ·t er
-sich allerdings noch sehr hÅbsch
-beobachten. Die gelockten Semaphore
-machen sich allerdings - in seltenen
-FÑllen - auch unter volksFORTH
-bemerkbar. Vîllig hoffnungslos wird der
-Fall, wenn eine grî·ere
-Stand-Alone-Anwendung (z.B. ein
-fÅrchterlich kompliziertes MenÅprogramm)
-grade sÑmtliche Systemvektoren
-erfolgreich verbogen hat und nun durch
-einem jÑmmerlich kleinen Fehler
-(vielleicht einen offengelassener
-Diskettenschacht) jÑh in die
-Forth-Hauptschleife geschleudert wird.
+Das Wort ABORT" (so es im Quelltext vorliegt) zeigt bereits da√ü im
+Fehlerfalle gewisse Systemressourcen wieder freigegeben werden m√ºssen.
+Zumindest d√ºrfte in jedem System der Return-stack entleert werden, oft
+auch der Datenstack, vielleicht werden sogar gewisse Systemvektoren
+restauriert (insb. f√ºr die Standard-Ein/Ausgabe scheint das geraten).
+Falls das Programm gewisse weitere Ressourcen reserviert hat, werden
+sie nicht wieder frei gegeben. Dies k√∂nnte ein ge√∂ffnetes File sein,
+das nicht geschlossen wird; ein Semaphor, das gelockt bleibt; ein
+men√ºartiger Bildschirm, der weiter in allen Farben des Spektrums
+blinkt; eine hoffnungslos verdrehte Schnittstelle etc.. Am
+auff√§lligsten ist eine z.B. auf den Drucker umgeleitete
+Standardausgabe, wenn sie von ABORT" nicht restauriert wird.
 
-o Auf welcher Programmebene soll der
-  Fehler behandelt werden?
+In diesem Fall wird schon die Ausgabe der ABORT"-Meldung (auf den
+Drucker) fehlschlagen, insb. wenn die gew√ºnschte Fehlermeldung
+"Drucker ausgeschaltet" hei√üen mag. Dieser Effekt wird in jedem
+intelligenten Forth-System nat√ºrlich abgefangen, unter MS-DOS l√§√üt er
+sich allerdings noch sehr h√ºbsch beobachten. Die gelockten Semaphore
+machen sich allerdings - in seltenen F√§llen - auch unter volksFORTH
+bemerkbar. V√∂llig hoffnungslos wird der Fall, wenn eine gr√∂√üere
+Stand-Alone-Anwendung (z.B. ein f√ºrchterlich kompliziertes
+Men√ºprogramm) grade s√§mtliche Systemvektoren erfolgreich verbogen hat
+und nun durch einem j√§mmerlich kleinen Fehler (vielleicht einen
+offengelassener Diskettenschacht) j√§h in die Forth-Hauptschleife
+geschleudert wird.
 
-In einem Fall
-wie letzterem wÑre es sogar denkbar,
-den Fehler noch innerhalb der
-Systemroutinem (in diesem Fall in der
-Block-Lese-Routine des Betriebssystem)
-zu beseitigen
-(z.B. den Benutzer aufzufordern, doch
-bitte den Schacht zu schlie·en) und
-anschlie·end fortzufahren, ohne da·
-das darÅberliegende Programm etwas
-bemerkt. Derartiges kann sogar MS-DOS.
-Alle Fehler die
-in Zusammenhang mit Diskettenlaufwerkern
-stehen werden noch innerhalb des
-Betriebssystems mit einer Meldung der
+* Auf welcher Programmebene soll der Fehler behandelt werden?
+
+In einem Fall wie letzterem w√§re es sogar denkbar, den Fehler noch
+innerhalb der Systemroutinem (in diesem Fall in der Block-Lese-Routine
+des Betriebssystem) zu beseitigen (z.B. den Benutzer aufzufordern,
+doch bitte den Schacht zu schlie√üen) und anschlie√üend fortzufahren,
+ohne da√ü das dar√ºberliegende Programm etwas bemerkt. Derartiges kann
+sogar MS-DOS. Alle Fehler die in Zusammenhang mit Diskettenlaufwerkern
+stehen werden noch innerhalb des Betriebssystems mit einer Meldung der
 Form:
 
 allgemeiner Fehler. Kaffee in Laufwerk A:
 (A)bbruch, (W)iederholen, (I)gnorieren ?
 
-beantwortet. Der Benutzer kann sich nun
-fÅr eine der Alternativen entscheiden.
-Tippt er 'W', so versucht das System
-denselben Zugriff nochmal. Dies ist bei
-einem offen gelassenen Schacht nÅtzlich,
-gegen Kaffee hilft es natÅrlich nicht.
-'A' terminiert das laufende Programm und
-springt zurÅck ins Betriebssystem (in
-etwa wie unser QUIT). Dies funktioniert
-meistens, es sei denn das Betriebssystem
-mîchte selbst Teile seiner selbst von
-der Diskette lesen: Wir bekommen die
-beliebte Endlosschleife, bis wir eine
-saubere Diskette eingelegt haben.
-Die Alternative 'I' ist die hÅbscheste.
-Das System vergi·t die Operation und
-kehrt ins rufende Programm zurÅck.
-Dieses arbeitet brav weiter, bis es
-sich an irgendwelchenden Zufallsergebnissen
-den Magen verdirbt. Um zum Beispiel
-des MenÅ-Programms mit offenen
-Kassettenschacht noch ein Wort zu
-verlieren: Beim 'W'iederholen ist
-natÅrlich trotz allem der
-Bildschirmaufbau im Eimer. Bis hierher
-lÑ·t sich erstmal formulieren, da·
-die Fehlerbehandlung lieber auf der
-Ebene des Anwenderprogramms erfolgen
-sollte.
+beantwortet. Der Benutzer kann sich nun f√ºr eine der Alternativen
+entscheiden. Tippt er 'W', so versucht das System denselben Zugriff
+nochmal. Dies ist bei einem offen gelassenen Schacht n√ºtzlich, gegen
+Kaffee hilft es nat√ºrlich nicht. 'A' terminiert das laufende Programm
+und springt zur√ºck ins Betriebssystem (in etwa wie unser QUIT). Dies
+funktioniert meistens, es sei denn das Betriebssystem m√∂chte selbst
+Teile seiner selbst von der Diskette lesen: Wir bekommen die beliebte
+Endlosschleife, bis wir eine saubere Diskette eingelegt haben. Die
+Alternative 'I' ist die h√ºbscheste. Das System vergi√üt die Operation
+und kehrt ins rufende Programm zur√ºck. Dieses arbeitet brav weiter,
+bis es sich an irgendwelchenden Zufallsergebnissen den Magen verdirbt.
+Um zum Beispiel des Men√º-Programms mit offenen Kassettenschacht noch
+ein Wort zu verlieren: Beim 'W'iederholen ist nat√ºrlich trotz allem
+der Bildschirmaufbau im Eimer. Bis hierher l√§√üt sich erstmal
+formulieren, da√ü die Fehlerbehandlung lieber auf der Ebene des
+Anwenderprogramms erfolgen sollte.
 
-o Warum eigentlich nur Fehler mit
-  Methoden der Fehlerbehandlung
-  behandeln?
+* Warum eigentlich nur Fehler mit Methoden der Fehlerbehandlung behandeln?
 
-Um diesem hÅbschen Wortspiel Sinn zu
-geben, mag ein anderes Beispiel
-herhalten.
-Ein Programm lese
-Daten von einem File, verarbeite sie und
-schreibe das Ergebnis auf ein anderes
-File.
-Es mu· somit (wenn es strukturiert sein
-mîchte) vor dem Lesen jedes einzelnen
-Zeichens das Betriebssystem befragen, ob
-das File vielleicht schon erschîpft ist.
-Das ergibt beispielsweise in Pascal
-endlose Konstrukte des Strickmusters:
+Um diesem h√ºbschen Wortspiel Sinn zu geben, mag ein anderes Beispiel
+herhalten. Ein Programm lese Daten von einem File, verarbeite sie und
+schreibe das Ergebnis auf ein anderes File. Es mu√ü somit (wenn es
+strukturiert sein m√∂chte) vor dem Lesen jedes einzelnen Zeichens das
+Betriebssystem befragen, ob das File vielleicht schon ersch√∂pft ist.
+Das ergibt beispielsweise in Pascal endlose Konstrukte des
+Strickmusters:
 
    WHILE not eof(input) DO
    WHILE not eoLn(input) DO
@@ -223,29 +138,20 @@ endlose Konstrukte des Strickmusters:
       ENDIF;
    END;
 
-Man verzeihe es mir, wenn ich die
-Pascal-Syntax nicht mehr so besonders
-gut kann. Das Strickmuster sollte
-eigentlich etwas anderes zeigen: In
-Pascal erfordert jeder Zugriff eines
-Programms (so es sich strukturiert nenn
-will) das Abfragen auf End-Of-File und
-End-Of-Line. Letzteres ist nîtig, da der
-Standard leider (?) nicht vorschreibt,
-wie EOLn am Fileende aussieht. Soll
-innerhalb der gro·en WHILE-Schleife ein
-weiteres Zeichen gelesen werden, so mu·
-beides erneut geprÅft werden, da· System
-Ñrgert sich mit stÑndigem Abgefrage
-herum, der Programmierer mit der
-Definition der Routine 'schweinkram',
-die ihren Namen i.a. zu Recht trÑgt.
+Man verzeihe es mir, wenn ich die Pascal-Syntax nicht mehr so
+besonders gut kann. Das Strickmuster sollte eigentlich etwas anderes
+zeigen: In Pascal erfordert jeder Zugriff eines Programms (so es sich
+strukturiert nenn will) das Abfragen auf End-Of-File und End-Of-Line.
+Letzteres ist n√∂tig, da der Standard leider (?) nicht vorschreibt, wie
+EOLn am Fileende aussieht. Soll innerhalb der gro√üen WHILE-Schleife
+ein weiteres Zeichen gelesen werden, so mu√ü beides erneut gepr√ºft
+werden, da√ü System √§rgert sich mit st√§ndigem Abgefrage herum, der
+Programmierer mit der Definition der Routine 'schweinkram', die ihren
+Namen i.a. zu Recht tr√§gt.
 
-Viel einfacher haben es da Sprachen, die
-keinerlei Anspruch auf strukturiertes
-Programmieren erheben. Das obige
-Kuddelmuddel lie·e sich in Fortran etwa
-so umgehen:
+Viel einfacher haben es da Sprachen, die keinerlei Anspruch auf
+strukturiertes Programmieren erheben. Das obige Kuddelmuddel lie√üe
+sich in Fortran etwa so umgehen:
 
   10  READ (input,char,end=100,err=200)
       IF char.eq..... THEN
@@ -256,60 +162,36 @@ so umgehen:
  100  ...<fileEnde behandeln>...
  200  ...<sonstige Fehler behandeln>...
 
-Die 'end=' und 'err=' Sequenzen sind
-verkappte GOTOs.
-Hier wird (vîllig unstrukturiert) der
-Programmflu· im Fehlerfall unterbrochen
-und an den durch 100 und 200
-gekennzeichneten Stellen fortgesetzt.
-Ein Ñhnliches GOTO-Konstrukt bietet auch
-Pascal an. Jedes gute Lehrbuch bittet
-aber darum es mîglichst nie zu benutzen.
-Als einzigen tolerierbaren Zweck wird
-meist die Fehlerbehandlung angegeben.
-Ein sehr treffender Beleg dafÅr, da·
-grade dem Vater der strukturierten
-Programmierung, Herrn Wirth, die
-Fehlerbehandlung Kopfzerbrechen
+Die 'end=' und 'err=' Sequenzen sind verkappte GOTOs. Hier wird
+(v√∂llig unstrukturiert) der Programmflu√ü im Fehlerfall unterbrochen
+und an den durch 100 und 200 gekennzeichneten Stellen fortgesetzt. Ein
+√§hnliches GOTO-Konstrukt bietet auch Pascal an. Jedes gute Lehrbuch
+bittet aber darum es m√∂glichst nie zu benutzen. Als einzigen
+tolerierbaren Zweck wird meist die Fehlerbehandlung angegeben. Ein
+sehr treffender Beleg daf√ºr, da√ü grade dem Vater der strukturierten
+Programmierung, Herrn Wirth, die Fehlerbehandlung Kopfzerbrechen
 bereitet.
 
-Was sollte das nun belegen? Es soll
-zeigen, da· erstens auch vîllig
-normale VorgÑnge (Ende eines Files)
-fehlerbehandelt werden wollen. In diesem
-Fall spricht man von
-'Ausnahmebehandlung', da dieser
-Programmierstil nur fÅr selten
-auftretende FÑlle sinnvoll ist. Es soll
-zweitens zeigen, da· eine Erhîhung der
-Performance und Wartbarkeit aus
-sinnvoller Ausnahmebehandlung
-entspringt. Denn sicher spart das obige
-Fortran-beispiel einigen Code. Dies
-spart auch Zeit, da an weniger
-Stellen auf Fehler geprÅft
-werden mu·. Und ich kann es besser
-lesen. (Zur Frage der Lesbarkeit steht
-mir als Nicht-Informatiker kein
-allgemeines Urteil zu. Die
-'ich'-Form spart mir hier sicher wieder
+Was sollte das nun belegen? Es soll zeigen, da√ü erstens auch v√∂llig
+normale Vorg√§nge (Ende eines Files) fehlerbehandelt werden wollen. In
+diesem Fall spricht man von 'Ausnahmebehandlung', da dieser
+Programmierstil nur f√ºr selten auftretende F√§lle sinnvoll ist. Es soll
+zweitens zeigen, da√ü eine Erh√∂hung der Performance und Wartbarkeit aus
+sinnvoller Ausnahmebehandlung entspringt. Denn sicher spart das obige
+Fortran-beispiel einigen Code. Dies spart auch Zeit, da an weniger
+Stellen auf Fehler gepr√ºft werden mu√ü. Und ich kann es besser lesen.
+(Zur Frage der Lesbarkeit steht mir als Nicht-Informatiker kein
+allgemeines Urteil zu. Die 'ich'-Form spart mir hier sicher wieder
 einigen Streit mit Helge und Gerd.)
 
-o Ist Ausnahmebehandlung
-  auf ganz tiefer Ebene verzichtbar ?
+* Ist Ausnahmebehandlung auf ganz tiefer Ebene verzichtbar ?
 
-Manchmal mu· aber auch eine
-Ausnahmebehandlung auf ganz tiefer
-Ebene erfolgen. Als Beispiel sei hier
-die Ausgabe von Informationen im
-Fehlerfall genannt. HÑufig mîchte der
-Benutzer im Fehlerfall wissen, wo der
-Fehler aufgetreten ist, wie bestimmte
-Variablen aussahen, etc.
-Im volksFORTH gibt es ein Wort
-UNRAVEL, das die Aufrufhierarchie
-ausgibt.
-Dies kînnte etwa so aussehen:
+Manchmal mu√ü aber auch eine Ausnahmebehandlung auf ganz tiefer Ebene
+erfolgen. Als Beispiel sei hier die Ausgabe von Informationen im
+Fehlerfall genannt. H√§ufig m√∂chte der Benutzer im Fehlerfall wissen,
+wo der Fehler aufgetreten ist, wie bestimmte Variablen aussahen, etc.
+Im volksFORTH gibt es ein Wort UNRAVEL, das die Aufrufhierarchie
+ausgibt. Dies k√∂nnte etwa so aussehen:
 
 FEHLER divide by Zero AUFGETRETEN.
    Der Fehler geschah in Wort: 0/
@@ -318,82 +200,54 @@ FEHLER divide by Zero AUFGETRETEN.
 	       aufgerufen von: EDIT
 	       aufgerufen von: L
 
-Derartige POST-MORTEM-DUMPS ermîglichen
-i.a. ein schnelles Lokalisieren des
-Fehlers. Sie enthalten des îfteren nicht
-nur die Aufrufhierarchie sondern
-diverse Register- und Variablen-Inhalte
-zum Zeitpunkt des Fehlers (am besten
-noch aus allen Unterprogrammen...),
-soda· sie manchmal den Benutzer eher in
-hunderten von Seiten Papier ersticken,
-als ihm bei der Fehlersuche zu helfen.
-Aber selbst dagegen sind KrÑuter
-gewachsen. Logitech's Modula-2-Compiler
-teilt dem Benutzer au·er einer sehr
-knappen Fehlerbeschreibung nichts mit
-und schreibt ersatzweise den kompletten
-Systemzustand auf Diskette, wo man ihn
-anschlie·end mit einem
-Post-Mortem-Debug-Programm umgraben
-kann. Es frage mich bitte niemand, was
-passiert, wenn die Diskette voll war.
-Ruft der Fehler dann einen erneuten
-Post-Mortem-Dump hervor?
+Derartige POST-MORTEM-DUMPS erm√∂glichen i.a. ein schnelles
+Lokalisieren des Fehlers. Sie enthalten des √∂fteren nicht nur die
+Aufrufhierarchie sondern diverse Register- und Variablen-Inhalte zum
+Zeitpunkt des Fehlers (am besten noch aus allen Unterprogrammen...),
+soda√ü sie manchmal den Benutzer eher in hunderten von Seiten Papier
+ersticken, als ihm bei der Fehlersuche zu helfen. Aber selbst dagegen
+sind Kr√§uter gewachsen. Logitech's Modula-2-Compiler teilt dem
+Benutzer au√üer einer sehr knappen Fehlerbeschreibung nichts mit und
+schreibt ersatzweise den kompletten Systemzustand auf Diskette, wo man
+ihn anschlie√üend mit einem Post-Mortem-Debug-Programm umgraben kann.
+Es frage mich bitte niemand, was passiert, wenn die Diskette voll war.
+Ruft der Fehler dann einen erneuten Post-Mortem-Dump hervor?
 
-Um wieder zum Faden zurÅckzukehren:
-Zumindest zum Post-Mortem-Debuggen
-(=Entlausen aus einem toten
-Programm. öbertragen: Infos
-Åber den Fehlerzustand erhalten)
-ist es nîtig Fehler auf niedrigster
-Ebene zu behandeln.
+Um wieder zum Faden zur√ºckzukehren: Zumindest zum Post-Mortem-Debuggen
+(=Entlausen aus einem toten Programm. √úbertragen: Infos √ºber den
+Fehlerzustand erhalten) ist es n√∂tig Fehler auf niedrigster Ebene zu
+behandeln.
 
-o Mein Wunsch zur Fehlerbehandlung:
-  Call-with-current-Continuation
-  (CallCC)
+* Mein Wunsch zur Fehlerbehandlung: Call-with-current-Continuation (CallCC)
 
-Die schînste, allgemeinste Art der
-Fehlerbehandlung, die ich kenne, ist das
-CATCH-THROW-Konstrukt aus TLC-Lisp (von
-T.Allen).
-Ich habe mir sagen lassen, da· sie unter
-Zuhilfenahme des
-Call-with-current-Continuation-Konzepts
-implementiert ist. Daher gefÑllt mir
-dieses auch sehr gut. Da ich CallCC
-leider nicht kenne beschrÑnke ich mich
-jetzt aber wieder auf CATCH-THROW.
-Es wird in folgender Form benutzt:
+Die sch√∂nste, allgemeinste Art der Fehlerbehandlung, die ich kenne,
+ist das CATCH-THROW-Konstrukt aus TLC-Lisp (von T.Allen). Ich habe mir
+sagen lassen, da√ü sie unter Zuhilfenahme des
+Call-with-current-Continuation-Konzepts implementiert ist. Daher
+gef√§llt mir dieses auch sehr gut. Da ich CallCC leider nicht kenne
+beschr√§nke ich mich jetzt aber wieder auf CATCH-THROW. Es wird in
+folgender Form benutzt:
 
 (CATCH name ((expression)
 	     (exceptionhandler)))
 
-Die Bedeutung ist folgende: Wenn wÑhrend
-der Evaluierung (=AusfÅhrung auf
-LISPisch) von EXPRESSION eine Ausnahme
-mit dem Namen NAME auftreten sollte, so
-mîge bitte sofort EXCEPTIONHANDLER
-evaluiert werden. Ansonsten ist der
-obige Ausdruck identisch mit:
+Die Bedeutung ist folgende: Wenn w√§hrend der Evaluierung (=Ausf√ºhrung
+auf LISPisch) von EXPRESSION eine Ausnahme mit dem Namen NAME
+auftreten sollte, so m√∂ge bitte sofort EXCEPTIONHANDLER evaluiert
+werden. Ansonsten ist der obige Ausdruck identisch mit:
 
    (expression)
 
-Eine Ausnahme tritt dadurch auf, da·
-eine Funktion (=wort auf
-LISPisch) innerhalb
-von expression die Funktion
+Eine Ausnahme tritt dadurch auf, da√ü eine Funktion (=wort auf
+LISPisch) innerhalb von expression die Funktion
 
    (THROW name)
 
 aufruft.
 
-Eigentlich ist es verabscheuungswÅrdig,
-von Lisp aus Files zu lesen, da dies dem
-funktionalen Programmieren zuwiderlÑuft.
-Um aber trotzdem das obige
-File-Lese-Beispiel nochmal zu
-strapazieren:
+Eigentlich ist es verabscheuungsw√ºrdig, von Lisp aus Files zu lesen,
+da dies dem funktionalen Programmieren zuwiderl√§uft. Um aber trotzdem
+das obige File-Lese-Beispiel nochmal zu strapazieren:
 
 (CATCH end-of-file
  (CATCH end-of-line
@@ -410,167 +264,114 @@ strapazieren:
  ( ...end-of-file-handler..)
 )
 
-Dies sieht nicht nur wundervoll aus mit
-den vielen Klammern, sondern hat auch
-eine Wirkung: wenn READCHAR irgendwann
-(THROW end-of-line) oder (THROW
-end-of-file) evaluiert, wird einer
-unsrer HANDLER aufgerufen. Ob READCHAR
-das tut und ob es in Lisp Åberhaupt eine
-Funktion diesen Namens gibt, entzieht
-sich leider meiner Kenntnis.
-SelbstverstÑndlich kînnen solche handler
-geschachtelt werden. Um DOSOMETHING
-kînnte z.B. ein noch
-spezielleren handler
-heruminstalliert werden. Eine AusfÅhrung
-von (THROW name) aktiviert jeweils den
-nÑchstÑu·eren (hîhergelegenen) handler.
-Wenn dieser das nîtige getan hat, kann
-er beispielsweise erneut (THROW name)
-evaluieren, um wiederum den ihm
-nÑchstÑu·eren handler zu aktivieren. Das
-Spiel lÑ·t sich weitertreiben, bis
-schlie·lich der allerÑu·erste (von der
-LISP-Interpreter-Schleife) installierte
-handler aufgerufen wird, der (Ñhnlich
-unserem ABORT") wieder Eingaben von der
-Tastatur verarbeitet. SelbstverstÑndlich
-kann jeder handler in der Schlange auch
-etwas anderes unternehmen,
-beispielsweise die gescheiterte Aktion
+Dies sieht nicht nur wundervoll aus mit den vielen Klammern, sondern
+hat auch eine Wirkung: wenn READCHAR irgendwann (THROW end-of-line)
+oder (THROW end-of-file) evaluiert, wird einer unsrer HANDLER
+aufgerufen. Ob READCHAR das tut und ob es in Lisp √ºberhaupt eine
+Funktion diesen Namens gibt, entzieht sich leider meiner Kenntnis.
+Selbstverst√§ndlich k√∂nnen solche handler geschachtelt werden. Um
+DOSOMETHING k√∂nnte z.B. ein noch spezielleren handler heruminstalliert
+werden. Eine Ausf√ºhrung von (THROW name) aktiviert jeweils den
+n√§chst√§u√üeren (h√∂hergelegenen) handler. Wenn dieser das n√∂tige getan
+hat, kann er beispielsweise erneut (THROW name) evaluieren, um
+wiederum den ihm n√§chst√§u√üeren handler zu aktivieren. Das Spiel l√§√üt
+sich weitertreiben, bis schlie√ülich der aller√§u√üerste (von der
+LISP-Interpreter-Schleife) installierte handler aufgerufen wird, der
+(√§hnlich unserem ABORT") wieder Eingaben von der Tastatur verarbeitet.
+Selbstverst√§ndlich kann jeder handler in der Schlange auch etwas
+anderes unternehmen, beispielsweise die gescheiterte Aktion
 wiederholen.
 
-o ZurÅck zu Forth
+* Zur√ºck zu Forth
 
 Aus dem gesagten seien noch einmal die
-Kernpunkte zusammengefa·t:
-- Fehlerbehandlung soll auf jeder
-  beliebigen Programmebene mîchlich sein
+Kernpunkte zusammengefa√üt:
+
+- Fehlerbehandlung soll auf jeder beliebigen Programmebene m√∂chlich
+  sein
 - insbesondere auch auf tiefster Ebene
-- Die Fehlerbehandlungsroutinen sollen
-  geschachtelt werden kînnen
-- Fehlerbehandlar sollen Mîglichkeiten
-  erhalten, nach Bedarf die
-  fehlerverursachende Routine erneut zu
-  probieren oder die AusfÅhrung dem
-  nÑchsthîheren
-  Fehlerbehandler weiterzugeben.
-- Das ganze soll so einfach zu benutzen
-  sein, da· Routinen fÅr selten
-  auftretende Ereignisse einfach zu
-  formulieren sind.
-- Diese Fehlerbehandlung soll durch das
-  Standardwort ABORT" aktiviert werden.
+- Die Fehlerbehandlungsroutinen sollen geschachtelt werden k√∂nnen
+- Fehlerbehandlar sollen M√∂glichkeiten erhalten, nach Bedarf die
+  fehlerverursachende Routine erneut zu probieren oder die Ausf√ºhrung
+  dem n√§chsth√∂heren Fehlerbehandler weiterzugeben.
+- Das ganze soll so einfach zu benutzen sein, da√ü Routinen f√ºr selten
+  auftretende Ereignisse einfach zu formulieren sind.
+- Diese Fehlerbehandlung soll durch das Standardwort ABORT" aktiviert
+  werden.
 
-Nun wird's konkret:
-Wo sollen die Informationen Åber die
-installierten Fehlerbehandlungsroutinen
-abgelegt werden? Auf dem Returnstack, da
-sich hier am einfachsten eine der
-jeweiligen AusfÅhrungsebene (Wort)
-angelehnte Datenstruktur bilden lÑ·t.
+Nun wird's konkret: Wo sollen die Informationen √ºber die installierten
+Fehlerbehandlungsroutinen abgelegt werden? Auf dem Returnstack, da
+sich hier am einfachsten eine der jeweiligen Ausf√ºhrungsebene (Wort)
+angelehnte Datenstruktur bilden l√§√üt.
 
-Wie soll die Syntax aussehen? Es soll
-einfach sein, daher Kontrollstrukturen.
-Beispielsweise:
+Wie soll die Syntax aussehen? Es soll einfach sein, daher
+Kontrollstrukturen. Beispielsweise:
 
 : name ..<clause1>..
    FAILS ...errorhandler... THEN
        ..<clause2>.. ;
 
-Die Bedeutung: Es wird ein Wort NAME
-definiert. Bei AusfÅhrung fÅhrt NAME
-erst <clause1> aus, installiert
-anschlie·end einen ERRORHANDLER, fÅhrt
-dann <clause2> aus und deinstalliert
-ERRORHANDLER nach Verlassen des Wortes.
-Sollte innerhalb von <clause2> ein
-ABORT" ausgefÅhrt werden, so wird
-ERRORHANDLER ausgefÅhrt.
+Die Bedeutung: Es wird ein Wort NAME definiert. Bei Ausf√ºhrung f√ºhrt
+NAME erst <clause1> aus, installiert anschlie√üend einen ERRORHANDLER,
+f√ºhrt dann <clause2> aus und deinstalliert ERRORHANDLER nach Verlassen
+des Wortes. Sollte innerhalb von <clause2> ein ABORT" ausgef√ºhrt
+werden, so wird ERRORHANDLER ausgef√ºhrt.
 
-Aktivieren des Ñu·eren ERRORHANDLERS:
-Sollte innerhalb von ERRORHANDLER das
-Wort THROW ausgefÅhrt werden, so wird
-die AusfÅhrung von ERRORHANDLER beendet
-und die nÑchstÑu·ere
-Fehlerbehandlungsroutine aktiviert.
+Aktivieren des √§u√üeren ERRORHANDLERS: Sollte innerhalb von
+ERRORHANDLER das Wort THROW ausgef√ºhrt werden, so wird die Ausf√ºhrung
+von ERRORHANDLER beendet und die n√§chst√§u√üere Fehlerbehandlungsroutine
+aktiviert.
 
-Wiederholen der fehlerverursachenden
-<clause2>: Hier wird's kritisch. Im
-Gegensatz zu praktisch allen anderen
-Sprachen liegen die Parameter auf dem
-Datenstack. Vor einer Wiederholung
-mÅssen Daten- und Returnstack repariert
-werden. Der Returnstack lÑ·t sich
-problemlos so manipulieren, da· er bei
-Aufruf von ERRORHANDLER bereits wieder
-im gewÅnschten Zustand ist. Falls ein
-definierter Zustand des Datenstacks
-gewÅmscht wird, mu· allerdings ein
-spezielles Konstrukt:
+Wiederholen der fehlerverursachenden <clause2>: Hier wird's kritisch.
+Im Gegensatz zu praktisch allen anderen Sprachen liegen die Parameter
+auf dem Datenstack. Vor einer Wiederholung m√ºssen Daten- und
+Returnstack repariert werden. Der Returnstack l√§√üt sich problemlos so
+manipulieren, da√ü er bei Aufruf von ERRORHANDLER bereits wieder im
+gew√ºnschten Zustand ist. Falls ein definierter Zustand des Datenstacks
+gew√ºmscht wird, mu√ü allerdings ein spezielles Konstrukt:
 
      nn #FAILS ..errorhandler.. RETRY
 
-benutzt werden. Die NN obersten
-Stackwerte, sowie der Stackpointer
-werden gesichert. Falls ERRORHANDLER
-aufgerufen werden sollte, wird der Stack
-vorher soweit restauriert. Es gilt
-natÅrlich aufzupassen, da· sie bis
-zur AusfÅhrung von RETRY auch dableiben.
+benutzt werden. Die NN obersten Stackwerte, sowie der Stackpointer
+werden gesichert. Falls ERRORHANDLER aufgerufen werden sollte, wird
+der Stack vorher soweit restauriert. Es gilt nat√ºrlich aufzupassen,
+da√ü sie bis zur Ausf√ºhrung von RETRY auch dableiben.
 
-Noch ein weiteres Konstrukt wurde
-eingefÅhrt:
+Noch ein weiteres Konstrukt wurde eingef√ºhrt:
 
 : name ..<clause1>..
    EXITS ..errorhandler.. throw THEN
    ..<clause2>. ;
 
-Es trÑgt der Idee Rechnung, da·
-ERRORHANDLER des îfteren nur installiert
-wird, um eine Ressource zu schlie·en.
-Die Bedeutung: Es wird ein Wort NAME
-definiert. Bei AusfÅhrung fÅhrt NAME
-erst <clause1> aus, installiert
-anschlie·end einen ERRORHANDLER, fÅhrt
-dann <clause2> aus. ERRORHANDLER wird
-im Falle eines Fehlers oder nach
-Verlassen des Wortes NAME ausgefÅhrt.
-Es lassen sich also so schîne Konstrukte
+Es tr√§gt der Idee Rechnung, da√ü ERRORHANDLER des √∂fteren nur
+installiert wird, um eine Ressource zu schlie√üen. Die Bedeutung: Es
+wird ein Wort NAME definiert. Bei Ausf√ºhrung f√ºhrt NAME erst <clause1>
+aus, installiert anschlie√üend einen ERRORHANDLER, f√ºhrt dann <clause2>
+aus. ERRORHANDLER wird im Falle eines Fehlers oder nach Verlassen des
+Wortes NAME ausgef√ºhrt. Es lassen sich also so sch√∂ne Konstrukte
 bilden wie:
 
 : machWas  ...
-   ..<îffne-GerÑt1>..
-   EXITS ..<schlie·e-GerÑt1>.. throw THEN
-   ..<îffne-GerÑt2>..
-   EXITS ..<schlie·e-GerÑt2>.. throw THEN
+   ..<√∂ffne-Ger√§t1>..
+   EXITS ..<schlie√üe-Ger√§t1>.. throw THEN
+   ..<√∂ffne-Ger√§t2>..
+   EXITS ..<schlie√üe-Ger√§t2>.. throw THEN
    .... ;
 
-Es werden auf jeden Fall die geîffneten
-GerÑte wieder geschlossen, ob nun ein
-Fehler auftritt oder nicht.
+Es werden auf jeden Fall die ge√∂ffneten Ger√§te wieder geschlossen, ob
+nun ein Fehler auftritt oder nicht.
 
-o Was gibt es noch fÅr AnsÑtze in Forth
+* Was gibt es noch f√ºr Ans√§tze in Forth
 
-Der vorgestellte Ansatz bringt nichts
-prinzipiell neues. In ///////Schliesieck
-lÑ·t sich eine Methode nachlesen, die
-sicherlich schneller und einfacher
-implementiert ist, allerdings verÑndert
-sie nicht das Verhalten von ABORT",
-sondern mu· mit einem gesonderten Wort
-aufgerufen werden. Auch sichert sie
-lediglich den Stackpointer, eventuelle
-Parameter mÅssen also 'zu Fu·'
-gesichert werden. //////weiter....
-wenn m
+Der vorgestellte Ansatz bringt nichts prinzipiell neues. In
+///////Schliesieck l√§√üt sich eine Methode nachlesen, die sicherlich
+schneller und einfacher implementiert ist, allerdings ver√§ndert sie
+nicht das Verhalten von ABORT", sondern mu√ü mit einem gesonderten Wort
+aufgerufen werden. Auch sichert sie lediglich den Stackpointer,
+eventuelle Parameter m√ºssen also 'zu Fu√ü' gesichert werden.
+//////weiter.... wenn m
 
- Schîner: statt THROW ein EXIT
-nehmen. Was passiert bei exit?
-Bitte nicht IF..ELSE..RETRY
-Bitte kein FAILS...THEN ohne throw oder
-so
+ ch√∂ner: statt THROW ein EXIT nehmen. Was passiert bei exit? Bitte
+nicht IF..ELSE..RETRY Bitte kein FAILS...THEN ohne throw oder so
 
 Wie rauskriegen, welcher Fehler passiert ist?
-

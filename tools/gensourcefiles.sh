@@ -32,3 +32,10 @@ for i in $d/../AtariST/GEM/*.FB; do
   echo " Done."
 done
 
+mkdir -p $d/../sources/Apple1
+for i in $d/../6502/Apple1/source/*.fb; do
+  b=$(basename $i)
+  /bin/echo -n "write $d/../source/Apple1/$b.src ..."
+  $d/dumpblock.sh "$i" > $d/../sources/Apple1/$b.src
+  echo " Done."
+done

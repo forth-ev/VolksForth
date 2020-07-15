@@ -1,0 +1,170 @@
+Screen 0 not modified     
+ 0 \ Multitasking Extension to volksFORTH               cas 26jan06
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ Tasker Loadscreen                                             
+ 1                                                                 
+ 2 \NEEDS CODE     abort( Assembler needed )                       
+ 3 hex                                                             
+ 4  1 5 +thru      \ load Tasker                                   
+ 5    7 load       \ Task-Demo                                     
+ 6 decimal                                                         
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ MULTITASKER               BP 13.9.84 )                        
+ 1                                                                 
+ 2 CODE STOP                                                       
+ 3  SP 2DEC  IP    LDA  SP X) STA  IP 1+ LDA  SP )Y STA            
+ 4  SP 2DEC  RP    LDA  SP X) STA  RP 1+ LDA  SP )Y STA            
+ 5  6 # LDY  SP    LDA  UP )Y STA  INY  SP 1+ LDA  UP )Y STA       
+ 6  1 # LDY  TYA  CLC  UP ADC  W STA                               
+ 7  TXA  UP 1+ ADC  W 1+ STA   W 1- JMP   END-CODE                 
+ 8                                                                 
+ 9 | CREATE TASKPAUSE   ASSEMBLER                                  
+10    2C # LDA  UP X) STA  ' STOP @ JMP   END-CODE                 
+11                                                                 
+12 : SINGLETASK [ ' PAUSE @ ] LITERAL  ['] PAUSE ! ;               
+13                                                                 
+14 : MULTITASK   TASKPAUSE ['] PAUSE ! ;                           
+15                                                                 
+Screen 3 not modified     
+ 0 \ PASS  ACTIVATE           KS 8 MAY 84 )                        
+ 1                                                                 
+ 2 : PASS  ( N0 .. NR-1 TADR R -- )                                
+ 3    BEGIN  [ ROT ( TRICK ! ) ]                                   
+ 4     SWAP  02C OVER C! \ AWAKE TASK                              
+ 5     R> -ROT           \ IP R ADDR                               
+ 6     8 + >R            \ S0 OF TASK                              
+ 7     R@ 2+ @  SWAP     \ IP R0 R                                 
+ 8     2+ 2*             \ BYTES ON TASKSTACK                      
+ 9                       \ INCL. R0 & IP                           
+10     R@ @ OVER -       \ NEW SP                                  
+11     DUP R> 2- !       \ INTO SSAVE                              
+12     SWAP BOUNDS  ?DO  I !  2 +LOOP  ; RESTRICT                  
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 4 not modified     
+ 0 \                                                               
+ 1                                                                 
+ 2 : ACTIVATE ( TADR --)                                           
+ 3      0 [ -ROT ( TRICK ! ) ]  REPEAT ; -2 ALLOT  RESTRICT        
+ 4                                                                 
+ 5 : SLEEP  ( TADR --) 4C SWAP C! ;       \ JMP-OPCODE             
+ 6                                                                 
+ 7 : WAKE  ( TADR --)  2C SWAP C! ;       \ BIT-OPCODE             
+ 8                                                                 
+ 9 | : TASKERROR  ( STRING -)                                      
+10      STANDARDI/O  SINGLETASK  ." TASK ERROR : " COUNT TYPE      
+11      MULTITASK STOP ;                                           
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 5 not modified     
+ 0 \ BUILDING A TASK           BP 13.9.84 )                        
+ 1                                                                 
+ 2 : TASK ( RLEN  SLEN -- )                                        
+ 3     ALLOT              \ STACK                                  
+ 4     HERE 00FF AND 0FE =                                         
+ 5     IF 1 ALLOT THEN    \ 6502-ALIGN                             
+ 6     UP@ HERE 100 CMOVE \ INIT USER AREA                         
+ 7     HERE  04C C,       \ JMP OPCODE TO SLEEP TASK               
+ 8     UP@ 1+ @ ,                                                  
+ 9     DUP  UP@ 1+ !      \ LINK TASK                              
+10     3 ALLOT            \ ALLOT JSR WAKE                         
+11     DUP  6 -  DUP , ,  \ SSAVE AND S0                           
+12     2DUP +  ,          \ HERE + RLEN = R0                       
+13     UNDER  + HERE - 2+ ALLOT ['] TASKERROR  OVER                
+14     [ ' ERRORHANDLER >BODY C@ ] LITERAL + ! CONSTANT ;          
+15                                                                 
+Screen 6 not modified     
+ 0 \ MORE TASKS           KS/BP  26APR85RE)                        
+ 1                                                                 
+ 2 : RENDEZVOUS  ( SEMAPHORADR -) DUP UNLOCK PAUSE LOCK ;          
+ 3                                                                 
+ 4 | : STATESMART  STATE @ IF [COMPILE] LITERAL THEN ;             
+ 5                                                                 
+ 6 : 'S  ( TADR - ADR.OF.TASKUSERVAR)                              
+ 7            ' >BODY C@ + STATESMART ; IMMEDIATE                  
+ 8                                                                 
+ 9 \ SYNTAX:  2 DEMOTASK 'S BASE ! \ MAKES DEMOTASK WORKING BINARY 
+10                                                                 
+11 : TASKS  ( -)  ." MAIN " CR UP@ DUP 1+ @                        
+12    BEGIN  2DUP - WHILE                                          
+13     DUP [ ' R0 >BODY C@ ] LITERAL + @ 6 + NAME> >NAME .NAME     
+14     DUP C@ 04C = IF ." SLEEPING" THEN CR 1+ @ REPEAT  2DROP ;   
+15                                                                 
+Screen 7 not modified     
+ 0 \ TASKDEMO                    27APR85RE)                        
+ 1 : TASKMARK ;                                                    
+ 2                                                                 
+ 3 VARIABLE COUNTER  COUNTER OFF                                   
+ 4                                                                 
+ 5 100 100 TASK BACKGROUND                                         
+ 6                                                                 
+ 7 : >COUNT  ( N -) BACKGROUND 1 PASS COUNTER !                    
+ 8     BEGIN  COUNTER @  DUP 1- COUNTER ! ?DUP                     
+ 9     WHILE  PAUSE 0 <# #S #> type REPEAT stop ;                  
+10                                                                 
+11 : WAIT  BACKGROUND SLEEP ;                                      
+12                                                                 
+13 : GO    BACKGROUND WAKE ;                                       
+14                                                                 
+15                                                                 
+Screen 8 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 9 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

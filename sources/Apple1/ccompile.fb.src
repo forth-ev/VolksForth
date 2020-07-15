@@ -1,0 +1,34 @@
+Screen 0 not modified     
+ 0 \ Crosscompile Script for 6502 Target                cas 26jan06
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ loadscreen for cross-compiler                      cas 26jan06
+ 1                                                                 
+ 2 include assemble.fb                \ load 68000 assembler       
+ 3 2 loadfrom as65.fb page            \ load  6502 assembler       
+ 4 include crostarg.fb page           \ load target compiler       
+ 5 include 6502f83.fb                 \ load Forth Kernel Source   
+ 6                                                                 
+ 7 save-target f6502.com              \ save new forth as f6502.com
+ 8 key drop page .( Ready ) cr        \ wait for keypress          
+ 9 bye                                \ and exit forth             
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

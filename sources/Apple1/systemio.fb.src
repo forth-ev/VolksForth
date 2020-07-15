@@ -1,0 +1,187 @@
+Screen 0 not modified     
+ 0                                                                 
+ 1                                                                 
+ 2                                                                 
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 1 not modified     
+ 0 \ loadscreen for system IO for Apple1               cas2013apr05
+ 1                                                                 
+ 2                                                                 
+ 3  1  9 +thru                                                     
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 2 not modified     
+ 0 \ 65KEY? GETKEY                                     cas2013apr05
+ 1 | $D010 Constant KBDDTA                                         
+ 2 | $D011 Constant KBDCTL                                         
+ 3                                                                 
+ 4 | CODE 65KEY? ( -- FLAG) KBDCTL lda 0>= ?[ 0 # lda ][ 1 # lda ]?
+ 5                           push0a jmp end-code                   
+ 6                                                                 
+ 7 | CODE GETKEY  ( -- 8B)   KBDDTA lda $7F # AND                  
+ 8  push0a jmp end-code                                            
+ 9                                                                 
+10 | CODE CURON   ( --) NEXT JMP END-CODE                          
+11                                                                 
+12 | CODE CUROFF  ( --) NEXT JMP END-CODE                          
+13                                                                 
+14 : 65KEY  ( -- 8B)                                               
+15     CURON BEGIN PAUSE 65KEY?  UNTIL CUROFF GETKEY ;             
+Screen 3 not modified     
+ 0 \ DECODE EXPECT KEYBOARD      BP28MAY85)               cs08aug05
+ 1 08 CONSTANT #BS   $0D CONSTANT #CR  &27 CONSTANT #ESC           
+ 2                                                                 
+ 3 : 65DECODE  ( ADDR CNT1 KEY -- ADDR CNT2)                       
+ 4    #BS CASE?  IF  DUP  IF DEL 1- THEN EXIT  THEN                
+ 5    #CR CASE?  IF  DUP SPAN ! EXIT THEN                          
+ 6    >R  2DUP +  R@ SWAP C!  R> EMIT  1+ ;                        
+ 7                                                                 
+ 8 : 65EXPECT ( ADDR LEN1 -- )  SPAN !  0                          
+ 9    BEGIN  DUP SPAN @  U<                                        
+10    WHILE  KEY  DECODE                                           
+11    REPEAT 2DROP SPACE ;                                         
+12                                                                 
+13 INPUT: KEYBOARD   [ HERE INPUT ! ]                              
+14  65KEY 65KEY? 65DECODE 65EXPECT [                               
+15                                                                 
+Screen 4 not modified     
+ 0 \ senden? (emit 65emit        25JAN85RE)            cas2013apr05
+ 1                                                                 
+ 2 | $D012 Constant DSP                                            
+ 3                                                                 
+ 4 | Code send? ( -- flg )                                         
+ 5      DSP lda $80 # AND $80 # EOR push0a jmp end-code            
+ 6                                                                 
+ 7 Code (emit ( 8b -- )                                            
+ 8      SP X) LDA DSP sta (drop jmp end-code                       
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 5 not modified     
+ 0 \ EMIT CR DEL PAGE AT AT?     25JAN85RE)            cas2013apr05
+ 1                                                                 
+ 2 | Variable out    0 out !         | &40 Constant c/row          
+ 3                                                                 
+ 4 : 65emit   ( 8b -- ) BEGIN pause send? UNTIL 1 out +! (emit ;   
+ 5                                                                 
+ 6 : 65CR     #CR 65emit  out @  c/row /  1+  c/row *  out ! ;     
+ 7                                                                 
+ 8 : 65DEL    ASCII _ 65emit -1 out +! ;                           
+ 9                                                                 
+10 : 65PAGE   &24 0 DO CR LOOP  out off ;                          
+11                                                                 
+12 : 65at ( row col -- ) .( at einf. ) swap  c/row * + out ! ;     
+13                                                                 
+14 : 65AT?  ( -- ROW COL ) out @  c/row /mod  &24 min swap ;       
+15                                                                 
+Screen 6 not modified     
+ 0 \                                                      er14dez88
+ 1                                                                 
+ 2 : 65type ( adr len -- ) bounds ?DO I c@ emit LOOP ;             
+ 3                                                                 
+ 4                                                                 
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 7 not modified     
+ 0 \ TYPE DISPLAY (BYE       BP  28MAY85RE)               er14dez88
+ 1                                                                 
+ 2 OUTPUT: DISPLAY   [ HERE OUTPUT ! ]                             
+ 3  65EMIT 65CR 65TYPE 65DEL 65PAGE 65AT 65AT? [                   
+ 4                                                                 
+ 5                                                                 
+ 6 | : (bye ;                                                      
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 8 not modified     
+ 0 \ B/BLK DRIVE >DRIVE DRVINIT  28MAY85RE)               er14dez88
+ 1                                                                 
+ 2 $400 CONSTANT B/BLK                                             
+ 3                                                                 
+ 4 $0AA CONSTANT BLK/DRV                                           
+ 5                                                                 
+ 6 | VARIABLE (DRV    0 (DRV !                                     
+ 7                                                                 
+ 8 | : DISK ( -- DEV.NO )   (DRV @ 8 + ;                           
+ 9                                                                 
+10 : DRIVE  ( DRV# -- )      BLK/DRV *  OFFSET ! ;                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 
+Screen 9 not modified     
+ 0 \                                                      er14dez88
+ 1 : >DRIVE ( BLOCK DRV# -- BLOCK' )                               
+ 2     BLK/DRV * +   OFFSET @ - ;                                  
+ 3 : DRV?    ( BLOCK -- DRV# )                                     
+ 4     OFFSET @ + BLK/DRV / ;                                      
+ 5                                                                 
+ 6 : DRVINIT  NOOP ;                                               
+ 7 .( fuer reads. u. writes. ist errorhandler erforderlich )       
+ 8 | : readserial ( adr blk -- )                                   
+ 9      &27 emit .( rb ) space base push decimal . cr              
+10      $400 bounds DO key I c! LOOP ;                             
+11                                                                 
+12 | : writeserial ( adr blk -- )                                  
+13      &27 emit .( wb ) space base push decimal . cr              
+14      $400 bounds DO I c@ emit LOOP ;                            
+15                                                                 
+Screen 10 not modified     
+ 0 \  (r/w                                                er14decas
+ 1                                                                 
+ 2 :  (R/W  ( ADR BLK FILE R/WF -- FLAG)                           
+ 3    swap abort" no file"                                         
+ 4    IF readserial ELSE writeserial THEN false ;                  
+ 5                                                                 
+ 6 ' (R/W  IS   R/W                                                
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

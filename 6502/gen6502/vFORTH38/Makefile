@@ -8,4 +8,4 @@ fth: $(fth_files)
 # Generic rule for converting .fb blk sources into .fth files.
 
 %.fth: %.fb fb2fth.py
-	./fb2fth.py $< $@
+	../../../tools/fb2fth.py $< $@

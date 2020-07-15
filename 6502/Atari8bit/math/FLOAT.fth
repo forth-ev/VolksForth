@@ -2,7 +2,7 @@
 \ using Atari 8bit ROM FP Routines
 \ based on FIG Forth APX20029
 
-\needs CALL INCLUDE" D:CALL.FS"
+\needs CALL INCLUDE" D:CALL.FTH"
 
 CR .( loading Floating Point ext. )
 
@@ -31,7 +31,7 @@ $F2 CONSTANT CIX
 | : FEX10  $DDCC XCALL ;
 | : FPOLY  $DD40 XCALL ;
 
-: F@ ( -- fp )
+: F@ ( addr -- fp )
   >R R@ @ R@ 2+ @ R> 4 + @ ;
 
 : F! ( fp addr -- )
@@ -60,10 +60,10 @@ $F2 CONSTANT CIX
   FASC F.TY SPACE
   FR0 F! ;
 
-: F? ( fp -- )
+: F? ( addr -- )
   F@ F. ;
 
-: <F ( fp1 fp2 -- ) 
+: <F ( fp1 fp2 -- )
   FR1 F! FR0 F! ;
 
 : F> ( -- fp1 )
@@ -77,7 +77,7 @@ $F2 CONSTANT CIX
 : F* <F FMUL F> ;
 : F/ <F FDIV F> ;
 
-: FLOAT ( n -- fp ) 
+: FLOAT ( n -- fp )
   FR0 ! IFP F> ;
 
 : FIX   ( fp -- n )
@@ -100,19 +100,18 @@ $F2 CONSTANT CIX
 
 : FCONSTANT
   CREATE F, DOES> F@ ;
-: FVARIABLE 
+: FVARIABLE
   CREATE 6 ALLOT DOES> ;
 
 | : FLIT
     R> DUP 6 + >R F@ ;
 : FLITERAL
   COMPILE FLIT F, ;
-: FLOATING 
-  BL WORD 1+ 
+: FLOATING
+  BL WORD 1+
   ASCF FLITERAL ; IMMEDIATE
 : [FLOATING] [COMPILE] FLOATING ; IMMEDIATE
 
 CR .( Floating Point ext. loaded. ) CR
- 
-ONLYFORTH
 
+ONLYFORTH

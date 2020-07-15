@@ -1,6 +1,6 @@
 \ SQRT
 
-\needs code    INCLUDE" D:TAS65.FS"
+\needs code    INCLUDE" D:TAS65.FTH"
 
 CODE D2*  ( D1 - D2)
   2 # LDA SETUP JSR
@@ -42,7 +42,7 @@ NEXT JMP END-CODE
 
 \ Test
 \
-\ : XX  
+\ : XX
 \ &16 * &62500 UM*
 \ SQRT 0 <# # # # ASCII . HOLD #S #>
 \ TYPE SPACE ;

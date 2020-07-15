@@ -1,7 +1,7 @@
 \ A SINUS-TABLE      20OCT87RE
 \ SINUS-TABLE FROM FD Vol IV/1
 
-\needs code    INCLUDE" D:TAS65.FS"
+\needs code    INCLUDE" D:TAS65.FTH"
 
 | : TABLE    ( VALUES N -)
  CREATE 0 DO , LOOP
@@ -47,4 +47,3 @@ BASE !
 : TAN     ( DEG -- TAN*10000)
    DUP SIN SWAP COS ?DUP
    IF &100 SWAP */ ELSE 3 * THEN ;
-

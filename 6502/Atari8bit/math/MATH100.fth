@@ -1,6 +1,6 @@
 \ 100* 100U/
 
-\needs code    INCLUDE" D:TAS65.FS
+\needs code    INCLUDE" D:TAS65.FTH"
 
 CODE 100*  ( N1 - N2)
  SP X) LDA
@@ -86,4 +86,3 @@ CODE  100U/  ( U - N)
  N 4 + ROR
    4/+ JSR
   NEXT JMP END-CODE
-

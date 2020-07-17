@@ -58,8 +58,8 @@ CODE CUROFF   ( --) NEXT JMP END-CODE
 
 \ *** Block No. 3, Hexblock 3
 
-\ DECODE EXPECT KEYBOARD      BP28MAY85)          cas 15july2020
-08 CONSTANT #BS   0D CONSTANT #CR  &27 CONSTANT #ESC
+\ DECODE EXPECT KEYBOARD      BP28MAY85)          cas 18juli2020
+7F CONSTANT #BS   0D CONSTANT #CR  &27 CONSTANT #ESC
                   0A CONSTANT #LF
 : 65DECODE  ( ADDR CNT1 KEY -- ADDR CNT2)
    #BS CASE?  IF  DUP  IF DEL 1- THEN EXIT  THEN
@@ -172,30 +172,30 @@ $0AA CONSTANT BLK/DRV  \ number of Blocks per Drive
 
 \ *** Block No. 9, Hexblock 9
 
-\                                                    cas 26jan06
+\                                                 cas 18juli2020
 : >DRIVE ( BLOCK DRV# -- BLOCK' )
     BLK/DRV * +   OFFSET @ - ;
 : DRV?    ( BLOCK -- DRV# )
     OFFSET @ + BLK/DRV / ;
 
 : DRVINIT  NOOP ;
-.( for read and write errorhandler is needed )
-| : readserial ( adr blk -- )
-     &27 emit .( rb ) space base push decimal . cr
-     $400 bounds DO key I c! LOOP ;
 
-| : writeserial ( adr blk -- )
-     &27 emit .( wb ) space base push decimal . cr
-     $400 bounds DO I c@ emit LOOP ;
+: READBLOCK ( ADR BLK )
+  $f011 ! $f013 ! 01 $f010 c! ;
+
+: WRITEBLOCK ( ADR BLK )
+  $f011 ! $f013 ! 02 $f010 c! ;
+
+
 
 
 \ *** Block No. 10, Hexblock a
 
-\  (r/w                                                er14dez88
+\  (r/w                                           cas 18juli2020
 
 :  (R/W  ( ADR BLK FILE R/WF -- FLAG)
    swap abort" no file"
-   IF readserial ELSE writeserial THEN false ;
+   IF readblock  ELSE writeblock  THEN false ;
 
 ' (R/W  IS   R/W
 

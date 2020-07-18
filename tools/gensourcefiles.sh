@@ -9,7 +9,7 @@ for i in $d/../msdos/*.{fb,vid,sys}; do
 done
 
 mkdir -p $d/../sources/cpm
-for i in $d/../cpm/*.FB; do
+for i in $d/../8080/CPM/*.FB; do
   b=$(basename $i)
   /bin/echo -n "write $d/../sources/cpm/$b.src ..."
   $d/dumpblock.sh "$i" > $d/../sources/cpm/$b.src

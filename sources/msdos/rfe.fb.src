@@ -16,7 +16,7 @@ Screen 0 not modified
 14                                                                 
 15                                                                 
 Screen 1 not modified     
- 0 \ RetroForth Editor for VolksForth 1/2                          
+ 0 \ RetroForth Editor for VolksForth 1/2                19july2020
  1                                                                 
  2 16 constant l/b                                                 
  3                                                                 
@@ -38,7 +38,7 @@ Screen 2 not modified
  2 : v* update v ;                                                 
  3 : s dup scr ! block drop v ;                                    
  4 : ia (line) + >r 10 parse r> swap move v* ;                     
- 5 : i 0 swap ia v* ;                                              
+ 5 : i 0 swap ia ;                                                 
  6 : d (line) c/l bl fill v* ;                                     
  7 : x (block) l/b c/l * bl fill v* ;                              
  8 : p -1 scr +! v ;                                               

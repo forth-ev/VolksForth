@@ -16,12 +16,12 @@ Screen 0 not modified
 14                                                                 
 15                                                                 
 Screen 1 not modified     
- 0 \ Trace Loadscreen                                ks cas 25sep16
+ 0 \ Programming-Tools word set                      cas 19july2020
  1   Onlyforth \needs Assembler   2 loadfrom asm.fb                
  2                                                                 
  3   Vocabulary Tools   Tools also definitions                     
  4                                                                 
- 5   1 9 +thru   Onlyforth   .( Tools geladen) cr                  
+ 5   1 11 +thru   Onlyforth   .( Tools loaded ) cr                 
  6                                                                 
  7                                                                 
  8                                                                 
@@ -186,10 +186,27 @@ Screen 10 not modified
 14                                                                 
 15                                                                 
 Screen 11 not modified     
- 0                                                                 
+ 0 \ N>R  NR> cr                                                   
  1                                                                 
- 2                                                                 
- 3                                                                 
+ 2 : N>R  ( i * n +n -- ) ( R: -- j * x +n )                       
+ 3 \ Transfer N items and count to the return stack.               
+ 4   DUP BEGIN DUP WHILE                                           
+ 5     ROT R> SWAP >R >R                                           
+ 6     1-                                                          
+ 7   REPEAT DROP  R> SWAP >R >R  ;                                 
+ 8                                                                 
+ 9 : NR>  ( -- i * x +n ) ( R: j * x +n -- )                       
+10 \ Pull N items and count off the return stack.                  
+11   R> R> SWAP >R DUP                                             
+12   BEGIN  DUP  WHILE                                             
+13      R> R> SWAP >R -ROT                                         
+14      1-                                                         
+15  REPEAT  DROP  ;                                                
+Screen 12 not modified     
+ 0 \  ?                                                            
+ 1 : ?  ( a-addr -- )                                              
+ 2 \ Display the value stored at a-addr.                           
+ 3   @ . ;                                                         
  4                                                                 
  5                                                                 
  6                                                                 

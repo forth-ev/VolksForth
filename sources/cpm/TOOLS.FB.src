@@ -16,11 +16,11 @@ Screen 0 not modified
 14 Er ist unentbehrliches Hilfsmittel bei der Fehlersuche.         
 15 (Benutzung:  DEBUG <name>  und  END-TRACE)                      
 Screen 1 not modified     
- 0 \ Loadscreen for simple decompiler and tracer            11Nov86
+ 0 \  Programming-Tools word set / tracer            cas 19july2020
  1                                                                 
  2 Onlyforth    Vocabulary Tools  Tools also definitions           
  3                                                                 
- 4 01 05 +thru                                                     
+ 4 01 05 +thru   15 16 +thru                                       
  5    06 +load     \ Tracer                                        
  6                                                                 
  7 Onlyforth                                                       
@@ -270,3 +270,37 @@ Screen 15 not modified
 13                                                                 
 14 : trace' ( -- )   \ reads a word                                
 15    context push   debug   <ip perform  end-trace ;              
+Screen 16 not modified     
+ 0 \ N>R  NR> cr                                                   
+ 1                                                                 
+ 2 : N>R  ( i * n +n -- ) ( R: -- j * x +n )                       
+ 3 \ Transfer N items and count to the return stack.               
+ 4   DUP BEGIN DUP WHILE                                           
+ 5     ROT R> SWAP >R >R                                           
+ 6     1-                                                          
+ 7   REPEAT DROP  R> SWAP >R >R  ;                                 
+ 8                                                                 
+ 9 : NR>  ( -- i * x +n ) ( R: j * x +n -- )                       
+10 \ Pull N items and count off the return stack.                  
+11   R> R> SWAP >R DUP                                             
+12   BEGIN  DUP  WHILE                                             
+13      R> R> SWAP >R -ROT                                         
+14      1-                                                         
+15  REPEAT  DROP  ;                                                
+Screen 17 not modified     
+ 0 \  ?                                                            
+ 1                                                                 
+ 2 : ?  ( a-addr -- )                                              
+ 3 \ Display the value stored at a-addr.                           
+ 4   @ . ;                                                         
+ 5                                                                 
+ 6                                                                 
+ 7                                                                 
+ 8                                                                 
+ 9                                                                 
+10                                                                 
+11                                                                 
+12                                                                 
+13                                                                 
+14                                                                 
+15                                                                 

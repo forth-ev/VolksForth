@@ -13,9 +13,10 @@ Forth also definitions
 
 (C16 : (64 ) \ jumps belhind C)
 (C64 : (16 )
- BEGIN name count 0= abort" C) missing"
+ BEGIN name count dup 0=
+ abort" C) missing"  2 = >r
  @ [ Ascii C Ascii ) $100 * + ] Literal
- = UNTIL ; immediate
+ = r> and UNTIL ; immediate
 
 : C)  ; immediate
 

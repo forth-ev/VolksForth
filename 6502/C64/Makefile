@@ -34,18 +34,6 @@ debug-64: emulator/tcbase.T64 emulator/build-vf.sh \
     disks/vforth4_2.d64 disks/tc38q.d64 $(vf_fth_files_petscii)
 	emulator/build-vf.sh vf-c64-main.fth
 
-# Temporary bincmp target while the old and the new binaries are still
-# expected to be binary identical.
-# Note: There is now 1 byte difference between the
-# old c64/c16-volksforth83 and the new c64/c16-vf-reference:
-# Byte $1b64 changed from $7c (old) to $dc (new).
-# This corresponds to the ." |" string in .name (blk/page $4e).
-# Since both represent the same character in PETSCII, namely | ,
-# the difference is acceptable, and a new reference binary was set.
-bincmp: cbmfiles/c64-vf-latest cbmfiles/c16-vf-latest
-	cmp -b -l cbmfiles/c64-vf-latest tests/c64-vf-reference
-	cmp -b -l cbmfiles/c16-vf-latest tests/c16-vf-reference
-
 run-devenv: emulator/devenv.T64
 	emulator/run-in-vice.sh devenv
 
@@ -58,7 +46,7 @@ run-testbase16: emulator/testbase16.T64
 
 # Targetcompiler targets
 
-cbmfiles/tcbase: emulator/c64-volksforth83.T64 emulator/build-tcbase.sh \
+cbmfiles/tcbase: emulator/c64-vf-390.T64 emulator/build-tcbase.sh \
     disks/tc38q.d64 disks/file-words.d64 cbmfiles/tc-base.fth
 	emulator/build-tcbase.sh
 

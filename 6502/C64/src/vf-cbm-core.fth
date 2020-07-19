@@ -511,7 +511,7 @@ Code 2+   ( n1 -- n2)
  2 # lda   n+ bne     end-code
 Code 3+   ( n1 -- n2)
  3 # lda   n+ bne     end-code
-| Code 4+ ( n1 -- n2)
+Code 4+ ( n1 -- n2)
  4 # lda   n+ bne     end-code
 | Code 6+ ( n1 -- n2)
  6 # lda   n+ bne     end-code
@@ -910,6 +910,9 @@ Code case?
 
 : LEAVE  endloop r> 2- dup @ + >r ;
          restrict
+
+code UNLOOP  clc rp lda 6 # adc rp sta
+ cs ?[ rp 1+ inc ]?  Next jmp  end-code
 
 \   Returnstack: calladr | index
 \                  limit | adr of DO
@@ -2702,7 +2705,7 @@ E400 Constant limit     Variable first
  name> under 1+ u< swap  heap?  or ;
 
 |  : endpoints  ( addr -- addr symb)
- heap   voc-link @ >r
+ heap   voc-link >r
  BEGIN r> @ ?dup    \ through all Vocabs
  WHILE dup >r 4 - >r \ link on returnst.
   BEGIN r> @ >r over 1- dup r@  u<

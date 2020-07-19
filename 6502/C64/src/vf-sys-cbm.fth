@@ -217,10 +217,13 @@ Code bus@  ( -- 8b)
 : businput  ( adr n --)
  bounds  ?DO  bus@ I c! LOOP pause ;
 
+: i/o-status?  $90 c@ ;
+
 : derror?  ( -- flag )
  disk $F busin bus@  dup Ascii 0 -
-  IF  BEGIN emit bus@ dup #cr =  UNTIL
-  0= cr  THEN   0=  busoff ;
+   IF  BEGIN emit bus@ dup #cr =  UNTIL
+   0= cr ELSE BEGIN bus@ #cr = UNTIL
+   THEN   0=  busoff ;
 
 
 \ *** Block No. 140, Hexblock 8c
@@ -306,13 +309,13 @@ Code bus@  ( -- 8b)
 
 : index ( from to --)
  1+ swap DO
-   cr  I 2 .r  I block 1+  25  type
+   cr  I 3 .r  I block 28 type
    stop?  IF LEAVE THEN  LOOP ;
 
 : findex ( from to --)
  diskopen  IF  2drop  exit  THEN
- 1+ swap DO  cr  I 2 .r
+ 1+ swap DO  cr  I 3 .r
    pad dup I 2* 2* s#>t+s readsector
-   >r 1+ 25 type
+   >r 28 type
    r> stop? or IF LEAVE THEN
  LOOP  diskclose  ;

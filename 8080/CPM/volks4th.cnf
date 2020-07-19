@@ -1,0 +1,12 @@
+# config file for tnylpo
+drive a = "."
+printer file = "./printer.txt"
+printer mode = text
+logfile = "./.tnylpo.log"
+loglevel = 0
+console = full
+lines = 24
+columns = 80
+application cursor = true
+screen delay = 2
+

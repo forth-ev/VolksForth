@@ -17,18 +17,18 @@ Screen 0 not modified
 15                                                                 
 Screen 1 not modified     
  0 \ System LOAD-Screen fuer CP/M VolksForth             UH 27Nov87
- 1 include ass8080.fb                                             i
- 2 nclude xinout.fb            \ Erweiterte Ein- u. Ausgabe      in
- 3 clude terminal.fb  save    \ Terminal                        inc
- 4 lude copy.fb           cr .( copy und convey geladen.)   cr incl
- 5 ude savesys.fb        cr .( Savesystem geladen.)        cr inclu
- 6 de editor.fb         cr .( Editor geladen.)            cr includ
- 7 e tools.fb          cr .( Tools geladen.)             cr include
- 8  see.fb            cr .( Decompiler geladen.)        cr include 
- 9 tasker.fb         cr .( Multitasker geladen.)       cr include p
-10 rinter.fb        cr .( Printer Interface geladen.) cr include re
-11 locate.fb       cr .( Relocating geladen. )       cr            
-12                                                      .( May the 
-13 volksFORTH be with you ...) cr   decimal   caps on              
-14                                                      editor.fb  
-15 scr off  r# off     savesystem volks4th.com         \           
+ 1 include ass8080.fb                                              
+ 2 include xinout.fb            \ extended I/O                     
+ 3 include terminal.fb  save    \ Terminal                         
+ 4 include copy.fb           cr .( copy and convey loaded)   cr    
+ 5 include savesys.fb        cr .( Savesystem loaded)        cr    
+ 6 include editor.fb         cr .( Editor loaded)            cr    
+ 7 include tools.fb          cr .( Tools loaded)             cr    
+ 8 include see.fb            cr .( Decompiler loaded)        cr    
+ 9 include tasker.fb         cr .( Multitasker loaded)       cr    
+10 include printer.fb        cr .( Printer Interface loaded) cr    
+11 include relocate.fb       cr .( Relocating loaded)        cr    
+12                                                                 
+13 .( May the volksFORTH be with you ...) cr   decimal   caps on   
+14 scr off  r# off     savesystem volks4th.com                     
+15                                                                 

@@ -20,7 +20,7 @@ Screen 1 not modified
  1                                                                 
  2 Onlyforth    Vocabulary Tools  Tools also definitions           
  3                                                                 
- 4 01 05 +thru   15 16 +thru                                       
+ 4 01 05 +thru   &15 &16 +thru                                     
  5    06 +load     \ Tracer                                        
  6                                                                 
  7 Onlyforth                                                       

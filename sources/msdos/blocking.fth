@@ -1,0 +1,51 @@
+\ *** Block No. 0 Hexblock 0 
+\                                                    cas 11nov05
+Routines to copy physical blocks into files.                    
+                                                                
+The copy will done from the current file and drive into a new   
+file created in on the current MS-DOS drive and sub-directory.  
+So there can be a different drives used in the DIRECT Mode and  
+in the FILE Mode.                                               
+                                                                
+This command sequence will copy the physical blocks 10-20 on    
+driver C: into file "TEST.FB" on drive D: in Subdirectory       
+"\VOLKS".                                                       
+                                                                
+                                                                
+KERNEL.FB  D: CD \VOLKS                                         
+DIRECT C:                                                       
+10 20 BLOCKS>FILE TEST.FB                                       
+\ *** Block No. 1 Hexblock 1 
+\ copy physical blocks to file                       cas 10nov05
+                                                                
+| File outfile                                                  
+                                                                
+  : blocks>file   ( <filename> from to -- )  [ Dos ]            
+     isfile@ -rot   outfile make  1+ swap                       
+     ?DO  I over (block                                         
+          ds@ swap b/blk isfile@ lfputs                         
+     LOOP  close isfile ! ;                                     
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 2 Hexblock 2 
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                

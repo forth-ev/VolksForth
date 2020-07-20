@@ -1,0 +1,748 @@
+\ *** Block No. 0 Hexblock 0 
+\                                                               
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 1 Hexblock 1 
+\ A disassembler for the 8086 by Charles Curley      cas 10nov05
+\ adapted to volksFORTH-83 by B. Molte                          
+                                                                
+ | : internal  1 ?head ! ;                                      
+ | : external  ?head off ;                                      
+                                                                
+ onlyFORTH forth DEFINITIONS  DECIMAL                           
+                                                                
+ VOCABULARY DISAM DISAM also DEFINITIONS                        
+                                                                
+ 2 capacity 1- thru                                             
+ onlyforth                                                      
+                                                                
+ cr .( Use DIS <name> to disassemble word. )                    
+ cr .( ESC will stop the output. )                              
+                                                                
+\ *** Block No. 2 Hexblock 2 
+\                                                    cas 10nov05
+                                                                
+ internal                                                       
+                                                                
+ : [and] and ;  \ the forth and                                 
+ : [or]  or ;                                                   
+                                                                
+ : mask  ( n maskb -- n n' ) over and ;                         
+                                                                
+ 5 constant 5  \ save some space                                
+ 6 constant 6                                                   
+ 7 constant 7                                                   
+ 8 constant 8                                                   
+                                                                
+                                                                
+                                                                
+\ *** Block No. 3 Hexblock 3 
+\                                                               
+ internal                                                       
+                                                                
+ : EXEC    [and] 2* R> + PERFORM ;                              
+                                                                
+ : STOP[                                                        
+  0 ?pairs  [compile] [  reveal ;  immediate restrict           
+                                                                
+ code shift>     \ n ct --- n' | shift n right ct times         
+  D C mov  D pop  D C* shr   next end-code                      
+\ : shift> 0 ?DO 2/ ( shift's artihm.!) $7FFF and LOOP ;        
+                                                                
+ code SEXT    \ n --- n' | sign extend lower half of n to upper 
+  D A mov  cbw  A D mov  next end-code                          
+\ : hsext  $FF and dup $80 and IF $FF00 or THEN  ;              
+                                                                
+\ *** Block No. 4 Hexblock 4 
+\                                                               
+ external                                                       
+ VARIABLE RELOC  0 ,  ds@ 0 RELOC 2! \ keeps relocation factor  
+ internal                                                       
+                                                                
+ VARIABLE CP                                                    
+ VARIABLE OPS \ operand count                                   
+                                                                
+ : cp@ cp @ ;                                                   
+ : C?  C@ . ;                                                   
+                                                                
+ : (T@)   RELOC 2@ ROT +  L@ ; \ in first word, seg in 2nd. You 
+                              \ dump/dis any segment w/ any     
+ : (TC@)  RELOC 2@ ROT + LC@ ; \ relocation you want by setting 
+                              \ RELOC  correctly.               
+ : SETSEG   RELOC 2+ ! ;                                        
+\ *** Block No. 5 Hexblock 5 
+\                                                               
+ external                                                       
+                                                                
+ DEFER T@    DEFER TC@                                          
+                                                                
+ : HOMESEG   ds@ SETSEG ; HOMESEG                               
+                                                                
+ : SEG?      RELOC 2+ @ 4 U.r ;                                 
+                                                                
+ : .seg:off  seg? ." :" cp@ 4 u.r  2 spaces ;                   
+                                                                
+ : MEMORY    ['] (TC@) IS TC@    ['] (T@) IS T@ ;   MEMORY      
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 6 Hexblock 6 
+\                                                               
+ internal                                                       
+                                                                
+                                                                
+ : oops   ." ??? " ;                                            
+                                                                
+ : OOPS0  oops  ;                                               
+ : OOPS1  oops drop ;                                           
+ : OOPS2  oops 2drop ;                                          
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 7 Hexblock 7 
+\                                                               
+                                                                
+ : NEXTB  CP@ TC@    1 CP +! ;                                  
+ : NEXTW  CP@ T@     2 CP +! ;                                  
+                                                                
+ : .myself \  ---  | have the current word print out its name.  
+  LAST @ [COMPILE] LITERAL  COMPILE .name ;   IMMEDIATE         
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 8 Hexblock 8 
+\                                                               
+ internal                                                       
+                                                                
+ VARIABLE IM  \ 2nd operand extension flag/ct                   
+                                                                
+ : ?DISP   \ op ext --- op ext | does MOD operand have a disp?  
+   DUP 6 shift>  DUP 3 =  OVER 0= [or]  0= IF  IM ! exit then   
+   0= IF  DUP 7 [and] 6 = IF 2 IM !  THEN  THEN ;               
+                                                                
+                                                                
+: .SELF      \  --  | create a word which prints its name       
+  CREATE  LAST @ ,  DOES> @ .name ; \ the ultimate in self-doc! 
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 9 Hexblock 9 
+\ register byte/word                                            
+ internal                                                       
+                                                                
+ create wreg-tab   ," ACDRSUIW"                                 
+ create breg-tab   ," A-C-D-R-A+C+D+R+"                         
+                                                                
+ : .16REG     \ r# ---  | register printed out                  
+   7 and wreg-tab 1+ + c@ emit space ;                          
+                                                                
+ : .8REG      \ r# ---  | register printed out                  
+   7 and 2* breg-tab 1+ + 2 type space ;                        
+                                                                
+ : .A  0 .16reg ;  : .A-  0 .8reg ;                             
+ : .D  2 .16reg ;                                               
+                                                                
+                                                                
+\ *** Block No. 10 Hexblock A 
+\ indizierte/indirekte Adressierung                  cas 10nov05
+                                                                
+  internal                                                      
+                                                                
+  : ?d  DUP 6 shift> 3 [and] 1 3 uwithin ;                      
+                                                                
+  : .D)   ( disp_flag ext -- op )  \ indirect                   
+    ?d IF ." D" THEN ." ) " ;      \ with/without Displacement  
+                                                                
+  : .I)  ( disp_flag ext -- op )   \ indexted indirect          
+   ?d IF ." D" THEN ." I) " ;      \ with/without Displacement  
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 11 Hexblock B 
+\ indexed/indirect addressing                        cas 10nov05
+  internal                                                      
+                                                                
+  : I)  6 .16reg .D) ;                                          
+  : W)  7 .16reg .D) ;                                          
+  : R)  3 .16reg .D) ;                                          
+  : S)  4 .16reg .D) ;                                          
+  : U)  5 .16reg .D) ;                                          
+                                                                
+  : U+W)  5 .16reg  7 .16reg .I) ;                              
+  : R+I)  3 .16reg  6 .16reg .I) ;                              
+  : U+I)  5 .16reg  6 .16reg .I) ;                              
+  : R+W)  3 .16reg  7 .16reg .I) ;                              
+                                                                
+  : .#    ." # " ;                                              
+                                                                
+\ *** Block No. 12 Hexblock C 
+\                                                               
+ internal                                                       
+                                                                
+ : (.R/M)     \ op ext ---  | print a register                  
+   IM OFF SWAP 1 [and]  IF .16REG exit then .8REG ;             
+                                                                
+ : .R/M       \ op ext --- op ext | print r/m as register       
+   2DUP  (.R/M) ;                                               
+                                                                
+ : .REG       \ op ext --- op ext | print reg as register       
+   2DUP  3 shift> (.R/M) ;                                      
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 13 Hexblock D 
+\                                                               
+ internal                                                       
+                                                                
+ CREATE SEGTB ," ECSD"                                          
+                                                                
+ : (.seg ( n -- )                                               
+  3 shift> 3 and segtb + 1+ c@ emit ;                           
+                                                                
+ : .SEG       \ s# ---  | register printed out                  
+  (.seg ." : " ;                                                
+                                                                
+ : SEG:       \ op ---  | print segment overrides               
+  (.seg ." S:" ;                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 14 Hexblock E 
+\                                                               
+ internal                                                       
+ : disp@  ( ops-cnt -- )                                        
+   ops +! CP@  IM @ + IM off ." $"  ;                           
+                                                                
+ : BDISP   \  ---  | do if displacement is byte                 
+  1 disp@ TC@ sext U. ;                                         
+                                                                
+ : WDisp   \  ---  | do if displacement is word                 
+  2 disp@ T@  U. ;                                              
+                                                                
+ : .DISP      \ op ext --- op ext | print displacement          
+  DUP 6 shift>  3 EXEC  noop BDISP WDISP .R/M STOP[             
+                                                                
+ : BIMM       \  ---  | do if immed. value is byte              
+  1 disp@  TC@ . ;                                              
+\ *** Block No. 15 Hexblock F 
+\                                                               
+ internal                                                       
+                                                                
+                                                                
+ : .MREG   \ op ext --- op ext | register(s) printed out + disp 
+   $C7 mask 6 = IF  WDISP ." ) " exit then                      
+   $C0 mask $C0 - 0= IF .R/M exit THEN                          
+   .DISP DUP  7 exec                                            
+     R+I)  R+W)  U+I)  U+W)      \ I) oder DI)                  
+       I)    W)    U)    R)      \  ) oder  D)                  
+ ;                                                              
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 16 Hexblock 10 
+\                                                               
+ internal                                                       
+                                                                
+ : .SIZE      \ op ---  | decodes for size; WORD is default     
+   1 [and] 0= IF ." BYTE " THEN ;                               
+                                                                
+ create adj-tab ," DAADASAAAAASAAMAAD"                          
+                                                                
+ : .adj-tab 3 * adj-tab 1+ + 3 type space  ;                    
+                                                                
+ : ADJUSTS    \ op ---  | the adjusts                           
+   3 shift>  3 [and] .adj-tab ;                                 
+                                                                
+ : .AAM  4 .adj-tab  nextb 2drop ;                              
+ : .AAD  5 .adj-tab  nextb 2drop ;                              
+                                                                
+\ *** Block No. 17 Hexblock 11 
+\                                                               
+ internal                                                       
+ : .POP       \ op ---  | print pops                            
+   DUP 8 = IF OOPS1 THEN  .SEG  ." POP " ;                      
+                                                                
+ : .PUSH      \ op ---  | print pushes                          
+   .SEG  ." PUSH " ;                                            
+                                                                
+ : P/P        \ op --- | pushes or pops                         
+  1 mask IF .pop ELSE .push THEN ;                              
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 18 Hexblock 12 
+\                                                               
+internal                                                        
+ : P/SEG      \ op ---  | push or seg overrides                 
+   DUP 5 shift>  1 exec  P/P SEG: STOP[                         
+                                                                
+ : P/ADJ      \ op ---  | pop or adjusts                        
+   DUP 5 shift>  1 exec  P/P ADJUSTS  STOP[                     
+                                                                
+ : 0GP        \ op --- op | opcode decoded & printed            
+   4 mask IF 1 mask                                             
+              IF WDISP ELSE BIMM THEN  .#                       
+             1 [and] IF .A ELSE .A- THEN  ELSE                  
+   NEXTB  OVER 2 [and]                                          
+          IF  .MREG .REG  ELSE  ?DISP .REG .MREG                
+   THEN  2DROP THEN  ;                                          
+                                                                
+\ *** Block No. 19 Hexblock 13 
+\                                                               
+ external                                                       
+ .SELF ADD  .SELF ADC  .SELF AND  .SELF XOR                     
+ .SELF OR   .SELF SBB  .SELF SUB  .SELF CMP                     
+                                                                
+ internal                                                       
+                                                                
+ : 0GROUP     \ op ---  | select 0 group to print               
+  DUP 0GP 3 shift> 7 EXEC                                       
+  ADD  OR   ADC  SBB  AND  SUB  XOR  CMP  STOP[                 
+                                                                
+ : LOWS       \ op ---  |  0-3f opcodes printed out             
+  DUP  7 EXEC                                                   
+  0GROUP  0GROUP  0GROUP  0GROUP                                
+  0GROUP  0GROUP  P/SEG   P/ADJ  STOP[                          
+                                                                
+\ *** Block No. 20 Hexblock 14 
+\                                                               
+ internal                                                       
+                                                                
+ : .REGGP     \ op ---  | register group defining word          
+   CREATE  LAST @ ,    DOES>  @ SWAP  .16REG  .name ;           
+                                                                
+ external                                                       
+                                                                
+ .REGGP INC  .REGGP DEC  .REGGP PUSH  .REGGP POP                
+                                                                
+ : POPs       \ op ---  | handle illegal opcode for cs pop      
+  $38 mask 8 = IF ." illegal" DROP ELSE POP THEN ;              
+                                                                
+: REGS       \ op ---  | 40-5f opcodes printed out              
+  DUP 3 shift> 3 exec  INC DEC PUSH POPs   STOP[                
+                                                                
+\ *** Block No. 21 Hexblock 15 
+\ conditional branches                                          
+                                                                
+ create branch-tab                                              
+  ," O  NO B  NB E  NE BE NBES  NS P  NP L  GE LE NLE"          
+                                                                
+ : .BRANCH    \ op ---  | branch printed out w/ dest.           
+  NEXTB SEXT  CP@ + u.  ASCII J EMIT                            
+  &15 [and] 3 * branch-tab 1+ + 3 type ;                        
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 22 Hexblock 16 
+\                                                               
+\\                                                              
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 23 Hexblock 17 
+\                                                               
+internal                                                        
+                                                                
+ : MEDS       \ op ---  | 40-7f opcodes printed out             
+  DUP 4 shift>  3 exec                                          
+  REGS  REGS  OOPS1 .BRANCH  STOP[                              
+                                                                
+ : 80/81      \ op ---  | secondary at 80 or 81                 
+  NEXTB  ?DISP OVER 1 [and]  IF WDISP ELSE BIMM THEN  .# .MREG  
+  SWAP .SIZE  3 shift>  7 EXEC                                  
+   ADD OR  ADC SBB AND SUB XOR CMP   STOP[                      
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 24 Hexblock 18 
+\                                                               
+ internal                                                       
+ : 83S        \ op ---  | secondary at 83                       
+  NEXTB  ?DISP BIMM .# .MREG                                    
+  SWAP .SIZE  3 shift>  7 EXEC                                  
+   ADD  OOPS0 ADC SBB oops0 SUB OOPS0 CMP   STOP[               
+                                                                
+ : 1GP        \ op ---  | r/m reg opcodes                       
+  CREATE  LAST @ ,  DOES> @ >R  NEXTB  ?DISP .REG .MREG  2DROP  
+  R> .name ;                                                    
+                                                                
+ external  1GP TEST  1GP XCHG  .SELF LEA  .SELF MOV  internal   
+                                                                
+: MOVRM/REG  NEXTB  ?DISP .REG .MREG  2DROP  MOV ; \ 88-89      
+: MOVD       NEXTB        .MREG .REG  2DROP  MOV ; \ 8A-8B      
+                                                                
+\ *** Block No. 25 Hexblock 19 
+\                                                               
+ internal                                                       
+: MOVS>M     \ op ---  | display instructions  8C-8E            
+  NEXTB  OVER $8D = IF  .MREG .REG  LEA  ELSE                   
+    OVER $8F = IF  .MREG  [ ' POP >NAME ] LITERAL .name  ELSE   
+    SWAP 1 [or] SWAP  \ 16 bit moves only, folks!               
+    OVER 2 [and] IF  .MREG DUP .SEG  ELSE                       
+      DUP .SEG .MREG  THEN  MOV  THEN THEN  2DROP ;             
+                                                                
+                                                                
+ : 8MOVS      \ op ---  | display instructions  80-8F           
+  DUP 2/ 7 exec                                                 
+   80/81 83S TEST XCHG MOVRM/REG  MOVD  MOVS>M  MOVS>M  STOP[   
+                                                                
+                                                                
+                                                                
+\ *** Block No. 26 Hexblock 1A 
+\                                                               
+ external                                                       
+ .SELF XCHG  .SELF CBW   .SELF CWD  .SELF CALL   .SELF NOP      
+ .SELF WAIT  .SELF PUSHF .SELF POPF .SELF SAHF   .SELF LAHF     
+ internal                                                       
+                                                                
+ : INTER      \ ---  | decode interseg jmp or call              
+  NEXTW  4 u.r ." :" NEXTW U. ;                                 
+                                                                
+ : CALLINTER  \ ---  | decode interseg call                     
+  INTER  CALL ;                                                 
+                                                                
+ : 9HIS       \ op ---  | 98-9F decodes                         
+  7 exec                                                        
+  CBW  CWD  CALLINTER WAIT  PUSHF  POPF SAHF LAHF  STOP[        
+                                                                
+\ *** Block No. 27 Hexblock 1B 
+\                                                               
+ internal                                                       
+ : XCHGA      \ op ---  | 98-9F decodes                         
+  dup $90 = IF drop NOP ELSE .A .16REG  XCHG THEN ;             
+                                                                
+ : 90S        \ op ---  | 90-9F decodes                         
+  DUP 3 shift> 1 exec XCHGA  9HIS  STOP[                        
+                                                                
+ : MOVSs       \ op ---  | A4-A5 decodes                        
+   .SIZE ." MOVS " ;                                            
+                                                                
+ : CMPSs       \ op ---  | A6-A7 decodes                        
+   .SIZE ." CMPS " ;                                            
+                                                                
+                                                                
+                                                                
+\ *** Block No. 28 Hexblock 1C 
+\                                                               
+ internal                                                       
+ : .AL/AX     \ op ---  | decodes for size                      
+  1 EXEC .A- .A STOP[                                           
+                                                                
+ : MOVS/ACC   \ op ---  | A0-A3 decodes                         
+  2 mask                                                        
+   IF .AL/AX  WDISP ." ) " ELSE WDISP ." ) " .AL/AX  THEN MOV ; 
+                                                                
+ create ss-tab ," TESTSTOSLODSSCAS"                             
+                                                                
+ : .ss-tab  3 [and] 4 * ss-tab 1+ + 4 type space ;              
+                                                                
+ : .TEST      \ op ---  | A8-A9 decodes                         
+  1 mask IF WDISP ELSE BIMM THEN .# .AL/AX  0 .ss-tab ;         
+                                                                
+\ *** Block No. 29 Hexblock 1D 
+\                                                               
+ internal                                                       
+ : STOSs   ( op --- )  .SIZE  1 .ss-tab ; \  STOS               
+ : LODSs   ( op --- )  .SIZE  2 .ss-tab ; \  LODS               
+ : SCASs   ( op --- )  .SIZE  3 .ss-tab ; \  SCAS               
+                                                                
+ : A0S        \ op ---  | A0-AF decodes                         
+  DUP 2/ 7 exec                                                 
+  MOVS/ACC MOVS/ACC  MOVSs  CMPSs .TEST STOSs LODSs SCASs STOP[ 
+                                                                
+ : MOVS/IMM   \ op ---  | B0-BF decodes                         
+  8 mask                                                        
+   IF  WDISP .# .16REG  ELSE  BIMM .# .8REG  THEN  MOV ;        
+                                                                
+ : HMEDS      \ op ---  | op codes 80 - C0 displayed            
+  DUP 4 shift>  3 exec  8MOVS  90S A0S MOVS/IMM   STOP[         
+\ *** Block No. 30 Hexblock 1E 
+\                                                               
+ external                                                       
+ .SELF LES .SELF LDS  .SELF INTO  .SELF IRET                    
+ internal                                                       
+                                                                
+ : LES/LDS    \ op ---  | les/lds instruction  C4-C5            
+  NEXTB .MREG  .REG  DROP 1 exec LES LDS STOP[                  
+ external                                                       
+ : RET       \ op ---  | return instruction  C2-C3, CA-CB       
+  1 mask 0= IF WDISP ."  SP+" THEN                              
+  8 [and] IF ." FAR " THEN  .myself ;                           
+                                                                
+ internal                                                       
+ : MOV#R/M    \ op ---  | return instruction  C2-C3, CA-CB      
+  NEXTB  ?DISP  OVER 1 [and]  IF  WDISP  ELSE  BIMM  THEN .#    
+  .MREG  MOV 2DROP ;                                            
+\ *** Block No. 31 Hexblock 1F 
+\                                                               
+ external                                                       
+                                                                
+ : INT       \ op ---  | int instruction  CC-CD                 
+   1 [and] IF NEXTB ELSE 3 THEN U.  .myself ;                   
+                                                                
+ internal                                                       
+ : INTO/IRET  \ op ---  | int & iret instructions  CE-CF        
+   1 exec  INTO IRET STOP[                                      
+                                                                
+ : C0S        \ op ---  | display instructions  C0-CF           
+   DUP 2/ 7 exec                                                
+   OOPS1 RET LES/LDS  MOV#R/M  OOPS1 RET INT  INTO/IRET  STOP[  
+                                                                
+                                                                
+                                                                
+\ *** Block No. 32 Hexblock 20 
+\                                                               
+ external                                                       
+ .SELF ROL      .SELF ROR      .SELF RCL      .SELF RCR         
+ .SELF SHL/SAL  .SELF SHR      .SELF SAR                        
+ internal                                                       
+                                                                
+ : SHIFTS     \ op ---  | secondary instructions d0-d3          
+  2 mask IF 0 .8reg ( C-) THEN                                  
+  NEXTB  .MREG NIP  3 shift> 7 exec                             
+  ROL  ROR  RCL  RCR  SHL/SAL SHR  OOPS0 SAR  STOP[             
+                                                                
+ : XLAT   DROP ." XLAT " ;                                      
+                                                                
+ : ESC       \ op ---  | esc instructions d8-DF                 
+  NEXTB .MREG  3 shift> 7 [and] U.  7 [and] U.  ." ESC " ;      
+                                                                
+\ *** Block No. 33 Hexblock 21 
+\                                                               
+ internal                                                       
+ : D0S        \ op ---  | display instructions  D0-DF           
+  8 mask IF ESC EXIT THEN                                       
+  DUP 7 exec                                                    
+  SHIFTS SHIFTS SHIFTS SHIFTS  .AAM .AAD OOPS1 XLAT STOP[       
+                                                                
+ external                                                       
+ .SELF LOOPE/Z  .SELF LOOP  .SELF JCXZ   .SELF LOOPNE/NZ        
+ internal                                                       
+                                                                
+ : LOOPS      \ op ---  | display instructions  E0-E3           
+  NEXTB SEXT  CP@ + u. 3 exec                                   
+  LOOPNE/NZ  LOOPE/Z  LOOP  JCXZ  STOP[                         
+                                                                
+ external .SELF IN  .SELF OUT   .SELF JMP                       
+\ *** Block No. 34 Hexblock 22 
+\                                                               
+ internal                                                       
+                                                                
+ : IN/OUT     \ op ---  | display instructions  E4-E6,EC-EF     
+  8 mask                                                        
+   IF    2 mask IF .AL/AX .D  OUT ELSE .D .AL/AX  IN THEN       
+   ELSE  2 mask                                                 
+          IF .AL/AX BIMM .# OUT ELSE BIMM .# .AL/AX IN  THEN    
+   THEN ;                                                       
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 35 Hexblock 23 
+\                                                               
+ internal                                                       
+ : CALLs       \ op ---  | display instructions  E7-EB          
+  2 mask IF  1 mask IF  NEXTB SEXT  CP@ + u.                    
+                    ELSE  INTER  THEN                           
+         ELSE  NEXTW CP@ + u. THEN                              
+  3 exec CALL JMP JMP  JMP STOP[                                
+                                                                
+ : E0S        \ op ---  | display instructions  E0-EF           
+  DUP 2 shift>  3 EXEC  LOOPS  IN/OUT CALLs  IN/OUT STOP[       
+                                                                
+ : FTEST      \ op ---  | display instructions  F6,7:0          
+  ?DISP OVER 1 [and] IF WDISP ELSE BIMM THEN .#                 
+  .MREG DROP  .SIZE  0 .ss-tab ; \ TEST                         
+                                                                
+                                                                
+\ *** Block No. 36 Hexblock 24 
+\                                                               
+ external                                                       
+ .SELF NOT   .SELF NEG   .SELF MUL      .SELF IMUL              
+ .SELF DIV   .SELF IDIV  .SELF REP/NZ   .SELF REPZ              
+ .SELF LOCK  .SELF HLT   .SELF CMC      .SELF CLC               
+ .SELF STC   .SELF CLI   .SELF STI      .SELF CLD               
+ .SELF STD   .SELF INC   .SELF DEC      .SELF PUSH              
+ internal                                                       
+                                                                
+: MUL/DIV    \ op ext ---  | secondary instructions F6,7:4-7    
+  .MREG  .A OVER 1 [and] IF .D THEN  NIP                        
+  3 shift> 3 exec MUL IMUL DIV IDIV STOP[                       
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 37 Hexblock 25 
+\                                                               
+ internal                                                       
+ : NOT/NEG    \ op ext ---  | secondary instructions F6,7:2,3   
+  .MREG SWAP .SIZE  3 shift> 1 exec NOT NEG STOP[               
+                                                                
+ : F6-F7S     \ op ---  | display instructions  F6,7            
+  NEXTB  DUP 3 shift>  7 exec   FTEST OOPS2 NOT/NEG NOT/NEG     
+  MUL/DIV MUL/DIV MUL/DIV MUL/DIV  STOP[                        
+                                                                
+ : FES        \ op ---  | display instructions  FE              
+  NEXTB .MREG ." BYTE " NIP 3 shift>                            
+   3 exec INC DEC oops oops STOP[                               
+                                                                
+ : FCALL/JMP  \ op ext ---  | display call instructions  FF     
+  .MREG  3 shift> 1 mask IF  ." FAR "  THEN                     
+  NIP  2/  1 exec  JMP CALL  STOP[                              
+\ *** Block No. 38 Hexblock 26 
+\                                                               
+ internal                                                       
+                                                                
+ : FPUSH      \ op ext ---  | display push instructions  FF     
+  dup $FF = IF oops2 exit THEN    \ FF FF gibt's nicht!         
+  4 mask IF .MREG  2DROP PUSH EXIT THEN  OOPS2 ;                
+                                                                
+ : FINC       \ op ext ---  | display inc/dec instructions  FF  
+  .MREG  NIP 3 shift> 1 exec INC DEC STOP[                      
+                                                                
+ : FFS        \ op ---  | display instructions  FF              
+  NEXTB DUP 4 shift> 3 exec                                     
+  FINC  FCALL/JMP FCALL/JMP  FPUSH   STOP[                      
+                                                                
+                                                                
+                                                                
+\ *** Block No. 39 Hexblock 27 
+\                                                               
+ internal                                                       
+                                                                
+ : F0S        \ op ---  | display instructions  F0-FF           
+  &15 mask  7 mask  6 < IF NIP  THEN  -1 exec                   
+   LOCK  OOPS0 REP/NZ REPZ  HLT CMC F6-F7S  F6-F7S              
+   CLC STC CLI STI CLD STD  FES  FFS  STOP[                     
+                                                                
+ : HIGHS   \ op -- | op codes C0 - FF displayed                 
+  DUP 4 shift>  3 exec C0S D0S E0S F0S STOP[                    
+                                                                
+ : (INST)  \ op ---  | highest level vector table               
+  &255 [and]  DUP 6 shift>                                      
+  -1 exec LOWS  MEDS  HMEDS  HIGHS  STOP[                       
+                                                                
+                                                                
+\ *** Block No. 40 Hexblock 28 
+\                                                               
+ internal                                                       
+                                                                
+ : INST  \  ---  | display opcode at ip, advancing as needed    
+  [ disam ] .seg:off                                            
+  NEXTB (INST)  OPS @ CP +!  OPS OFF  IM OFF ;                  
+                                                                
+ : (DUMP) \  addr ct ---  | dump as pointed to by reloc         
+  [ forth ] BOUNDS  ?do I TC@ u. LOOP ;                         
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 41 Hexblock 29 
+\                                                               
+ internal                                                       
+                                                                
+ : steps?                                                       
+  1+ dup &10 mod 0= IF key #esc = exit THEN  0 ;                
+                                                                
+ create next-code   assembler  next forth                       
+                                                                
+ : ?next ( steps-count -- steps-count )                         
+  cp@ 2@  next-code 2@ D=                                       
+  IF  cr .seg:off ." NEXT Link= "  cp@ 4+ @ U.                  
+      cp@ 6 +  cp ! \ 4 bytes code, 2 byte link                 
+      drop 9        \ forces stop at steps?                     
+  THEN ;                                                        
+                                                                
+                                                                
+\ *** Block No. 42 Hexblock 2A 
+\                                                 ks 28 feb 89  
+ forth definitions                                              
+                                                                
+ external                                                       
+                                                                
+ : DISASM   \  addr --- | disassemble until esc key             
+  [ disam ] CP !  base [ forth ] push  hex  0                   
+  BEGIN  CP@ >R                                                 
+     CR  INST R>  CP@ OVER - &35 tab (DUMP)                     
+     ?next  ?stack steps?                                       
+  UNTIL drop ;                                                  
+                                                                
+ : dis   ( <name> -- )    ' @ disasm ;                          
+                                                                
+                                                                
+                                                                
+\ *** Block No. 43 Hexblock 2B 
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                

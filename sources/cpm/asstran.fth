@@ -1,0 +1,34 @@
+\ *** Block No. 0 Hexblock 0 
+\\ Transinient Assembler                                 11Nov86
+                                                                
+Dieses File enthaelt Befehle, die den Assembler vollstaendig in 
+den Heap laden, so dass er schliesslich mit clear wieder        
+vergessen werden kann.                                          
+                                                                
+Dadurch ist es nicht notwendig in einer Anwendung den ganzen    
+Assembler im Speicher lassen zu muessen, nur weil einige        
+primitive Worte in Assembler geschrieben sind.                  
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 1 Hexblock 1 
+\ Internal Assembler                                  UH 22Oct86
+                                                                
+Onlyforth                                                       
+                                                                
+here                                                            
+    $C00 hallot    heap dp !     include ass8080.scr            
+dp !                                                            
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                

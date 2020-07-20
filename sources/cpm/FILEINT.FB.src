@@ -24,14 +24,14 @@ Screen 1 not modified
  5   5 $11 thru \ Forth File Functions                             
  6 $12 $16 thru \ User Interface                                   
  7                                                                 
- 8 File source.scr     \  Define already existing Files            
- 9 File fileint.scr    File startup.scr                            
+ 8 File source.fb      \  Define already existing Files            
+ 9 File fileint.fb     File startup.fbr                            
 10                                                                 
 11 ' (makeview     Is makeview                                     
 12 ' remove-files  Is custom-remove                                
 13 ' file-r/w      Is r/w                                          
 14 ' noop          Is drvinit                                      
-15 \      include startup.scr \ load Standard System               
+15  \      include startup.fb \ load Standard System               
 Screen 2 not modified     
  0 \ Build correct view-numbers for this file           UUH 19Nov87
  1                                                                 

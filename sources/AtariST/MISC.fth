@@ -1,9 +1,9 @@
 \ *** Block No. 0 Hexblock 0 
-\\                       *** Diverses ***              26oct86we
+\\ miscellaneous words                                 cas202007
                                                                 
-In diesem File haben wir Worte untergebracht, die zwar h„ufig   
- gebraucht werden, aber nicht bestimmten Files zugeordnet werden
- k”nnen.                                                        
+this file contains words that are frequently used but do not    
+fit into any of the other source files                          
+                                                                
                                                                 
                                                                 
                                                                 
@@ -16,7 +16,7 @@ In diesem File haben wir Worte untergebracht, die zwar h„ufig
                                                                 
                                                                 
 \ *** Block No. 1 Hexblock 1 
-\ Loadscreen fr Diverses                              26oct86we
+\ Loadscreen for misc tools                      cas  21july2020
                                                                 
 Onlyforth                                                       
                                                                 
@@ -33,7 +33,7 @@ Onlyforth
                                                                 
                                                                 
 \ *** Block No. 2 Hexblock 2 
-\ H„ufig benutzte Definitionen                         26oct86we
+\ common used words                              cas  21july2020
                                                                 
 : >absaddr   ( addr -- abs_laddr )       0  forthstart d+ ;     
                                                                 
@@ -50,7 +50,7 @@ Onlyforth
                                                                 
                                                                 
 \ *** Block No. 3 Hexblock 3 
-\ H„ufig benutzte Definitionen II                      26oct86we
+\ more common word definitions                   cas  21july2020
                                                                 
 | Create: cpull                                                 
       rp@ count  2dup + even rp!  r> swap cmove ;               
@@ -67,7 +67,7 @@ Onlyforth
                                                                 
                                                                 
 \ *** Block No. 4 Hexblock 4 
-\ TOS-Alerts abschalten                                16oct86we
+\ disable TOS alerts                             cas  21july2020
                                                                 
 Create oldvec   4 allot                                         
                                                                 

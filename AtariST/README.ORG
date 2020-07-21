@@ -1,0 +1,65 @@
+#+Title: VolksForth Atari ST Notes
+#+Date: <2020-07-22 Wed>
+#+Author: Carsten Strotmann
+
+* How to re-compile the Atari ST VolksForth kernel
+
+Requirements:
+
+ * Atari ST computer (or an emulator such as Hatari) running VolksForth
+ * Floppy Disk (for a real computer) or a Disk-Image (for the Emulator)
+
+Files:
+
+ * FORTH83.FB- The VolksForth Kernel source
+ * ASSEMBLE.FB- M68000 Forth Assembler
+ * TARGET.FB- VolksForth Target Compiler
+ * PATCH.FB- The Patch Tool to patch the kernel and load the Fileinterface
+ * FILEINT.FB - The File-Interface
+ * C.FB - Target Compile "script"
+
+** Step 1: Compiling a new kernel
+
+ * make your changes to the VolksForth kernel (=FORTH83.FB=)
+ * start a fresh copy of VolksForth (File =4TH.PRG=)
+ * enter: =include c.fb=. This will compile the kernel. It will load
+   the files =ASSEMBLE.FB=, =TARGET.FB= and =FORTH83.FB= and will
+   write the generated new kernel as =4THIMG.PRG=. This new Forth
+   image is very very basic, it does not contain the file interface
+   and can only load source for blocks (sector I/O) from the floppy
+   disks A: or B:
+ * exit the VolksForth (=BYE=)
+
+** Step 2: adding the file interface to the new Kernel
+
+ * format a new floppy (360 KB or 720 KB floppy, HD floppies will not
+   work) in drive A:
+ * copy the following files exactly in this order. The order is
+   important, as the new VolksForth kernel need to find the source
+   code at the correct block/sector locations!: =PATCH.FB=, =ASSEMBLE.FB=
+   and =FILEINT.FB=. =PATCH.FB= must be in Block 1, =ASSEMBLE.FB= must start
+   at Block 6 and =FILEINT.FB= must start at Block 24 ($18).
+ * execute the new VolksForth kernel (=4THIMG.PRG=).
+ * select drive A: =0 drive=
+ * test that =PATCH.FB= is in Block 1: =1 list= should show the
+   =PATCH.FB= load screen
+ * test that =ASSEMBLE.FB= is in Block 6: =6 list= should show the
+   =ASSEMBLE.FB= load screen
+ * test that =FILEINT.FB= is in Block 24: =24 list= should show the
+   =FILEINT.FB= load screen
+ * load the patch tool: =1 load=
+ * save the new VolksForth Image to disk: =save-system
+   4THCORE.PRG=. =4THCORE.PRG= is now the kernel plus the file
+   interface. This is a minimal but useable Forth system
+
+** Step 3: build a full VolksForth system
+
+ * edit the file =STARTUP.FB=, add or remove features you want to have
+   in your VolksForth system
+ * start =4THCORE.PRG= created in step 2
+ * load =STARTUP.FB=: =include startup.fb=
+ * save the new image under a new name (be careful not to overwrite
+   your original =VOLKS4TH.PRG=, make a backup first!): =save-system  myforth.prg=
+ * your new VolksForth system is now ready!
+
+Have fun.

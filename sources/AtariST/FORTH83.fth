@@ -33,7 +33,7 @@ Target definitions here!
 cr .unresolved  ' .blk is .status                               
                                                                 
 \ *** Block No. 2 Hexblock 2 
-\ FORTH Preamble and ID                                cas201301
+\ FORTH Preamble and ID                                cas202007
                                                                 
 Assembler                                                       
 0 FP D) jmp   here 2- >label >cold                              
@@ -41,10 +41,10 @@ Assembler
 here dup origin!                                                
 \ Initial cold-start values for user variables                  
                                                                 
-0 # D6 move   D6 reg) jmp   \ FÅr multitasker                   
+0 # D6 move   D6 reg) jmp   \ for multitasker                   
 $100 allot                                                      
                                                                 
-| Create logo    ," volksFORTH-83  rev. 3.85.1"                 
+| Create logo    ," volksFORTH-83  rev. 3.85.2"                 
                                                                 
                                                                 
                                                                 
@@ -2147,7 +2147,7 @@ Code STtype   ( addr len -- )
    SP )+ D3 move   SP )+ D6 move   D3 tst  0<>                  
    IF   D3 out R#) add   1 D3 subq                              
       D3 DO   D6 reg) A0 lea   .b A0 ) D1 move    FP A7 -) lmove
-        .w D1 A7 -) move   5 # A7 -) move   3 # A7 -) move      
+ .w $FF D1 andi .w D1 A7 -) move  5 # A7 -) move  3 # A7 -) move
         $0D trap   6 A7 addq    1 D6 addq   A7 )+ FP lmove  LOOP
    THEN   ;c:  pause ;                                          
                                                                 

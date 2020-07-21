@@ -29,7 +29,7 @@ At this time VolksForth is available for this Systems:
 The VolksForth Sources are made available under the terms of the
 BSD Lizenz - http://www.opensource.org/licenses/bsd-license.php
 
-The Handbook is Copyright (c) 1985 - 2019 Forth Gesellschaft e.V. (
+The Handbook is Copyright (c) 1985 - 2020 Forth Gesellschaft e.V. (
 Klaus Schleisiek, Ulrich Hoffmann, Bernd Pennemann, Georg Rehfeld,
 Dietrich Weineck, Carsten Strotmann).
 

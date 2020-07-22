@@ -2146,8 +2146,8 @@ Input:  keyboard    [ here input ! ]
 Code STtype   ( addr len -- )                                   
    SP )+ D3 move   SP )+ D6 move   D3 tst  0<>                  
    IF   D3 out R#) add   1 D3 subq                              
-      D3 DO   D6 reg) A0 lea   .b A0 ) D1 move    FP A7 -) lmove
- .w $FF D1 andi .w D1 A7 -) move  5 # A7 -) move  3 # A7 -) move
+     D3 DO   D6 reg) A0 lea  .l D1 clr  .b A0 ) D1 move         
+FP A7 -) lmove .w  D1 A7 -) move  5 # A7 -) move  3 # A7 -) move
         $0D trap   6 A7 addq    1 D6 addq   A7 )+ FP lmove  LOOP
    THEN   ;c:  pause ;                                          
                                                                 

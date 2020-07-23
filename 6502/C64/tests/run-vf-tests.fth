@@ -1,4 +1,6 @@
 
+include vf-cbm-dos.fth
+
 include logtofile.fth
 
 logopen" test.log"

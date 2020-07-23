@@ -2379,6 +2379,7 @@ end-code
 
 
 
+E400 Constant limit     Variable first
 
 include vf-cbm-bufs.fth
 

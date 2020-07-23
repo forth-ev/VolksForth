@@ -32,6 +32,7 @@ include vf-c16+jsr.fth
 include vf-head-c16.fth
 include vf-cbm-core.fth
 include vf-sys-c16.fth
+include vf-cbm-file.fth
 include vf-finalize.fth
 
 include vf-pr-target.fth

@@ -287,7 +287,7 @@ Defer r/w
 
 \ Allocating buffers          clv12jul87
 
-E400 Constant limit     Variable first
+\ E400 Constant limit     Variable first
 
 : allotbuffer   ( -- )
  first @  r0 @ -  b/buf 2+ u< ?exit

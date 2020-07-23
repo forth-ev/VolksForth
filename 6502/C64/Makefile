@@ -67,18 +67,18 @@ cbmfiles/c16-vf-32k: emulator/tcbase.T64 emulator/build-vf.sh \
 
 # Core test targets
 
-test-c64.result: emulator/c64-testbase.T64 $(test_files_petscii) \
+test-c64.result: emulator/c64-vf-latest.T64 $(test_files_petscii) \
     emulator/run-in-vice.sh tests/evaluate-test.sh tests/test-c64.golden
 	rm -f test-c64.log test-c64.result
-	emulator/run-in-vice.sh c64-testbase \
+	emulator/run-in-vice.sh c64-vf-latest \
 	  "include run-vf-tests.fth\n1234567890\ndos s0:notdone\n"
 	petscii2ascii cbmfiles/test.log test-c64.log
 	tests/evaluate-test.sh test-c64
 
-test-c16.result: emulator/c16-testbase.T64 $(test_files_petscii) \
+test-c16.result: emulator/c16-vf-latest.T64 $(test_files_petscii) \
     emulator/run-in-vice.sh tests/evaluate-test.sh tests/test-c16.golden
 	rm -f test-c16.log test-c16.result
-	VICE=xplus4 emulator/run-in-vice.sh c16-testbase \
+	VICE=xplus4 emulator/run-in-vice.sh c16-vf-latest \
 	  "include run-vf-tests.fth\n1234567890\ndos s0:notdone\n"
 	petscii2ascii cbmfiles/test.log test-c16.log
 	tests/evaluate-test.sh test-c16
@@ -92,13 +92,14 @@ cbmfiles/devenv: emulator/run-in-vice.sh emulator/build-devenv.sh \
      disks/vforth4_1.d64  disks/vforth4_3.d64  disks/file-words.d64
 	emulator/build-devenv.sh
 
-cbmfiles/c64-testbase: emulator/run-in-vice.sh emulator/build-testbase.sh \
-    emulator/c64-$(VERSION).T64 disks/file-words.d64
-	emulator/build-testbase.sh c64 $(VERSION)
+# Deprecated
+# cbmfiles/c64-testbase: emulator/run-in-vice.sh emulator/build-testbase.sh \
+#    emulator/c64-$(VERSION).T64 disks/file-words.d64
+#	emulator/build-testbase.sh c64 $(VERSION)
 
-cbmfiles/c16-testbase: emulator/run-in-vice.sh emulator/build-testbase.sh \
-    emulator/c16-$(VERSION).T64 disks/file-words.d64
-	VICE=xplus4 emulator/build-testbase.sh c16 $(VERSION)
+# cbmfiles/c16-testbase: emulator/run-in-vice.sh emulator/build-testbase.sh \
+#    emulator/c16-$(VERSION).T64 disks/file-words.d64
+#	VICE=xplus4 emulator/build-testbase.sh c16 $(VERSION)
 
 
 # Generic T64 tape image rule

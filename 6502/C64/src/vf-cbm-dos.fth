@@ -1,5 +1,5 @@
 \ dir dos cat                  09jun20pz
-| : dev fload-dev @ ;
+: dev fload-dev @ ;
 
 : dir  ( -- )
    dev 0 busopen  ascii $ bus! busoff

@@ -12,16 +12,12 @@
 
 : dos  ( -- )
    bl word count ?dup
-      IF dev 15 busout bustype
+      IF dev $f busout bustype
       busoff cr ELSE drop THEN
    dev dos-error ;
 
 : cat   ( -- ) cr
-   dev 2 busopen  bl word count bustype
-   busoff
-   \ i/o-status?abort
-   i/o-status? IF cr
-     fload-dev @ dos-error abort THEN
-   dev 2 busin  BEGIN bus@ con!
-   i/o-status? UNTIL busoff
+   dev 2 busopen  bl word count bustype busoff
+   i/o-status? IF cr dev dos-error abort THEN
+   dev 2 busin  BEGIN bus@ con! i/o-status? UNTIL busoff
    dev 2 busclose ;

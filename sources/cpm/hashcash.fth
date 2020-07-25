@@ -1,0 +1,85 @@
+\ *** Block No. 0 Hexblock 0 
+\ HashCash Suchalgorithmus                            UH 11Nov86
+                                                                
+Ein Algorithmus, der die Dictionarysuche beschleunigt:          
+Zuerst wird uebr das gesucht Wort gehasht und in in einer       
+Tabelle nachgesehen. Schlaegt der Versuch fehl, wird ganz normal
+gesucht. Suchzeit geht auf ca. 70-80% gegenueber normalem Suchen
+herunter.                                                       
+                                                                
+Hinzu kommen die Worte:                                         
+cash, hash-thread, erase-cash, 'cash, und found?                
+                                                                
+Im Kernal neudefiniert oder gepatched werden muessen:           
+(find, hide, reveal, forget-words                               
+                                                                
+(find und (forget benutzen jejweils die alten Worte. Sie muessen
+umbenannt oder in die neuen Worte eingebettet werden.           
+\ *** Block No. 1 Hexblock 1 
+\ Hash Cash fuer volksFORTH                           UH 11Nov86
+                                                                
+Create cash $200 allot                                          
+                                                                
+' Forth >body Constant hash-thread                              
+: erase-cash ( -- ) cash $200 erase ;  erase-cash               
+                                                                
+1 3 +thru                                                       
+                                                                
+patch (find                                                     
+( patch forget-words )  ' forget-words \ forget-words           
+   dup  ' clear   >body   6 + ! \ liegt auf einer ungluecklichen
+   dup  ' (forget >body $12 + ! \ Adresse, sodass das automa-   
+   dup  ' empty   >body   8 + ! \ tische Patchen nicht klappt.  
+        ' save    >body    4+ !                                 
+patch hide   patch reveal    forget (patch  save                
+\ *** Block No. 2 Hexblock 2 
+\ 'cash found? hfind                                  UH 23Oct86
+                                                                
+: 'cash ( nfa -- 'cash )                                        
+    count $1F and  under bounds                                 
+    ?DO  I c@ +  LOOP   $FF and   2*  cash + ;                  
+                                                                
+: found? ( str nfa -- f )                                       
+   count rot count rot over = IF swap -text 0= exit THEN        
+   drop 2drop false ;                                           
+                                                                
+: (find ( str thread -- str false | nfa true )                  
+   dup hash-thread -  IF (find exit THEN                        
+   drop dup 'cash @  2dup found?   IF nip true exit THEN        
+   drop   hash-thread (find   dup 0= ?exit   over dup 'cash ! ; 
+                                                                
+                                                                
+\ *** Block No. 3 Hexblock 3 
+\ Kernal changes                                      UH 23Oct86
+                                                                
+' hide >body @  | Alias last?                                   
+                                                                
+: hide   last? IF  0   over 'cash !  2- @ current @ !  THEN ;   
+                                                                
+: reveal last? IF  dup  dup 'cash !  2-   current @ !  THEN ;   
+                                                                
+' clear >body 6 + @ | Alias forget-words                        
+                                                                
+| : forget-words  erase-cash forget-words ;                     
+                                                                
+: .cash   cash $200 bounds DO  I @ ?dup IF .name THEN  2 +LOOP ;
+                                                                
+                                                                
+                                                                
+\ *** Block No. 4 Hexblock 4 
+\ patching                                            UH 23Oct86
+                                                                
+: (patch ( new old -- )                                         
+    ['] cash 0 DO                                               
+      i @ over = IF cr I u.  over I ! THEN  LOOP 2drop ;        
+                                                                
+: patch \ name                                                  
+   >in @ '  swap >in !   dup >name 2-  context push  context ! '
+   (patch ;                                                     
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                

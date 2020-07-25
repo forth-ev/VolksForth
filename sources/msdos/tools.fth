@@ -1,0 +1,221 @@
+\ *** Block No. 0 Hexblock 0 
+\                                                 ks 22 dez 87  
+                                                                
+Some simple tools for debugging.                                
+A state-of-the-art, interactive single step tracer              
+and a couple of tools for decompiling and dumping               
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 1 Hexblock 1 
+\ Programming-Tools word set                      cas 19july2020
+  Onlyforth \needs Assembler   2 loadfrom asm.fb                
+                                                                
+  Vocabulary Tools   Tools also definitions                     
+                                                                
+  1 11 +thru   Onlyforth   .( Tools loaded ) cr                 
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 2 Hexblock 2 
+\ trace - next                                    ks 11 jun 87  
+                                                                
+| Variable nest?   nest? off                                    
+                                                                
+  Label tracenext    0 # nest? #) byte cmp  0=                  
+     ?[  $5555 # I cmp  here 2- >label (ip    >=                
+         ?[ [[ swap  lods   A W xchg   W ) jmp  ]?              
+         $5555 # I cmp  here 2- >label ip)    CS ?]             
+     ][  0 # nest? #) byte mov                                  
+     ]?  $5555 # W mov  here 2- >label >tracing   W ) jmp       
+  end-code                                                      
+                                                                
+| (ip Constant <ip        | ip) Constant ip>                    
+                                                                
+| : (debug   ( addr -- )   dup <ip !                            
+     BEGIN  1+ dup @  ['] unnest = UNTIL  2+ ip> ! ;            
+\ *** Block No. 3 Hexblock 3 
+\ install Tracer                                  ks 11 jun 87  
+                                                                
+  Label (do-trace   next-link # W mov   D push                  
+     $E9 # A- mov   tracenext 1+ # C mov                        
+     [[  W ) W mov   W W or  0= not                             
+         ?[[  A- -4 W D) mov   C D mov   W D sub                
+              D -3 W D) mov  ]]?  D pop   ret   end-code        
+                                                                
+  Code do-trace   (do-trace # call   Next   end-code            
+                                                                
+  ' end-trace Alias end-trace                                   
+                                                                
+| Code (step    (do-trace # call                                
+     R ) I mov   R inc   R inc   lods   A W xchg   W ) jmp      
+                                                                
+| Create: nextstep (step ;                                      
+\ *** Block No. 4 Hexblock 4 
+\ tracer display                                  ks 20 sep 88  
+                                                                
+| Variable nest#   nest# off                                    
+                                                                
+| Variable 'ip     'ip off                                      
+                                                                
+| Create: -nest  r> ip> !   r> <ip !   -1 nest# +! ;            
+                                                                
+| : oneline   .status space                                     
+     BEGIN  query  interpret  tib #tib @ + 1- c@ BL =           
+     WHILE  prompt &36 tab  REPEAT                              
+     -$20 allot   r0 @ rp!   r> r0 !   r> dup #tib !            
+     rp@ over tib swap cmove   rp@ + rp!                        
+     r> Is parser   r> adr 'quit !   r> >in !                   
+     r> blk !   r> state !   r> output !   r> input ! ;         
+                                                                
+\ *** Block No. 5 Hexblock 5 
+\ tracer display                                  ks 16 sep 88  
+                                                                
+| : tracing   end-trace  nest? @                                
+     IF  r>  <ip @ >r   ip> @ >r  -nest >r  >r                  
+         1 nest# +!   r@ 2- (debug   nest? off  THEN  r@ 'ip !  
+     nextstep >r   input @ >r  output @ >r  state @ >r          
+     blk @ >r  >in @ >r  adr 'quit @ >r  adr parser @ >r        
+     tib #tib @  rp@ over - under rp! cmove   #tib @ >r         
+     r0 @ >r   rp@ r0 !   standardi/o                           
+     cr nest# @ spaces   'ip @ dup 5 u.r   @ dup 5 u.r          
+     2 spaces  >name .name   &30 nest# @ + tab .s               
+     $20 allot   ['] oneline Is 'quit   quit ;                  
+  ' tracing >tracing !                                          
+                                                                
+                                                                
+                                                                
+\ *** Block No. 6 Hexblock 6 
+\ test traceability                               ks 07 dez 87  
+                                                                
+| : traceable  ( cfa -- cfa' )   recursive  dup @               
+     [ ' :    @ ] Literal case? ?exit                           
+     [ ' key  @ ] Literal case? IF  >body c@ Input @ +          
+                                    @ traceable exit  THEN      
+     [ ' type @ ] Literal case? IF  >body c@ Output @ +         
+                                    @ traceable exit  THEN      
+     [ ' r/w  @ ] Literal case? IF  >body @ traceable exit  THEN
+     c@ $E9 = IF  @ 1+ exit  THEN  \ Does> word                 
+     >name .name ." can't be DEBUGged" quit ;                   
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 7 Hexblock 7 
+\ user words for tracing                          ks 16 sep 88  
+| : do_debug  ( addr -- )                                       
+     traceable (debug  nest? off  nest# off  do-trace ;         
+                                                                
+  : nest            \ trace next high-level word executed       
+     'ip @ @ traceable drop  nest? on ;                         
+                                                                
+  : unnest          \ ends tracing of actual word               
+     <ip on  ip> off ; unnest   \ clears trap range             
+                                                                
+  : endloop               \ stop tracing loop                   
+     'ip @ <ip ! ;        \ use when at end of loop             
+                                                                
+  : debug     ' do_debug ;                                      
+                                                                
+  : trace     ' dup >r do_debug r> execute end-trace unnest ;   
+\ *** Block No. 8 Hexblock 8 
+\ tools for decompiling, interactive use          ks 04 jul 87  
+                                                                
+| : ?:  ( addr -- addr )   dup    5 u.r ." :"  ;                
+| : @?  ( addr -- addr )   dup  @ 6 u.r ;                       
+| : c?  ( addr -- addr )   dup c@ 3  .r ;                       
+| : end                    $28 tab ;                            
+                                                                
+  : s  ( addr1 -- addr2 )                                       
+     ?: 3 spaces c? 2 spaces count 2dup type + even end ;       
+  : n  ( addr1 -- addr2 )                                       
+     ?: @? 2 spaces dup @ >name .name 2+ end ;                  
+  : d  ( addr1 n -- addr2 )  2dup swap ?: 3 spaces              
+     swap 0 DO  c? 1+  LOOP  2 spaces -rot type end ;           
+  : l  ( addr1 -- addr2 )   ?: 6 spaces @? 2+ end ;             
+  : c  ( addr1 -- addr2 )   1 d end ;                           
+  : b  ( addr1 -- addr2 )   ?: @? dup @  over + 6 u.r 2+ end ;  
+\ *** Block No. 9 Hexblock 9 
+\ often  times                                    ks 29 jun 87  
+  Onlyforth                                                     
+                                                                
+  : often    stop? ?exit  >in off ;                             
+                                                                
+| Variable #times   #times off                                  
+                                                                
+  : times   ( n -- )   ?dup                                     
+     IF  #times @ 2+  u<  stop? or                              
+         IF  #times off exit  THEN  1 #times +!                 
+     ELSE  stop? ?exit                                          
+     THEN  >in off ;                                            
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 10 Hexblock A 
+\ dump                                            ks 04 jul 87  
+                                                                
+  : dump  ( addr n -- )    base push hex                        
+     bounds ?DO  cr I $10 [ Tools ] d [ Forth ] drop            
+                 stop? IF LEAVE THEN  $10 +LOOP ;               
+                                                                
+| : ld  ( seg:addr -- )                                         
+     over 4 u.r ." :" dup 0 <# # # # # #> type                  
+     3 spaces   ds@ pad $10 lmove   pad $10 bounds              
+     DO  I c@ 3 u.r  LOOP   2 spaces  pad $10 type ;            
+                                                                
+  : ldump  ( seg:addr quan -- )  base push hex                  
+     0 DO  cr 2dup ld  $10 +  stop? IF LEAVE THEN               
+       $10 +LOOP  2drop ;                                       
+                                                                
+                                                                
+\ *** Block No. 11 Hexblock B 
+\ N>R  NR> cr                                                   
+                                                                
+: N>R  ( i * n +n -- ) ( R: -- j * x +n )                       
+\ Transfer N items and count to the return stack.               
+  DUP BEGIN DUP WHILE                                           
+    ROT R> SWAP >R >R                                           
+    1-                                                          
+  REPEAT DROP  R> SWAP >R >R  ;                                 
+                                                                
+: NR>  ( -- i * x +n ) ( R: j * x +n -- )                       
+\ Pull N items and count off the return stack.                  
+  R> R> SWAP >R DUP                                             
+  BEGIN  DUP  WHILE                                             
+     R> R> SWAP >R -ROT                                         
+     1-                                                         
+ REPEAT  DROP  ;                                                
+\ *** Block No. 12 Hexblock C 
+\  ?                                                            
+: ?  ( a-addr -- )                                              
+\ Display the value stored at a-addr.                           
+  @ . ;                                                         
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                

@@ -1,0 +1,51 @@
+\ *** Block No. 0 Hexblock 0 
+\\ Primitivst Editor zur Installation                 UH 17Nov86
+                                                                
+Da zur Installationszeit der Full-Screen Editor noch nicht      
+funtionsfaehig ist, muessen die zu aendernden Screens auf eine  
+andere Weise ge{nder werden: mit dem primitivst Editor PRIMED,  
+der nur ein Benutzer wort enthaelt:                             
+                                                                
+Benutzung: Mit "nn LIST" Screen nn zum editieren Anwaehlen,     
+  dann mit "ll NEW" den Screen aendern. Es koennen immer nur    
+  ganze Zeilen neu geschrieben werden. ll gibt an, ab welcher   
+  Zeilennummer neue Zeilen eingeben werden sollen. Die Eingabe  
+  einer leeren Zeile (nur RETURN) bewirkt den Abruch von NEW.   
+  Nach jeder Eingabe von RETURN wird die eingegebene Zeile in   
+  den Screen uebernommen, und der ganze Screen zur Kontrolle    
+  nocheinmal ausgegeben.                                        
+                                                                
+\ *** Block No. 1 Hexblock 1 
+\ primitivst Editor PRIMED                            UH 17Nov86
+                                                                
+| : !line ( adr count line# -- )                                
+      scr @ block  swap c/l * +  dup c/l bl fill                
+      swap cmove update ;                                       
+                                                                
+: new ( n -- )                                                  
+   l/s 1+ swap                                                  
+   ?DO cr  I .                                                  
+      pad c/l expect   span @ 0= IF leave THEN                  
+      pad  span @  I !line   cr  scr @ list  LOOP ;             
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+\ *** Block No. 2 Hexblock 2 
+\ PRIMED Demo-Screen                                            
+                                                                
+                                                                
+                                                                
+Dieser Text entstand durch: "2 LIST  4 NEW" mit anschliessender 
+Eingabe dieses Textes                                           
+Die Kopfzeile (Zeile 0) wurde spaeter durch Verlassen von new   
+durch Eingabe einer leeren Zeile (nur RETURN) und Neustart mit  
+"0 NEW" erzeugt.                                                
+                  Ulrich Hoffmann                               
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                

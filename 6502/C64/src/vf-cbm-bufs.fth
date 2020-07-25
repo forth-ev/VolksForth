@@ -7,8 +7,6 @@ User file           0 file !
         \ adr of file control block
 Variable prev       0 prev !
         \ Listhead
-Variable buffers  0 buffers !
-        \ Semaphore
 0408 Constant b/buf
         \ Physical Size
 
@@ -120,22 +118,6 @@ Label blockfound     SP 2inc
 
 Defer diskerr  ' (diskerr  Is diskerr
 
-Defer r/w
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 \ *** Block No. 107, Hexblock 6b
 6b fthpage
@@ -219,8 +201,11 @@ Defer r/w
 : block   ( blk -- addr )
  file@  (block ;
 
+: (blk-source   ( -- addr len)
+ blk @  ?dup IF  block b/blk exit THEN
+ tib #tib @  ;
 
-
+' (blk-source IS source
 
 
 
@@ -231,10 +216,17 @@ Defer r/w
 
 : update   080 prev @  6+ 1+ c! ;
 
-: save-buffers
+: (save-buffers
  buffers lock BEGIN   updates? ?dup
               WHILE backup REPEAT
  buffers unlock  ;
+
+' (save-buffers IS save-buffers
+
+| : (init-buffers
+ 0 prev !  limit first !  all-buffers ;
+
+' (init-buffers IS init-buffers
 
 : empty-buffers
  buffers lock  prev
@@ -245,12 +237,13 @@ Defer r/w
 : flush    save-buffers empty-buffers ;
 
 
-
-
-
-
-
-
+: list   ( blk --)
+ scr ! ." Scr " scr @ dup blk/drv mod u.
+       ." Dr "  drv? .
+ l/s 0 DO stop? IF leave THEN
+   cr I 2 .r space scr @  block
+      I c/l * + c/l  (C 1- )
+   -trailing type  LOOP cr ;
 
 
 \ *** Block No. 111, Hexblock 6f
@@ -286,8 +279,6 @@ Defer r/w
 70 fthpage
 
 \ Allocating buffers          clv12jul87
-
-\ E400 Constant limit     Variable first
 
 : allotbuffer   ( -- )
  first @  r0 @ -  b/buf 2+ u< ?exit

@@ -1378,9 +1378,12 @@ Code capitalize  ( string -- string )
 
 ( source word parse name      08apr85bp)
 
-: source   ( -- addr len)
- blk @  ?dup IF  block b/blk exit THEN
+defer source
+
+: (source   ( -- addr len)
  tib #tib @  ;
+
+' (source IS source
 
 : word  ( char -- addr)   source (word ;
 
@@ -2335,13 +2338,6 @@ Label (-trail
 10 (C drop 19 ) Constant l/s
    \ lines per screen
 
-: list   ( blk --)
- scr ! ." Scr " scr @ dup blk/drv mod u.
-       ." Dr "  drv? .
- l/s 0 DO stop? IF leave THEN
-   cr I 2 .r space scr @  block
-      I c/l * + c/l  (C 1- )
-   -trailing type  LOOP cr ;
 
 
 
@@ -2381,9 +2377,14 @@ end-code
 
 E400 Constant limit     Variable first
 
+Variable buffers  0 buffers !
+        \ Semaphore
+
+Defer r/w
+Defer save-buffers  ' noop IS save-buffers
+Defer init-buffers  ' noop IS init-buffers
+
 include vf-cbm-bufs.fth
-
-
 
 
 \ *** Block No. 113, Hexblock 71
@@ -2593,9 +2594,6 @@ Host Target
 | : init-vocabularys   voc-link @
  BEGIN  dup  2- @  over 4 - !
         @ ?dup 0= UNTIL ;
-
-| : init-buffers
- 0 prev !  limit first !  all-buffers ;
 
 Defer 'cold    ' noop Is 'cold
 

@@ -1445,8 +1445,8 @@ Variable state    0 state !
 : .(     Ascii )  parse type ;
                     immediate
 
-: \      >in @  c/l /  1+ c/l *  >in ! ;
-                    immediate
+: \  blk @ IF >in @  c/l /  1+ c/l *
+ ELSE #tib @ THEN >in ! ; immediate
 
 : \\        b/blk >in ! ;  immediate
 

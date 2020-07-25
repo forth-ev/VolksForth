@@ -65,10 +65,6 @@
 
 \   include                    09jun20pz
 
-  : \ ( -- )
- blk @ IF [compile] \ exit THEN
- #tib @ >in ! ; immediate
-
  create >tib-orig >tib @ ,
  fib >tib !
 

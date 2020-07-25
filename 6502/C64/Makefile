@@ -22,6 +22,7 @@ vf_blk_fth: $(vf_blk_fth_files)
 clean:
 	rm -f cbmfiles/*.fr cbmfiles/*.fth cbmfiles/*.log *.log *.result
 	rm -f cbmfiles/c??-testbase
+	rm -f disks/scratch.d64
 
 
 # Convenience targets
@@ -70,8 +71,9 @@ cbmfiles/c16-vf-32k: emulator/tcbase.T64 emulator/build-vf.sh \
 test-c64.result: emulator/c64-vf-latest.T64 $(test_files_petscii) \
     emulator/run-in-vice.sh tests/evaluate-test.sh tests/test-c64.golden
 	rm -f test-c64.log test-c64.result
-	emulator/run-in-vice.sh c64-vf-latest \
-	  "include run-vf-tests.fth\n1234567890\ndos s0:notdone\n"
+	cp disks/empty.d64 disks/scratch.d64
+	DISK9=scratch emulator/run-in-vice.sh c64-vf-latest \
+	  "include run-vf-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log test-c64.log
 	tests/evaluate-test.sh test-c64
 
@@ -79,7 +81,7 @@ test-c16.result: emulator/c16-vf-latest.T64 $(test_files_petscii) \
     emulator/run-in-vice.sh tests/evaluate-test.sh tests/test-c16.golden
 	rm -f test-c16.log test-c16.result
 	VICE=xplus4 emulator/run-in-vice.sh c16-vf-latest \
-	  "include run-vf-tests.fth\n1234567890\ndos s0:notdone\n"
+	  "include run-vf-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log test-c16.log
 	tests/evaluate-test.sh test-c16
 

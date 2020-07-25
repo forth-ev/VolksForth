@@ -29,6 +29,11 @@ include coreplustest.fth
 
 (64 include doubletest.fth C)
 
+(64 1 drive C)
+(64 include blocktest.fth C)
+
 (64 REPORT-ERRORS C)
 
 logclose
+
+dos s0:notdone

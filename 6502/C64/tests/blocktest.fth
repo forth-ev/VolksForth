@@ -440,30 +440,30 @@ T{ RND-TEST-BLOCK DUP TL3 DUP LOAD = -> TRUE }T
 
 \ EVALUATE resets BLK
 \ u: "EVALUATE-BLK@"; u LOAD
-: EVALUATE-BLK@ ( -- BLK@ )
-    S" BLK @" EVALUATE ;
-: TL4 ( blk -- )
-    S" EVALUATE-BLK@" WRITE-BLOCK ;
-T{ RND-TEST-BLOCK DUP TL4 LOAD -> 0 }T
+\vf : EVALUATE-BLK@ ( -- BLK@ )
+\vf     S" BLK @" EVALUATE ;
+\vf : TL4 ( blk -- )
+\vf     S" EVALUATE-BLK@" WRITE-BLOCK ;
+\vf T{ RND-TEST-BLOCK DUP TL4 LOAD -> 0 }T
 
 \ EVALUTE can nest with LOAD
 \ u: "BLK @"; S" u LOAD" EVALUATE
-: TL5 ( blk -- c-addr u )
-    0 <#                       \ blk 0
-         [CHAR] D HOLD
-         [CHAR] A HOLD
-         [CHAR] O HOLD
-         [CHAR] L HOLD
-         BL HOLD
-    #S #> ;                    \ c-addr u
-\T{ RND-TEST-BLOCK DUP TL3 DUP TL5 EVALUATE = -> TRUE }T
+\vf : TL5 ( blk -- c-addr u )
+\vf     0 <#                       \ blk 0
+\vf          [CHAR] D HOLD
+\vf          [CHAR] A HOLD
+\vf          [CHAR] O HOLD
+\vf          [CHAR] L HOLD
+\vf          BL HOLD
+\vf     #S #> ;                    \ c-addr u
+\vf T{ RND-TEST-BLOCK DUP TL3 DUP TL5 EVALUATE = -> TRUE }T
 
 \ Nested LOADs
 \ u2: "BLK @"; u1: "LOAD u2"; u1 LOAD
-: TL6 ( blk1 blk2 -- )
-    DUP TL3                    \ blk1 blk2
-    TL5 WRITE-BLOCK ;
-T{ 2RND-TEST-BLOCKS 2DUP TL6 SWAP LOAD = -> TRUE }T
+\vf : TL6 ( blk1 blk2 -- )
+\vf     DUP TL3                    \ blk1 blk2
+\vf     TL5 WRITE-BLOCK ;
+\vf T{ 2RND-TEST-BLOCKS 2DUP TL6 SWAP LOAD = -> TRUE }T
 
 \ LOAD changes the currect block that is effected by UPDATE
 \ This test needs at least 2 distinct buffers, though this is not a
@@ -611,6 +611,7 @@ TESTING \, SAVE-INPUT, RESTORE-INPUT and REFILL from a block source
         S" 4444"        WRITE-BLOCK-LINE
     THEN
     DROP UPDATE SAVE-BUFFERS ;
+
 T{ RND-TEST-BLOCK DUP TCSIRIR1 LOAD -> 2222 4444 }T
 
 VARIABLE T-CNT 0 T-CNT !
@@ -622,43 +623,43 @@ VARIABLE T-CNT 0 T-CNT !
     IF EXECUTE ELSE DROP THEN ;
 
 \ SAVE-INPUT and RESTORE-INPUT within a single block
-: TCSIRIR2-EXPECTED S" EDCBCBA" ; \ Remember that the string comes out backwards
-: TCSIRIR2 ( blk -- )
-    C/L 1024 U< IF
-        BLANK-BUFFER
-        S" 0 T-CNT !"                   WRITE-BLOCK-LINE
-        S" <# MARK A SAVE-INPUT MARK B" WRITE-BLOCK-LINE
-S" 1 T-CNT +! MARK C ' RESTORE-INPUT T-CNT @ 2 < ?EXECUTE MARK D" WRITE-BLOCK-LINE
-        S" MARK E 0 0 #>"               WRITE-BLOCK-LINE
-        UPDATE SAVE-BUFFERS DROP
-    ELSE
-        S" 0 TCSIRIR2-EXPECTED"         WRITE-BLOCK
-    THEN ;
-T{ RND-TEST-BLOCK DUP TCSIRIR2 LOAD TCSIRIR2-EXPECTED S= -> 0 TRUE }T
+\vf : TCSIRIR2-EXPECTED S" EDCBCBA" ; \ Remember that the string comes out backwards
+\vf : TCSIRIR2 ( blk -- )
+\vf     C/L 1024 U< IF
+\vf         BLANK-BUFFER
+\vf         S" 0 T-CNT !"                   WRITE-BLOCK-LINE
+\vf         S" <# MARK A SAVE-INPUT MARK B" WRITE-BLOCK-LINE
+\vf S" 1 T-CNT +! MARK C ' RESTORE-INPUT T-CNT @ 2 < ?EXECUTE MARK D" WRITE-BLOCK-LINE
+\vf         S" MARK E 0 0 #>"               WRITE-BLOCK-LINE
+\vf         UPDATE SAVE-BUFFERS DROP
+\vf     ELSE
+\vf         S" 0 TCSIRIR2-EXPECTED"         WRITE-BLOCK
+\vf     THEN ;
+\vf T{ RND-TEST-BLOCK DUP TCSIRIR2 LOAD TCSIRIR2-EXPECTED S= -> 0 TRUE }T
 
 \ REFILL across 2 blocks
-: TCSIRIR3 ( blks -- )
-    DUP S" 1 2 3 REFILL 4 5 6" WRITE-BLOCK
-    1+  S" 10 11 12"           WRITE-BLOCK ;
-T{ 2 RND-TEST-BLOCK-SEQ DUP TCSIRIR3 LOAD -> 1 2 3 -1 10 11 12 }T
+\vf : TCSIRIR3 ( blks -- )
+\vf     DUP S" 1 2 3 REFILL 4 5 6" WRITE-BLOCK
+\vf     1+  S" 10 11 12"           WRITE-BLOCK ;
+\vf T{ 2 RND-TEST-BLOCK-SEQ DUP TCSIRIR3 LOAD -> 1 2 3 -1 10 11 12 }T
 
 \ SAVE-INPUT and RESTORE-INPUT across 2 blocks
-: TCSIRIR4-EXPECTED S" HGF1ECBF1ECBA" ; \ Remember that the string comes out backwards
-: TCSIRIR4 ( blks -- )
-    C/L 1024 U< IF
-        DUP BLANK-BUFFER
-        S" 0 T-CNT !"                   WRITE-BLOCK-LINE
-        S" <# MARK A SAVE-INPUT MARK B" WRITE-BLOCK-LINE
-        S" MARK C REFILL MARK D"        WRITE-BLOCK-LINE
-        DROP UPDATE 1+ BLANK-BUFFER
-        S" MARK E ABS CHAR 0 + HOLD"    WRITE-BLOCK-LINE
-S" 1 T-CNT +! MARK F ' RESTORE-INPUT T-CNT @ 2 < ?EXECUTE MARK G" WRITE-BLOCK-LINE
-        S" MARK H 0 0 #>"               WRITE-BLOCK-LINE
-        DROP UPDATE SAVE-BUFFERS
-    ELSE
-        S" 0 TCSIRIR4-EXPECTED"         WRITE-BLOCK
-    THEN ;
-T{ 2 RND-TEST-BLOCK-SEQ DUP TCSIRIR4 LOAD TCSIRIR4-EXPECTED S= -> 0 TRUE }T
+\vf : TCSIRIR4-EXPECTED S" HGF1ECBF1ECBA" ; \ Remember that the string comes out backwards
+\vf : TCSIRIR4 ( blks -- )
+\vf     C/L 1024 U< IF
+\vf         DUP BLANK-BUFFER
+\vf         S" 0 T-CNT !"                   WRITE-BLOCK-LINE
+\vf         S" <# MARK A SAVE-INPUT MARK B" WRITE-BLOCK-LINE
+\vf         S" MARK C REFILL MARK D"        WRITE-BLOCK-LINE
+\vf         DROP UPDATE 1+ BLANK-BUFFER
+\vf         S" MARK E ABS CHAR 0 + HOLD"    WRITE-BLOCK-LINE
+\vf S" 1 T-CNT +! MARK F ' RESTORE-INPUT T-CNT @ 2 < ?EXECUTE MARK G" WRITE-BLOCK-LINE
+\vf         S" MARK H 0 0 #>"               WRITE-BLOCK-LINE
+\vf         DROP UPDATE SAVE-BUFFERS
+\vf     ELSE
+\vf         S" 0 TCSIRIR4-EXPECTED"         WRITE-BLOCK
+\vf     THEN ;
+\vf T{ 2 RND-TEST-BLOCK-SEQ DUP TCSIRIR4 LOAD TCSIRIR4-EXPECTED S= -> 0 TRUE }T
 
 \ ------------------------------------------------------------------------------
 TESTING THRU

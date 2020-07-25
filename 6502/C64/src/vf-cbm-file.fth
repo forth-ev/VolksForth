@@ -13,9 +13,6 @@
 
   create fload-dev  8 ,
   create fload-2nd  f ,
-| 84 constant /fib
-  create fib /fib allot
-  variable #fib
 
 | : eol? ( c -- f )
    dup 0= swap #cr = or IF 0 exit THEN
@@ -23,14 +20,14 @@
 
 | : freadline ( -- eof )
  fload-dev @ fload-2nd @ busin
- fib /fib bounds
+ tib /tib bounds
  DO bus@ dup eol? under
      IF I c! ELSE drop THEN
  dup 0<
-   IF drop ELSE I + fib - #fib ! UNLOOP
+   IF drop ELSE I + tib - #tib ! UNLOOP
    i/o-status? busoff exit THEN
- LOOP /fib #fib !
- ." warning: line exceeds max " /fib .
+ LOOP /tib #tib !
+ ." warning: line exceeds max " /tib .
  cr ." extra chars ignored" cr
  BEGIN bus@ eol? 1+ UNTIL
  i/o-status? busoff ;
@@ -65,17 +62,14 @@
 
 \   include                    09jun20pz
 
- create >tib-orig >tib @ ,
- fib >tib !
-
-  : interpret-via-fib
+  : interpret-via-tib
  BEGIN freadline >r  >in off
- #fib @ #tib !  interpret  r> UNTIL ;
+ interpret  r> UNTIL ;
 
   : include ( -- )
  blk @ Abort" no include from blk"
  bl parse  fload-open
-   interpret-via-fib
+   interpret-via-tib
  fload-close
  #tib off >in off ;
 

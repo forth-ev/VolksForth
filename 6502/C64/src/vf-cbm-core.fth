@@ -1176,8 +1176,9 @@ Code fill  ( addr quan 8b -- )
 
 ( input strings               24dec83ks)
 
+| $84 Constant /tib
 Variable #tib   0 #tib !
-Variable >tib   here >tib !   $50 allot
+Variable >tib   here >tib !   /tib allot
 Variable >in    0 >in !
 Variable blk    0 blk !
 Variable span   0 span !

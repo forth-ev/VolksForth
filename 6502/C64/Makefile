@@ -20,7 +20,8 @@ vf_blk_fth: $(vf_blk_fth_files)
 
 
 clean:
-	rm -f cbmfiles/*.fr cbmfiles/*.fth cbmfiles/*.log *.log *.result
+	rm -f cbmfiles/*.fr cbmfiles/*.fth cbmfiles/*.log
+	rm -f *.log *.result *.golden
 	rm -f cbmfiles/c??-testbase
 	rm -f disks/scratch.d64
 
@@ -69,7 +70,7 @@ cbmfiles/c16-vf-32k: emulator/tcbase.T64 emulator/build-vf.sh \
 # Core test targets
 
 test-c64.result: emulator/c64-vf-latest.T64 $(test_files_petscii) \
-    emulator/run-in-vice.sh tests/evaluate-test.sh tests/test-c64.golden
+    emulator/run-in-vice.sh tests/evaluate-test.sh test-c64.golden
 	rm -f test-c64.log test-c64.result
 	cp disks/empty.d64 disks/scratch.d64
 	DISK9=scratch emulator/run-in-vice.sh c64-vf-latest \
@@ -78,13 +79,24 @@ test-c64.result: emulator/c64-vf-latest.T64 $(test_files_petscii) \
 	tests/evaluate-test.sh test-c64
 
 test-c16.result: emulator/c16-vf-latest.T64 $(test_files_petscii) \
-    emulator/run-in-vice.sh tests/evaluate-test.sh tests/test-c16.golden
+    emulator/run-in-vice.sh tests/evaluate-test.sh test-c16.golden
 	rm -f test-c16.log test-c16.result
 	VICE=xplus4 emulator/run-in-vice.sh c16-vf-latest \
 	  "include run-vf-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log test-c16.log
 	tests/evaluate-test.sh test-c16
 
+c64_golden_parts = prelim core coreext double block report-blk
+c64_golden_files = $(patsubst %, tests/golden/%.golden, \
+  $(c64_golden_parts))
+test-c64.golden: $(c64_golden_files)
+	cat $? > $@
+
+c16_golden_parts = prelim core
+c16_golden_files = $(patsubst %, tests/golden/%.golden, \
+  $(c16_golden_parts))
+test-c16.golden: $(c16_golden_files)
+	cat $? > $@
 
 # Rules for building Forth binaries on top of the plain vanilla
 # c64-volksforth83.

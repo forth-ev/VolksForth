@@ -5,7 +5,8 @@ basedir="$(realpath --relative-to="$PWD" "${testsdir}/..")"
 
 testname="$1"
 
-diff "${testsdir}/${testname}.golden" "${basedir}/${testname}.log" > tmp.result
+diff --ignore-trailing-space "${basedir}/${testname}.golden" \
+  "${basedir}/${testname}.log" > tmp.result
 exitcode=$?
 test $exitcode -eq 0 \
   && echo "PASS: ${testname}" >> tmp.result \

@@ -297,3 +297,5 @@ Defer diskerr  ' (diskerr  Is diskerr
 : all-buffers
  BEGIN  first @ allotbuffer
         first @  = UNTIL ;
+
+include vf-sys-cbmrw.fth

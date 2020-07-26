@@ -2374,7 +2374,10 @@ Label wake    wake >wake !
 end-code
 
 
-
+\ Hooks for buffer mechanism to hook into the
+\ overall system.
+\ Needed somewhere around here so that
+\ loading vf-cbm-bufs.fth o can be ptional.
 
 E400 Constant limit     Variable first
 
@@ -2384,8 +2387,6 @@ Variable buffers  0 buffers !
 Defer r/w
 Defer save-buffers  ' noop IS save-buffers
 Defer init-buffers  ' noop IS init-buffers
-
-include vf-cbm-bufs.fth
 
 
 \ *** Block No. 113, Hexblock 71

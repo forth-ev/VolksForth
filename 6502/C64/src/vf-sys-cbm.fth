@@ -224,5 +224,3 @@ Code bus@  ( -- 8b)
    IF  BEGIN emit bus@ dup #cr =  UNTIL
    0= cr ELSE BEGIN bus@ #cr = UNTIL
    THEN   0=  busoff ;
-
-include vf-sys-cbmrw.fth

@@ -4,369 +4,427 @@
 
 Comparison of user visible words in each target base kernel image
 
- | Word          | CP/M | MS-DOS | C64/C16 | Atari ST | Atari 8bit | Apple 1/2 | PET | py65 |   |
- |---------------+------+--------+---------+----------+------------+-----------+-----+------+---|
- | ASSEMBLER     |      |        |         |          |            |           |     | core |   |
- | FORTH-83      |      |        |         |          |            |           |     | core |   |
- | (R/W          |      |        |         |          |            |           |     | core |   |
- | DRVINIT       |      |        |         |          |            |           |     | core |   |
- | DRV?          |      |        |         |          |            |           |     | core |   |
- | >DRIVE        |      |        |         |          |            |           |     | core |   |
- | DRIVE         |      |        |         |          |            |           |     | core |   |
- | BLK/DRV       |      |        |         |          |            |           |     | core |   |
- | B/BLK         |      |        |         |          |            |           |     | core |   |
- | DISPLAY       |      |        |         |          |            |           |     | core |   |
- | 65TYPE        |      |        |         |          |            |           |     |      |   |
- | 65AT?         |      |        |         |          |            |           |     |      |   |
- | 65AT          |      |        |         |          |            |           |     |      |   |
- | 65PAGE        |      |        |         |          |            |           |     |      |   |
- | 65DEL         |      |        |         |          |            |           |     |      |   |
- | 65CR          |      |        |         |          |            |           |     |      |   |
- | 65EMIT        |      |        |         |          |            |           |     |      |   |
- | (EMIT         |      |        |         |          |            |           |     |      |   |
- | KEYBOARD      |      |        |         |          |            |           |     | core |   |
- | 65EXPECT      |      |        |         |          |            |           |     |      |   |
- | 65DECODE      |      |        |         |          |            |           |     |      |   |
- | #LF           |      |        |         |          |            |           |     | core |   |
- | #ESC          |      |        |         |          |            |           |     | core |   |
- | #CR           |      |        |         |          |            |           |     | core |   |
- | #BS           |      |        |         |          |            |           |     | core |   |
- | 65KEY         |      |        |         |          |            |           |     |      |   |
- | CUROFF        |      |        |         |          |            |           |     | core |   |
- | CURON         |      |        |         |          |            |           |     | core |   |
- | GETKEY        |      |        |         |          |            |           |     | core |   |
- | 65KEY?        |      |        |         |          |            |           |     |      |   |
- | RESTART       |      |        |         |          |            |           |     | core |   |
- | COLD          |      |        |         |          |            |           |     | core |   |
- | 'RESTART      |      |        |         |          |            |           |     | core |   |
- | 'COLD         |      |        |         |          |            |           |     | core |   |
- | EXPECT        |      |        |         |          |            |           |     | core |   |
- | DECODE        |      |        |         |          |            |           |     | core |   |
- | KEY?          |      |        |         |          |            |           |     | core |   |
- | KEY           |      |        |         |          |            |           |     | core |   |
- | INPUT:        |      |        |         |          |            |           |     | core |   |
- | COL           |      |        |         |          |            |           |     | core |   |
- | ROW           |      |        |         |          |            |           |     | core |   |
- | AT?           |      |        |         |          |            |           |     | core |   |
- | AT            |      |        |         |          |            |           |     | core |   |
- | PAGE          |      |        |         |          |            |           |     | core |   |
- | DEL           |      |        |         |          |            |           |     | core |   |
- | TYPE          |      |        |         |          |            |           |     | core |   |
- | CR            |      |        |         |          |            |           |     | core |   |
- | EMIT          |      |        |         |          |            |           |     | core |   |
- | OUTPUT:       |      |        |         |          |            |           |     | core |   |
- | ?CR           |      |        |         |          |            |           |     | core |   |
- | STOP?         |      |        |         |          |            |           |     | core |   |
- | BYE           |      |        |         |          |            |           |     | core |   |
- | SAVE          |      |        |         |          |            |           |     | core |   |
- | EMPTY         |      |        |         |          |            |           |     | core |   |
- | FORGET        |      |        |         |          |            |           |     | core |   |
- | (FORGET       |      |        |         |          |            |           |     | core |   |
- | CLEAR         |      |        |         |          |            |           |     | core |   |
- | ALL-BUFFERS   |      |        |         |          |            |           |     | core |   |
- | FREEBUFFER    |      |        |         |          |            |           |     | core |   |
- | ALLOTBUFFER   |      |        |         |          |            |           |     | core |   |
- | FIRST         |      |        |         |          |            |           |     | core |   |
- | LIMIT         |      |        |         |          |            |           |     | core |   |
- | CONVEY        |      |        |         |          |            |           |     | core |   |
- | COPY          |      |        |         |          |            |           |     | core |   |
- | FLUSH         |      |        |         |          |            |           |     | core |   |
- | EMPTY-BUFFERS |      |        |         |          |            |           |     | core |   |
- | SAVE-BUFFERS  |      |        |         |          |            |           |     | core |   |
- | UPDATE        |      |        |         |          |            |           |     | core |   |
- | BLOCK         |      |        |         |          |            |           |     | core |   |
- | BUFFER        |      |        |         |          |            |           |     | core |   |
- | (BLOCK        |      |        |         |          |            |           |     | core |   |
- | (BUFFER       |      |        |         |          |            |           |     | core |   |
- | CORE?         |      |        |         |          |            |           |     | core |   |
- | R/W           |      |        |         |          |            |           |     | core |   |
- | DISKERR       |      |        |         |          |            |           |     | core |   |
- | (DISKERR      |      |        |         |          |            |           |     | core |   |
- | B/BUF         |      |        |         |          |            |           |     | core |   |
- | PREV          |      |        |         |          |            |           |     | core |   |
- | FILE          |      |        |         |          |            |           |     | core |   |
- | UNLOCK        |      |        |         |          |            |           |     | core |   |
- | LOCK          |      |        |         |          |            |           |     | core |   |
- | PAUSE         |      |        |         |          |            |           |     | core |   |
- | LIST          |      |        |         |          |            |           |     | core |   |
- | L/S           |      |        |         |          |            |           |     | core |   |
- | C/L           |      |        |         |          |            |           |     | core |   |
- | .S            |      |        |         |          |            |           |     | core |   |
- | U.            |      |        |         |          |            |           |     | core |   |
- | .             |      |        |         |          |            |           |     | core |   |
- | D.            |      |        |         |          |            |           |     | core |   |
- | U.R           |      |        |         |          |            |           |     | core |   |
- | .R            |      |        |         |          |            |           |     | core |   |
- | D.R           |      |        |         |          |            |           |     | core |   |
- | #S            |      |        |         |          |            |           |     | core |   |
- | #             |      |        |         |          |            |           |     | core |   |
- | SIGN          |      |        |         |          |            |           |     | core |   |
- | #>            |      |        |         |          |            |           |     | core |   |
- | <#            |      |        |         |          |            |           |     | core |   |
- | HOLD          |      |        |         |          |            |           |     | core |   |
- | SPACES        |      |        |         |          |            |           |     | core |   |
- | SPACE         |      |        |         |          |            |           |     | core |   |
- | -TRAILING     |      |        |         |          |            |           |     | core |   |
- | BL            |      |        |         |          |            |           |     | core |   |
- | ERROR"        |      |        |         |          |            |           |     | core |   |
- | ABORT"        |      |        |         |          |            |           |     | core |   |
- | (ABORT"       |      |        |         |          |            |           |     | core |   |
- | (ERROR        |      |        |         |          |            |           |     | core |   |
- | R#            |      |        |         |          |            |           |     | core |   |
- | SCR           |      |        |         |          |            |           |     | core |   |
- | ABORT         |      |        |         |          |            |           |     | core |   |
- | 'ABORT        |      |        |         |          |            |           |     | core |   |
- | STANDARDI/O   |      |        |         |          |            |           |     | core |   |
- | QUIT          |      |        |         |          |            |           |     | core |   |
- | 'QUIT         |      |        |         |          |            |           |     | core |   |
- | (QUIT         |      |        |         |          |            |           |     | core |   |
- | DEPTH         |      |        |         |          |            |           |     | core |   |
- | RDEPTH        |      |        |         |          |            |           |     | core |   |
- | -->           |      |        |         |          |            |           |     | core |   |
- | +THRU         |      |        |         |          |            |           |     | core |   |
- | THRU          |      |        |         |          |            |           |     | core |   |
- | +LOAD         |      |        |         |          |            |           |     | core |   |
- | LOAD          |      |        |         |          |            |           |     | core |   |
- | PUSH          |      |        |         |          |            |           |     | core |   |
- | .STATUS       |      |        |         |          |            |           |     | core |   |
- | ?STACK        |      |        |         |          |            |           |     | core |   |
- | IS            |      |        |         |          |            |           |     | core |   |
- | (IS           |      |        |         |          |            |           |     | core |   |
- | DEFER         |      |        |         |          |            |           |     | core |   |
- | ]             |      |        |         |          |            |           |     | core |   |
- | [             |      |        |         |          |            |           |     | core |   |
- | INTERPRET     |      |        |         |          |            |           |     | core |   |
- | NO.EXTENSIONS |      |        |         |          |            |           |     | core |   |
- | NOTFOUND      |      |        |         |          |            |           |     | core |   |
- | >INTERPRET    |      |        |         |          |            |           |     | core |   |
- | NULLSTRING?   |      |        |         |          |            |           |     | core |   |
- | [']           |      |        |         |          |            |           |     | core |   |
- | [COMPILE]     |      |        |         |          |            |           |     | core |   |
- | '             |      |        |         |          |            |           |     | core |   |
- | FIND          |      |        |         |          |            |           |     | core |   |
- | (FIND         |      |        |         |          |            |           |     | core |   |
- | WORDS         |      |        |         |          |            |           |     | core |   |
- | ORDER         |      |        |         |          |            |           |     | core |   |
- | DEFINITIONS   |      |        |         |          |            |           |     | core |   |
- | ONLYFORTH     |      |        |         |          |            |           |     | core |   |
- | ONLY          |      |        |         |          |            |           |     | core |   |
- | FORTH         |      |        |         |          |            |           |     | core |   |
- | VOCABULARY    |      |        |         |          |            |           |     | core |   |
- | TOSS          |      |        |         |          |            |           |     | core |   |
- | ALSO          |      |        |         |          |            |           |     | core |   |
- | CONTEXT       |      |        |         |          |            |           |     | core |   |
- | CURRENT       |      |        |         |          |            |           |     | core |   |
- | VP            |      |        |         |          |            |           |     | core |   |
- | ALIAS         |      |        |         |          |            |           |     | core |   |
- | USER          |      |        |         |          |            |           |     | core |   |
- | UALLOT        |      |        |         |          |            |           |     | core |   |
- | VARIABLE      |      |        |         |          |            |           |     | core     |   |
- | CONSTANT      |      |        |         |          |            |           |     | core     |   |
- | ;             |      |        |         |          |            |           |     | core     |   |
- | :             |      |        |         |          |            |           |     | core     |   |
- | .NAME         |      |        |         |          |            |           |     | core     |   |
- | >BODY         |      |        |         |          |            |           |     | core     |   |
- | NAME>         |      |        |         |          |            |           |     | core     |   |
- | >NAME         |      |        |         |          |            |           |     | core     |   |
- | CREATE        |      |        |         |          |            |           |     | core     |   |
- | WARNING       |      |        |         |          |            |           |     | core     |   |
- | \vert         |      |        |         |          |            |           |     | core     |   |
- | ?HEAD         |      |        |         |          |            |           |     | core     |   |
- | DOES>         |      |        |         |          |            |           |     | core     |   |
- | HEAP?         |      |        |         |          |            |           |     | core     |   |
- | HEAP          |      |        |         |          |            |           |     | core     |   |
- | HALLOT        |      |        |         |          |            |           |     | core     |   |
- | CLEARSTACK    |      |        |         |          |            |           |     | core     |   |
- | RESTRICT      |      |        |         |          |            |           |     | core     |   |
- | IMMEDIATE     |      |        |         |          |            |           |     | core     |   |
- | RECURSIVE     |      |        |         |          |            |           |     | core     |   |
- | REVEAL        |      |        |         |          |            |           |     | core     |   |
- | HIDE          |      |        |         |          |            |           |     | core     |   |
- | LAST          |      |        |         |          |            |           |     | core     |   |
- | NUMBER        |      |        |         |          |            |           |     | core     |   |
- | NUMBER?       |      |        |         |          |            |           |     | core     |   |
- | DPL           |      |        |         |          |            |           |     | core     |   |
- | CONVERT       |      |        |         |          |            |           |     | core     |   |
- | ACCUMULATE    |      |        |         |          |            |           |     | core     |   |
- | DIGIT?        |      |        |         |          |            |           |     | core     |   |
- | DECIMAL       |      |        |         |          |            |           |     | core     |   |
- | HEX           |      |        |         |          |            |           |     | core     |   |
- | \NEEDS        |      |        |         |          |            |           |     | core     |   |
- | \\            |      |        |         |          |            |           |     | core     |   |
- | \             |      |        |         |          |            |           |     | core     |   |
- | .(            |      |        |         |          |            |           |     | core     |   |
- | (             |      |        |         |          |            |           |     | core     |   |
- | ."            |      |        |         |          |            |           |     | core     |   |
- | (."           |      |        |         |          |            |           |     | core     |   |
- | "             |      |        |         |          |            |           |     | core     |   |
- | ("            |      |        |         |          |            |           |     | core     |   |
- | "LIT          |      |        |         |          |            |           |     | core     |   |
- | ,"            |      |        |         |          |            |           |     | core     |   |
- | ASCII         |      |        |         |          |            |           |     | core     |   |
- | STATE         |      |        |         |          |            |           |     | core     |   |
- | NAME          |      |        |         |          |            |           |     | core     |   |
- | PARSE         |      |        |         |          |            |           |     | core     |   |
- | WORD          |      |        |         |          |            |           |     | core     |   |
- | SOURCE        |      |        |         |          |            |           |     | core     |   |
- | CAPITALIZE    |      |        |         |          |            |           |     | core     |   |
- | CAPITAL       |      |        |         |          |            |           |     | core     |   |
- | /STRING       |      |        |         |          |            |           |     | core     |   |
- | SKIP          |      |        |         |          |            |           |     | core     |   |
- | SCAN          |      |        |         |          |            |           |     | core     |   |
- | QUERY         |      |        |         |          |            |           |     | core     |   |
- | TIB           |      |        |         |          |            |           |     | core     |   |
- | SPAN          |      |        |         |          |            |           |     | core     |   |
- | BLK           |      |        |         |          |            |           |     | core     |   |
- | >IN           |      |        |         |          |            |           |     | core     |   |
- | >TIB          |      |        |         |          |            |           |     | core     |   |
- | #TIB          |      |        |         |          |            |           |     | core     |   |
- | COMPILE       |      |        |         |          |            |           |     | core     |   |
- | C,            |      |        |         |          |            |           |     | core     |   |
- | ,             |      |        |         |          |            |           |     | core     |   |
- | ALLOT         |      |        |         |          |            |           |     | core     |   |
- | PAD           |      |        |         |          |            |           |     | core     |   |
- | HERE          |      |        |         |          |            |           |     | core     |   |
- | FILL          |      |        |         |          |            |           |     | core     |   |
- | ERASE         |      |        |         |          |            |           |     | core     |   |
- | COUNT         |      |        |         |          |            |           |     | core     |   |
- | PLACE         |      |        |         |          |            |           |     | core     |   |
- | MOVE          |      |        |         |          |            |           |     | core     |   |
- | CMOVE>        |      |        |         |          |            |           |     | core     |   |
- | CMOVE         |      |        |         |          |            |           |     | core     |   |
- | UD/MOD        |      |        |         |          |            |           |     | core     |   |
- | UD/MOD        |      |        |         |          |            |           |     | core     |   |
- | */            |      |        |         |          |            |           |     | core     |   |
- | */MOD         |      |        |         |          |            |           |     | core     |   |
- | MOD           |      |        |         |          |            |           |     | core     |   |
- | /             |      |        |         |          |            |           |     | core     |   |
- | /MOD          |      |        |         |          |            |           |     | core     |   |
- | 2/            |      |        |         |          |            |           |     | core     |   |
- | M/MOD         |      |        |         |          |            |           |     | core     |   |
- | UM/MOD        |      |        |         |          |            |           |     | core     |   |
- | 2*            |      |        |         |          |            |           |     | core     |   |
- | *             |      |        |         |          |            |           |     | core     |   |
- | M*            |      |        |         |          |            |           |     | core     |   |
- | UM*           |      |        |         |          |            |           |     | core     |   |
- | LEAVE         |      |        |         |          |            |           |     | core     |   |
- | +LOOP         |      |        |         |          |            |           |     | core     |   |
- | LOOP          |      |        |         |          |            |           |     | core     |   |
- | ?DO           |      |        |         |          |            |           |     | core     |   |
- | DO            |      |        |         |          |            |           |     | core     |   |
- | UNTIL         |      |        |         |          |            |           |     | core     |   |
- | REPEAT        |      |        |         |          |            |           |     | core     |   |
- | WHILE         |      |        |         |          |            |           |     | core     |   |
- | BEGIN         |      |        |         |          |            |           |     | core     |   |
- | ELSE          |      |        |         |          |            |           |     | core     |   |
- | THEN          |      |        |         |          |            |           |     | core     |   |
- | IF            |      |        |         |          |            |           |     | core     |   |
- | CASE?         |      |        |         |          |            |           |     | core     |   |
- | ?PAIRS        |      |        |         |          |            |           |     | core     |   |
- | <RESOLVE      |      |        |         |          |            |           |     | core     |   |
- | <MARK         |      |        |         |          |            |           |     | core     |   |
- | >RESOLVE      |      |        |         |          |            |           |     | core     |   |
- | >MARK         |      |        |         |          |            |           |     | core     |   |
- | ?BRANCH       |      |        |         |          |            |           |     | core     |   |
- | BRANCH        |      |        |         |          |            |           |     | core     |   |
- | J             |      |        |         |          |            |           |     | core     |   |
- | I             |      |        |         |          |            |           |     | core     |   |
- | (+LOOP        |      |        |         |          |            |           |     | core     |   |
- | (LOOP         |      |        |         |          |            |           |     | core     |   |
- | ENDLOOP       |      |        |         |          |            |           |     | core     |   |
- | BOUNDS        |      |        |         |          |            |           |     | core     |   |
- | (?DO          |      |        |         |          |            |           |     | core     |   |
- | (DO           |      |        |         |          |            |           |     | core     |   |
- | ABS           |      |        |         |          |            |           |     | core     |   |
- | DBAS          |      |        |         |          |            |           |     | core     |   |
- | EXTEND        |      |        |         |          |            |           |     | core     |   |
- | UMIN          |      |        |         |          |            |           |     | core     |   |
- | UMAX          |      |        |         |          |            |           |     | core     |   |
- | MAX           |      |        |         |          |            |           |     | core     |   |
- | MIN           |      |        |         |          |            |           |     | core     |   |
- | D<            |      |        |         |          |            |           |     | core     |   |
- | D=            |      |        |         |          |            |           |     | core     |   |
- | D0=           |      |        |         |          |            |           |     | core     |   |
- | =             |      |        |         |          |            |           |     | core     |   |
- | U>            |      |        |         |          |            |           |     | core     |   |
- | 0<>           |      |        |         |          |            |           |     | core     |   |
- | 0>            |      |        |         |          |            |           |     | core     |   |
- | >             |      |        |         |          |            |           |     | core     |   |
- | U<            |      |        |         |          |            |           |     | core     |   |
- | <             |      |        |         |          |            |           |     | core     |   |
- | UWITHIN       |      |        |         |          |            |           |     | core     |   |
- | 0=            |      |        |         |          |            |           |     | core     |   |
- | 0<            |      |        |         |          |            |           |     | core     |   |
- | LITERAL       |      |        |         |          |            |           |     | core     |   |
- | LIT           |      |        |         |          |            |           |     | core     |   |
- | CLIT          |      |        |         |          |            |           |     | core     |   |
- | OFF           |      |        |         |          |            |           |     | core     |   |
- | ON            |      |        |         |          |            |           |     | core     |   |
- | 4             |      |        |         |          |            |           |     | core     |   |
- | 3             |      |        |         |          |            |           |     | core     |   |
- | 2             |      |        |         |          |            |           |     | core     |   |
- | 1             |      |        |         |          |            |           |     | core     |   |
- | 0             |      |        |         |          |            |           |     | core     |   |
- | -1            |      |        |         |          |            |           |     | core     |   |
- | FALSE         |      |        |         |          |            |           |     | core     |   |
- | TRUE          |      |        |         |          |            |           |     | core     |   |
- | 2-            |      |        |         |          |            |           |     | core     |   |
- | 1-            |      |        |         |          |            |           |     | core     |   |
- | 3+            |      |        |         |          |            |           |     | core     |   |
- | 2+            |      |        |         |          |            |           |     | core     |   |
- | 1+            |      |        |         |          |            |           |     | core     |   |
- | D+            |      |        |         |          |            |           |     | core     |   |
- | DNEGATE       |      |        |         |          |            |           |     | core     |   |
- | NEGATE        |      |        |         |          |            |           |     | core     |   |
- | NOT           |      |        |         |          |            |           |     | core     |   |
- | -             |      |        |         |          |            |           |     | core     |   |
- | XOR           |      |        |         |          |            |           |     | core     |   |
- | AND           |      |        |         |          |            |           |     | core     |   |
- | OR            |      |        |         |          |            |           |     | core     |   |
- | +             |      |        |         |          |            |           |     | core     |   |
- | 2DUP          |      |        |         |          |            |           |     | core     |   |
- | 2DROP         |      |        |         |          |            |           |     | core     |   |
- | 2SWAP         |      |        |         |          |            |           |     | core     |   |
- | ROLL          |      |        |         |          |            |           |     | core     |   |
- | PICK          |      |        |         |          |            |           |     | core     |   |
- | UNDER         |      |        |         |          |            |           |     | core     |   |
- | NIP           |      |        |         |          |            |           |     | core     |   |
- | ROT           |      |        |         |          |            |           |     | core     |   |
- | -ROT          |      |        |         |          |            |           |     | core     |   |
- | OVER          |      |        |         |          |            |           |     | core     |   |
- | ?DUP          |      |        |         |          |            |           |     | core     |   |
- | DUP           |      |        |         |          |            |           |     | core     |   |
- | SWAP          |      |        |         |          |            |           |     | core     |   |
- | DROP          |      |        |         |          |            |           |     | core     |   |
- | +!            |      |        |         |          |            |           |     | core     |   |
- | !             |      |        |         |          |            |           |     | core     |   |
- | @             |      |        |         |          |            |           |     | core     |   |
- | CTOGGLE       |      |        |         |          |            |           |     | core     |   |
- | C!            |      |        |         |          |            |           |     | core     |   |
- | C@            |      |        |         |          |            |           |     | core     |   |
- | PERFORM       |      |        |         |          |            |           |     | core     |   |
- | EXECUTE       |      |        |         |          |            |           |     | core     |   |
- | ?EXIT         |      |        |         |          |            |           |     | core     |   |
- | EXIT          |      |        |         |          |            |           |     | core     |   |
- | RDROP         |      |        |         |          |            |           |     | core     |   |
- | R@            |      |        |         |          |            |           |     | core     |   |
- | R>            |      |        |         |          |            |           |     | core     |   |
- | >R            |      |        |         |          |            |           |     | core     |   |
- | RP!           |      |        |         |          |            |           |     | core     |   |
- | RP@           |      |        |         |          |            |           |     | core     |   |
- | UP!           |      |        |         |          |            |           |     | core     |   |
- | UP@           |      |        |         |          |            |           |     | core     |   |
- | SP!           |      |        |         |          |            |           |     | core     |   |
- | SP@           |      |        |         |          |            |           |     | core     |   |
- | UDP           |      |        |         |          |            |           |     | core     |   |
- | VOC-LINK      |      |        |         |          |            |           |     | core     |   |
- | ERRORHANDLER  |      |        |         |          |            |           |     | core     |   |
- | INPUT         |      |        |         |          |            |           |     | core     |   |
- | OUTPUT        |      |        |         |          |            |           |     | core     |   |
- | BASE          |      |        |         |          |            |           |     | core     |   |
- | OFFSET        |      |        |         |          |            |           |     | core     |   |
- | DP            |      |        |         |          |            |           |     | core     |   |
- | R0            |      |        |         |          |            |           |     | core     |   |
- | S0            |      |        |         |          |            |           |     | core     |   |
- | ORIGIN        |      |        |         |          |            |           |     | core     |   |
- | NOOP          |      |        |         |          |            |           |     | core     |   |
- | RECOVER       |      |        |         |          |            |           |     | core     |   |
- | END-TRACE     |      |        |         |          |            |           |     | core     |   |
+ | Word          | C64/C16 | CP/M | MS-DOS | Atari ST | Atari 8bit | Apple 1/2 | PET | py65 |   |
+ |---------------+---------+------+--------+----------+------------+-----------+-----+------+---|
+ | ASSEMBLER     | core    |      |        |          |            |           |     | core |   |
+ | FORTH-83      | core    |      |        |          |            |           |     | core |   |
+ | (R/W          |         |      |        |          |            |           |     | core |   |
+ | DRVINIT       | core    |      |        |          |            |           |     | core |   |
+ | DRV?          | core    |      |        |          |            |           |     | core |   |
+ | >DRIVE        | core    |      |        |          |            |           |     | core |   |
+ | DRIVE         | core    |      |        |          |            |           |     | core |   |
+ | BLK/DRV       | core    |      |        |          |            |           |     | core |   |
+ | B/BLK         | core    |      |        |          |            |           |     | core |   |
+ | DISPLAY       | core    |      |        |          |            |           |     | core |   |
+ | KEYBOARD      | core    |      |        |          |            |           |     | core |   |
+ | 65TYPE        |         |      |        |          |            |           |     |      |   |
+ | 65AT?         |         |      |        |          |            |           |     |      |   |
+ | 65AT          |         |      |        |          |            |           |     |      |   |
+ | 65PAGE        |         |      |        |          |            |           |     |      |   |
+ | 65DEL         |         |      |        |          |            |           |     |      |   |
+ | 65CR          |         |      |        |          |            |           |     |      |   |
+ | 65EMIT        |         |      |        |          |            |           |     |      |   |
+ | (EMIT         |         |      |        |          |            |           |     |      |   |
+ | 65EXPECT      |         |      |        |          |            |           |     |      |   |
+ | 65DECODE      |         |      |        |          |            |           |     |      |   |
+ | #LF           |         |      |        |          |            |           |     | core |   |
+ | #ESC          |         |      |        |          |            |           |     | core |   |
+ | #CR           | core    |      |        |          |            |           |     | core |   |
+ | #BS           | core    |      |        |          |            |           |     | core |   |
+ | 65KEY         |         |      |        |          |            |           |     |      |   |
+ | CUROFF        | core    |      |        |          |            |           |     | core |   |
+ | CURON         | core    |      |        |          |            |           |     | core |   |
+ | GETKEY        | core    |      |        |          |            |           |     | core |   |
+ | 65KEY?        |         |      |        |          |            |           |     |      |   |
+ | RESTART       | core    |      |        |          |            |           |     | core |   |
+ | COLD          | core    |      |        |          |            |           |     | core |   |
+ | 'RESTART      | core    |      |        |          |            |           |     | core |   |
+ | 'COLD         | core    |      |        |          |            |           |     | core |   |
+ | EXPECT        | core    |      |        |          |            |           |     | core |   |
+ | DECODE        | core    |      |        |          |            |           |     | core |   |
+ | KEY?          | core    |      |        |          |            |           |     | core |   |
+ | KEY           | core    |      |        |          |            |           |     | core |   |
+ | INPUT:        | core    |      |        |          |            |           |     | core |   |
+ | COL           | core    |      |        |          |            |           |     | core |   |
+ | ROW           | core    |      |        |          |            |           |     | core |   |
+ | AT?           | core    |      |        |          |            |           |     | core |   |
+ | AT            | core    |      |        |          |            |           |     | core |   |
+ | PAGE          | core    |      |        |          |            |           |     | core |   |
+ | DEL           | core    |      |        |          |            |           |     | core |   |
+ | TYPE          | core    |      |        |          |            |           |     | core |   |
+ | CR            | core    |      |        |          |            |           |     | core |   |
+ | EMIT          | core    |      |        |          |            |           |     | core |   |
+ | OUTPUT:       | core    |      |        |          |            |           |     | core |   |
+ | ?CR           | core    |      |        |          |            |           |     | core |   |
+ | STOP?         | core    |      |        |          |            |           |     | core |   |
+ | BYE           | core    |      |        |          |            |           |     | core |   |
+ | SAVE          | core    |      |        |          |            |           |     | core |   |
+ | EMPTY         | core    |      |        |          |            |           |     | core |   |
+ | FORGET        | core    |      |        |          |            |           |     | core |   |
+ | (FORGET       | core    |      |        |          |            |           |     | core |   |
+ | CLEAR         | core    |      |        |          |            |           |     | core |   |
+ | ALL-BUFFERS   | core    |      |        |          |            |           |     | core |   |
+ | FREEBUFFER    | core    |      |        |          |            |           |     | core |   |
+ | ALLOTBUFFER   | core    |      |        |          |            |           |     | core |   |
+ | FIRST         | core    |      |        |          |            |           |     | core |   |
+ | LIMIT         | core    |      |        |          |            |           |     | core |   |
+ | CONVEY        | core    |      |        |          |            |           |     | core |   |
+ | COPY          | core    |      |        |          |            |           |     | core |   |
+ | BLKMOVE       | core    |      |        |          |            |           |     |      |   |
+ | (COPY         | core    |      |        |          |            |           |     |      |   |
+ | FLUSH         | core    |      |        |          |            |           |     | core |   |
+ | EMPTY-BUFFERS | core    |      |        |          |            |           |     | core |   |
+ | SAVE-BUFFERS  | core    |      |        |          |            |           |     | core |   |
+ | UPDATE        | core    |      |        |          |            |           |     | core |   |
+ | BLOCK         | core    |      |        |          |            |           |     | core |   |
+ | BUFFER        | core    |      |        |          |            |           |     | core |   |
+ | (BLOCK        | core    |      |        |          |            |           |     | core |   |
+ | (BUFFER       | core    |      |        |          |            |           |     | core |   |
+ | CORE?         | core    |      |        |          |            |           |     | core |   |
+ | R/W           | core    |      |        |          |            |           |     | core |   |
+ | DISKERR       | core    |      |        |          |            |           |     | core |   |
+ | (DISKERR      | core    |      |        |          |            |           |     | core |   |
+ | B/BUF         | core    |      |        |          |            |           |     | core |   |
+ | BUFFERS       | core    |      |        |          |            |           |     |      |   |
+ | PREV          | core    |      |        |          |            |           |     | core |   |
+ | FILE          | core    |      |        |          |            |           |     | core |   |
+ | UNLOCK        | core    |      |        |          |            |           |     | core |   |
+ | LOCK          | core    |      |        |          |            |           |     | core |   |
+ | PAUSE         | core    |      |        |          |            |           |     | core |   |
+ | LIST          | core    |      |        |          |            |           |     | core |   |
+ | L/S           | core    |      |        |          |            |           |     | core |   |
+ | C/L           | core    |      |        |          |            |           |     | core |   |
+ | .S            | core    |      |        |          |            |           |     | core |   |
+ | U.            | core    |      |        |          |            |           |     | core |   |
+ | .             | core    |      |        |          |            |           |     | core |   |
+ | D.            | core    |      |        |          |            |           |     | core |   |
+ | U.R           | core    |      |        |          |            |           |     | core |   |
+ | .R            | core    |      |        |          |            |           |     | core |   |
+ | D.R           | core    |      |        |          |            |           |     | core |   |
+ | #S            | core    |      |        |          |            |           |     | core |   |
+ | #             | core    |      |        |          |            |           |     | core |   |
+ | SIGN          | core    |      |        |          |            |           |     | core |   |
+ | #>            | core    |      |        |          |            |           |     | core |   |
+ | <#            | core    |      |        |          |            |           |     | core |   |
+ | HOLD          | core    |      |        |          |            |           |     | core |   |
+ | SPACES        | core    |      |        |          |            |           |     | core |   |
+ | SPACE         | core    |      |        |          |            |           |     | core |   |
+ | -TRAILING     | core    |      |        |          |            |           |     | core |   |
+ | BL            | core    |      |        |          |            |           |     | core |   |
+ | ERROR"        | core    |      |        |          |            |           |     | core |   |
+ | ABORT"        | core    |      |        |          |            |           |     | core |   |
+ | (ABORT"       | core    |      |        |          |            |           |     | core |   |
+ | (ERROR        | core    |      |        |          |            |           |     | core |   |
+ | R#            | core    |      |        |          |            |           |     | core |   |
+ | SCR           | core    |      |        |          |            |           |     | core |   |
+ | ABORT         | core    |      |        |          |            |           |     | core |   |
+ | 'ABORT        | core    |      |        |          |            |           |     | core |   |
+ | STANDARDI/O   | core    |      |        |          |            |           |     | core |   |
+ | QUIT          | core    |      |        |          |            |           |     | core |   |
+ | 'QUIT         | core    |      |        |          |            |           |     | core |   |
+ | (QUIT         | core    |      |        |          |            |           |     | core |   |
+ | DEPTH         | core    |      |        |          |            |           |     | core |   |
+ | RDEPTH        | core    |      |        |          |            |           |     | core |   |
+ | -->           | core    |      |        |          |            |           |     | core |   |
+ | +THRU         | core    |      |        |          |            |           |     | core |   |
+ | THRU          | core    |      |        |          |            |           |     | core |   |
+ | +LOAD         | core    |      |        |          |            |           |     | core |   |
+ | LOAD          | core    |      |        |          |            |           |     | core |   |
+ | PUSH          | core    |      |        |          |            |           |     | core |   |
+ | .STATUS       | core    |      |        |          |            |           |     | core |   |
+ | ?STACK        | core    |      |        |          |            |           |     | core |   |
+ | IS            | core    |      |        |          |            |           |     | core |   |
+ | (IS           | core    |      |        |          |            |           |     | core |   |
+ | DEFER         | core    |      |        |          |            |           |     | core |   |
+ | ]             | core    |      |        |          |            |           |     | core |   |
+ | [             | core    |      |        |          |            |           |     | core |   |
+ | INTERPRET     | core    |      |        |          |            |           |     | core |   |
+ | NO.EXTENSIONS | core    |      |        |          |            |           |     | core |   |
+ | NOTFOUND      | core    |      |        |          |            |           |     | core |   |
+ | >INTERPRET    | core    |      |        |          |            |           |     | core |   |
+ | NULLSTRING?   | core    |      |        |          |            |           |     | core |   |
+ | [']           | core    |      |        |          |            |           |     | core |   |
+ | [COMPILE]     | core    |      |        |          |            |           |     | core |   |
+ | '             | core    |      |        |          |            |           |     | core |   |
+ | FIND          | core    |      |        |          |            |           |     | core |   |
+ | (FIND         | core    |      |        |          |            |           |     | core |   |
+ | WORDS         | core    |      |        |          |            |           |     | core |   |
+ | ORDER         | core    |      |        |          |            |           |     | core |   |
+ | DEFINITIONS   | core    |      |        |          |            |           |     | core |   |
+ | ONLYFORTH     | core    |      |        |          |            |           |     | core |   |
+ | ONLY          | core    |      |        |          |            |           |     | core |   |
+ | FORTH         | core    |      |        |          |            |           |     | core |   |
+ | VOCABULARY    | core    |      |        |          |            |           |     | core |   |
+ | TOSS          | core    |      |        |          |            |           |     | core |   |
+ | ALSO          | core    |      |        |          |            |           |     | core |   |
+ | CONTEXT       | core    |      |        |          |            |           |     | core |   |
+ | CURRENT       | core    |      |        |          |            |           |     | core |   |
+ | VP            | core    |      |        |          |            |           |     | core |   |
+ | ALIAS         | core    |      |        |          |            |           |     | core |   |
+ | USER          | core    |      |        |          |            |           |     | core |   |
+ | UALLOT        | core    |      |        |          |            |           |     | core |   |
+ | VARIABLE      | core    |      |        |          |            |           |     | core |   |
+ | CONSTANT      | core    |      |        |          |            |           |     | core |   |
+ | ;             | core    |      |        |          |            |           |     | core |   |
+ | :             | core    |      |        |          |            |           |     | core |   |
+ | CREATE:       | core    |      |        |          |            |           |     |      |   |
+ | .NAME         | core    |      |        |          |            |           |     | core |   |
+ | >BODY         | core    |      |        |          |            |           |     | core |   |
+ | NAME>         | core    |      |        |          |            |           |     | core |   |
+ | >NAME         | core    |      |        |          |            |           |     | core |   |
+ | NFA?          | core    |      |        |          |            |           |     |      |   |
+ | CREATE        | core    |      |        |          |            |           |     | core |   |
+ | WARNING       | core    |      |        |          |            |           |     | core |   |
+ | \vert         | core    |      |        |          |            |           |     | core |   |
+ | ?HEAD         | core    |      |        |          |            |           |     | core |   |
+ | DOES>         | core    |      |        |          |            |           |     | core |   |
+ | HEAP?         | core    |      |        |          |            |           |     | core |   |
+ | HEAP          | core    |      |        |          |            |           |     | core |   |
+ | HALLOT        | core    |      |        |          |            |           |     | core |   |
+ | CLEARSTACK    | core    |      |        |          |            |           |     | core |   |
+ | RESTRICT      | core    |      |        |          |            |           |     | core |   |
+ | IMMEDIATE     | core    |      |        |          |            |           |     | core |   |
+ | RECURSIVE     | core    |      |        |          |            |           |     | core |   |
+ | REVEAL        | core    |      |        |          |            |           |     | core |   |
+ | HIDE          | core    |      |        |          |            |           |     | core |   |
+ | LAST          | core    |      |        |          |            |           |     | core |   |
+ | NUMBER        | core    |      |        |          |            |           |     | core |   |
+ | 'NUMBER?      | core    |      |        |          |            |           |     |      |   |
+ | NUMBER?       | core    |      |        |          |            |           |     | core |   |
+ | DPL           | core    |      |        |          |            |           |     | core |   |
+ | PREVIOUS      | core    |      |        |          |            |           |     |      |   |
+ | CHAR          | core    |      |        |          |            |           |     |      |   |
+ | END?          | core    |      |        |          |            |           |     |      |   |
+ | CONVERT       | core    |      |        |          |            |           |     | core |   |
+ | ACCUMULATE    | core    |      |        |          |            |           |     | core |   |
+ | DIGIT?        | core    |      |        |          |            |           |     | core |   |
+ | DECIMAL       | core    |      |        |          |            |           |     | core |   |
+ | HEX           | core    |      |        |          |            |           |     | core |   |
+ | \NEEDS        | core    |      |        |          |            |           |     | core |   |
+ | \\            | core    |      |        |          |            |           |     | core |   |
+ | \             | core    |      |        |          |            |           |     | core |   |
+ | .(            | core    |      |        |          |            |           |     | core |   |
+ | (             | core    |      |        |          |            |           |     | core |   |
+ | ."            | core    |      |        |          |            |           |     | core |   |
+ | (."           | core    |      |        |          |            |           |     | core |   |
+ | "             | core    |      |        |          |            |           |     | core |   |
+ | ("            | core    |      |        |          |            |           |     | core |   |
+ | "LIT          | core    |      |        |          |            |           |     | core |   |
+ | ,"            | core    |      |        |          |            |           |     | core |   |
+ | ASCII         | core    |      |        |          |            |           |     | core |   |
+ | STATE         | core    |      |        |          |            |           |     | core |   |
+ | NAME          | core    |      |        |          |            |           |     | core |   |
+ | PARSE         | core    |      |        |          |            |           |     | core |   |
+ | WORD          | core    |      |        |          |            |           |     | core |   |
+ | SOURCE        | core    |      |        |          |            |           |     | core |   |
+ | CAPITALIZE    | core    |      |        |          |            |           |     | core |   |
+ | CAPITAL       | core    |      |        |          |            |           |     | core |   |
+ | /STRING       | core    |      |        |          |            |           |     | core |   |
+ | SKIP          | core    |      |        |          |            |           |     | core |   |
+ | SCAN          | core    |      |        |          |            |           |     | core |   |
+ | QUERY         | core    |      |        |          |            |           |     | core |   |
+ | TIB           | core    |      |        |          |            |           |     | core |   |
+ | SPAN          | core    |      |        |          |            |           |     | core |   |
+ | BLK           | core    |      |        |          |            |           |     | core |   |
+ | >IN           | core    |      |        |          |            |           |     | core |   |
+ | >TIB          | core    |      |        |          |            |           |     | core |   |
+ | #TIB          | core    |      |        |          |            |           |     | core |   |
+ | COMPILE       | core    |      |        |          |            |           |     | core |   |
+ | C,            | core    |      |        |          |            |           |     | core |   |
+ | ,             | core    |      |        |          |            |           |     | core |   |
+ | ALLOT         | core    |      |        |          |            |           |     | core |   |
+ | PAD           | core    |      |        |          |            |           |     | core |   |
+ | HERE          | core    |      |        |          |            |           |     | core |   |
+ | FILL          | core    |      |        |          |            |           |     | core |   |
+ | ERASE         | core    |      |        |          |            |           |     | core |   |
+ | COUNT         | core    |      |        |          |            |           |     | core |   |
+ | PLACE         | core    |      |        |          |            |           |     | core |   |
+ | MOVE          | core    |      |        |          |            |           |     | core |   |
+ | CMOVE>        | core    |      |        |          |            |           |     | core |   |
+ | CMOVE         | core    |      |        |          |            |           |     | core |   |
+ | UD/MOD        | core    |      |        |          |            |           |     | core |   |
+ | U/MOD         | core    |      |        |          |            |           |     | core |   |
+ | */            | core    |      |        |          |            |           |     | core |   |
+ | */MOD         | core    |      |        |          |            |           |     | core |   |
+ | MOD           | core    |      |        |          |            |           |     | core |   |
+ | /             | core    |      |        |          |            |           |     | core |   |
+ | /MOD          | core    |      |        |          |            |           |     | core |   |
+ | 2/            | core    |      |        |          |            |           |     | core |   |
+ | M/MOD         | core    |      |        |          |            |           |     | core |   |
+ | UM/MOD        | core    |      |        |          |            |           |     | core |   |
+ | 2*            | core    |      |        |          |            |           |     | core |   |
+ | *             | core    |      |        |          |            |           |     | core |   |
+ | M*            | core    |      |        |          |            |           |     | core |   |
+ | UM*           | core    |      |        |          |            |           |     | core |   |
+ | UNLOOP        | core    |      |        |          |            |           |     |      |   |
+ | LEAVE         | core    |      |        |          |            |           |     | core |   |
+ | +LOOP         | core    |      |        |          |            |           |     | core |   |
+ | LOOP          | core    |      |        |          |            |           |     | core |   |
+ | ?DO           | core    |      |        |          |            |           |     | core |   |
+ | DO            | core    |      |        |          |            |           |     | core |   |
+ | UNTIL         | core    |      |        |          |            |           |     | core |   |
+ | REPEAT        | core    |      |        |          |            |           |     | core |   |
+ | WHILE         | core    |      |        |          |            |           |     | core |   |
+ | BEGIN         | core    |      |        |          |            |           |     | core |   |
+ | ELSE          | core    |      |        |          |            |           |     | core |   |
+ | THEN          | core    |      |        |          |            |           |     | core |   |
+ | IF            | core    |      |        |          |            |           |     | core |   |
+ | CASE?         | core    |      |        |          |            |           |     | core |   |
+ | ?PAIRS        | core    |      |        |          |            |           |     | core |   |
+ | <RESOLVE      | core    |      |        |          |            |           |     | core |   |
+ | <MARK         | core    |      |        |          |            |           |     | core |   |
+ | >RESOLVE      | core    |      |        |          |            |           |     | core |   |
+ | >MARK         | core    |      |        |          |            |           |     | core |   |
+ | ?BRANCH       | core    |      |        |          |            |           |     | core |   |
+ | BRANCH        | core    |      |        |          |            |           |     | core |   |
+ | J             | core    |      |        |          |            |           |     | core |   |
+ | I             | core    |      |        |          |            |           |     | core |   |
+ | (+LOOP        | core    |      |        |          |            |           |     | core |   |
+ | (LOOP         | core    |      |        |          |            |           |     | core |   |
+ | ENDLOOP       | core    |      |        |          |            |           |     | core |   |
+ | BOUNDS        | core    |      |        |          |            |           |     | core |   |
+ | (?DO          | core    |      |        |          |            |           |     | core |   |
+ | (DO           | core    |      |        |          |            |           |     | core |   |
+ | ABS           | core    |      |        |          |            |           |     | core |   |
+ | DBAS          | core    |      |        |          |            |           |     | core |   |
+ | EXTEND        | core    |      |        |          |            |           |     | core |   |
+ | UMIN          | core    |      |        |          |            |           |     | core |   |
+ | UMAX          | core    |      |        |          |            |           |     | core |   |
+ | MAX           | core    |      |        |          |            |           |     | core |   |
+ | MIN           | core    |      |        |          |            |           |     | core |   |
+ | D<            | core    |      |        |          |            |           |     | core |   |
+ | D=            | core    |      |        |          |            |           |     | core |   |
+ | D0=           | core    |      |        |          |            |           |     | core |   |
+ | =             | core    |      |        |          |            |           |     | core |   |
+ | U>            | core    |      |        |          |            |           |     | core |   |
+ | 0<>           | core    |      |        |          |            |           |     | core |   |
+ | 0>            | core    |      |        |          |            |           |     | core |   |
+ | >             | core    |      |        |          |            |           |     | core |   |
+ | U<            | core    |      |        |          |            |           |     | core |   |
+ | <             | core    |      |        |          |            |           |     | core |   |
+ | UWITHIN       | core    |      |        |          |            |           |     | core |   |
+ | 0=            | core    |      |        |          |            |           |     | core |   |
+ | 0<            | core    |      |        |          |            |           |     | core |   |
+ | LITERAL       | core    |      |        |          |            |           |     | core |   |
+ | LIT           | core    |      |        |          |            |           |     | core |   |
+ | CLIT          | core    |      |        |          |            |           |     | core |   |
+ | OFF           | core    |      |        |          |            |           |     | core |   |
+ | ON            | core    |      |        |          |            |           |     | core |   |
+ | 4             | core    |      |        |          |            |           |     | core |   |
+ | 3             | core    |      |        |          |            |           |     | core |   |
+ | 2             | core    |      |        |          |            |           |     | core |   |
+ | 1             | core    |      |        |          |            |           |     | core |   |
+ | 0             | core    |      |        |          |            |           |     | core |   |
+ | -1            | core    |      |        |          |            |           |     | core |   |
+ | FALSE         | core    |      |        |          |            |           |     | core |   |
+ | TRUE          | core    |      |        |          |            |           |     | core |   |
+ | 2-            | core    |      |        |          |            |           |     | core |   |
+ | 1-            | core    |      |        |          |            |           |     | core |   |
+ | 4+            | core    |      |        |          |            |           |     |      |   |
+ | 3+            | core    |      |        |          |            |           |     | core |   |
+ | 2+            | core    |      |        |          |            |           |     | core |   |
+ | 1+            | core    |      |        |          |            |           |     | core |   |
+ | D+            | core    |      |        |          |            |           |     | core |   |
+ | DNEGATE       | core    |      |        |          |            |           |     | core |   |
+ | NEGATE        | core    |      |        |          |            |           |     | core |   |
+ | NOT           | core    |      |        |          |            |           |     | core |   |
+ | -             | core    |      |        |          |            |           |     | core |   |
+ | XOR           | core    |      |        |          |            |           |     | core |   |
+ | AND           | core    |      |        |          |            |           |     | core |   |
+ | OR            | core    |      |        |          |            |           |     | core |   |
+ | +             | core    |      |        |          |            |           |     | core |   |
+ | 2DUP          | core    |      |        |          |            |           |     | core |   |
+ | 2DROP         | core    |      |        |          |            |           |     | core |   |
+ | 2SWAP         | core    |      |        |          |            |           |     | core |   |
+ | ROLL          | core    |      |        |          |            |           |     | core |   |
+ | PICK          | core    |      |        |          |            |           |     | core |   |
+ | UNDER         | core    |      |        |          |            |           |     | core |   |
+ | NIP           | core    |      |        |          |            |           |     | core |   |
+ | ROT           | core    |      |        |          |            |           |     | core |   |
+ | -ROT          | core    |      |        |          |            |           |     | core |   |
+ | OVER          | core    |      |        |          |            |           |     | core |   |
+ | ?DUP          | core    |      |        |          |            |           |     | core |   |
+ | DUP           | core    |      |        |          |            |           |     | core |   |
+ | SWAP          | core    |      |        |          |            |           |     | core |   |
+ | DROP          | core    |      |        |          |            |           |     | core |   |
+ | +!            | core    |      |        |          |            |           |     | core |   |
+ | !             | core    |      |        |          |            |           |     | core |   |
+ | @             | core    |      |        |          |            |           |     | core |   |
+ | CTOGGLE       | core    |      |        |          |            |           |     | core |   |
+ | C!            | core    |      |        |          |            |           |     | core |   |
+ | C@            | core    |      |        |          |            |           |     | core |   |
+ | PERFORM       | core    |      |        |          |            |           |     | core |   |
+ | EXECUTE       | core    |      |        |          |            |           |     | core |   |
+ | ?EXIT         | core    |      |        |          |            |           |     | core |   |
+ | UNNEST        | core    |      |        |          |            |           |     |      |   |
+ | EXIT          | core    |      |        |          |            |           |     | core |   |
+ | RDROP         | core    |      |        |          |            |           |     | core |   |
+ | R@            | core    |      |        |          |            |           |     | core |   |
+ | R>            | core    |      |        |          |            |           |     | core |   |
+ | >R            | core    |      |        |          |            |           |     | core |   |
+ | RP!           | core    |      |        |          |            |           |     | core |   |
+ | RP@           | core    |      |        |          |            |           |     | core |   |
+ | UP!           | core    |      |        |          |            |           |     | core |   |
+ | UP@           | core    |      |        |          |            |           |     | core |   |
+ | SP!           | core    |      |        |          |            |           |     | core |   |
+ | SP@           | core    |      |        |          |            |           |     | core |   |
+ | UDP           | core    |      |        |          |            |           |     | core |   |
+ | VOC-LINK      | core    |      |        |          |            |           |     | core |   |
+ | ERRORHANDLER  | core    |      |        |          |            |           |     | core |   |
+ | INPUT         | core    |      |        |          |            |           |     | core |   |
+ | OUTPUT        | core    |      |        |          |            |           |     | core |   |
+ | BASE          | core    |      |        |          |            |           |     | core |   |
+ | OFFSET        | core    |      |        |          |            |           |     | core |   |
+ | DP            | core    |      |        |          |            |           |     | core |   |
+ | R0            | core    |      |        |          |            |           |     | core |   |
+ | S0            | core    |      |        |          |            |           |     | core |   |
+ | ORIGIN        | core    |      |        |          |            |           |     | core |   |
+ | NOOP          | core    |      |        |          |            |           |     | core |   |
+ | RECOVER       | core    |      |        |          |            |           |     | core |   |
+ | END-TRACE     | core    |      |        |          |            |           |     | core |   |
+ | LOGO          | core    |      |        |          |            |           |     |      |   |
+ | (64           | core    |      |        |          |            |           |     |      |   |
+ | C)            | core    |      |        |          |            |           |     |      |   |
+ | (16           | core    |      |        |          |            |           |     |      |   |
+ | C64INIT       | core    |      |        |          |            |           |     |      |   |
+ | INIT-SYSTEM   | core    |      |        |          |            |           |     |      |   |
+ | INK-POT       | core    |      |        |          |            |           |     |      |   |
+ | FINDEX        | core    |      |        |          |            |           |     |      |   |
+ | INDEX         | core    |      |        |          |            |           |     |      |   |
+ | 1541RW        | core    |      |        |          |            |           |     |      |   |
+ | DISKCLOSE     | core    |      |        |          |            |           |     |      |   |
+ | DISKOPEN      | core    |      |        |          |            |           |     |      |   |
+ | WRITESECTOR   | core    |      |        |          |            |           |     |      |   |
+ | READSECTOR    | core    |      |        |          |            |           |     |      |   |
+ | DERROR?       | core    |      |        |          |            |           |     |      |   |
+ | I/O-STATUS?   | core    |      |        |          |            |           |     |      |   |
+ | BUSINPUT      | core    |      |        |          |            |           |     |      |   |
+ | BUS@          | core    |      |        |          |            |           |     |      |   |
+ | BUSTYPE       | core    |      |        |          |            |           |     |      |   |
+ | BUS!          | core    |      |        |          |            |           |     |      |   |
+ | BUSIN         | core    |      |        |          |            |           |     |      |   |
+ | (BUSIN        | core    |      |        |          |            |           |     |      |   |
+ | BUSCLOSE      | core    |      |        |          |            |           |     |      |   |
+ | BUSOPEN       | core    |      |        |          |            |           |     |      |   |
+ | BUSOUT        | core    |      |        |          |            |           |     |      |   |
+ | (BUSOUT       | core    |      |        |          |            |           |     |      |   |
+ | ?DEVICE       | core    |      |        |          |            |           |     |      |   |
+ | (?DEVICE      | core    |      |        |          |            |           |     |      |   |
+ | BUSOFF        | core    |      |        |          |            |           |     |      |   |
+ | I/O           | core    |      |        |          |            |           |     |      |   |
+ | (DRV          | core    |      |        |          |            |           |     |      |   |
+ | C64TYPE       | core    |      |        |          |            |           |     |      |   |
+ | C64AT?        | core    |      |        |          |            |           |     |      |   |
+ | C64AT         | core    |      |        |          |            |           |     |      |   |
+ | C64PAGE       | core    |      |        |          |            |           |     |      |   |
+ | C64DEL        | core    |      |        |          |            |           |     |      |   |
+ | C64CR         | core    |      |        |          |            |           |     |      |   |
+ | C64EMIT       | core    |      |        |          |            |           |     |      |   |
+ | PRINTABLE     | core    |      |        |          |            |           |     |      |   |
+ | CON!          | core    |      |        |          |            |           |     |      |   |
+ | C64EXPECT     | core    |      |        |          |            |           |     |      |   |
+ | C64DECODE     | core    |      |        |          |            |           |     |      |   |
+ | C64KEY        | core    |      |        |          |            |           |     |      |   |
+ | C64KEY?       | core    |      |        |          |            |           |     |      |   |
+ | CUSTOM-REMOVE | core    |      |        |          |            |           |     |      |   |
+ |               |         |      |        |          |            |           |     |      |   |

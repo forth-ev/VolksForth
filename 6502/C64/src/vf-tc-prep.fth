@@ -1,3 +1,13 @@
+
+hex
+
+\ load transient part of target compiler
+2 drive 27 30 thru
+
+
+Onlyforth hex
+
+\ clear memory and clr labels  .status
 \ *** Block No. 12, Hexblock c
 
 \ ramfill                             3:
@@ -73,3 +83,8 @@ variable current-page   0 current-page !
   current-page @ ;
 
 ' blk-or-page@ is blk@
+
+\ Host and target settings and display
+cr .( Host is: )
+    (64  .( C64) C)
+    (16  .( C16) C)

@@ -54,17 +54,17 @@ cbmfiles/tcbase: emulator/c64-vf-390.T64 emulator/build-tcbase.sh \
 
 cbmfiles/c64-vf-latest: emulator/tcbase.T64 emulator/build-vf.sh \
     disks/vforth4_2.d64 disks/tc38q.d64 $(vf_fth_files_petscii)
-	emulator/build-vf.sh vf-c64-main.fth c64-vf-latest
+	emulator/build-vf.sh vf-main-c64.fth c64-vf-latest
 
 # C16 with 64 kB RAM or Plus4 - called (C16+ in the sources.
 cbmfiles/c16-vf-latest: emulator/tcbase.T64 emulator/build-vf.sh \
     disks/vforth4_2.d64 disks/tc38q.d64 $(vf_fth_files_petscii)
-	emulator/build-vf.sh vf-c16-main.fth c16-vf-latest
+	emulator/build-vf.sh vf-main-c16+.fth c16-vf-latest
 
 # C16 with 32 kB RAM - called (C16- in the sources.
 cbmfiles/c16-vf-32k: emulator/tcbase.T64 emulator/build-vf.sh \
     disks/vforth4_2.d64 disks/tc38q.d64 $(vf_fth_files_petscii)
-	emulator/build-vf.sh vf-c16-32k.fth c16-vf-32k
+	emulator/build-vf.sh vf-main-c16-.fth c16-vf-32k
 
 
 # Core test targets

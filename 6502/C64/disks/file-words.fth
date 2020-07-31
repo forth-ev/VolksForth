@@ -281,17 +281,17 @@
 
 \ *** Block No. 10, Hexblock a
 
-\ include loadscreen           30jun20pz
+\ include loadscreen           19jul20pz
 
 
-  : i/o-status?  $90 c@ ;
+\ : i/o-status?  $90 c@ ;
 
   : dos-error  ( dev -- )
    15 busin
    BEGIN bus@ con! i/o-status? UNTIL
    busoff ;
 
-  : unloop  r> rdrop rdrop rdrop >r ;
+\ : unloop  r> rdrop rdrop rdrop >r ;
 
   : lo/hi> ( lo hi -- u )
      255 and 256 * swap 255 and + ;

@@ -12,7 +12,7 @@ include vf-lbls-cbm.fth
   098 >label  InDev
 0ff19 >label BrdCol
 0ff15 >label BkgCol
- 0540 >label PenCol
+ 053b >label PenCol
   09d >label PrgEnd
   0b2 >label IOBeg
   0cb >label CurFlg

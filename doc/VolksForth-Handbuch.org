@@ -7,7 +7,7 @@
 * Prolog
 
 volksFORTH ist eine Sprache, die in verschiedener Hinsicht
-ungewöhnlich ist. Denn FORTH selbst ist nicht nur eine Sprache,sondern
+ungewöhnlich ist. Denn FORTH selbst ist nicht nur eine Sprache, sondern
 ein im Prinzip grenzenloses Programmiersystem. Eines der Hauptmerkmale
 des Programmiersystems FORTH ist seine Modularität. Diese Modularität
 wird durch die kleinste Einheit eines FORTH-Systems, das WORT,

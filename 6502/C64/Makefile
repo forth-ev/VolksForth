@@ -15,8 +15,7 @@ vf_binaries = $(patsubst %, cbmfiles/vf-%, $(vf_flavours))
 
 test_files = $(wildcard tests/*.f*)
 test_files_petscii = $(patsubst tests/%, cbmfiles/%, $(test_files))
-atest_logs = $(patsubst %, test-%.log, $(vf_flavours))
-test_logs = $(patsubst %, test-%.log, c64 c16+ c16-)
+test_logs = $(patsubst %, test-%.log, $(vf_flavours))
 
 # Target to convert all .d64 images into .fth files for easier reading.
 vf_blk_fth: $(vf_blk_fth_files)

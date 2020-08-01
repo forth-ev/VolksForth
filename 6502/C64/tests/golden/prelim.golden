@@ -1,6 +1,5 @@
 
-ans-shim.fth CHAR exists  0> exists
-
+ans-shim.fth CHAR exists
 prelimtest.fth
 
 CR CR SOURCE TYPE ( Preliminary test ) CR

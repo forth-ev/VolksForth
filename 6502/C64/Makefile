@@ -10,10 +10,13 @@ vf_blk_d64_files = $(wildcard disks/*.d64)
 vf_blk_fth_files = $(patsubst %.d64, %.fth, $(vf_blk_d64_files))
 vf_fth_files = $(wildcard src/vf-*.fth)
 vf_fth_files_petscii = $(patsubst src/%, cbmfiles/%, $(vf_fth_files))
+vf_flavours = full-c64 full-c16+ full-c16- lite-c64 lite-c16+ lite-c16-
+vf_binaries = $(patsubst %, cbmfiles/vf-%, $(vf_flavours))
 
 test_files = $(wildcard tests/*.f*)
 test_files_petscii = $(patsubst tests/%, cbmfiles/%, $(test_files))
-
+atest_logs = $(patsubst %, test-%.log, $(vf_flavours))
+test_logs = $(patsubst %, test-%.log, c64 c16+ c16-)
 
 # Target to convert all .d64 images into .fth files for easier reading.
 vf_blk_fth: $(vf_blk_fth_files)
@@ -28,9 +31,9 @@ clean:
 
 # Convenience targets
 
-test: test-c64.result test-c16.result
+test: test-full-c64.result test-full-c16+.result
 
-test64: test-c64.result
+test64: test-full-c64.result
 
 debug-64: emulator/tcbase.T64 emulator/build-vf.sh \
     disks/vforth4_2.d64 disks/tc38q.d64 $(vf_fth_files_petscii)
@@ -52,50 +55,62 @@ cbmfiles/tcbase: emulator/c64-vf-390.T64 emulator/build-tcbase.sh \
     disks/tc38q.d64 disks/file-words.d64 cbmfiles/tc-base.fth
 	emulator/build-tcbase.sh
 
-cbmfiles/vf-full-c64: emulator/tcbase.T64 emulator/build-vf.sh \
+$(vf_binaries):  emulator/tcbase.T64 emulator/build-vf.sh \
     disks/tc38q.d64 $(vf_fth_files_petscii)
+
+cbmfiles/vf-full-c64:
 	emulator/build-vf.sh vf-full-c64.fth vf-full-c64
 
-# C16 with 64 kB RAM or Plus4 - called (C16+ in the sources.
-cbmfiles/vf-full-c16+: emulator/tcbase.T64 emulator/build-vf.sh \
-    disks/tc38q.d64 $(vf_fth_files_petscii)
+cbmfiles/vf-full-c16+:
 	emulator/build-vf.sh vf-full-c16+.fth vf-full-c16+
 
-# C16 with 32 kB RAM - called (C16- in the sources.
-cbmfiles/vf-full-c16-: emulator/tcbase.T64 emulator/build-vf.sh \
-    disks/tc38q.d64 $(vf_fth_files_petscii)
+cbmfiles/vf-full-c16-:
 	emulator/build-vf.sh vf-full-c16-.fth vf-full-c16-
+
+cbmfiles/vf-lite-c64:
+	emulator/build-vf.sh vf-lite-c64.fth vf-lite-c64
+
+cbmfiles/vf-lite-c16+:
+	emulator/build-vf.sh vf-lite-c16+.fth vf-lite-c16+
+
+cbmfiles/vf-lite-c16-:
+	emulator/build-vf.sh vf-lite-c16-.fth vf-lite-c16-
 
 
 # Core test targets
 
-test-c64.result: emulator/vf-full-c64.T64 $(test_files_petscii) \
-    emulator/run-in-vice.sh tests/evaluate-test.sh test-c64.golden
-	rm -f test-c64.log test-c64.result
-	cp disks/empty.d64 disks/scratch.d64
+$(test_logs): $(test_files_petscii) emulator/run-in-vice.sh
+
+test-full-c64.log: emulator/vf-full-c64.T64 disks/scratch.d64
 	DISK9=scratch emulator/run-in-vice.sh vf-full-c64 \
 	  "include run-vf-tests.fth\n1234567890\n"
-	petscii2ascii cbmfiles/test.log test-c64.log
-	tests/evaluate-test.sh test-c64
+	petscii2ascii cbmfiles/test.log $@
 
-test-c16.result: emulator/vf-full-c16+.T64 $(test_files_petscii) \
-    emulator/run-in-vice.sh tests/evaluate-test.sh test-c16.golden
-	rm -f test-c16.log test-c16.result
+test-full-c16+.log: emulator/vf-full-c16+.T64
 	VICE=xplus4 emulator/run-in-vice.sh vf-full-c16+ \
 	  "include run-vf-tests.fth\n1234567890\n"
-	petscii2ascii cbmfiles/test.log test-c16.log
-	tests/evaluate-test.sh test-c16
+	petscii2ascii cbmfiles/test.log $@
+
+test-%.result: test-%.log test-%.golden tests/evaluate-test.sh
+	rm -f $@
+	tests/evaluate-test.sh $(basename $@)
+
+disks/scratch.d64: disks/empty.d64
+	cp $< $@
+
 
 c64_golden_parts = prelim core coreext double block report-blk
 c64_golden_files = $(patsubst %, tests/golden/%.golden, \
   $(c64_golden_parts))
-test-c64.golden: $(c64_golden_files)
+test-full-c64.golden: $(c64_golden_files)
 	cat $? > $@
 
 c16_golden_parts = prelim core
 c16_golden_files = $(patsubst %, tests/golden/%.golden, \
   $(c16_golden_parts))
-test-c16.golden: $(c16_golden_files)
+test-full-c16+.golden: $(c16_golden_files)
+	cat $? > $@
+test-full-c16-.golden: $(c16_golden_files)
 	cat $? > $@
 
 # Rules for building Forth binaries on top of the plain vanilla

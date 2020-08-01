@@ -52,36 +52,36 @@ cbmfiles/tcbase: emulator/c64-vf-390.T64 emulator/build-tcbase.sh \
     disks/tc38q.d64 disks/file-words.d64 cbmfiles/tc-base.fth
 	emulator/build-tcbase.sh
 
-cbmfiles/c64-vf-latest: emulator/tcbase.T64 emulator/build-vf.sh \
-    disks/vforth4_2.d64 disks/tc38q.d64 $(vf_fth_files_petscii)
-	emulator/build-vf.sh vf-main-c64.fth c64-vf-latest
+cbmfiles/vf-full-c64: emulator/tcbase.T64 emulator/build-vf.sh \
+    disks/tc38q.d64 $(vf_fth_files_petscii)
+	emulator/build-vf.sh vf-full-c64.fth vf-full-c64
 
 # C16 with 64 kB RAM or Plus4 - called (C16+ in the sources.
-cbmfiles/c16-vf-latest: emulator/tcbase.T64 emulator/build-vf.sh \
-    disks/vforth4_2.d64 disks/tc38q.d64 $(vf_fth_files_petscii)
-	emulator/build-vf.sh vf-main-c16+.fth c16-vf-latest
+cbmfiles/vf-full-c16+: emulator/tcbase.T64 emulator/build-vf.sh \
+    disks/tc38q.d64 $(vf_fth_files_petscii)
+	emulator/build-vf.sh vf-full-c16+.fth vf-full-c16+
 
 # C16 with 32 kB RAM - called (C16- in the sources.
-cbmfiles/c16-vf-32k: emulator/tcbase.T64 emulator/build-vf.sh \
-    disks/vforth4_2.d64 disks/tc38q.d64 $(vf_fth_files_petscii)
-	emulator/build-vf.sh vf-main-c16-.fth c16-vf-32k
+cbmfiles/vf-full-c16-: emulator/tcbase.T64 emulator/build-vf.sh \
+    disks/tc38q.d64 $(vf_fth_files_petscii)
+	emulator/build-vf.sh vf-full-c16-.fth vf-full-c16-
 
 
 # Core test targets
 
-test-c64.result: emulator/c64-vf-latest.T64 $(test_files_petscii) \
+test-c64.result: emulator/vf-full-c64.T64 $(test_files_petscii) \
     emulator/run-in-vice.sh tests/evaluate-test.sh test-c64.golden
 	rm -f test-c64.log test-c64.result
 	cp disks/empty.d64 disks/scratch.d64
-	DISK9=scratch emulator/run-in-vice.sh c64-vf-latest \
+	DISK9=scratch emulator/run-in-vice.sh vf-full-c64 \
 	  "include run-vf-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log test-c64.log
 	tests/evaluate-test.sh test-c64
 
-test-c16.result: emulator/c16-vf-latest.T64 $(test_files_petscii) \
+test-c16.result: emulator/vf-full-c16+.T64 $(test_files_petscii) \
     emulator/run-in-vice.sh tests/evaluate-test.sh test-c16.golden
 	rm -f test-c16.log test-c16.result
-	VICE=xplus4 emulator/run-in-vice.sh c16-vf-latest \
+	VICE=xplus4 emulator/run-in-vice.sh vf-full-c16+ \
 	  "include run-vf-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log test-c16.log
 	tests/evaluate-test.sh test-c16

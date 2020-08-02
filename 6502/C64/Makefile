@@ -15,8 +15,10 @@ test_files = $(wildcard tests/*.f*)
 test_files_petscii = $(patsubst tests/%, cbmfiles/%, $(test_files))
 
 
-# Target to convert all .d64 images into .fth files for easier reading.
-vf_blk_fth: $(vf_blk_fth_files)
+# Target to convert all .d64 images into .fth files for easier reading,
+# and to update all PETSCII files in cbmfiles to the latest state of
+# the corresponding ASCII files in src.
+update: $(vf_blk_fth_files) $(vf_fth_files_petscii)
 
 
 clean:

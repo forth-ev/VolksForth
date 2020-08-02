@@ -16,8 +16,10 @@ test_logs = $(patsubst %, test-%.log, $(vf_flavours))
 working_vf_flavours = full-c64 full-c16+ lite-c64 lite-c16+
 test_resuls = $(patsubst %, test-%.result, $(working_vf_flavours))
 
-# Target to convert all .d64 images into .fth files for easier reading.
-vf_blk_fth: $(vf_blk_fth_files)
+# Target to convert all .d64 images into .fth files for easier reading,
+# and to update all PETSCII files in cbmfiles to the latest state of
+# the corresponding ASCII files in src.
+update: $(vf_blk_fth_files) $(vf_fth_files_petscii)
 
 
 clean:

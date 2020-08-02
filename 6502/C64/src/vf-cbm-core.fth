@@ -648,7 +648,7 @@ Code u<   ( u1 u2 -- flag)
 
 : >   ( n1 n2 -- flag)  swap < ;
 
-: 0>  ( n --     flag)  negate 0<  ;
+: 0>  ( n --     flag)  dup 0< swap 0= or not ;
 
 : 0<> ( n --     flag)  0= not ;
 

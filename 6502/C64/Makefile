@@ -30,6 +30,8 @@ clean:
 
 # Convenience targets
 
+binaries: $(vf_binaries)
+
 test: $(test_resuls)
 
 test64: full64 lite64

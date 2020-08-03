@@ -7,7 +7,7 @@
 * Prolog
 
 volksFORTH ist eine Sprache, die in verschiedener Hinsicht
-ungewöhnlich ist. Denn FORTH selbst ist nicht nur eine Sprache,sondern
+ungewöhnlich ist. Denn FORTH selbst ist nicht nur eine Sprache, sondern
 ein im Prinzip grenzenloses Programmiersystem. Eines der Hauptmerkmale
 des Programmiersystems FORTH ist seine Modularität. Diese Modularität
 wird durch die kleinste Einheit eines FORTH-Systems, das WORT,
@@ -25,7 +25,7 @@ auf dem jeweiligen FORTH-System lauffähig sind. Ungewö̈hnlich ist, dass
 der Programmtext des Kerns selbst ein FORTH—Programm ist, im Gegensatz
 zu anderen Programmiersprachen, denen ein Maschinensprach-Programm
 zugrunde liegt. Aus diesem Kern wird durch ein besonderes
-FORTH-Programm, den MetaCompi1er, das lauffähige Forth-System (unter
+FORTH-Programm, dem MetaCompi1er, das lauffähige Forth-System (unter
 MS-DOS z.B. =KERNEL.COM=) erzeugt:
 
 Wie fügt man nun diesem lauffähigen Kern eigene Worte hinzu? Das
@@ -52,7 +52,7 @@ FORTH-Prozeduren ist also das Leerzeichen, womit auch schon die Syntax
 der Sprache FORTH beschrieben wäre.
 
 Der Compiler eines FORTH-Systems ist also Teil der
-Interpreteroberfläche. Es gibt daher keinen Compiler-Lauf zur
+Interpreteroberfläche. Es gibt daher keinen Compiler-Lauf zum
 Erstellen des Programmtextes wie in anderen Compiler-Sprachen,
 sondern der Interpreter wird mit allen zur Problemlösung notwendigen
 Worten als Anwenderprogramm abgespeichert.
@@ -81,7 +81,7 @@ Keine Nachrichten sind immer gute Nachrichten !
 
 Und — ungewöhnlicherweise - benutzt FORTH die sogenannte
 Postfix-Notation (UPN) vergleichbar den HP-Taschenrechnern, die in
-machen Kreisen sehr beliebt sind. Das bedeutet, FORTH erwartet immer
+manchen Kreisen sehr beliebt sind. Das bedeutet, FORTH erwartet immer
 erst die Argumente, dann die Aktion. Statt
 
   3 + 2 und (5 + 5) * 10
@@ -108,7 +108,7 @@ über den Stack übergeben.
 
 ** Assembler
 
-Innerhalb einer PORTH-Umgebung kann man sofort in der Maschinensprache
+Innerhalb einer FORTH-Umgebung kann man sofort in der Maschinensprache
 des Prozessors programmieren, ohne den Interpreter verlassen zu
 müssen. Assembier-Definitionen sind den FORTH-Programmen gleichwertige
 FORTH-Worte.
@@ -141,7 +141,7 @@ in FORTH. Allerdings können mit dem VolksForth auch Dateien bearbeitet
 werden, die im Dateiformat des Systems vorliegen, sog. "Stream-Files".
 
 Generell steht hinter jeder Sprache ein bestimmtes Konzept, und nur
-mit Kenntnis dieses Konzeptes ist möglich, eine Sprache effizient
+mit Kenntnis dieses Konzeptes ist es möglich, eine Sprache effizient
 einzusetzen. Das Sprachkonzept von FORTH wird beschrieben in dem Buch
 "In FORTH denken" von Leo Brodie (["Thinking
 Forth"][http://thinking-forth.sourceforge.net]). Einen ersten Eindruck
@@ -234,7 +234,7 @@ Damit Sie sofort beginnen können, wird in diesem Kapitel beschrieben,
 
  | Datei        | Beschreibung                                                                                                                                                                                                                                                                                                                               |
  |--------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
- | volks4th.com | als Ihr komplettes Arbeitsssystem enthält resident das Fileinterface, den Editor, den Assembler und von Ihnen eingefügte Werkzeuge (tools).                                                                                                                                                                                                |
+ | volks4th.com | als Ihr komplettes Arbeitssystem enthält resident das Fileinterface, den Editor, den Assembler und von Ihnen eingefügte Werkzeuge (tools).                                                                                                                                                                                                |
  | minimal.com  | ist eine Grundversion, die oft benötigte Systemteile enthält. Diese ist notwendig, da FORTH—Systeme allgemein nicht über einen Linker verfügen, sondern ausgehend vom Systemkern die zur Problemlösung notwendigen Einzelprogramme schrittweise hinzukompiliert werden.                                                                    |
  | kernel.com   | ist eine Grundversion, die nur den Sprachkern enthält. Damit können Sie eigene FORTH-Versionen mit z.B. einem veränderten Editor zusammenstellen und dann mit =SAVESYSTEM <name>= als fertiges System abspeichern. In der gleichen Art können Sie auch fertige Anwendungen herstellen, denen man ihre FORTH-Abstammung nicht mehr ansieht. |
  | kernel.fb    | enthält die Quelltexte des Sprachkerns. Eben dieser Quelltext ist mit einem Target-Compiler kompiliert worden und entspricht exakt dem =KERNEL.COM=. Sie können sich also den Compiler ansehen, wenn Sie wissen wollen, wie das volksFORTH funktioniert.                                                                                   |
@@ -256,7 +256,7 @@ FORTH-Systeme und damit auch volksFORTH sind fast immer interaktive
 Systeme, in denen Sie einen gerade entwickelten Gedankengang sofort
 überprüfen und verwirklichen können. Das Auffälligste an der
 volksFORTH-Oberfläche ist die inverse Statuszeile in der unteren
-Bildschirmzeile, die sich mit =status off= — und mit =status on= aus
+Bildschirmzeile, die sich mit =status off= aus— und mit =status on=
 wieder einschalten lässt.
 
 Diese Statuszeile zeigt von links nach rechts folgende Informationen,
@@ -269,7 +269,7 @@ wobei =/= für "oder" steht
  | =Dic <xxxx>=          | nennt den freien Hauptspeicher                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
  | =Scr <xx>=            | ist die Nummer des aktuellen Blocks (einer Block-Datei)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
  | =<name>.<ext>=        | zeigt den Namen der Datei, die gerade bearbeitet wird. Dateien haben im MSDOS sowohl einen Namen <name> als auch eine dreibuchstabige Kennung, die Extension <ext>, wobei auch Dateien ohne Extension angelegt werden können.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
- | =FORTH FORTH   FORTH= | zeigt die aktuelle Suchreihenfolge gemäß dem Vokabularkonzept.                                                                                                                                                                                                                     Ein Beispiel dafür sind die Assembler-Befehle: Diese befinden sich in ASSEMBLER und assembler words zeigtIhnen den Befehlsvorrat des Assemblers an. Achten Sie bitte auf die rechte Seite der Statuszeiie, wo jetzt =assembler forth forth= zu sehen ist. Da Sie aber jetzt - noch - keine Assembler-Befehle einsetzen wollen, schalten Sie bitte mit forth die Suchlaufpriorität wiederum.Die Statuszeile zeigt wieder das gewohnte =forth forth  forth=. |
+ | =FORTH FORTH   FORTH= | zeigt die aktuelle Suchreihenfolge gemäß dem Vokabularkonzept.                                                                                                                                                                                                                     Ein Beispiel dafür sind die Assembler-Befehle: Diese befinden sich in ASSEMBLER und assembler words zeigt Ihnen den Befehlsvorrat des Assemblers an. Achten Sie bitte auf die rechte Seite der Statuszeiie, wo jetzt =assembler forth forth= zu sehen ist. Da Sie aber jetzt - noch - keine Assembler-Befehle einsetzen wollen, schalten Sie bitte mit forth die Suchlaufpriorität wieder um. Die Statuszeile zeigt wieder das gewohnte =forth forth  forth=. |
 
 Zur Orientierung im Arbeitssystem stellt das volksFORTH einige
 standardkonforme Wörter zur Verfügung:

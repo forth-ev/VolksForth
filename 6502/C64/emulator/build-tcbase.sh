@@ -14,4 +14,4 @@ keybuf="3 drive 20 load\n3 drive 10 load\nsave\n\
 savesystem tcbase\ndos s0:notdone\n"
 
 DISK10=tc38q DISK11=file-words "${emulatordir}/run-in-vice.sh" \
-  "c64-volksforth83" "${keybuf}"
+  "c64-vf-390" "${keybuf}"

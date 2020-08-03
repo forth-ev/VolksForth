@@ -8,3 +8,6 @@
 : (C16+ [compile] ( ; immediate
 
 include vf-pr-target.fth
+
+Assembler also definitions
+' Jsr Alias NormJsr

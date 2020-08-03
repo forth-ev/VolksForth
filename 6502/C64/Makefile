@@ -13,8 +13,7 @@ vf_binaries = $(patsubst %, cbmfiles/vf-%, $(vf_flavours))
 test_files = $(wildcard tests/*.f*)
 test_files_petscii = $(patsubst tests/%, cbmfiles/%, $(test_files))
 test_logs = $(patsubst %, test-%.log, $(vf_flavours))
-working_vf_flavours = full-c64 full-c16+ lite-c64 lite-c16+
-test_resuls = $(patsubst %, test-%.result, $(working_vf_flavours))
+test_resuls = $(patsubst %, test-%.result, $(vf_flavours))
 
 # Target to convert all .d64 images into .fth files for easier reading,
 # and to update all PETSCII files in cbmfiles to the latest state of
@@ -33,7 +32,9 @@ clean:
 
 test: $(test_resuls)
 
-test64: test-full-c64.result
+test64: full64 lite64
+
+full64: test-full-c64.result
 
 lite64: test-lite-c64.result
 
@@ -103,6 +104,16 @@ test-lite-c16+.log: emulator/vf-lite-c16+.T64
 	  "include run-min-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
+test-full-c16-.log: emulator/vf-full-c16-.T64
+	VICE=xplus4 emulator/run-in-vice.sh vf-full-c16- \
+	  "include run-min-tests.fth\n1234567890\n"
+	petscii2ascii cbmfiles/test.log $@
+
+test-lite-c16-.log: emulator/vf-lite-c16-.T64
+	VICE=xplus4 emulator/run-in-vice.sh vf-lite-c16- \
+	  "include run-min-tests.fth\n1234567890\n"
+	petscii2ascii cbmfiles/test.log $@
+
 test-%.result: test-%.log test-%.golden tests/evaluate-test.sh
 	rm -f $@
 	tests/evaluate-test.sh $(basename $@)
@@ -126,6 +137,12 @@ test-full-c16+.golden: $(c16_golden_parts)
 	cat $? > $@
 
 test-lite-c16+.golden: $(c16_golden_parts)
+	cat $? > $@
+
+test-full-c16-.golden: $(c16_golden_parts)
+	cat $? > $@
+
+test-lite-c16-.golden: $(c16_golden_parts)
 	cat $? > $@
 
 # Rules for building Forth binaries on top of the plain vanilla

@@ -97,9 +97,9 @@ Output: display   [ here output ! ]
 
 (C64  | Create (bye  $FCE2  here 2- ! )
 
-(C16- | Create (bye  $FF52  here 2- ! )
+(C16- | Create (bye  $FFF6  here 2- ! )
 
-(C16+ | CODE   (bye  rom $FF52 jmp  end-code )
+(C16+ | CODE   (bye  rom $FFF6 jmp  end-code )
 
 
 \ *** Block No. 135, Hexblock 87

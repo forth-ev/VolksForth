@@ -55,29 +55,4 @@ xyNext Constant xyNext
 (2drop Constant Poptwo
 (drop  Constant Pop
 
-\ *** Block No. 125, Hexblock 7d
-7d fthpage
-
-\ System patchup              clv06aug87
-
 Forth definitions
-
-(C64  C000 ' limit >body !  7B00 s0 !  7F00 r0 ! )
-
-(C16  8000 ' limit >body !  7700 s0 !  7b00 r0 ! )
-
-\ (C16+ fd00 ' limit >body !
-\       7B00 s0 !  7F00 r0 ! )
-
-s0 @ dup s0 2- !      6 + s0 7 - !
-here dp !
-
-Host  Tudp @          Target  udp !
-Host  Tvoc-link @     Target  voc-link !
-Host  move-threads
-
-\ Final part of loadscreen
-
-Assembler nonrelocate
-
-.unresolved

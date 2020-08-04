@@ -96,14 +96,14 @@ test-lite-c64.log: emulator/vf-lite-c64.T64
 	  "include run-lite-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
-test-full-c16+.log: emulator/vf-full-c16+.T64
+test-full-c16+.log: emulator/vf-full-c16+.T64 disks/scratch.d64
 	VICE=xplus4 emulator/run-in-vice.sh vf-full-c16+ \
-	  "include run-min-tests.fth\n1234567890\n"
+	  "include run-full-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
 test-lite-c16+.log: emulator/vf-lite-c16+.T64
 	VICE=xplus4 emulator/run-in-vice.sh vf-lite-c16+ \
-	  "include run-min-tests.fth\n1234567890\n"
+	  "include run-lite-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
 test-full-c16-.log: emulator/vf-full-c16-.T64
@@ -132,19 +132,20 @@ test-lite-c64.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreext double report-noblk)
 	cat $? > $@
 
-c16_golden_parts = $(patsubst %, tests/golden/%.golden, \
-  prelim core)
-
-test-full-c16+.golden: $(c16_golden_parts)
+test-full-c16+.golden: $(patsubst %, tests/golden/%.golden, \
+    prelim core coreext double block report-blk)
 	cat $? > $@
 
-test-lite-c16+.golden: $(c16_golden_parts)
+test-lite-c16+.golden: $(patsubst %, tests/golden/%.golden, \
+    prelim core coreext double report-noblk)
 	cat $? > $@
 
-test-full-c16-.golden: $(c16_golden_parts)
+test-full-c16-.golden: $(patsubst %, tests/golden/%.golden, \
+    prelim core)
 	cat $? > $@
 
-test-lite-c16-.golden: $(c16_golden_parts)
+test-lite-c16-.golden: $(patsubst %, tests/golden/%.golden, \
+    prelim core)
 	cat $? > $@
 
 # Rules for building Forth binaries on top of the plain vanilla

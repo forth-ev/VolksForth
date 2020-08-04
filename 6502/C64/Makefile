@@ -113,7 +113,7 @@ test-full-c16-.log: emulator/vf-full-c16-.T64
 
 test-lite-c16-.log: emulator/vf-lite-c16-.T64
 	VICE=xplus4 emulator/run-in-vice.sh vf-lite-c16- \
-	  "include run-min-tests.fth\n1234567890\n"
+	  "include run-lite-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
 test-%.result: test-%.log test-%.golden tests/evaluate-test.sh
@@ -145,7 +145,7 @@ test-full-c16-.golden: $(patsubst %, tests/golden/%.golden, \
 	cat $? > $@
 
 test-lite-c16-.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core)
+    prelim core coreext double report-noblk)
 	cat $? > $@
 
 # Rules for building Forth binaries on top of the plain vanilla

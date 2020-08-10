@@ -4,26 +4,17 @@
 
 Onlyforth
 
-\needs Code -$2B +load \ Trans Assembler
+\needs Code include trns6502asm.fth
 
 \needs Tools   Vocabulary Tools
 
 Tools also definitions
 
-   1 6  +thru  \ Tracer
-   7 8  +thru  \ Tools for decompiling
-
-Onlyforth
-
-\\
-
-This nice Forth Tracer has been
-developed by B. Pennemann and co
-for Atari ST. CL Vogt has ported it
-back to the volksForth 6502 C-16 and
-C-64
-
-
+\ This nice Forth Tracer has been
+\ developed by B. Pennemann and co
+\ for Atari ST. CL Vogt has ported it
+\ back to the volksForth 6502 C-16 and
+\ C-64
 
 
 \ *** Block No. 48, Hexblock 30
@@ -43,15 +34,6 @@ Only Forth also Tools also definitions
 | Variable <ip      | Variable ip>
 | Variable nest?    | Variable trap?
 | Variable last'    | Variable #spaces
-
-
-
-
-
-
-
-
-
 
 
 \ *** Block No. 49, Hexblock 31
@@ -78,10 +60,6 @@ Only Forth also Tools also definitions
  3+ ip> ! ;
 
 
-
-
-
-
 \ *** Block No. 50, Hexblock 32
 
 \ tracer:step tnext           clv04aug87
@@ -106,10 +84,6 @@ Label  tnext IP 2inc
   W lda  (W sta    W 1+ lda   (W 1+ sta
 
 
-
-
-
-
 \ *** Block No. 51, Hexblock 33
 
 \ tracer:..tnext              clv12oct87
@@ -130,12 +104,6 @@ Label  tnext IP 2inc
  #tib push  tib #tib @ cpush  r0 push
  rp@ r0 !
  ['] oneline Is 'quit  quit ;
-
-
-
-
-
-
 
 
 \ *** Block No. 52, Hexblock 34
@@ -163,7 +131,6 @@ end-code
  \ for defining words with DOES>
  >name .name ." can't be DEBUGged"
  quit ;
-
 
 
 \ *** Block No. 53, Hexblock 35
@@ -242,3 +209,6 @@ Onlyforth Tools also definitions
 ( used for : )
 ( Name String Literal Dump Clit Branch )
 ( -    -      -       -    -    -      )
+
+
+Onlyforth

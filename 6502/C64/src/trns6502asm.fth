@@ -8,7 +8,7 @@
 
 here   $800 hallot  heap dp !
 
-         1  +load
+include 6502asm.fth
 
 dp !
 

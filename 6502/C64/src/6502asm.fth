@@ -6,25 +6,6 @@
 
 Onlyforth  Assembler also definitions
 
-1 7  +thru
- -3  +load \ Makros: rom ram sys
-
-Onlyforth
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 \ *** Block No. 6, Hexblock 6
 
@@ -47,11 +28,6 @@ $8080 , $1C0C , $801C , $2C80 ,
 2 | Mode: mem       3    Mode: ,X
 4   Mode: ,Y        5    Mode: X)
 6   Mode: )Y       $F    Mode: )
-
-
-
-
-
 
 
 \ *** Block No. 7, Hexblock 7
@@ -109,7 +85,6 @@ $0480 $14 m/cpu jsr $8480 $40 m/cpu jmp
 $0484 $20 m/cpu bit
 
 
-
 \ *** Block No. 9, Hexblock 9
 
 \ Assembler conditionals       20oct87re
@@ -136,8 +111,6 @@ $0484 $20 m/cpu bit
 : ]]? ( REPEAT) jmp ]? ;
 
 
-
-
 \ *** Block No. 10, Hexblock a
 
 \ Assembler conditionals       20oct87re
@@ -153,17 +126,6 @@ $50 Constant VS     $70 Constant VC
 : bne    0=  ?] ;   : bpl   0<  ?] ;
 : bcc    CS  ?] ;   : bvc   VS  ?] ;
 : bcs    CC  ?] ;   : bvs   VC  ?] ;
-
-
-
-
-
-
-
-
-
-
-
 
 
 \ *** Block No. 11, Hexblock b
@@ -186,12 +148,6 @@ $50 Constant VS     $70 Constant VC
 
 : ;c:
  recover jsr  end-code ]  0 last !  0 ;
-
-
-
-
-
-
 
 
 \ *** Block No. 12, Hexblock c
@@ -220,3 +176,8 @@ immediate
 
 : Label
  [ Assembler ]  here >label Assembler ;
+
+\ TODO(pzembrod): enable once rom-ram-sys.fth works with include
+\ include rom-ram-sys.fth \ Makros: rom ram sys
+
+Onlyforth

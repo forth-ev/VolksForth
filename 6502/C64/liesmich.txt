@@ -275,6 +275,7 @@ Ein Diskettenlaufwerk ist sehr empfehlenswert.
     getestet:
     * VICE  - http://www.viceteam.org/
     * Frodo - http://frodo.cebix.net/ 
+    * YAPE/SDL - https://github.com/calmopyrin/yapesdl
 
 * Website:
   VolksForth ist erhältlich von der SourceForge Entwicklerwebseite

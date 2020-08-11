@@ -80,7 +80,7 @@ Hinweise zum volksFORTH C=64/C16/Plus4 (ultraForth)
 
 Die Ursprungsversion des C16 mit 16kB ist nicht ultraFORTH-faehig,
 da allein der FORTH-Kern den Speicher von $1000 bis $4b00 belegt.
-Der Umbau auf 64kB ist kosteng¸nstig und lohnt sich eigentlich immer.
+Der Umbau auf 64kB ist kosteng√ºnstig und lohnt sich eigentlich immer.
 
 Ein Diskettenlaufwerk ist sehr empfehlenswert.
 
@@ -88,31 +88,31 @@ Ein Diskettenlaufwerk ist sehr empfehlenswert.
 
   In der Distribution finden sich folgende Files:
 
-  vforth_1.d64 - Disketteimage Diskette 1 f¸r Emulator
+  vforth_1.d64 - Disketteimage Diskette 1 f√ºr Emulator
                  C64 volksForth Binary
                  C16 volksForth Binary
                  Sourcecode 
-  vforth_2.d64 - Disketteimage Diskette 3 f¸r Emulator
+  vforth_2.d64 - Disketteimage Diskette 2 f√ºr Emulator
                  Kompletter volksForth 6502 C64/C16 Quellcode 
-  vforth_3.d64 - Disketteimage Diskette 3 f¸r Emulator
+  vforth_3.d64 - Disketteimage Diskette 3 f√ºr Emulator
                  Assembler, Disassembler, Editor 
-  vforth_4.d64 - Disketteimage Diskette 4 f¸r Emulator
+  vforth_4.d64 - Disketteimage Diskette 4 f√ºr Emulator
                  Grafik, Demos, Tools, Decompiler
   tc38q.d64    - Quelltexte des Target Compilers 
 
-  Diese Version des volksForth f¸r den C=64 benutzt noch ein traditionelles 
+  Diese Version des volksForth f√ºr den C=64 benutzt noch ein traditionelles 
   Forth-Block Dateisystem auf den Disketten. Ab der kommenden Version 3.90
   wird auch diese Version eine ANSI-Forth Dateischnittstelle bekommen. Die
-  Forth-Block Routinen wird es weiterhin als optionales Quellcodepaket zum 
+  Forth-Block-Routinen wird es weiterhin als optionales Quellcodepaket zum 
   Nachladen geben. 
 
-* ¸ber UltraForth/volksForth 6502/UltraForth83 ist das volksForth fuer die 
+* √ºber UltraForth/volksForth 6502/UltraForth83 ist das volksForth fuer die 
   kleinen Commodore-Rechner C16, Plus4 und C64.
 
   UltraForth83 besteht aus ca. 200 Seiten Handbuch in deutscher Sprache und 
   vier Diskettenseiten. UltraForth83 ist sicher das beste Forth-System fuer 
   den C64. Fuer den C16/Plus4 war es lange Zeit die einzige enstzunehmende 
-  Programmiersprache ¸berhaupt.
+  Programmiersprache √ºberhaupt.
 
   UltraForth83 ist eine komplette Programmierumgebung. Es enthaelt einen 
   Full-Screen-Editor, einen quelltextnahe Debugger, den Compiler/Interpreter 
@@ -192,7 +192,7 @@ Ein Diskettenlaufwerk ist sehr empfehlenswert.
       bald ein System-Absturz beider Sprachen oder unsinnige Reaktionen.
 
   Die Benutzung des FORTH ist wie im Handbuch beschrieben. Selbst Woerter 
-  wie "C64init" heissen weiterhin genauso. Der verfÅgbare Speicher ist um 
+  wie "C64init" heissen weiterhin genauso. Der verfuegbare Speicher ist um 
   fast 16kB groesser als der der C64-Version. Das Wort "C64fkeys" ist neu 
   hinzugekommen. Es installiert auf einem C16 die Funktionstastenbelegung des C64.
 
@@ -200,10 +200,10 @@ Ein Diskettenlaufwerk ist sehr empfehlenswert.
   Ein/Ausgabe-Routinen geaendert hat. Die "<Fx>-Tasten sind etwas anders beschriftet.
   Die im Handbuch erwaehnte "<Ctrl>+@"-Funktion liegt beim C16 auf "<Ctrl>+&".
 
-  Im Gegensatz zu der Bemerkung des Handbuchs "S 149"  koennen Zeilen nach
+  Im Gegensatz zu der Bemerkung des Handbuchs auf S. 149 koennen Zeilen nach
   unten aus dem Bildschirm geschoben werden. Dies geschieht unter folgenden Umstaenden:
   - Es wird in die 40. Bildschirmspalte einer beliebigen Spalte ein
-    beliebiges Zeichen geschrieben. ( Wenn hier eine logische
+    beliebiges Zeichen geschrieben. (Wenn hier eine logische
     Bildschirmzeile aufhoert, schiebt die I/O-Routine eine neue Zeile ein)
   - Es wird "<ESC> I" eingegeben oder eine andere "<Esc>"-Kombination,
     die eine Zeile aus dem Bildschirm schiebt.
@@ -238,7 +238,7 @@ Ein Diskettenlaufwerk ist sehr empfehlenswert.
 
   Statt "SYS(2064)" steht "SYS(4112)"
 
-  Der FORTH-Kern belegt nicht wie beim C64 den Bereich von $800 bis "limit", 
+  Der FORTH-Kern belegt nicht, wie beim C64 den Bereich von $800 bis "limit", 
   sondern von $1000  bis "limit"
 
   "limit" liegt nicht automatisch unterhalb von $E000 sondern bei $fd00 (64kb RAM) 
@@ -251,8 +251,8 @@ Ein Diskettenlaufwerk ist sehr empfehlenswert.
   Da beim C16 das Bank-Switching etwas anders funktioniert, mussten folgende 
   Aenderungen vorgenommen werden:
   - ultraFORTH schaltet bei der Initialisierung das komplette ROM aus.
-  - Daher muessen alle Lese-Zugriffe (auch JSR) ins ROM
-    mittels Makro und/oder Umleitungsroutine implementiert werden.
+  - Daher muessen alle Lese-Zugriffe (auch JSR) mittels Makro und/oder
+    Umleitungsroutine ins ROMimplementiert werden.
   - Daher musste die Interrupt-Behandlung umgeleitet werden.
 
   Aus der veraenderten Interrupt-Behandlung ergibt sich eine geringe
@@ -268,22 +268,22 @@ Ein Diskettenlaufwerk ist sehr empfehlenswert.
   Sie macht folgendes:
   - Installation der Interrupt-Umleitungs-Routine
   - Umschalten auf RAM.
-  erst spaeter wird C64init aufgerufen, dass aehnliche Prozesse wie beim C64 ausloest.
+    erst spaeter wird C64init aufgerufen, dass aehnliche Prozesse wie beim C64 ausloest.
 
 * Emulator
-  * volksForth 3.81 6502 f¸r C=64, C16 und Plus4 wurde in folgenden Emulatoren
+  * volksForth 3.81 6502 f√ºr C=64, C16 und Plus4 wurde in folgenden Emulatoren
     getestet:
     * VICE  - http://www.viceteam.org/
     * Frodo - http://frodo.cebix.net/ 
 
 * Website:
-  VolksForth ist erh‰ltlich von der SourceForge Entwicklerwebseite
+  VolksForth ist erh√§ltlich von der SourceForge Entwicklerwebseite
   http://volksForth.sf.net
   und von der Webseite der Forth Gesellschaft 
   http://www.forth-ev.de
 
-Die Forth Live-Linux CD-ROM (erhaeltlich im Downloadbereich der Forth
-Gesellschaft Webseite) enthaelt die aktuellen Versionen des volksFORTH direkt
+Die Forth Live-Linux CD-ROM (erhaeltlich im Downloadbereich der Webseite der
+Forth Gesellschaft) enthaelt die aktuellen Versionen des volksFORTH, direkt
 ausfuerbar auf der Linux CD-ROM, inkl. der volksFORTH Handbuecher.
 
 Viel Spass mit volksFORTH

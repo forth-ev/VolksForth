@@ -87,93 +87,66 @@
  * =blk/drv ( -- #blk )= "blocks-per-drive" - =#blk= gibt die
    Kapazität des aktuellen Laufwerks (bestimmt durch =OFFSET=) in
    Forth-Blöcken (1kB) an. Siehe =(BLK/DRV=.
-
-con!           ( 8b -- )  "con-store"
-          Gibt  8b auf die CONsole (Bildschirm) aus.  Ascii-Werte < $20 werden
-          als Steuercodes interpretiert.
-
-curleft        ( -- ) "cur-left"
-          Bewegt  den Cursor ein Zeichen nach links.  Eine der  vordefinierten
-          Terminalfunktionen.
-
-curoff         ( -- ) "cur-off"
-          Schaltet den Cursor aus. Eine der vordefinierten Terminalfunktionen.
-
-curon          ( -- ) "cur-on"
-          Schaltet den Cursor an. Eine der vordefinierten Terminalfunktionen.
-
-currite        ( -- ) "cur-right"
-          Bewegt den Cursor ein Zeichen nach rechts. Eine der  vordefinierten
-          Terminalfunktionen.
-
-dark           ( -- ) "dark"
-          Löscht den Bildschirm. Eine der vordefinierten Terminalfunktionen.
-
-display        ( -- ) "display"
-          Ein  mit OUTPUT:  definiertes Wort,  das den Bildschirm als Ausgabe
-          gerät anwählt,  wenn es ausgeführt wird.  Die Worte EMIT,  CR, TYPE,
-          DEL, PAGE, AT, und AT? beziehen sich dann auf das aktuelle Terminal.
-          Siehe TERMINAL:.
-
-dma!           ( addr -- ) "d-m-a-store"
-          addr  ist die Adresse des Diskettenpuffers,  der beim nächsten  Dis
-          kettenzugriff verwendet werden soll.
-
-drive          ( n -- ) "drive"
-          Wählt n als aktuelles Laufwerk an. [ndert OFFSET entsprechend.
-          Siehe BLK/DRV.
-
-drv!           ( drv f -- dph ) "drive-store"
-          drv  ist  die Nummer des Diskettenlaufwerks,  das als nächstes  ver
-          wendet  werden soll.  f=0 gibt an,  ob es sich um den erste  Zugriff
-          nach  einem  CP/M Warmstart handelt.  dph ist die Adresse  des  CP/M
-          Disk-Parameter-Headders. (Siehe CP/M Operating System Manual)
-          Ist  dph=0,  so  ist das angesprochene Laufwerk in diesem  Komputer
-          system nicht unterstützt.
-
-drv?           ( blk -- drv ) "drive-question"
-          blk gibt die absolute Nummer eines FORTH-Blocks an,  DRV?  berechnet
-          daraus das Laufwerk (drv) auf dem er zu finden ist.
-          Siehe /DRIVE, >DRIVE.
-
-drv0           ( -- ) "drive-zero"
-          Wählt Laufwerk 0 (A) als aktuelles Laufwerk für R/W an.  Siehe DRIVE
-          und >DRIVE.
-
-drv1           ( -- ) "drive-one"
-          Wählt Laufwerk 1 (B) als aktuelles Laufwerk für R/W an.  Siehe DRIVE
-          und >DRIVE.
-
-drvinit        ( -- ) "drive-init"
-          Initialisiert das volksFORTH-Disk-System.
-          Die  im Komputer-System vorhandenen Laufwerke werden der Reihe  nach
-          selektiert  und  deren  Kapazität  berechnet.  Dann  wird  das  CP/M
-          default-Laufwerk selektiert.
-dumb           ( -- ) "dumb"
-          Ein  mit TERMINAL:  definiertes Wort,  das ein ignorantes  Terminal
-          anwählt,  wenn es ausgeführt wird.  CURON, CUROFF, CURLEFT, CURRITE,
-          RVSON,  RVSOFF,  DARK und LOCATE haben dann keine Wirkung. Mit ihnen
-          auch  die  sie benutzenden Worte  (PAGE,  (AT,  (DEL.  Wenn  DISPLAY
-          eingeschaltet ist, sind also auch PAGE, AT und DEL wirkungslos.
-          DUMB  ist als aktuelles Terminal angewählt,  bis  die  Installierung
-          eines leistungsfähigeren Terminals abgeschlossen ist.
-
-getkey         ( -- char ) "getkey"
-          die  unteren  7  Bit von char enthalten den Ascii-Code  des  letzten
-          Tastendrucks.  Ist  noch keine Taste gedrückt,  dann wartet  getkey.
-          Siehe auch KEY? und KEY.
-
-home           ( -- ) "home"
-          Der  Kopf des momentan selektierte Diskettenlaufwerks wird auf  Spur
-          null  gefahren.  Spur  null wird als  nächste  Spur  angewählt,  die
-          verwendet werden soll. Siehe TRK!, DRV!.
-
-index          ( from to -- ) "index"
-          Liest  die  Blocks from bis to einschlie~lich und gibt  deren  erste
-          Zeilen aus.  Index kann mit einer beliebigen Taste angehalten werden
-          und  mit RETURN abgebrochen werden.  (Siehe STOP?) Die ersten Zeilen
-          von  Screens enthalten typischer Weise Kommentare,  die  den  Inhalt
-          chararkterisieren.
+ * =con! ( 8b -- )= "con-store" - Gibt =8b= auf die CONsole
+   (Bildschirm) aus. Ascii-Werte < $20 werden als Steuercodes
+   interpretiert.
+ * =curleft ( -- )= "cur-left" - Bewegt den Cursor ein Zeichen nach
+   links. Eine der vordefinierten Terminalfunktionen.
+ * =curoff ( -- )= "cur-off" - Schaltet den Cursor aus. Eine der
+   vordefinierten Terminalfunktionen.
+ * =curon ( -- )= "cur-on" - Schaltet den Cursor an. Eine der
+   vordefinierten Terminalfunktionen.
+ * =currite ( -- )= "cur-right" - Bewegt den Cursor ein Zeichen nach
+   rechts. Eine der vordefinierten Terminalfunktionen.
+ * =dark ( -- )= - "dark" - Löscht den Bildschirm. Eine der
+   vordefinierten Terminalfunktionen.
+ * =display ( -- )= "display" - Ein mit =OUTPUT:= definiertes Wort,
+   das den Bildschirm als Ausgabegerät anwählt, wenn es ausgeführt
+   wird. Die Worte =EMIT=, =CR=, =TYPE=, =DEL=, =PAGE=, =AT=, und
+   =AT?= beziehen sich dann auf das aktuelle Terminal. Siehe
+   TERMINAL:.
+ * =dma! ( addr -- )= "d-m-a-store" - =addr= ist die Adresse des
+   Diskettenpuffers, der beim nächsten Diskettenzugriff verwendet
+   werden soll.
+ * =drive ( n -- )= "drive" - Wählt =n= als aktuelles Laufwerk an.
+   Ändert =OFFSET= entsprechend. Siehe =BLK/DRV=.
+ * =drv! ( drv f -- dph )= "drive-store" - =drv= ist die Nummer des
+   Diskettenlaufwerks, das als nächstes verwendet werden soll. f=0
+   gibt an, ob es sich um den erste Zugriff nach einem CP/M Warmstart
+   handelt. =dph= ist die Adresse des CP/M Disk-Parameter-Headders.
+   (Siehe CP/M Operating System Manual) Ist =dph= = 0, so ist das
+   angesprochene Laufwerk in diesem Computersystem nicht unterstützt.
+ * =drv? ( blk -- drv )= "drive-question" - =blk= gibt die absolute
+   Nummer eines FORTH-Blocks an, =DRV?= berechnet daraus das Laufwerk
+   (=drv=) auf dem er zu finden ist. Siehe =/DRIVE=, =>DRIVE=.
+ * =drv0 ( -- )= "drive-zero" - Wählt Laufwerk 0 (A) als aktuelles
+   Laufwerk für =R/W= an. Siehe =DRIVE= und =>DRIVE=.
+ * =drv1 ( -- )= "drive-one" - Wählt Laufwerk 1 (B) als aktuelles
+   Laufwerk für =R/W= an. Siehe =DRIVE= und =>DRIVE=.
+ * =drvinit ( -- )= "drive-init" - Initialisiert das
+   volksFORTH-Disk-System. Die im Komputer-System vorhandenen
+   Laufwerke werden der Reihe nach selektiert und deren Kapazität
+   berechnet. Dann wird das CP/M Default-Laufwerk selektiert.
+ * =dumb ( -- )= "dumb" - Ein mit =TERMINAL:= definiertes Wort, das
+   ein ignorantes Terminal anwählt, wenn es ausgeführt wird. =CURON=,
+   =CUROFF=, =CURLEFT=, =CURRITE=, =RVSON=, =RVSOFF=, =DARK= und
+   =LOCATE= haben dann keine Wirkung. Mit ihnen auch die sie
+   benutzenden Worte =(PAGE=, =(AT=, =(DEL=. Wenn =DISPLAY=
+   eingeschaltet ist, sind also auch =PAGE=, =AT= und =DEL=
+   wirkungslos. DUMB ist als aktuelles Terminal angewählt, bis die
+   Installierung eines leistungsfähigeren Terminals abgeschlossen ist.
+ * =getkey ( -- char )= "getkey" - die unteren 7 Bit von =char=
+   enthalten den ASCII-Code des letzten Tastendrucks. Ist noch keine
+   Taste gedrückt, dann wartet =getkey=. Siehe auch =KEY?= und =KEY=.
+ * =home ( -- )= "home" - Der Kopf des momentan selektierte
+   Diskettenlaufwerks wird auf Spur null gefahren. Spur null wird als
+   nächste Spur angewählt, die verwendet werden soll. Siehe =TRK!=,
+   =DRV!=.
+ * =index ( from to -- )= "index" - Liest die Blocks from bis to
+   einschlielich und gibt deren erste Zeilen aus. Index kann mit einer
+   beliebigen Taste angehalten werden und mit =RETURN= abgebrochen
+   werden. (Siehe =STOP?=) Die ersten Zeilen von Screens enthalten
+   typischer Weise Kommentare, die den Inhalt chararkterisieren.
 
 keyboard       ( -- ) "keyboard"
           Ein mit INPUT:  definiertes Wort,  das die Tastatur als Eingabegerät

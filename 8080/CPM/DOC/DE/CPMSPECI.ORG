@@ -147,59 +147,47 @@
    beliebigen Taste angehalten werden und mit =RETURN= abgebrochen
    werden. (Siehe =STOP?=) Die ersten Zeilen von Screens enthalten
    typischer Weise Kommentare, die den Inhalt chararkterisieren.
-
-keyboard       ( -- ) "keyboard"
-          Ein mit INPUT:  definiertes Wort,  das die Tastatur als Eingabegerät
-          anwählt.  Die Worte KEY,  KEY?,  DECODE und EXPECT beziehen sich nun
-          auf die Tastatur. Siehe (KEY, (KEY? (DECODE, (EXPECT.
-
-locate         ( row col -- ) "locate"
-          Bewegt den Cursor absolut auf Spalte col, Zeile row.
-          Eine der vordefinierten Terminalfunktionen.
-
-
-out            ( -- addr ) "out"
-          Adresse  einer  Variablen,  die die Anzahl der ausgegebenen  Zeichen
-          enthält.
-
-read/write     ( r/wf sponti -- f ) "read-write"
-          Bewirkt  das  physikalische  Lesen  (r/wf  =  FALSE)  und  Schreiben
-          (r/wf=TRUE) eines Sektors (=128 Bytes) von der/auf die Diskette. Das
-          Laufwerk,  die Spur , der Sektor sowie der Sektor-Puffer sind vorher
-          mit DRV!, TRK!, SEC! und DMA! gewählt worden.
-          sponti  gibt  an,  ob  beim Schreiben unmittelbar auf  die  Diskette
-          geschrieben  werden  soll (sponti=TRUE) oder,  ob  der  geschriebene
-          Sektor im BIOS zwischengepuffert werden darf (sponti=FALSE).
-
-rvsoff         ( -- ) "reverse-off"
-          Schaltet   die  Inversdarstellung  aus.   Eine  der   vordefinierten
-          Terminalfunktionen.
-
-rvson          ( -- ) "reverse-on"
-          Schaltet   die  Inversedarstellung  ein.   Eine  der  vordefinierten
-          Terminalfunktionen.
-
-sec!           ( sec -- ) "sec-store"
-          sec ist der beim nächsten Diskettenzugriff zu verwendende Sektor.
-.PA
-Term:          ( offset -- offset' ) "term-colon"
-          Ein definierendes Wort für Terminalfunktionen.  Wird benutzt um  die
-          einzelnen   Komponenten   eines  Terminal-Vektors   zu   definieren.
-          Vordefinierte  Terminalfunktionen  sind  CURON,   CUROFF,   CURLEFT,
-          CURRITE, RVSON, RVSOFF, DARK und LOCATE. Siehe auch TERMINAL:
-
-Terminal:      ( -- ) "terminal-colon"
-          Ein definierendes Wort für Terminals. Benutzt in der Form:
+ * =keyboard ( -- )= "keyboard" - Ein mit INPUT: definiertes Wort, das
+   die Tastatur als Eingabegerät anwählt. Die Worte =KEY=, =KEY?=, =DECODE=
+   und =EXPECT= beziehen sich nun auf die Tastatur. Siehe =(KEY=, =(KEY?=
+   =(DECODE=, =(EXPECT=.
+ * =locate ( row col -- )= "locate" - Bewegt den Cursor absolut auf
+   Spalte col, Zeile row. Eine der vordefinierten Terminalfunktionen.
+ * =out ( -- addr )= "out" - Adresse einer Variablen, die die Anzahl
+   der ausgegebenen Zeichen enthält.
+ * =read/write ( r/wf sponti -- f )= "read-write" - Bewirkt das
+   physikalische Lesen (r/wf = FALSE) und Schreiben (r/wf=TRUE) eines
+   Sektors (=128 Bytes) von der/auf die Diskette. Das Laufwerk, die
+   Spur, der Sektor sowie der Sektor-Puffer sind vorher mit =DRV!=,
+   =TRK!=, =SEC!= und =DMA!= gewählt worden. =sponti= gibt an, ob beim
+   Schreiben unmittelbar auf die Diskette geschrieben werden soll
+   (sponti=TRUE) oder, ob der geschriebene Sektor im BIOS
+   zwischengepuffert werden darf (sponti=FALSE).
+ * =rvsoff ( -- )= "reverse-off" - Schaltet die Inversdarstellung aus.
+   Eine der vordefinierten Terminalfunktionen.
+ * =rvson ( -- )= "reverse-on" - Schaltet die Inversedarstellung ein.
+   Eine der vordefinierten Terminalfunktionen.
+ * =sec! ( sec -- )= "sec-store" - sec ist der beim nächsten
+   Diskettenzugriff zu verwendende Sektor.
+ * =Term: ( offset -- offset' )= "term-colon" - Ein definierendes Wort
+   für Terminalfunktionen. Wird benutzt um die einzelnen Komponenten
+   eines Terminal-Vektors zu definieren. Vordefinierte
+   Terminalfunktionen sind =CURON=, =CUROFF=, =CURLEFT=, =CURRITE=, =RVSON=,
+   =RVSOFF=, =DARK= und =LOCATE=. Siehe auch =TERMINAL:=
+ * =Terminal: ( -- )= "terminal-colon" - Ein definierendes Wort für
+   Terminals. Benutzt in der Form:
+   #+begin_example
              Terminal: <name>
                newCURON newCUROFF newCURLEFT newCURRITE
                newRVSON newRVSOFF newDARK    newLOACTE ;
-          TERMINAL: erzeugt einen Kopf für <name> im Dictionary und kompiliert
-          einen  Vektor von Zeigern auf Worte die für die Ausführung von  Ter
-          minalfunktionen  zuständig sind.  Wird <name> ausgeführt,  so werden
-          die  Terminalfunktionen  von  <name>  zu  den  aktuellen   Terminal
-          funktionen gemacht,  das Terminal <name> ist damit aktiv.  Terminal
-          funktionen werden von AT, PAGE, DEL ausgeführt, wenn die Ausgabe auf
-          DISPLAY geschaltet ist. Siehe OUTPUT:, DISPLAY, DUMB.
-
-trk!           ( trk -- ) "track-store"
-          trk ist die beim nächsten Diskettenzugriff zu verwendende Spur.
+   #+end_example
+   =TERMINAL:= erzeugt einen Kopf für <name> im Dictionary und
+   kompiliert einen Vektor von Zeigern auf Worte die für die
+   Ausführung von Terminalfunktionen zuständig sind. Wird <name>
+   ausgeführt, so werden die Terminalfunktionen von <name> zu den
+   aktuellen Terminal funktionen gemacht, das Terminal <name> ist
+   damit aktiv. Terminal funktionen werden von =AT=, =PAGE=, =DEL=
+   ausgeführt, wenn die Ausgabe auf =DISPLAY= geschaltet ist. Siehe
+   =OUTPUT:=, =DISPLAY=, =DUMB=.
+ * =trk! ( trk -- )= "track-store" - =trk= ist die beim nächsten
+   Diskettenzugriff zu verwendende Spur.

@@ -1,4 +1,4 @@
-README.TXT      zu museum/ultra4th  für Commodore C16, C64, Plus4         clv2000
+README.TXT      zu museum/ultra4th  fÃ¼r Commodore C16, C64, Plus4         clv2000
 
         Claus.Vogt@Berlin.de       --- http://www.home.pages.de/~clv
 
@@ -149,7 +149,7 @@ UF_TO_PC\LIST-CBM.BAT            45  28.06.89  16:19 LIST-CBM.BAT
         ergibt etwa sieben Druckseiten, wenn alles funktioniert.
 
         (Soeben gestet mit einem Pentium-III-500 mit HP Laserjet 5MP:
-         Das Layout ist ziemlich murksig, aber man die Screens deutlich lesen.)
+         Das Layout ist ziemlich murksig, aber man kann die Screens deutlich lesen.)
 
 
 UF_TO_PC\EPSONCBM.PRN        12.288  28.06.89  15:44 EPSONCBM.PRN
@@ -161,7 +161,7 @@ UF_TO_PC\CBM_ST.SCR
 
         Benutzung von Commodore-Screens mit Atari       clv05jan90
         Das Commodore-Screen-Format von 25 Zeilen a 41 Buchstaben
-        kann so unter Atari ST, volksFORTH 3.80  verwendet werden.
+        kann so unter Atari ST, volksFORTH 3.80 verwendet werden.
 
 UF_TO_PC\FG0190.ART
 
@@ -189,7 +189,7 @@ CLV\DSK-GRF.487     Image für C16/C64. Unvollendet, ca. 1987
 
                 Tests für die Basis eines Grafikpakets für ultraForth C16.
                 Das Bankswitching, das etwas anders als auf dem C64
-                organisiert war, machte da �rger.
+                organisiert war, machte da Ärger.
 
 
 CLV\EDIT.           Image für C16/C64. Unvollendet, ca. 1987
@@ -199,7 +199,7 @@ CLV\EDIT.           Image für C16/C64. Unvollendet, ca. 1987
                 er auch, war aber unerträglich langsam und
                 der Cursor war meistens weg ...
 
-                Dann begann auch bei mir zuhause die PC-�ra ...
+                Dann begann auch bei mir zuhause die PC-Ära ...
 
 
 CLV\EH-TERM.387     Image für C16/C64
@@ -230,7 +230,7 @@ CLV\MENUE.          Image. Test für ein Menüsystem ultraForth 3.8. Unvollendet
 
         UltraForth83 war sicher das beste Forth-System für den C64.
         Für den C16/Plus4 war es die einzige enstzunehmende Programmiersprache
-        überhaupt. Sonst existierten dort Basic und Assembler.
+        Überhaupt. Sonst existierten dort Basic und Assembler.
 
         UltraForth83 ist eine komplette Programmierumgebung
         Es enthält einen Full-Screen-Editor, einen quelltextnahe Debugger,
@@ -281,12 +281,12 @@ CLV\MENUE.          Image. Test für ein Menüsystem ultraForth 3.8. Unvollendet
         Der Plattenzugriff in Blöcken ist leichter zu implementieren.
         Auf Commodore bot er zusätzlich extreme Geschwindigkeitsvorteile.
 
-        Das Schreiben in Block-Manier führte positiv zu kurzen Quelltext-Abschnitten und übersichtlicher Organisation der
+        Das Schreiben in Block-Manier führte positiv zu kurzen Quelltext-Abschnitten und Übersichtlicher Organisation der
         Quellen. Zum Problem wurde es, wenn man doch noch ein paar Zeilen einfügen wollte.
         Um einen Block einzuschieben, mußte man alle anderen Blöcke um eins verschieben.
         Dies geschah z.B. mit '10 50 11 CONVEY'. Ein Tippfehler und die Quellen waren weg.
         Die Erinnerung an Convey dürfte alte Forthler immer noch erbleichen lassen.
         Damit wurden wohl mehr Quellen vernichtet, als mit dem damaligen Dos-DISKCOPY.
         Letzteres erforderte ungefähr 6 Diskettenwechsel. Jede Verwechslung
-        der Disketten führte zwangsläufig zu Datenverlust.
+        der Disketten führte zwangslÃ¤ufig zu Datenverlust.
         'Legen Sie die Quelle ins Ziel' war eine gängige Verballhornung der Diskcopy-Meldungen.

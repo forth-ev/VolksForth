@@ -5,8 +5,8 @@ Version 1.2
 
 volksFORTH ist ein 16bit Forthsystem der Forth Gesellschaft e.V. Die
 Hauptentwicklung am volksFORTH fand von 1985 bis 1989 statt. Das
-volksFORTH Projekt wurde 2005 wiederbelebt, um ein ueberschaubares
-Forth-System fuer Systeme mit begrenzten Systemresourcen zur Verfuegung
+volksFORTH Projekt wurde 2005 wiederbelebt, um ein überschaubares
+Forth-System für Systeme mit begrenzten Systemresourcen zur Verfügung
 zu stellen.
 
 Einige moderne Forth Systeme sind von volksFORTH beeinflusst worden oder
@@ -15,8 +15,8 @@ von volksFORTH abgeleitet worden (GNU-Forth, bigForth).
 Die aktuelle volksFORTH Version ist 3.81. Die Arbeit an der Version 3.90
 hat begonnen.
 
-Derzeit stehen volksFORTH Versionen fuer folgende
-Rechner/Betriebssysteme zur Verfuegung:
+Derzeit stehen volksFORTH Versionen für folgende
+Rechner/Betriebssysteme zur Verfügung:
 
 VolksForth MS-DOS (Intel x86 
                    Architecture 
@@ -31,7 +31,7 @@ VolksForth Z80 (CP/M,
 
 VolksForth 68000 (Atari ST)
 
-VolksForth fuer folgende Rechner/Systeme ist in Arbeit:
+VolksForth für folgende Rechner/Systeme ist in Arbeit:
 
 VolksForth MS-DOS (Atari Portfolio)
 VolksForth 6502 (Apple II, Commodore PET)
@@ -44,10 +44,10 @@ Die volksFORTH Quelldateien unterliegen der
 BSD Lizenz - http://www.opensource.org/licenses/bsd-license.php
 
 Das Handbuch unterliegt dem Copyright (c) 1985 - 2006 Forth Gesellschaft
-e.V. ( Klaus Schleisiek, Ulrich Hoffmann, Bernd Pennemann, Georg Rehfeld
+e.V. (Klaus Schleisiek, Ulrich Hoffmann, Bernd Pennemann, Georg Rehfeld
 und Dietrich Weineck).
 
-Autoren des volksForth/ultraForth sind
+Autoren des volksForth/ultraForth sind:
 
    - Bernd Pennemann,
    - Claus Vogt,
@@ -58,7 +58,7 @@ Autoren des volksForth/ultraForth sind
    - Ewald Rieger,
    - Carsten Strotmann.
 
-Handbuecher, Programmdateien und Quellcode zum volksFORTH sowie
+Handbücher, Programmdateien und Quellcode zum volksFORTH sowie
 Informationen zur Forth Gesellschaft finden Sie auf dem Webserver der
 Forth Gesellschaft
 
@@ -78,9 +78,9 @@ Hinweise zum volksFORTH C=64/C16/Plus4 (ultraForth)
    C16 oder C116 mit 32kB oder 64kB  mit Diskettenlaufwerk
    C16 oder C116 mit 64kB oder Plus4 mit Kassettenrekorder
 
-Die Ursprungsversion des C16 mit 16kB ist nicht ultraFORTH-faehig,
+Die Ursprungsversion des C16 mit 16kB ist nicht ultraFORTH-fähig,
 da allein der FORTH-Kern den Speicher von $1000 bis $4b00 belegt.
-Der Umbau auf 64kB ist kosteng�nstig und lohnt sich eigentlich immer.
+Der Umbau auf 64kB ist kostengünstig und lohnt sich eigentlich immer.
 
 Ein Diskettenlaufwerk ist sehr empfehlenswert.
 
@@ -88,73 +88,73 @@ Ein Diskettenlaufwerk ist sehr empfehlenswert.
 
   In der Distribution finden sich folgende Files:
 
-  vforth_1.d64 - Disketteimage Diskette 1 f�r Emulator
+  vforth_1.d64 - Disketteimage Diskette 1 für Emulator
                  C64 volksForth Binary
                  C16 volksForth Binary
-                 Sourcecode 
-  vforth_2.d64 - Disketteimage Diskette 3 f�r Emulator
+                 Sourcecode
+  vforth_2.d64 - Disketteimage Diskette 2 für Emulator
                  Kompletter volksForth 6502 C64/C16 Quellcode 
-  vforth_3.d64 - Disketteimage Diskette 3 f�r Emulator
+  vforth_3.d64 - Disketteimage Diskette 3 für Emulator
                  Assembler, Disassembler, Editor 
-  vforth_4.d64 - Disketteimage Diskette 4 f�r Emulator
+  vforth_4.d64 - Disketteimage Diskette 4 für Emulator
                  Grafik, Demos, Tools, Decompiler
   tc38q.d64    - Quelltexte des Target Compilers 
 
-  Diese Version des volksForth f�r den C=64 benutzt noch ein traditionelles 
+  Diese Version des volksForth für den C=64 benutzt noch ein traditionelles 
   Forth-Block Dateisystem auf den Disketten. Ab der kommenden Version 3.90
   wird auch diese Version eine ANSI-Forth Dateischnittstelle bekommen. Die
-  Forth-Block Routinen wird es weiterhin als optionales Quellcodepaket zum 
+  Forth-Block-Routinen wird es weiterhin als optionales Quellcodepaket zum 
   Nachladen geben. 
 
-* �ber UltraForth/volksForth 6502/UltraForth83 ist das volksForth fuer die 
+* über UltraForth/volksForth 6502/UltraForth83 ist das volksForth für die 
   kleinen Commodore-Rechner C16, Plus4 und C64.
 
   UltraForth83 besteht aus ca. 200 Seiten Handbuch in deutscher Sprache und 
-  vier Diskettenseiten. UltraForth83 ist sicher das beste Forth-System fuer 
-  den C64. Fuer den C16/Plus4 war es lange Zeit die einzige enstzunehmende 
-  Programmiersprache �berhaupt.
+  vier Diskettenseiten. UltraForth83 ist sicher das beste Forth-System für 
+  den C64. Für den C16/Plus4 war es lange Zeit die einzige enstzunehmende 
+  Programmiersprache überhaupt.
 
-  UltraForth83 ist eine komplette Programmierumgebung. Es enthaelt einen 
+  UltraForth83 ist eine komplette Programmierumgebung. Es enthält einen 
   Full-Screen-Editor, einen quelltextnahe Debugger, den Compiler/Interpreter 
   und einen Assembler.
 
-  UltraForth83 entspricht dem Forth83-Standard und existiert in aehnlichen 
+  UltraForth83 entspricht dem Forth83-Standard und existiert in ähnlichen 
   Versionen auf Atari ST, C16/64/+4, Apple I, Apple II, Atari 8bit CP/M und 
   MS-DOS PCs.
 
-  Der Name ultraForth wurde gewaehlt, da auf dem legendaeren C64 kein Programm 
+  Der Name ultraForth wurde gewählt, da auf dem legendären C64 kein Programm 
   geklaut wurde, das nicht mindestens Super, Turbo oder eben Ultra hiess. Da
   diese seligen Zeiten schon lange vorbei sind, wird die kommende Version 3.90
   wieder volksForth 6502 C=64 heissen :)
 
-* Zur Erlaeuterung der Bloecke/Screens
+* Zur Erläuterung der Blöcke/Screens
 
   ultraForth/volksForth verwendete wie viele damalige Forth-Systeme statt 'normalen'
-  Dateien Bloecke. Dabei handelt es sich um Disketten/Plattenbereiche fester Groesse,
+  Dateien Blöcke. Dabei handelt es sich um Disketten/Plattenbereiche fester Größe,
   im Forth-83-Standard von jeweils 1024 bytes. Diese wurden ohne Betriebssystem-Unter-
-  stuetzung auf die Platte geschrieben. Nebenbei werden Forth-Compiler auch heute noch 
-  oft als Forth-'Systeme' bezeichnet, da sie urspruenglich ohne Betriebssystem liefen 
+  stützung auf die Platte geschrieben. Nebenbei werden Forth-Compiler auch heute noch 
+  oft als Forth-'Systeme' bezeichnet, da sie ursprünglich ohne Betriebssystem liefen 
   und daher leicht auf neue Hardware portiert werden konnten.
 
-  Die Forth-Quellen sind in solchen Bloecken gespeichert. Sie heissen auch Screens, da 
-  sie mit 16 Zeilen zu je 64 Zeichen einen Bildschirm (fast) ausfuellen.
+  Die Forth-Quellen sind in solchen Blöcken gespeichert. Sie heissen auch Screens, da 
+  sie mit 16 Zeilen zu je 64 Zeichen einen Bildschirm (fast) ausfüllen.
 
-  Beim Commodore mit seinem 24x40-Bildschirm wurde ein anderes Format gewaehlt. Hier 
-  wurden 23 Zeilen zu 41 Zeichen und eine letzte Zeile zu 40 Zeichen benutzt. Das fuellte 
+  Beim Commodore mit seinem 24x40-Bildschirm wurde ein anderes Format gewählt. Hier 
+  wurden 23 Zeilen zu 41 Zeichen und eine letzte Zeile zu 40 Zeichen benutzt. Das füllte 
   den Bildschirm genau aus und bot noch eine (unsichtbare) Spalte mit Leerzeichen.
 
-  Der Plattenzugriff in Bloecken ist leichter zu implementieren. Auf den Commodore Rechnern 
-  bot er zusaetzlich extreme Geschwindigkeitsvorteile.
+  Der Plattenzugriff in Blöcken ist leichter zu implementieren. Auf den Commodore Rechnern 
+  bot er zusätzlich extreme Geschwindigkeitsvorteile.
 
-  Das Schreiben in Block-Manier fuehrt positiv zu kurzen Quelltext-Abschnitten und 
-  uebersichtlicher Organisation der Quellen. Zum Problem wurde es, wenn man doch noch 
-  ein paar Zeilen einfuegen will. Um einen Block einzuschieben, musste man alle anderen 
-  Bloecke um eins verschieben. Dies geschah z.B. mit '10 50 11 CONVEY'. Ein Tippfehler 
-  und die Quellen waren weg. Die Erinnerung an Convey duerfte alte Forthler immer noch 
+  Das Schreiben in Block-Manier führt positiv zu kurzen Quelltext-Abschnitten und 
+  übersichtlicher Organisation der Quellen. Zum Problem wurde es, wenn man doch noch 
+  ein paar Zeilen einfügen wollte. Um einen Block einzuschieben, musste man alle anderen 
+  Blöcke um eins verschieben. Dies geschah z.B. mit '10 50 11 CONVEY'. Ein Tippfehler 
+  und die Quellen waren weg. Die Erinnerung an Convey dürfte alte Forthler immer noch 
   erbleichen lassen. Damit wurden wohl mehr Quellen vernichtet, als mit dem damaligen 
-  Dos-DISKCOPY. Letzteres erforderte ungefaehr 6 Diskettenwechsel. Jede Verwechslung
-  der Disketten fuehrte zwangslaeufig zu Datenverlust. 'Legen Sie die Quelle ins Ziel' 
-  war eine gaengige Verballhornung der Diskcopy-Meldungen.
+  Dos-DISKCOPY. Letzteres erforderte ungefähr 6 Diskettenwechsel. Jede Verwechslung
+  der Disketten führte zwangsläufig zu Datenverlust. 'Legen Sie die Quelle ins Ziel' 
+  war eine gängige Verballhornung der Diskcopy-Meldungen.
 
 * Erste Schritte
 
@@ -178,46 +178,46 @@ Ein Diskettenlaufwerk ist sehr empfehlenswert.
 
   Der C16 hat im Gegensatz zum C64 keine RESTORE-Taste.
 
-  Es gibt folgende Moeglichkeiten,  ultraFORTH zu verlassen oder abzubrechen:
+  Es gibt folgende Möglichkeiten, ultraFORTH zu verlassen oder abzubrechen:
     - Das Forth-Wort "BYE" schliesst die ultraFORTH-Bereiche und startet den Monitor.
-    - Das Festhalten der "<Run/Stop>"-Taste mit gleichzeitigem Druecken der
-      "<Reset>"-Taste fuehrt zu einem Reinitialisieren der I/O-Funktionen ohne
+    - Das Festhalten der "<Run/Stop>"-Taste mit gleichzeitigem Drücken der
+      "<Reset>"-Taste führt zu einem Reinitialisieren der I/O-Funktionen ohne
       Schliessen der ultraFORTH-Bereiche und startet den Monitor. Bei einem
       anschliessenden Restart von ultraFORTH ist alles so, wie vorher verlassen.
     - Die normale Benutzung des MONITORS schadet den von ultraFORTH benutzen
       Bereichen nicht.
-    - Das Druecken der RESET-Taste ohne "<Run/Stop>"-Taste oder der
-      Monitor-Befehl "1X" fuehren ins BASIC. Da ultraFORTH und BASIC
-      die gleichen Speicher-Bereiche verschieden benutzen, folgt danach i.a.
+    - Das Drücken der RESET-Taste ohne "<Run/Stop>"-Taste oder der
+      Monitor-Befehl "1X" führen ins BASIC. Da ultraFORTH und BASIC
+      die gleichen Speicher-Bereiche verschieden benutzen, folgt danach i.a.R.
       bald ein System-Absturz beider Sprachen oder unsinnige Reaktionen.
 
-  Die Benutzung des FORTH ist wie im Handbuch beschrieben. Selbst Woerter 
-  wie "C64init" heissen weiterhin genauso. Der verf�gbare Speicher ist um 
-  fast 16kB groesser als der der C64-Version. Das Wort "C64fkeys" ist neu 
+  Die Benutzung des FORTH ist wie im Handbuch beschrieben. Selbst Wörter 
+  wie "C64init" heissen weiterhin genauso. Der verfügbare Speicher ist um 
+  fast 16kB größer als der der C64-Version. Das Wort "C64fkeys" ist neu 
   hinzugekommen. Es installiert auf einem C16 die Funktionstastenbelegung des C64.
 
-  S.155 - Die Benutzung des EDITORS hat sich etwas geaendert, da Commodore die 
-  Ein/Ausgabe-Routinen geaendert hat. Die "<Fx>-Tasten sind etwas anders beschriftet.
-  Die im Handbuch erwaehnte "<Ctrl>+@"-Funktion liegt beim C16 auf "<Ctrl>+&".
+  S.155 - Die Benutzung des EDITORS hat sich etwas geändert, da Commodore die 
+  Ein/Ausgabe-Routinen geändert hat. Die "<Fx>-Tasten sind etwas anders beschriftet.
+  Die im Handbuch erwähnte "<Ctrl>+@"-Funktion liegt beim C16 auf "<Ctrl>+&".
 
-  Im Gegensatz zu der Bemerkung des Handbuchs "S 149"  koennen Zeilen nach
-  unten aus dem Bildschirm geschoben werden. Dies geschieht unter folgenden Umstaenden:
+  Im Gegensatz zu der Bemerkung des Handbuchs auf S. 149 können Zeilen nach
+  unten aus dem Bildschirm geschoben werden. Dies geschieht unter folgenden Umständen:
   - Es wird in die 40. Bildschirmspalte einer beliebigen Spalte ein
-    beliebiges Zeichen geschrieben. ( Wenn hier eine logische
-    Bildschirmzeile aufhoert, schiebt die I/O-Routine eine neue Zeile ein)
+    beliebiges Zeichen geschrieben. (Wenn hier eine logische
+    Bildschirmzeile aufhört, schiebt die I/O-Routine eine neue Zeile ein)
   - Es wird "<ESC> I" eingegeben oder eine andere "<Esc>"-Kombination,
     die eine Zeile aus dem Bildschirm schiebt.
 
-  Die C16 ESCAPE-Tasten-Funktionen koennen benutzt werden, fuehren
+  Die C16 ESCAPE-Tasten-Funktionen können benutzt werden, führen
   aber zusammen mit Editor-Funktionen zu sonderbaren Bildschirm-Reaktionen.
 
   Benutzung der GRAFIK:
-  Die Grafik ist bisher nicht angepasst und laeuft daher nicht.
+  Die Grafik ist bisher nicht angepasst und läuft daher nicht.
 
-  Saemtliche TOOLS der System-Diskette sind angepasst, bzw. funktionieren ohne Aenderung.
+  Sämtliche TOOLS der System-Diskette sind angepasst, bzw. funktionieren ohne Änderung.
 
-  Die Benutzung des Assemblers hat sich nicht geaendert. Es muss nur beachtet werden, 
-  dass ultraFORTH das ROM abschaltet. Daher muessen Lesezugriffe ins ROM etwas anders 
+  Die Benutzung des Assemblers hat sich nicht geändert. Es muss nur beachtet werden, 
+  dass ultraFORTH das ROM abschaltet. Daher müssen Lesezugriffe ins ROM etwas anders 
   organisiert werden.
 
   Beispiel:
@@ -229,16 +229,16 @@ Ein Diskettenlaufwerk ist sehr empfehlenswert.
 
   S.48 Speichermodell:
 
-  Der ultraFORTH-Assembler-Scratchbereich von $029 aufwaerts sollte
+  Der ultraFORTH-Assembler-Scratchbereich von $029 aufwärts sollte
   max. bis inclusive $76 genutzt werden, da sonst Monitor&Kernal-Bereiche
-  ueberschrieben werden.
+  überschrieben werden.
 
-  Zusaetzlich zu den im Handbuch beschriebenen Bereichen benutzt die
-  C16-Version den Bereich von $0700 - $071E fuer eine Interrupt-Routine.
+  Zusätzlich zu den im Handbuch beschriebenen Bereichen benutzt die
+  C16-Version den Bereich von $0700 - $071E für eine Interrupt-Routine.
 
   Statt "SYS(2064)" steht "SYS(4112)"
 
-  Der FORTH-Kern belegt nicht wie beim C64 den Bereich von $800 bis "limit", 
+  Der FORTH-Kern belegt nicht, wie beim C64, den Bereich von $800 bis "limit", 
   sondern von $1000  bis "limit"
 
   "limit" liegt nicht automatisch unterhalb von $E000 sondern bei $fd00 (64kb RAM) 
@@ -249,15 +249,15 @@ Ein Diskettenlaufwerk ist sehr empfehlenswert.
   Bank-Switching:
 
   Da beim C16 das Bank-Switching etwas anders funktioniert, mussten folgende 
-  Aenderungen vorgenommen werden:
+  Änderungen vorgenommen werden:
   - ultraFORTH schaltet bei der Initialisierung das komplette ROM aus.
-  - Daher muessen alle Lese-Zugriffe (auch JSR) ins ROM
-    mittels Makro und/oder Umleitungsroutine implementiert werden.
+  - Daher müssen alle Lese-Zugriffe (auch JSR) mittels Makro und/oder
+    Umleitungsroutine ins ROM implementiert werden.
   - Daher musste die Interrupt-Behandlung umgeleitet werden.
 
-  Aus der veraenderten Interrupt-Behandlung ergibt sich eine geringe
-  Verlangsamung des Systems.  Ca.  1 Promille der CPU-Zeit verbringt das
-  System zusaetzlich in der neuen Interrupt-Routine.  Weiterhin fuehrt ein
+  Aus der veränderten Interrupt-Behandlung ergibt sich eine geringe
+  Verlangsamung des Systems.  Ca. 1 Promille der CPU-Zeit verbringt das
+  System zusätzlich in der neuen Interrupt-Routine.  Weiterhin führt ein
   "BRK"-Befehl zwar wie gewohnt in den MONITOR, allerdings mit falschem Registerdump, 
   da der Monitor jetzt die Daten der Interrupt-Routine auf dem Stack vorfindet.
 
@@ -268,25 +268,24 @@ Ein Diskettenlaufwerk ist sehr empfehlenswert.
   Sie macht folgendes:
   - Installation der Interrupt-Umleitungs-Routine
   - Umschalten auf RAM.
-  erst spaeter wird C64init aufgerufen, dass aehnliche Prozesse wie beim C64 ausloest.
+    erst später wird C64init aufgerufen, dass ähnliche Prozesse wie beim C64 auslöst.
 
 * Emulator
-  * volksForth 3.81 6502 f�r C=64, C16 und Plus4 wurde in folgenden Emulatoren
+  * volksForth 3.81 6502 für C=64, C16 und Plus4 wurde in folgenden Emulatoren
     getestet:
     * VICE  - http://www.viceteam.org/
     * Frodo - http://frodo.cebix.net/ 
+    * YAPE/SDL - https://github.com/calmopyrin/yapesdl
 
 * Website:
-  VolksForth ist erh�ltlich von der SourceForge Entwicklerwebseite
+  VolksForth ist erhältlich von der SourceForge Entwicklerwebseite
   http://volksForth.sf.net
   und von der Webseite der Forth Gesellschaft 
   http://www.forth-ev.de
 
-Die Forth Live-Linux CD-ROM (erhaeltlich im Downloadbereich der Forth
-Gesellschaft Webseite) enthaelt die aktuellen Versionen des volksFORTH direkt
-ausfuerbar auf der Linux CD-ROM, inkl. der volksFORTH Handbuecher.
+Die Forth Live-Linux CD-ROM (erhältlich im Downloadbereich der Webseite der
+Forth Gesellschaft) enthält die aktuellen Versionen des volksFORTH, direkt
+ausfürbar auf der Linux CD-ROM, inkl. der volksFORTH Handbücher.
 
 Viel Spass mit volksFORTH
-wuenscht das volksFORTH Team
-
-
+wünscht das volksFORTH Team

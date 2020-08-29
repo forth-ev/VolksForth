@@ -13,8 +13,8 @@ include vf-lbls-cbm.fth
 0ff19 >label BrdCol
 0ff15 >label BkgCol
  053b >label PenCol
-  09d >label PrgEnd
-  0b2 >label IOBeg
+  09d >label PrgEnd  \ aka eal; seems unused
+  0b2 >label IOBeg   \ aka stal; seems unused
   0cb >label CurFlg
   0cf >label InsCnt
  0540 >label KeyRep

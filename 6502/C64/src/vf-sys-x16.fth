@@ -33,16 +33,18 @@ Label ConOut  clc  console_put_char jmp
 \ C64 c64key? getkey
 
 Code c64key? ( -- flag)
- 0C6 lda
+ 0 # lda  9f61 sta
+ 0a00a lda
  0<> ?[  0FF # lda  ]? pha
  Push jmp  end-code
 
 Code getkey  ( -- 8b)
- 0C6 lda  0<>
- ?[  sei  0277 ldy
-  [[  0277 1+ ,X lda  0277 ,X sta  inx
-      0C6 cpx  0= ?]
-  0C6 dec  tya  cli  0A0 # cmp
+ 0 # lda  9f61 sta
+ 0a00a lda  0<>
+ ?[  sei  0a000 ldy
+  [[  0a000 1+ ,X lda  0a000 ,X sta  inx
+      0a00a cpx  0= ?]
+  0a00a dec  tya  cli  0A0 # cmp
   0= ?[  bl # lda  ]?
  ]?
  Push0A jmp   end-code

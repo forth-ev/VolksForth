@@ -1,23 +1,30 @@
 
 include vf-lbls-cbm.fth
 
-\ *** Block No. 127, Hexblock 7f
 7f fthpage
 
 \ C64-Labels                 clv13.4.87)
 
-0E716 >label ConOut
-  09d >label MsgFlg
-  09a >label OutDev
-  099 >label  InDev
 0d020 >label BrdCol
 0d021 >label BkgCol
  0286 >label PenCol
-  0ae >label PrgEnd
-  0c1 >label IOBeg
-  0d4 >label CurFlg
-  0d8 >label InsCnt
- 028a >label KeyRep
+
+\ X16 labels
+
+0fede >label console_put_char
+ 028c >label MsgFlg
+ 028b >label OutDev
+ 028a >label  InDev
+   8a >label PrgEnd  \ aka eal; seems unused
+ 0292 >label IOBeg   \ aka stal; seems unused
+ 0381 >label CurFlg  \ aka qtsw
+ 0385 >label InsCnt  \ aka insrt
+
+Label ConOut  clc  console_put_char jmp
+
+\ C64 labels that X16 doesn't have:
+
+\ 028a >label KeyRep  \ aka rptflg
 
 
 \ *** Block No. 129, Hexblock 81

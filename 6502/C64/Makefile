@@ -7,7 +7,9 @@ vf_blk_d64_files = $(wildcard disks/*.d64)
 vf_blk_fth_files = $(patsubst %.d64, %.fth, $(vf_blk_d64_files))
 vf_fth_files = $(wildcard src/vf-*.fth)
 vf_fth_files_petscii = $(patsubst src/%, cbmfiles/%, $(vf_fth_files))
-vf_flavours = full-c64 full-c16+ full-c16- lite-c64 lite-c16+ lite-c16-
+vf_flavours = \
+    full-c64 full-c16+ full-c16- \
+    lite-c64 lite-c16+ lite-c16- lite-x16
 vf_binaries = $(patsubst %, cbmfiles/vf-%, $(vf_flavours))
 
 test_files = $(wildcard tests/*.f*)
@@ -80,6 +82,9 @@ cbmfiles/vf-lite-c16+:
 
 cbmfiles/vf-lite-c16-:
 	emulator/build-vf.sh vf-lite-c16-.fth vf-lite-c16-
+
+cbmfiles/vf-lite-x16:
+	emulator/build-vf.sh vf-lite-x16.fth vf-lite-x16
 
 
 # Core test targets

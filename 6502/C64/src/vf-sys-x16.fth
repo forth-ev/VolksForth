@@ -141,7 +141,6 @@ Label first-init
  ink-pot    lda BrdCol sta \ border
  ink-pot 1+ lda BkgCol sta \ backgrnd
  ink-pot 2+ lda PenCol sta \ pen
-$80 # lda KeyRep sta  \ repeat all keys
 $17 # lda  $D018 sta  \ low/upp +
   0 # lda  $D01A sta  \ VIC-IRQ off
 $1B # lda  $D011 sta  \ Textmode on

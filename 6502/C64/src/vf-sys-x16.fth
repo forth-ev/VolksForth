@@ -55,14 +55,35 @@ Code getkey  ( -- 8b)
 
 \ C64 curon curoff
 
+00C837 >label screen_get_char_color
+00C8CC >label screen_restore_state
+00C8B4 >label screen_save_state
+00C830 >label screen_set_char_color
+  037B >label blnsw  \ C64: $cc
+  037C >label blnct  \ C64: $cd
+  037D >label gdbln  \ C64: $ce
+  037E >label blnon  \ C64: $cf
+  0262 >label pnt    \ C64: $d1
+  0380 >label pntr   \ C64: $d3
+  0373 >label gdcol
+
 Code curon   ( --)
- 0D3 ldy  0D1 )Y lda  0CE sta  0CC stx
+\ 0D3 ldy  0D1 )Y lda  0CE sta  0CC stx
+  screen_save_state jsr
+  pntr ldy  screen_get_char_color jsr  gdbln sta  gdcol stx
+  0 # ldx  blnsw stx  \ TODO: use stz
+  screen_restore_state jsr
  xyNext jmp   end-code
 
 Code curoff   ( --)
- iny  0CC sty  0CD sty  0CF stx
- 0CE lda  0D3 ldy  0D1 )Y sta
- 1 # ldy  Next jmp   end-code
+\ iny  0CC sty  0CD sty  0CF stx
+\ 0CE lda  0D3 ldy  0D1 )Y sta
+\ 1 # ldy  Next jmp   end-code
+  screen_save_state jsr
+  2 # ldy  blnsw sty  blnct sty  0 # ldx  blnon stx  \ TODO: use stz
+  gdbln lda  gdcol ldx  pntr ldy  screen_set_char_color jsr
+  screen_restore_state jsr
+ xyNext jmp   end-code
 
 
 include vf-sys-cbm.fth

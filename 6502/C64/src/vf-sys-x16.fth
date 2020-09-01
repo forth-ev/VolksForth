@@ -3,18 +3,15 @@ include vf-lbls-cbm.fth
 
 7f fthpage
 
-\ C64-Labels                 clv13.4.87)
-
-0d020 >label BrdCol
-0d021 >label BkgCol
- 0286 >label PenCol
-
 \ X16 labels
 
 0fede >label console_put_char
  028c >label MsgFlg
  028b >label OutDev
  028a >label  InDev
+09f2c >label BrdCol
+ 0266 >label BkgCol
+ 0284 >label PenCol
    8a >label PrgEnd  \ aka eal; seems unused
  0292 >label IOBeg   \ aka stal; seems unused
  0381 >label CurFlg  \ aka qtsw
@@ -103,25 +100,16 @@ Create ink-pot
 \ *** Block No. 144, Hexblock 90
 90 fthpage
 
-\ C64 restore
+\ x16 restore
 
-Label asave 0 c,    Label 1save 0 c,
+\ 00E00A .nnmi
+\ 00FFE1 .stop
+\ 00E01F .prend
 
-Label continue
- pha  1save lda  1 sta  pla  rti
-
-Label restore   sei  asave sta
- continue $100 /mod
- # lda pha  # lda pha  php  \ for RTI
- asave lda pha  txa pha  tya pha
- 1 lda 1save sta
- $36 # lda   1 sta  \ Basic off ROM on
- $7F # lda  $DD0D sta
- $DD0D ldy  0< ?[
-Label 6526-NMI $FE72 jmp  ]?
- UDTIM jsr STOP jsr  \ RUN/STOP ?
- 6526-NMI bne        \ not >>-->
- ' restart @ jmp  end-code
+Label restore   pha txa pha tya pha cld
+\ TODO: Replace with phx phy once 65c02 asm is available
+  $ffe1 jsr ( stop )  0<> ?[ $e01f jmp ( prend ) ]?
+' restart @ jmp  end-code
 
 
 \ *** Block No. 145, Hexblock 91

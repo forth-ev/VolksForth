@@ -12,7 +12,7 @@ include vf-lbls-cbm.fth
   098 >label  InDev
 0ff19 >label BrdCol
 0ff15 >label BkgCol
- 0540 >label PenCol
+ 053b >label PenCol
   09d >label PrgEnd
   0b2 >label IOBeg
   0cb >label CurFlg
@@ -75,18 +75,7 @@ Create ink-pot
 Code init-system $F7 # ldx  txs
  xyNext jmp end-code
 
-$fcb3 >label IRQ   \ normal IRQ
-$fffe >label >IRQ  \ 6502-Ptr to IRQ
-
-\ selfmodifying code:
-Label RAMIRQ       \ the new IRQ
-   rom RAMIRQ $15 + sta RAMIRQ $17 + stx
-(  +9) RAMIRQ $1b + $100 u/mod # lda pha
-                               # lda pha
-(  +f) tsx $103 ,x lda pha   \ flags
-( +14) 0 # lda 0 # ldx IRQ jmp
-( +1b) ram rti end-code
-
+(C16+ include vf-c16+irq.fth )
 
 \ *** Block No. 147, Hexblock 93
 93 fthpage
@@ -96,10 +85,9 @@ Label RAMIRQ       \ the new IRQ
 Label first-init
    \ will be called in ROM first time
    \ later called from RAM
- sei rom
- RAMIRQ $100 u/mod    \ new IRQ
-   # lda >IRQ 1+ sta  \ .. install
-   # lda >IRQ sta
+ sei (C16+ rom ( )
+ \ new IRQ install
+ (C16+ RAMIRQ $100 u/mod  # lda >IRQ 1+ sta  # lda >IRQ sta ( )
  $FF84 normJsr  $FF8A normJsr
     \ CIAs init. and set I/O-Vectors
  ink-pot    lda BrdCol sta \ border
@@ -107,7 +95,7 @@ Label first-init
  ink-pot 2+ lda PenCol sta \ pen
  $80 # lda KeyRep sta \ repeat all keys
  $FF13 lda 04 # ora $FF13 sta \ low/upp
- ram cli rts end-code
+ (C16+ ram ( ) cli rts end-code
 
 first-init dup bootsystem 1+ !
                warmboot   1+ !

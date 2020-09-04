@@ -48,8 +48,6 @@
 : :noname  here  ['] tuck @ ,  0 ] ;
 
 : <>  = not ;
-\ Wrong for -32768: : 0>  ( n --     flag)  negate 0<  ;
-: 0>  dup 0< swap 0= or not ;
 
 : 2>r  r> -rot swap >r >r >r ;
 : 2r>  r> r> r> swap rot >r ;

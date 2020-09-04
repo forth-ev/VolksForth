@@ -5,7 +5,10 @@
 
 ( Zero page Variables & Next  03apr85bp)
 
-02 dup     >label RP     2+
+(C64  02  )
+(C16  02  )
+(X16  $30 )
+   dup     >label RP     2+
    dup     >label UP     2+
 
    dup     >label Puta   1+

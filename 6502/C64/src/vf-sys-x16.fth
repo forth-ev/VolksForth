@@ -117,22 +117,20 @@ Label restore   pha txa pha tya pha cld
 
 \ C64:Init                     06nov87re
 
-: init-system   $FF40 dup $C0 cmove
- [ restore ] Literal  dup
- $FFFA ! $318 ! ;  \ NMI-Vector to RAM
+: init-system
+ [ restore ] Literal $318 ! ;  \ NMI-Vector
 
 Label first-init
- sei cld
+ sei cld  \ $db c,  \ for activating X16 monitor
  IOINIT jsr  CINT jsr  RESTOR jsr
   \ init. and set I/O-Vectors
- $36 # lda   01 sta        \ Basic off
  ink-pot    lda BrdCol sta \ border
  ink-pot 1+ lda BkgCol sta \ backgrnd
  ink-pot 2+ lda PenCol sta \ pen
-$17 # lda  $D018 sta  \ low/upp +
-  0 # lda  $D01A sta  \ VIC-IRQ off
-$1B # lda  $D011 sta  \ Textmode on
-  4 # lda   $288 sta  \ low screen
+\ $17 # lda  $D018 sta  \ low/upp +
+\   0 # lda  $D01A sta  \ VIC-IRQ off
+\ $1B # lda  $D011 sta  \ Textmode on
+\   4 # lda   $288 sta  \ low screen
  cli rts end-code
 first-init dup bootsystem 1+ !
                warmboot   1+ !

@@ -44,7 +44,7 @@ lite64: test-lite-c64.result
 
 debug-64: emulator/tcbase.T64 emulator/build-vf.sh \
     disks/vforth4_2.d64 disks/tc38q.d64 $(vf_fth_files_petscii)
-	emulator/build-vf.sh vf-c64-main.fth
+	emulator/build-vf.sh vf-c64-main nosave
 
 run-devenv: emulator/devenv.T64
 	emulator/run-in-vice.sh devenv
@@ -65,26 +65,28 @@ cbmfiles/tcbase: emulator/c64-vf-390.T64 emulator/build-tcbase.sh \
 $(vf_binaries):  emulator/tcbase.T64 emulator/build-vf.sh \
     disks/tc38q.d64 $(vf_fth_files_petscii)
 
+$(vf_binaries):  cbmfiles/logtofile.fth
+
 cbmfiles/vf-full-c64:
-	emulator/build-vf.sh vf-full-c64.fth vf-full-c64
+	emulator/build-vf.sh vf-full-c64
 
 cbmfiles/vf-full-c16+:
-	emulator/build-vf.sh vf-full-c16+.fth vf-full-c16+
+	emulator/build-vf.sh vf-full-c16+
 
 cbmfiles/vf-full-c16-:
-	emulator/build-vf.sh vf-full-c16-.fth vf-full-c16-
+	emulator/build-vf.sh vf-full-c16-
 
 cbmfiles/vf-lite-c64:
-	emulator/build-vf.sh vf-lite-c64.fth vf-lite-c64
+	emulator/build-vf.sh vf-lite-c64
 
 cbmfiles/vf-lite-c16+:
-	emulator/build-vf.sh vf-lite-c16+.fth vf-lite-c16+
+	emulator/build-vf.sh vf-lite-c16+
 
 cbmfiles/vf-lite-c16-:
-	emulator/build-vf.sh vf-lite-c16-.fth vf-lite-c16-
+	emulator/build-vf.sh vf-lite-c16-
 
 cbmfiles/vf-lite-x16:
-	emulator/build-vf.sh vf-lite-x16.fth vf-lite-x16
+	emulator/build-vf.sh vf-lite-x16
 
 
 # Core test targets

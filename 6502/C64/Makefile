@@ -94,31 +94,37 @@ cbmfiles/vf-lite-x16:
 $(test_logs): $(test_files_petscii) emulator/run-in-vice.sh
 
 test-full-c64.log: emulator/vf-full-c64.T64 disks/scratch.d64
+	rm -f cbmfiles/test.log
 	DISK9=scratch emulator/run-in-vice.sh vf-full-c64 \
 	  "include run-full-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
 test-lite-c64.log: emulator/vf-lite-c64.T64
+	rm -f cbmfiles/test.log
 	emulator/run-in-vice.sh vf-lite-c64 \
 	  "include run-lite-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
 test-full-c16+.log: emulator/vf-full-c16+.T64 disks/scratch.d64
+	rm -f cbmfiles/test.log
 	VICE=xplus4 emulator/run-in-vice.sh vf-full-c16+ \
 	  "include run-full-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
 test-lite-c16+.log: emulator/vf-lite-c16+.T64
+	rm -f cbmfiles/test.log
 	VICE=xplus4 emulator/run-in-vice.sh vf-lite-c16+ \
 	  "include run-lite-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
 test-full-c16-.log: emulator/vf-full-c16-.T64
+	rm -f cbmfiles/test.log
 	VICE=xplus4 emulator/run-in-vice.sh vf-full-c16- \
 	  "include run-min-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
 test-lite-c16-.log: emulator/vf-lite-c16-.T64
+	rm -f cbmfiles/test.log
 	VICE=xplus4 emulator/run-in-vice.sh vf-lite-c16- \
 	  "include run-lite-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@

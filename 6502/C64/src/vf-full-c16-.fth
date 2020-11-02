@@ -8,7 +8,7 @@
 
 include vf-tc-prep.fth
 
-\log logopen" vf-lite-c64.log"
+\log logopen" vf-full-c16-.log"
 
 include vf-trg-c16-.fth
 

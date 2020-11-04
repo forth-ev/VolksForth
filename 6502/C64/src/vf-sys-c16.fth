@@ -126,3 +126,7 @@ Code C64fkeys \ Pushkeys a la C64
   [[ dex  0>= ?[[
     InitPKs ,X lda PKeys ,x sta ]]?
   xyNext jmp end-code
+
+(C16- | Create (bye  $FFF6  here 2- ! )
+
+(C16+ | CODE   (bye  rom $FFF6 jmp  end-code )

@@ -121,3 +121,5 @@ first-init dup bootsystem 1+ !
                warmboot   1+ !
 Code c64init first-init jsr
  xyNext jmp end-code
+
+| Create (bye  $FCE2  here 2- !

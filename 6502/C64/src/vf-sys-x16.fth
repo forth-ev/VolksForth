@@ -5,7 +5,7 @@ include vf-lbls-cbm.fth
 
 \ X16 labels
 
-0fede >label console_put_char
+0c28c >label ConOut
  028c >label MsgFlg
  028b >label OutDev
  028a >label  InDev
@@ -17,7 +17,17 @@ include vf-lbls-cbm.fth
  0381 >label CurFlg  \ aka qtsw
  0385 >label InsCnt  \ aka insrt
 
-Label ConOut  clc  console_put_char jmp
+0ded1 >label BasicColdStart
+
+0debf >label BasicStackRstReady
+\ 0deb7 >label BasicPanic
+\ 0dec3 >label BasicReady
+\ 0dece >label BasicNReady
+
+\ TODO(pzembrod): Remove once X16 VolksForth is stabilized enough.
+Code (x16abort  BasicStackRstReady jmp  end-code
+: x16abort  cr ." x16abort" cr (x16abort ;
+
 
 \ C64 labels that X16 doesn't have:
 
@@ -52,35 +62,25 @@ Code getkey  ( -- 8b)
 
 \ C64 curon curoff
 
-00C837 >label screen_get_char_color
-00C8CC >label screen_restore_state
-00C8B4 >label screen_save_state
-00C830 >label screen_set_char_color
+\ 00C837 >label screen_get_char_color
+\ 00C8CC >label screen_restore_state
+\ 00C8B4 >label screen_save_state
+\ 00C830 >label screen_set_char_color
   037B >label blnsw  \ C64: $cc
-  037C >label blnct  \ C64: $cd
-  037D >label gdbln  \ C64: $ce
-  037E >label blnon  \ C64: $cf
-  0262 >label pnt    \ C64: $d1
-  0380 >label pntr   \ C64: $d3
-  0373 >label gdcol
+\   037C >label blnct  \ C64: $cd
+\   037D >label gdbln  \ C64: $ce
+\   037E >label blnon  \ C64: $cf
+\   0262 >label pnt    \ C64: $d1
+\   0380 >label pntr   \ C64: $d3
+\   0373 >label gdcol
+
+09f60 >label via1pb
 
 Code curon   ( --)
-\ 0D3 ldy  0D1 )Y lda  0CE sta  0CC stx
-  screen_save_state jsr
-  pntr ldy  screen_get_char_color jsr  gdbln sta  gdcol stx
-  0 # ldx  blnsw stx  \ TODO: use stz
-  screen_restore_state jsr
- xyNext jmp   end-code
+  blnsw stx  Next jmp  end-code
 
 Code curoff   ( --)
-\ iny  0CC sty  0CD sty  0CF stx
-\ 0CE lda  0D3 ldy  0D1 )Y sta
-\ 1 # ldy  Next jmp   end-code
-  screen_save_state jsr
-  2 # ldy  blnsw sty  blnct sty  0 # ldx  blnon stx  \ TODO: use stz
-  gdbln lda  gdcol ldx  pntr ldy  screen_set_char_color jsr
-  screen_restore_state jsr
- xyNext jmp   end-code
+  blnsw sty  Next jmp  end-code
 
 
 include vf-sys-cbm.fth
@@ -117,22 +117,23 @@ Label restore   pha txa pha tya pha cld
 
 \ C64:Init                     06nov87re
 
-: init-system
+: init-system  \ TODO(pzembrod): Check if this works and is needed
  [ restore ] Literal $318 ! ;  \ NMI-Vector
 
 Label first-init
- sei cld  \ $db c,  \ for activating X16 monitor
- IOINIT jsr  CINT jsr  RESTOR jsr
-  \ init. and set I/O-Vectors
+ sei cld
+ via1pb lda  $f8 # and  via1pb sta \ map in KERNAL ROM
+ IOINIT jsr  CINT jsr  RESTOR jsr  \ init. and set I/O-Vectors
  ink-pot    lda BrdCol sta \ border
  ink-pot 1+ lda BkgCol sta \ backgrnd
  ink-pot 2+ lda PenCol sta \ pen
-\ $17 # lda  $D018 sta  \ low/upp +
-\   0 # lda  $D01A sta  \ VIC-IRQ off
-\ $1B # lda  $D011 sta  \ Textmode on
-\   4 # lda   $288 sta  \ low screen
+ $0e # lda  ConOut jsr  \ lower/uppercase
  cli rts end-code
 first-init dup bootsystem 1+ !
                warmboot   1+ !
 Code c64init first-init jsr
  xyNext jmp end-code
+
+| CODE (bye
+ via1pb lda  $f8 # and  $4 # ora  via1pb sta \ map in BASIC ROM
+ BasicColdStart jmp  end-code

@@ -27,7 +27,7 @@ clean:
 	rm -f cbmfiles/*.fr cbmfiles/*.fth cbmfiles/*.log
 	rm -f *.log *.result *.golden
 	rm -f cbmfiles/c??-testbase
-	rm -f disks/scratch.d64
+	rm -f disks/scratch.d64 emulator/sdcard.img
 
 
 # Convenience targets
@@ -129,6 +129,13 @@ test-lite-c16-.log: emulator/vf-lite-c16-.T64
 	  "include run-lite-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
+test-lite-x16.log: cbmfiles/vf-lite-x16 emulator/sdcard.img
+	rm -f cbmfiles/test.log
+	emulator/run-in-x16emu.sh vf-lite-x16 \
+	  "include run-lite-tests.fth\n1234567890\n"
+	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
+	petscii2ascii cbmfiles/test.log $@
+
 test-%.result: test-%.log test-%.golden tests/evaluate-test.sh
 	rm -f $@
 	tests/evaluate-test.sh $(basename $@)
@@ -136,6 +143,12 @@ test-%.result: test-%.log test-%.golden tests/evaluate-test.sh
 disks/scratch.d64: disks/empty.d64
 	cp $< $@
 
+emulator/sdcard.img: emulator/sdcard.sfdisk
+	rm -f $@ $@.tmp
+	dd if=/dev/zero of=$@.tmp count=64 bs=1M
+	sfdisk -w always -W always $@.tmp < $<
+	mformat -i $@.tmp -F
+	mv $@.tmp $@
 
 test-full-c64.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreext double block report-blk)

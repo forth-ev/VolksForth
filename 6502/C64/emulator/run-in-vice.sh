@@ -18,7 +18,7 @@ keybuf=""
 warp=""
 if [ -n "$2" ]
 then
-  keybuf="${2}" # dos s0:notdone\n"
+  keybuf="${2}"
   # The following could also just be a cp.
   ascii2petscii "${emulatordir}/notdone" "${basedir}/cbmfiles/notdone"
   warp="-warp"
@@ -51,7 +51,7 @@ then
   sleep 0.5
 
   kill9log="${basedir}/kill-9.log"
-  vicepid=$(jobs -p %1)
+  vicepid="$(jobs -p %1)"
   kill %1
   (sleep 20; ps -q "${vicepid}" -f --no-headers && \
       (kill -9 "${vicepid}" ; date)) >> "${kill9log}" 2>&1 &

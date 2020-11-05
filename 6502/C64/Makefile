@@ -174,6 +174,10 @@ test-lite-c16-.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreext double report-noblk)
 	cat $? > $@
 
+test-lite-x16.golden: $(patsubst %, tests/golden/%.golden, \
+    prelim core coreext double report-noblk)
+	cat $? > $@
+
 # Rules for building Forth binaries on top of the plain vanilla
 # c64-volksforth83.
 

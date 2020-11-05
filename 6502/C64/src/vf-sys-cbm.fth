@@ -211,8 +211,6 @@ Code bus@  ( -- 8b)
 : businput  ( adr n --)
  bounds  ?DO  bus@ I c! LOOP pause ;
 
-: i/o-status?  $90 c@ ;
-
 : derror?  ( -- flag )
  disk $F busin bus@  dup Ascii 0 -
    IF  BEGIN emit bus@ dup #cr =  UNTIL

@@ -58,6 +58,8 @@ Code curoff   ( --)
 
 include vf-sys-cbm.fth
 
+: i/o-status?  $90 c@ ;
+
 
 \ *** Block No. 143, Hexblock 8f
 \ ... continued

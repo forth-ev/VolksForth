@@ -132,7 +132,7 @@ test-lite-c16-.log: emulator/vf-lite-c16-.T64
 test-lite-x16.log: cbmfiles/vf-lite-x16 emulator/sdcard.img
 	rm -f cbmfiles/test.log
 	emulator/run-in-x16emu.sh vf-lite-x16 \
-	  "include run-lite-tests.fth\n1234567890\n"
+	  "INCLUDE RUN-LITE-TESTS.FTH\\X0D1234567890\\X0D"
 	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
 	petscii2ascii cbmfiles/test.log $@
 

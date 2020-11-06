@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-#set -x
 
 emulatordir="$(realpath --relative-to="$PWD" "$(dirname "${BASH_SOURCE[0]}")")"
 basedir="$(realpath --relative-to="$PWD" "${emulatordir}/..")"
@@ -10,6 +9,7 @@ sdcard="${emulatordir}/sdcard.img"
 mformat -i "${sdcard}" -F
 for asciifile in  $(cd "${cbmfilesdir}" && ls *.fth *fr)
 do
+  # Convert filename to PETSCII, remove trailing CR.
   petsciifile="$(echo ${asciifile} | ascii2petscii - |tr -d '\r')"
   mcopy -i "${sdcard}" "${cbmfilesdir}/$asciifile" "::${petsciifile}"
 done
@@ -22,21 +22,27 @@ fi
 
 keybuf=""
 warp=""
+scale=""
+debug=""
 if [ -n "$2" ]
 then
   keybuf="${2}"
   mcopy -i "${sdcard}" "${emulatordir}/notdone" "::NOTDONE"
   # warp="-warp"
+else
+  scale="-scale 2"
+  debug="-debug"
 fi
 
 x16emu \
   -keymap de \
-  -scale 2 \
-  -debug \
   -sdcard "${sdcard}" \
   $autostart \
   $warp \
+  $scale \
+  $debug \
   &
+  # -keybuf "$keybuf" \
 
 if [ -n "$keybuf" ]
 then

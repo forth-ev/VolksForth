@@ -17,17 +17,6 @@ include vf-lbls-cbm.fth
  0381 >label CurFlg  \ aka qtsw
  0385 >label InsCnt  \ aka insrt
 
-0ded1 >label BasicColdStart
-
-0debf >label BasicStackRstReady
-\ 0deb7 >label BasicPanic
-\ 0dec3 >label BasicReady
-\ 0dece >label BasicNReady
-
-\ TODO(pzembrod): Remove once X16 VolksForth is stabilized enough.
-Code (x16abort  BasicStackRstReady jmp  end-code
-: x16abort  cr ." x16abort" cr (x16abort ;
-
 
 \ C64 labels that X16 doesn't have:
 
@@ -37,7 +26,7 @@ Code (x16abort  BasicStackRstReady jmp  end-code
 \ *** Block No. 129, Hexblock 81
 81 fthpage
 
-\ C64 c64key? getkey
+\ X16 c64key? getkey
 
 Code c64key? ( -- flag)
  0 # lda  9f61 sta
@@ -60,12 +49,8 @@ Code getkey  ( -- 8b)
 \ *** Block No. 130, Hexblock 82
 82 fthpage
 
-\ C64 curon curoff
+\ X16 curon curoff
 
-\ 00C837 >label screen_get_char_color
-\ 00C8CC >label screen_restore_state
-\ 00C8B4 >label screen_save_state
-\ 00C830 >label screen_set_char_color
   037B >label blnsw  \ C64: $cc
 \   037C >label blnct  \ C64: $cd
 \   037D >label gdbln  \ C64: $ce
@@ -102,11 +87,7 @@ Create ink-pot
 \ *** Block No. 144, Hexblock 90
 90 fthpage
 
-\ x16 restore
-
-\ 00E00A .nnmi
-\ 00FFE1 .stop
-\ 00E01F .prend
+\ X16 restore
 
 Label restore   pha txa pha tya pha cld
 \ TODO: Replace with phx phy once 65c02 asm is available
@@ -117,7 +98,7 @@ Label restore   pha txa pha tya pha cld
 \ *** Block No. 145, Hexblock 91
 91 fthpage
 
-\ C64:Init                     06nov87re
+\ X16:Init
 
 : init-system  \ TODO(pzembrod): Check if this works and is needed
  [ restore ] Literal $318 ! ;  \ NMI-Vector
@@ -136,6 +117,4 @@ first-init dup bootsystem 1+ !
 Code c64init first-init jsr
  xyNext jmp end-code
 
-| CODE (bye
- via1pb lda  $f8 # and  $4 # ora  via1pb sta \ map in BASIC ROM
- BasicColdStart jmp  end-code
+| CODE (bye  $FFFC ) jmp  end-code

@@ -28,7 +28,7 @@ if [ -n "$2" ]
 then
   keybuf="${2}"
   mcopy -i "${sdcard}" "${emulatordir}/notdone" "::NOTDONE"
-  # warp="-warp"
+  warp="-warp"
 else
   scale="-scale 2"
   debug="-debug"
@@ -38,11 +38,11 @@ x16emu \
   -keymap de \
   -sdcard "${sdcard}" \
   $autostart \
+  -keybuf "$keybuf" \
   $warp \
   $scale \
   $debug \
   &
-  # -keybuf "$keybuf" \
 
 if [ -n "$keybuf" ]
 then

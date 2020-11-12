@@ -5,10 +5,10 @@
 
 vf_blk_d64_files = $(wildcard disks/*.d64)
 vf_blk_fth_files = $(patsubst %.d64, %.fth, $(vf_blk_d64_files))
-vf_fth_files = $(wildcard src/vf-*.fth src/v4th-*.fth)
+vf_fth_files = $(wildcard src/vf-*.fth src/v4th*.fth)
 vf_fth_files_petscii = $(patsubst src/%, cbmfiles/%, $(vf_fth_files))
 vf_flavours = \
-    vf-full-c64 vf-full-c16+ vf-full-c16- \
+    v4thblk-c64 v4thblk-c16+ v4thblk-c16- \
     v4th-c64 v4th-c16+ v4th-c16- v4th-x16
 vf_binaries = $(patsubst %, cbmfiles/%, $(vf_flavours))
 
@@ -38,7 +38,7 @@ test: $(test_resuls)
 
 test64: full64 lite64
 
-full64: test-vf-full-c64.result
+full64: test-v4thblk-c64.result
 
 lite64: test-v4th-c64.result
 
@@ -67,14 +67,14 @@ $(vf_binaries):  emulator/tcbase.T64 emulator/build-vf.sh \
 
 $(vf_binaries):  cbmfiles/logtofile.fth
 
-cbmfiles/vf-full-c64:
-	emulator/build-vf.sh vf-full-c64
+cbmfiles/v4thblk-c64:
+	emulator/build-vf.sh v4thblk-c64
 
-cbmfiles/vf-full-c16+:
-	emulator/build-vf.sh vf-full-c16+
+cbmfiles/v4thblk-c16+:
+	emulator/build-vf.sh v4thblk-c16+
 
-cbmfiles/vf-full-c16-:
-	emulator/build-vf.sh vf-full-c16-
+cbmfiles/v4thblk-c16-:
+	emulator/build-vf.sh v4thblk-c16-
 
 cbmfiles/v4th-c64:
 	emulator/build-vf.sh v4th-c64
@@ -93,9 +93,9 @@ cbmfiles/v4th-x16:
 
 $(test_logs): $(test_files_petscii) emulator/run-in-vice.sh
 
-test-vf-full-c64.log: emulator/vf-full-c64.T64 disks/scratch.d64
+test-v4thblk-c64.log: emulator/v4thblk-c64.T64 disks/scratch.d64
 	rm -f cbmfiles/test.log
-	DISK9=scratch emulator/run-in-vice.sh vf-full-c64 \
+	DISK9=scratch emulator/run-in-vice.sh v4thblk-c64 \
 	  "include run-full-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
@@ -105,9 +105,9 @@ test-v4th-c64.log: emulator/v4th-c64.T64
 	  "include run-lite-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
-test-vf-full-c16+.log: emulator/vf-full-c16+.T64 disks/scratch.d64
+test-v4thblk-c16+.log: emulator/v4thblk-c16+.T64 disks/scratch.d64
 	rm -f cbmfiles/test.log
-	VICE=xplus4 emulator/run-in-vice.sh vf-full-c16+ \
+	VICE=xplus4 emulator/run-in-vice.sh v4thblk-c16+ \
 	  "include run-full-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
@@ -117,9 +117,9 @@ test-v4th-c16+.log: emulator/v4th-c16+.T64
 	  "include run-lite-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
-test-vf-full-c16-.log: emulator/vf-full-c16-.T64
+test-v4thblk-c16-.log: emulator/v4thblk-c16-.T64
 	rm -f cbmfiles/test.log
-	VICE=xplus4 emulator/run-in-vice.sh vf-full-c16- \
+	VICE=xplus4 emulator/run-in-vice.sh v4thblk-c16- \
 	  "include run-min-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
@@ -150,7 +150,7 @@ emulator/sdcard.img: emulator/sdcard.sfdisk
 	mformat -i $@.tmp -F
 	mv $@.tmp $@
 
-test-vf-full-c64.golden: $(patsubst %, tests/golden/%.golden, \
+test-v4thblk-c64.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreext double block report-blk)
 	cat $? > $@
 
@@ -158,7 +158,7 @@ test-v4th-c64.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreext double report-noblk)
 	cat $? > $@
 
-test-vf-full-c16+.golden: $(patsubst %, tests/golden/%.golden, \
+test-v4thblk-c16+.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreext double block report-blk)
 	cat $? > $@
 
@@ -166,7 +166,7 @@ test-v4th-c16+.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreext double report-noblk)
 	cat $? > $@
 
-test-vf-full-c16-.golden: $(patsubst %, tests/golden/%.golden, \
+test-v4thblk-c16-.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core)
 	cat $? > $@
 

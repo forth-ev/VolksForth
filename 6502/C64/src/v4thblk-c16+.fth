@@ -8,9 +8,9 @@
 
 include vf-tc-prep.fth
 
-\log logopen" vf-full-c16-.log"
+\log logopen" v4thblk-c16+.log"
 
-include vf-trg-c16-.fth
+include vf-trg-c16+.fth
 
 \ The actual volksForth sources
 
@@ -20,7 +20,7 @@ include vf-sys-c16.fth
 include vf-cbm-file.fth
 include vf-cbm-bufs.fth
 include vf-finalize.fth
-  8000 ' limit >body !  7700 s0 !  7b00 r0 !
+  fd00 ' limit >body !  bc00 s0 !  c000 r0 !
 include vf-memsetup.fth
 
 include vf-pr-target.fth

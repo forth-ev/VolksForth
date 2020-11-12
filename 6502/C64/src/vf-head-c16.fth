@@ -28,5 +28,5 @@ here dup origin!
 $100 allot
 
 Create logo
- (C16+ ," volksFORTH-83 3.90-C16+ " )
- (C16- ," volksFORTH-83 3.90-C16- " )
+ (C16+ ," volksFORTH-83 3.91-C16+ " )
+ (C16- ," volksFORTH-83 3.91-C16- " )

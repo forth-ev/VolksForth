@@ -13,8 +13,8 @@ include vf-lbls-cbm.fth
 0d020 >label BrdCol
 0d021 >label BkgCol
  0286 >label PenCol
-  0ae >label PrgEnd
-  0c1 >label IOBeg
+  0ae >label PrgEnd  \ aka eal; seems unused
+  0c1 >label IOBeg   \ aka stal; seems unused
   0d4 >label CurFlg
   0d8 >label InsCnt
  028a >label KeyRep
@@ -57,6 +57,8 @@ Code curoff   ( --)
 
 
 include vf-sys-cbm.fth
+
+: i/o-status?  $90 c@ ;
 
 
 \ *** Block No. 143, Hexblock 8f
@@ -121,3 +123,5 @@ first-init dup bootsystem 1+ !
                warmboot   1+ !
 Code c64init first-init jsr
  xyNext jmp end-code
+
+| Create (bye  $FCE2  here 2- !

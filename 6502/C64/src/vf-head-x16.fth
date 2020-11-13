@@ -1,6 +1,6 @@
-\ The head of C64 VolkForth
+\ The head of Commander X16 VolkForth
 
-\ Initial part of load screen
+\ Initial part of load file
 
 Onlyforth
 
@@ -8,10 +8,9 @@ $801 dup  displace !
 Target definitions   here!
 
 
-\ *** Block No. 16, Hexblock 10
 10 fthpage
 
-\ FORTH Preamble and ID       clv06aug87
+\ FORTH Preamble and ID
 
 $D c, $8 c, $A c, 00 c, 9E c, 28 c, 32 c, 30 c,
 36 c, 34 c, 29 c, 00 c, 00 c, 00 c, 00 c, \ SYS(2064)
@@ -28,4 +27,4 @@ here dup origin!
 $100 allot
 
 Create logo
-  ," volksFORTH-83 3.91-C64  "
+  ," volksFORTH-83 3.91-X16  "

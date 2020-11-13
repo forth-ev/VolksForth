@@ -95,12 +95,6 @@ Output: display   [ here output ! ]
  c64emit c64cr c64type c64del c64page
  c64at c64at? ;
 
-(C64  | Create (bye  $FCE2  here 2- ! )
-
-(C16- | Create (bye  $FFF6  here 2- ! )
-
-(C16+ | CODE   (bye  rom $FFF6 jmp  end-code )
-
 
 \ *** Block No. 135, Hexblock 87
 87 fthpage
@@ -216,8 +210,6 @@ Code bus@  ( -- 8b)
 
 : businput  ( adr n --)
  bounds  ?DO  bus@ I c! LOOP pause ;
-
-: i/o-status?  $90 c@ ;
 
 : derror?  ( -- flag )
  disk $F busin bus@  dup Ascii 0 -

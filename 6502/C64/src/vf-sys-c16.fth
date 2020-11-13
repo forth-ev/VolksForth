@@ -13,8 +13,8 @@ include vf-lbls-cbm.fth
 0ff19 >label BrdCol
 0ff15 >label BkgCol
  053b >label PenCol
-  09d >label PrgEnd
-  0b2 >label IOBeg
+  09d >label PrgEnd  \ aka eal; seems unused
+  0b2 >label IOBeg   \ aka stal; seems unused
   0cb >label CurFlg
   0cf >label InsCnt
  0540 >label KeyRep
@@ -54,6 +54,8 @@ end-code
 
 
 include vf-sys-cbm.fth
+
+: i/o-status?  $90 c@ ;
 
 
 \ *** Block No. 143, Hexblock 8f
@@ -126,3 +128,7 @@ Code C64fkeys \ Pushkeys a la C64
   [[ dex  0>= ?[[
     InitPKs ,X lda PKeys ,x sta ]]?
   xyNext jmp end-code
+
+(C16- | Create (bye  $FFF6  here 2- ! )
+
+(C16+ | CODE   (bye  rom $FFF6 jmp  end-code )

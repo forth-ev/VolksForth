@@ -1,5 +1,14 @@
 
+\ with build log:
+' noop alias \log
+\ without build log:
+\ ' \ alias \log
+
+\log include logtofile.fth
+
 include vf-tc-prep.fth
+
+\log logopen" v4th-c64.log"
 
 include vf-trg-c64.fth
 
@@ -14,4 +23,7 @@ include vf-finalize.fth
 include vf-memsetup.fth
 
 include vf-pr-target.fth
+.( target compile complete) cr
+\log logclose
+
 quit

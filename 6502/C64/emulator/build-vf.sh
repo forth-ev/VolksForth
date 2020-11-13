@@ -10,13 +10,20 @@ set -e
 emulatordir="$(dirname "${BASH_SOURCE[0]}")"
 basedir="$(realpath --relative-to="$PWD" "${emulatordir}/..")"
 
-source="$1"
-target="$2"
+target="${1}"
+source="${target}.fth"
+logfile="${target}.log"
+nosave="${2}"
 
-test -n "$target" && rm -f "${basedir}/cbmfiles/${target}"
+test -z "${nosave}" && rm -f "${basedir}/cbmfiles/${target}"
+rm -f "${basedir}/cbmfiles/${logfile}"
 
 keybuf="include ${source}\nsave-target ${target}\ndos s0:notdone\n"
-test -z "$target" && keybuf="include ${source}\n"
+test -n "${nosave}" && keybuf="include ${source}\n"
 
 DISK10=tc38q "${emulatordir}/run-in-vice.sh" \
   "tcbase" "${keybuf}"
+
+petscii2ascii "${basedir}/cbmfiles/${logfile}" | \
+  grep -F 'target compile complete' || \
+  (echo "check logfile ${basedir}/cbmfiles/${logfile}" && exit 1)

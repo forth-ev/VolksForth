@@ -21,7 +21,7 @@ based on the current 2012 Standard (https://forth-standard.org).
 At this time VolksForth is available for this Systems:
 
  * VolksForth MS-DOS (Intel x86 architecture i8086/i186/i286/i386/i486 etc)
- * VolksForth 6502 (Commodore 64, Commodore Plus 4, Atari XL/XE)
+ * VolksForth 6502 (Commodore 64, Commodore Plus 4, Commander X16, Apple 1, Apple ][, Atari XL/XE)
  * VolksForth Z80 (CP/M, Schneider CPC)
  * VolksForth 68000 (Atari ST, Amiga with EmuTOS)
 

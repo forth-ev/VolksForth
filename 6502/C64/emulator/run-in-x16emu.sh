@@ -34,6 +34,7 @@ else
   debug="-debug"
 fi
 
+# The -keybuf flag is added in https://github.com/pzembrod/x16-emulator
 x16emu \
   -keymap de \
   -sdcard "${sdcard}" \

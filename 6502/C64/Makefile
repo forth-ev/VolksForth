@@ -36,11 +36,11 @@ binaries: $(vf_binaries)
 
 test: $(test_resuls)
 
-test64: full64 lite64
+test64: std64 blk64
 
-full64: test-v4thblk-c64.result
+blk64: test-v4thblk-c64.result
 
-lite64: test-v4th-c64.result
+std64: test-v4th-c64.result
 
 debug-64: emulator/tcbase.T64 emulator/build-vf.sh \
     disks/vforth4_2.d64 disks/tc38q.d64 $(vf_fth_files_petscii)
@@ -96,25 +96,25 @@ $(test_logs): $(test_files_petscii) emulator/run-in-vice.sh
 test-v4thblk-c64.log: emulator/v4thblk-c64.T64 disks/scratch.d64
 	rm -f cbmfiles/test.log
 	DISK9=scratch emulator/run-in-vice.sh v4thblk-c64 \
-	  "include run-full-tests.fth\n1234567890\n"
+	  "include run-blk-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4th-c64.log: emulator/v4th-c64.T64
 	rm -f cbmfiles/test.log
 	emulator/run-in-vice.sh v4th-c64 \
-	  "include run-lite-tests.fth\n1234567890\n"
+	  "include run-std-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4thblk-c16+.log: emulator/v4thblk-c16+.T64 disks/scratch.d64
 	rm -f cbmfiles/test.log
 	VICE=xplus4 emulator/run-in-vice.sh v4thblk-c16+ \
-	  "include run-full-tests.fth\n1234567890\n"
+	  "include run-blk-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4th-c16+.log: emulator/v4th-c16+.T64
 	rm -f cbmfiles/test.log
 	VICE=xplus4 emulator/run-in-vice.sh v4th-c16+ \
-	  "include run-lite-tests.fth\n1234567890\n"
+	  "include run-std-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4thblk-c16-.log: emulator/v4thblk-c16-.T64
@@ -126,13 +126,13 @@ test-v4thblk-c16-.log: emulator/v4thblk-c16-.T64
 test-v4th-c16-.log: emulator/v4th-c16-.T64
 	rm -f cbmfiles/test.log
 	VICE=xplus4 emulator/run-in-vice.sh v4th-c16- \
-	  "include run-lite-tests.fth\n1234567890\n"
+	  "include run-std-tests.fth\n1234567890\n"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4th-x16.log: cbmfiles/v4th-x16 emulator/sdcard.img
 	rm -f cbmfiles/test.log
 	emulator/run-in-x16emu.sh v4th-x16 \
-	  "INCLUDE RUN-LITE-TESTS.FTH\\X0D1234567890\\X0D"
+	  "INCLUDE RUN-STD-TESTS.FTH\\X0D1234567890\\X0D"
 	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
 	petscii2ascii cbmfiles/test.log $@
 

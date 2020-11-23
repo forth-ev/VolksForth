@@ -1602,13 +1602,6 @@ Code clearstack
 : heap?  ( addr -- flag)
  heap up@ uwithin ;
 
-| : heapmove   ( from -- from)
-   dup here  over -
-   dup hallot  heap swap cmove
-   heap over - last +!  reveal ;
-
-
-
 
 \ *** Block No. 74, Hexblock 4a
 4a fthpage
@@ -1642,7 +1635,7 @@ Label docreate
 \ *** Block No. 75, Hexblock 4b
 4b fthpage
 
-( 6502-align  ?head  |        08sep84bp)
+( 6502-align        08sep84bp)
 
 | : 6502-align/1   ( adr -- adr' )
    dup  $FF and  $FF =  - ;
@@ -1654,47 +1647,46 @@ Label docreate
        1 last +! 1 allot  THEN  ;
 
 
-Variable ?head    0 ?head !
-
-: |     ?head @   ?exit   -1 ?head  ! ;
-
-
-
-
-
-
-
-
-
-
-
 \ *** Block No. 76, Hexblock 4c
 4c fthpage
 
-( warning   Create            30dec84bp)
+\ warning  ?heapmovetx  |  |on |off  Create
 
 Variable warning  0 warning !
 
-| : exists?
+| : exists?  ( -- )
  warning @ ?exit
  last @  current @  (find  nip
  IF space  last @ .name ." exists " ?cr
  THEN  ;
 
+Variable ?heapmovetx  0 ?heapmovetx !
+
+| : heapmove   ( from size -- from offset )
+   dup hallot  heap swap cmove
+   heap over - ;
+
+| : heapmove1x   ( from size -- from offset )
+   heapmove  ?heapmovetx off ;
+
+: |     ['] heapmove1x  ?heapmovetx ! ;
+: |on   ['] heapmove    ?heapmovetx ! ;
+: |off  ?heapmovetx off ;
+
 : Create
- here blk @ ,  current @ @ ,
- name  c@ dup 1 $20
- uwithin not  Abort" invalid name"
- here  last ! 1+ allot
- exists? ?head @
- IF 1 ?head +!  dup  6502-align/1 ,
-                    \ Pointer to code
-    heapmove $20 flag! 6502-align/1 dp !
+ here
+ blk @ ,  current @ @ ,
+ name c@
+ dup 1 $20 uwithin not  Abort" invalid name"
+ here last !  1+ allot  exists?
+ ?heapmovetx @
+ IF dup  6502-align/1 ,  \ Pointer to code
+    dup here  over -
+    ?heapmovetx perform  last +!
+    $20 flag! 6502-align/1 dp !
  ELSE  6502-align/2  drop
  THEN  reveal  0 ,
  ;Code  docreate jmp end-code
-
-
 
 
 \ *** Block No. 77, Hexblock 4d
@@ -2484,9 +2476,12 @@ Defer custom-remove
 
 ( deleting words from dict.   13jan83ks)
 
-| : forget-words    ( dic symb --)
+: (forget-words    ( dic symb -- dic symb )
  over remove-tasks remove-vocs
-      remove-words custom-remove
+      remove-words custom-remove ;
+
+| : forget-words    ( dic symb --)
+ (forget-words
  heap swap - hallot dp !  0 last ! ;
 
 : clear

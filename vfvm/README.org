@@ -1,0 +1,22 @@
+#+Title: Portable VM for VolksForth
+#+Author: Carsten Strotmann
+#+Date: <2020-11-23 Mon>
+
+* Goal
+
+  * create a portable VM to run VolksForth
+  * multiple implementations (C, Go, Pascal ...)
+  * 64KB Memory + Banked extension memory
+  * Stack machine CPU (Data-Stack, Return-Stack)
+  * Stacks mapped into main memory
+  * Stack-Pointer as memory mapped register
+
+* Implementation Idea
+
+  * 16bit alignment
+  * 16bit opcodes
+  * opcodes $0000-$00FF -> Forth primitives (dup, swap, drop ...)
+  * opcodes $FF00-$FFFF -> extended opcodes
+  * opcodes $0100-$FEFF -> implicit jump to subroutine
+    - allows easy implementation of ITC and DTC Forth
+  * memory $FFF0-$FFFF -> memory mapped I/O, Bankswitching etc

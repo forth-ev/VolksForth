@@ -20,3 +20,22 @@
   * opcodes $0100-$FEFF -> implicit jump to subroutine
     - allows easy implementation of ITC and DTC Forth
   * memory $FFF0-$FFFF -> memory mapped I/O, Bankswitching etc
+
+* Design questions and thoughts
+
+  * implicit jump to subroutine opcode(s)
+    * would use the Forth Return Stack?
+    * with 16bit alignment, should we use opcode bit 0 for implicit
+      return from subroutine?
+      * pros: obvious, space and time saved
+      * cons: a compiled word would have different values with and
+        without following RTS. Some code may depend on the same word
+        always having the same compile token.
+    * that would mean non NEST or UNNEST routines, but NEST and UNNEST
+      would be primitives, UNNEST even a 0-byte primitive if we do the
+      bit 0 thing?
+    * would not having a NEST routine influence compatibility with ITC
+      VolksForth flavours? Would a colon definition then look just like
+      a Code definition, with in both cases the CFA pointing to the PFA?
+    * would the address of the implicit JSR be the CFA or the PFA of the
+      called code?

@@ -1810,6 +1810,13 @@ Variable ?heapmovetx  0 ?heapmovetx !
 
 ( voc-link vp current context also   bp)
 
+\ vp contains the vocabulary search oder respectively stack.
+\ vp/vp+1: order/stack size. 0 = one vocabulary on the stack
+\ vp+2/vp+3: bottom vocabulary on the stack
+\ ...
+\ vp+N+2/vp+N+3: the current context vocabulary, the top of stack,
+\ if N is the content of vp/vp+1.
+\ The top two vocabularies are the same after also is called.
 Create   vp       $10 allot
 Variable current
 
@@ -1953,6 +1960,8 @@ Label findloop   0 # ldy
 ( find  ' [']                 13jan85bp)
 
 : find ( string -- cfa n / string false)
+ \ Skip the top vocabulary in the search order if it's equal to the
+ \ second in the search order, as is the case after also is called.
  context dup @ over 2- @ = IF 2- THEN
  BEGIN  under @ (find
                 IF nip found exit THEN
@@ -2418,23 +2427,40 @@ Defer init-buffers  ' noop IS init-buffers
 
 \ remove                       23jul85we
 
-| Code remove ( dic symb thr - dic symb)
+| Code remove ( dict symb thread - dict symb)
+ \ thread: vocabulary linked list
  5 # ldy [[ SP )Y lda N ,Y sta dey 0< ?]
+ \ N+4/5: dict  N+2/3: symb  N+0/1: thread
  user' s0 # ldy
  clc UP )Y lda 6 # adc N 6 + sta
  iny UP )Y lda 0 # adc N 7 + sta
  1 # ldy
+ \ N+6/7: s0
  [[ N X) lda N 8 + sta
     N )Y lda N 9 + sta N 8 + ora  0<>
+ \ N+8/9: next ptr in thread
+ \ compare N+8/9 next ptr to s0 in N+6/7:
  ?[[ N 8 + lda N 6 + cmp
      N 9 + lda N 7 + sbc CS
+   \ CS aka u>= :
+   \ compare N+8/9 next ptr to symb N+2/3
    ?[ N 8 + lda N 2 + cmp
       N 9 + lda N 3 + sbc
+   \ CC aka u< :
+   \ compare N+4/5 dict to next ptr N+8/9
    ][ N 4 + lda N 8 + cmp
       N 5 + lda N 9 + sbc
    ]? CC
+   \ CC aka u< i.e.
+   \ either (CS above) s0 u<= next ptr u< symb
+   \ or (CC above) dict u< next ptr u< s0
+   \ let current ptr's adr point to next ptr's adr,
+   \ i.e. remover next ptr from vocabulary thread.
    ?[ N 8 + X) lda N X) sta
       N 8 + )Y lda N )Y sta
+   \ CS aka u>= :
+   \ let next ptr N+8/9 be current ptr N+0/1
+   \ i.e. leave next ptr in vocabulary thread.
    ][ N 8 + lda    N    sta
       N 9 + lda N 1+ sta ]?
  ]]? (drop jmp   end-code
@@ -2447,17 +2473,17 @@ Defer init-buffers  ' noop IS init-buffers
 
 ( remove-     forget-words    29apr85bp)
 
-| : remove-words ( dic symb -- dic symb)
+| : remove-words ( dict symb -- dict symb)
  voc-link  BEGIN  @ ?dup
   WHILE  dup >r 4 - remove r>  REPEAT  ;
 
-| : remove-tasks  ( dic --)
+| : remove-tasks  ( dict --)
  up@  BEGIN  1+ dup @ up@ -
  WHILE  2dup @ swap here uwithin
   IF dup @ 1+ @ over ! 1-  ELSE  @ THEN
  REPEAT  2drop ;
 
-| : remove-vocs  ( dic symb -- dic symb)
+| : remove-vocs  ( dict symb -- dict symb)
  voc-link remove thru.vocstack
   DO  2dup I @  -rot  uwithin
     IF   [ ' Forth 2+ ] Literal I ! THEN
@@ -2476,11 +2502,11 @@ Defer custom-remove
 
 ( deleting words from dict.   13jan83ks)
 
-: (forget-words    ( dic symb -- dic symb )
+: (forget-words    ( dict symb -- dict symb )
  over remove-tasks remove-vocs
       remove-words custom-remove ;
 
-| : forget-words    ( dic symb --)
+| : forget-words    ( dict symb --)
  (forget-words
  heap swap - hallot dp !  0 last ! ;
 

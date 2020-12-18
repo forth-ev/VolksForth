@@ -11,17 +11,21 @@ Target
 
 Forth also definitions
 
+(C16 : (16 ) (C64 : (64 ) (X16 : (CX ) ; immediate
+
 (C16 : (64 ) \ jumps belhind C)
 (C64 : (16 )
-(X16 : (CX )
+(X16 : (64 )
  BEGIN name count dup 0=
  abort" C) missing"  2 = >r
  @ [ Ascii C Ascii ) $100 * + ] Literal
  = r> and UNTIL ; immediate
 
-: C)  ; immediate
+(C16 ' (64 alias (CX immediate )
+(C64 ' (16 alias (CX immediate )
+(X16 ' (64 alias (16 immediate )
 
-(C16 : (16 ) (C64 : (64 ) (X16 : (CX ) ; immediate
+: C)  ; immediate
 
 : forth-83 ;  \ last word in Dictionary
 

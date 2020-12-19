@@ -29,18 +29,23 @@ include vf-lbls-cbm.fth
 \ X16 c64key? getkey
 
 Code c64key? ( -- flag)
+ 9f61 ldx
  0 # lda  9f61 sta
  0a00a lda
  0<> ?[  0FF # lda  ]? pha
+ 9f61 stx
  Push jmp  end-code
 
 Code getkey  ( -- 8b)
+ 9f61 lda  N sta
  0 # lda  9f61 sta
  0a00a lda  0<>
  ?[  sei  0a000 ldy
   [[  0a000 1+ ,X lda  0a000 ,X sta  inx
       0a00a cpx  0= ?]
-  0a00a dec  tya  cli  0A0 # cmp
+  0a00a dec
+  N lda  9f61 sta
+  tya  cli  0A0 # cmp
   0= ?[  bl # lda  ]?
  ]?
  Push0A jmp   end-code

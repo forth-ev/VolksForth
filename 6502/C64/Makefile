@@ -24,7 +24,7 @@ update: $(vf_blk_fth_files) $(vf_fth_files_petscii)
 
 
 clean:
-	rm -f cbmfiles/*.fr cbmfiles/*.fth cbmfiles/*.log
+	rm -f cbmfiles/*.fr cbmfiles/*.fth cbmfiles/*.log tmp/*
 	rm -f *.log *.result *.golden
 	rm -f cbmfiles/c??-testbase
 	rm -f disks/scratch.d64 emulator/sdcard.img
@@ -132,7 +132,7 @@ test-v4th-c16-.log: emulator/v4th-c16-.T64
 test-v4th-x16.log: cbmfiles/v4th-x16 emulator/sdcard.img
 	rm -f cbmfiles/test.log
 	emulator/run-in-x16emu.sh v4th-x16 \
-	  "INCLUDE RUN-STD-TESTS.FTH\\X0D1234567890\\X0D"
+	  "include run-std-tests.fth\n1234567890\n"
 	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
 	petscii2ascii cbmfiles/test.log $@
 

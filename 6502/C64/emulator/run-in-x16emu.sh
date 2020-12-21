@@ -5,9 +5,10 @@ emulatordir="$(realpath --relative-to="$PWD" "$(dirname "${BASH_SOURCE[0]}")")"
 basedir="$(realpath --relative-to="$PWD" "${emulatordir}/..")"
 cbmfilesdir="${basedir}/cbmfiles"
 sdcard="${emulatordir}/sdcard.img"
+x16script="${basedir}/tmp/x16script"
 
 mformat -i "${sdcard}" -F
-for asciifile in  $(cd "${cbmfilesdir}" && ls *.fth *fr)
+for asciifile in  $(cd "${cbmfilesdir}" && ls)
 do
   # Convert filename to PETSCII, remove trailing CR.
   petsciifile="$(echo ${asciifile} | ascii2petscii - |tr -d '\r')"
@@ -20,13 +21,18 @@ then
   autostart="-prg ${cbmfilesdir}/${1} -run"
 fi
 
-keybuf=""
+script=""
 warp=""
 scale=""
 debug=""
 if [ -n "$2" ]
 then
-  keybuf="${2}"
+  test -d tmp || mkdir tmp
+  rm -f "${x16script}".*
+  echo "load\"${1}\"\nrun\n${2}" | sed 's/\\n/\n/g' > "${x16script}".ascii
+  ascii2petscii "${x16script}.ascii" "${x16script}.petscii"
+  script="-bas ${x16script}.petscii"
+  autostart=""
   mcopy -i "${sdcard}" "${emulatordir}/notdone" "::NOTDONE"
   warp="-warp"
 else
@@ -39,13 +45,13 @@ x16emu \
   -keymap de \
   -sdcard "${sdcard}" \
   $autostart \
-  -keybuf "$keybuf" \
+  $script \
   $warp \
   $scale \
   $debug \
   &
 
-if [ -n "$keybuf" ]
+if [ -n "$script" ]
 then
   while mtype -i "${sdcard}" "::NOTDONE" > /dev/null
     do sleep 1

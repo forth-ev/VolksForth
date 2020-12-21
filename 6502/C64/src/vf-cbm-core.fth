@@ -2405,21 +2405,30 @@ Defer init-buffers  ' noop IS init-buffers
  name> under 1+ u< swap  heap?  or ;
 
 |  : endpoints  ( addr -- addr symb)
- heap   voc-link >r
- BEGIN r> @ ?dup    \ through all Vocabs
- WHILE dup >r 4 - >r \ link on returnst.
-  BEGIN r> @ >r over 1- dup r@  u<
-                    \ until link  or
-             swap  r@ 2+ name> u< and
-                    \ code under adr
-  WHILE  r@ heap?  [ 2dup ] UNTIL
+ \ heap is the starting value for symb
+ \ at the end symb is heap or 2 + the highest of all cfas that are
+ \ either in the heap or u> addr
+ heap   voc-link >r  ( addr symb / R: voc-link )
+ BEGIN  \ outer loop through all vocabs
+ r> @ ?dup  ( addr symb / R: )  \ this is the word's exit point
+ WHILE dup >r 4 - >r  ( addr symb / R: next-voc prev-lfa )
+  BEGIN  \ inner loop through all words of a vocab
+    r> @ >r  ( R: prev-voc next-lfa )
+    over 1- dup r@  u<
+    ( addr heap addr-1 flag:addr-1_u<_next-lfa_? )
+    swap  r@ 2+ name> u<
+    ( addr heap flag:addr-1_u<_next-lfa_? flag:addr-1_u<_next-cfa_?  )
+    and  ( addr heap flag )
+    \ flag means both lfa and cfa of next word are still u> addr-1
+    \ i.e. WHILE flag means exit loop if either lfa or cfa u<= addr
+  WHILE  r@ heap?  [ 2dup ] UNTIL  \ Continue loop if lfa not on heap
              \ search for a name in heap
     r@ 2+ |?  IF  over r@ 2+ forget?
                IF r@ 2+ (name> 2+ umax
                THEN \ then update symb
               THEN
-  REPEAT rdrop
- REPEAT  ;
+  REPEAT rdrop  ( R: next-voc )
+ REPEAT ;
 
 
 \ *** Block No. 114, Hexblock 72
@@ -2429,6 +2438,7 @@ Defer init-buffers  ' noop IS init-buffers
 
 | Code remove ( dict symb thread - dict symb)
  \ thread: vocabulary linked list
+ \
  5 # ldy [[ SP )Y lda N ,Y sta dey 0< ?]
  \ N+4/5: dict  N+2/3: symb  N+0/1: thread
  user' s0 # ldy
@@ -2452,8 +2462,8 @@ Defer init-buffers  ' noop IS init-buffers
       N 5 + lda N 9 + sbc
    ]? CC
    \ CC aka u< i.e.
-   \ either (CS above) s0 u<= next ptr u< symb
-   \ or (CC above) dict u< next ptr u< s0
+   \ either (inner CS above) s0 u<= next ptr u< symb
+   \ or (inner CC above) dict u< next ptr u< s0
    \ let current ptr's adr point to next ptr's adr,
    \ i.e. remover next ptr from vocabulary thread.
    ?[ N 8 + X) lda N X) sta
@@ -2502,12 +2512,15 @@ Defer custom-remove
 
 ( deleting words from dict.   13jan83ks)
 
-: (forget-words    ( dict symb -- dict symb )
- over remove-tasks remove-vocs
-      remove-words custom-remove ;
-
+\ forget-words use cases:
+\ clear: dict=here, symb=up@
+\ forget: dict=cfa-to-forget,
+\     symb=umax(heap, 2 + (highest cfa either in heap or u> dict)
+\ empty: dict=here@cold, symb=up@
+\ save: dict=here, symb=up@
 | : forget-words    ( dict symb --)
- (forget-words
+ over remove-tasks remove-vocs
+      remove-words custom-remove
  heap swap - hallot dp !  0 last ! ;
 
 : clear

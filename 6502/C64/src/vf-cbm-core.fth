@@ -1789,8 +1789,8 @@ Variable ?heapmovetx  0 ?heapmovetx !
 : User  Create   2 uallot c,
  ;Code  SP 2dec  2 # ldy
  W )Y lda  clc UP    adc  SP X) sta
-      txa  iny UP 1+ adc  1 # ldy
- SP )Y sta   Next jmp   end-code
+ dey  txa      UP 1+ adc  SP )Y sta
+ Next jmp   end-code
 
 : Alias  ( cfa --)
  Create last @ dup c@ $20 and

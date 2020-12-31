@@ -212,7 +212,8 @@ Code bus@  ( -- 8b)
  bounds  ?DO  bus@ I c! LOOP pause ;
 
 : derror?  ( -- flag )
- disk $F busin bus@  dup Ascii 0 -
-   IF  BEGIN emit bus@ dup #cr =  UNTIL
-   0= cr ELSE BEGIN bus@ #cr = UNTIL
-   THEN   0=  busoff ;
+ disk $F busin bus@  dup Ascii 0 =
+   IF drop BEGIN bus@ drop i/o-status? UNTIL false
+   ELSE BEGIN emit bus@ i/o-status? UNTIL emit true THEN
+ busoff ;
+

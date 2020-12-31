@@ -7,7 +7,7 @@
 
 (C64  02  )
 (C16  02  )
-(X16  $30 )
+(X16  $50 )
    dup     >label RP     2+
    dup     >label UP     2+
 

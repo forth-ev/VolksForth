@@ -58,7 +58,7 @@ run-testbase16: emulator/testbase16.T64
 
 # Targetcompiler targets
 
-cbmfiles/tcbase: emulator/c64-vf-390.T64 emulator/build-tcbase.sh \
+cbmfiles/tcbase: emulator/v4th-c64-4tc.T64 emulator/build-tcbase.sh \
     disks/tc38q.d64 disks/file-words.d64 cbmfiles/tc-base.fth
 	emulator/build-tcbase.sh
 

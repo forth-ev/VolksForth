@@ -7,6 +7,7 @@ include vf-lbls-cbm.fth
 \ C64-Labels                 clv13.4.87)
 
 0E716 >label ConOut
+  090 >label IOStatus
   09d >label MsgFlg
   09a >label OutDev
   099 >label  InDev
@@ -57,8 +58,6 @@ Code curoff   ( --)
 
 
 include vf-sys-cbm.fth
-
-: i/o-status?  $90 c@ ;
 
 
 \ *** Block No. 143, Hexblock 8f

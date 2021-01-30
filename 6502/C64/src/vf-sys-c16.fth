@@ -7,6 +7,7 @@ include vf-lbls-cbm.fth
 \ C16-Labels                 clv13.4.87)
 
 0ff4c >label ConOut
+  090 >label IOStatus
   09a >label MsgFlg
   099 >label OutDev
   098 >label  InDev
@@ -54,8 +55,6 @@ end-code
 
 
 include vf-sys-cbm.fth
-
-: i/o-status?  $90 c@ ;
 
 
 \ *** Block No. 143, Hexblock 8f

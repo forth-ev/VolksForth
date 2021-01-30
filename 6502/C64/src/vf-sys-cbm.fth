@@ -99,6 +99,9 @@ Output: display   [ here output ! ]
 \ *** Block No. 135, Hexblock 87
 87 fthpage
 
+Code i/o-status?  ( -- n )
+  IOStatus lda  Push0A jmp  end-code
+
 \ b/blk drive >drive drvinit  clv14:2x87
 
 400 Constant b/blk
@@ -143,10 +146,10 @@ Label nodevice     0 # ldx  1 # ldy
 \ ?device                     clv12jul87
 
 Label (?dev
- 90 stx (C16 $ae sta ( ) LISTEN jsr
+ IOStatus stx (C16 $ae sta ( ) LISTEN jsr
         \ because of error in OS
  60 # lda  SECOND jsr  UNLSN jsr
- 90 lda  0<> ?[ pla pla nodevice jmp ]?
+ IOStatus lda  0<> ?[ pla pla nodevice jmp ]?
  rts    end-code
 
  Code (?device  ( dev --)
@@ -212,7 +215,8 @@ Code bus@  ( -- 8b)
  bounds  ?DO  bus@ I c! LOOP pause ;
 
 : derror?  ( -- flag )
- disk $F busin bus@  dup Ascii 0 -
-   IF  BEGIN emit bus@ dup #cr =  UNTIL
-   0= cr ELSE BEGIN bus@ #cr = UNTIL
-   THEN   0=  busoff ;
+ disk $F busin bus@  dup Ascii 0 =
+   IF drop BEGIN bus@ drop i/o-status? UNTIL false
+   ELSE BEGIN emit bus@ i/o-status? UNTIL emit true THEN
+ busoff ;
+

@@ -99,6 +99,9 @@ Output: display   [ here output ! ]
 \ *** Block No. 135, Hexblock 87
 87 fthpage
 
+Code i/o-status?  ( -- n )
+  IOStatus lda  Push0A jmp  end-code
+
 \ b/blk drive >drive drvinit  clv14:2x87
 
 400 Constant b/blk
@@ -143,10 +146,10 @@ Label nodevice     0 # ldx  1 # ldy
 \ ?device                     clv12jul87
 
 Label (?dev
- 90 stx (C16 $ae sta ( ) LISTEN jsr
+ IOStatus stx (C16 $ae sta ( ) LISTEN jsr
         \ because of error in OS
  60 # lda  SECOND jsr  UNLSN jsr
- 90 lda  0<> ?[ pla pla nodevice jmp ]?
+ IOStatus lda  0<> ?[ pla pla nodevice jmp ]?
  rts    end-code
 
  Code (?device  ( dev --)

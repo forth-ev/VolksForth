@@ -6,6 +6,7 @@ include vf-lbls-cbm.fth
 \ X16 labels
 
 0c28c >label ConOut
+ 0286 >label IOStatus
  028c >label MsgFlg
  028b >label OutDev
  028a >label  InDev
@@ -74,8 +75,6 @@ Code curoff   ( --)
 
 
 include vf-sys-cbm.fth
-
-: i/o-status?  $0286 c@ ;
 
 
 \ *** Block No. 143, Hexblock 8f

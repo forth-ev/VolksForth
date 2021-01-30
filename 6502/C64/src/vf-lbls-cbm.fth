@@ -8,6 +8,7 @@ $FFA5 >label ACPTR
 $FFC6 >label CHKIN
 $FFC9 >label CHKOUT
 $FFD2 >label CHROUT
+$FFCF >label CHRIN
 $FF81 >label CINT
 $FFA8 >label CIOUT
 $FFC3 >label CLOSE
@@ -25,5 +26,6 @@ $FF96 >label TKSA
 $FFEA >label UDTIM
 $FFAE >label UNLSN
 $FFAB >label UNTLK
-$FFCF >label CHRIN
 $FF99 >label MEMTOP
+$FFBD >label SETNAM
+$FFBA >label SETLFS

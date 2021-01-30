@@ -1,0 +1,27 @@
+Im volksFORTH rev.3.81.41 treten, bedingt durch die Vielfalt an
+Grafik-Karten fr den PC, unter Umst„nden Probleme mit dem CURSOR
+auf. Denn in dem meisten PCs verrichtet eine Hercules-Karte ihre
+Dienste, auf die einige Worte im EDITOR und im Kommando-zeilen-
+Editor CED zugeschnitten sind.
+Die Worte CURON und CUROFF bestimmen das Erscheinungsbild des
+Cursors durch Zahlenwerte fr CURSHAPE, die grafikkartenabh„ngig
+sind. Hier bietet sich eine nderung mit Hilfe des Video-
+Interrupts INT$10 an, dessen Funktion $3 im C-Register die
+aktuelle Start- und End-Zeile des Cursors wiedergibt. Als
+Warnung: Im Zuge meiner amateurhaften Versuche zur
+Interruptprogrammierung hat, nach ungesichertem R-Register, ein V
+(aktuellen Screen editieren) dafr gesorgt, daá meine gesamte
+freie Festplattenkapazit„t der Datei EDITOR.SCR zugeschlagen
+wurde.
+Mit den neuen Varianten von CURON/OFF máten auch EGA und andere
+Karten einen Cursor auf dem Schirm anzeigen. Mit dem
+Kommandozeilen-Editor CED h„ngt auch das zweite Problem zusammen:
+Wie man in SHOWCUR sieht, wird der Einfge- oder šberschreibmodus
+durch das Erscheinungsbild des Cursors verdeutlicht. Da liegt es
+auf der Hand, daá in (EXPECT die Wortfolge KEY DECODE SHOWCUR
+nach jeder Zeicheneingabe das Aussehen des Cursor in Abh„ngigkeit
+vom jeweiligen Modus festlegt und ein etwaiges  ( top bot) CURSHAPE
+unwirksam machen. Soll dem nicht so sein, k”nnte man eventuell
+die jetzt gel”schte Cursor-Anfangszeile in einem der beiden Modi
+INS/OVER beibehalten.
+

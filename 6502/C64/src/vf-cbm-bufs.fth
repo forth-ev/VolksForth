@@ -1,6 +1,24 @@
 \ *** Block No. 102, Hexblock 66
 66 fthpage
 
+( load +load thru +thru --> )
+
+: load   ( blk --)
+ ?dup 0= ?exit blk push  blk !
+ >in push  >in off
+ .status interpret ;
+
+: +load  ( offset --)  blk @  + load ;
+
+: thru  ( from to --)
+ 1+  swap  DO  I load  LOOP ;
+
+: +thru  ( off0 off1 --)
+ 1+  swap  DO  I +load LOOP ;
+
+: -->
+ 1 blk +! >in off .status  ;  immediate
+
 ( buffer mechanism            15dec83ks)
 
 User file           0 file !

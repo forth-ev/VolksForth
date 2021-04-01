@@ -2122,7 +2122,7 @@ Code ?stack
 \ *** Block No. 92, Hexblock 5c
 5c fthpage
 
-( .status push load           08sep84ks)
+( .status push           08sep84ks)
 
 Defer .status    ' noop Is .status
 
@@ -2132,37 +2132,10 @@ Defer .status    ' noop Is .status
  r> swap dup >r @ >r  pull >r >r  ;
  restrict
 
-: load   ( blk --)
- ?dup 0= ?exit blk push  blk !
- >in push  >in off
- .status interpret ;
-
-
-
-
-
-
-
-
-
-
-
-
 \ *** Block No. 93, Hexblock 5d
 5d fthpage
 
-( +load thru +thru --> rdepth depth  ks)
-
-: +load  ( offset --)  blk @  + load ;
-
-: thru  ( from to --)
- 1+  swap  DO  I load  LOOP ;
-
-: +thru  ( off0 off1 --)
- 1+  swap  DO  I +load LOOP ;
-
-: -->
- 1 blk +! >in off .status  ;  immediate
+( rdepth depth  ks)
 
 : rdepth  ( -- +n)  r0 @  rp@ 2+ - 2/ ;
 

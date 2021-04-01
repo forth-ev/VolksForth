@@ -63,8 +63,8 @@
 \   include                    09jun20pz
 
   : interpret-via-tib
- BEGIN freadline >r  >in off
- interpret  r> UNTIL ;
+ BEGIN freadline >r  .status
+ >in off interpret  r> UNTIL ;
 
   : include ( -- )
  blk @ Abort" no include from blk"

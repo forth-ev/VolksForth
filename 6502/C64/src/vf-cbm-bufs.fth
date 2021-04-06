@@ -1,4 +1,5 @@
 \ *** Block No. 102, Hexblock 66
+\needs fthpage ' drop | alias fthpage
 66 fthpage
 
 ( load +load thru +thru --> )

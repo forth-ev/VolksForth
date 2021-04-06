@@ -1650,7 +1650,7 @@ Label docreate
 \ *** Block No. 76, Hexblock 4c
 4c fthpage
 
-\ warning  ?heapmovetx  |  |on |off  Create
+\ warning  ?headmove-xt  |  |on |off  Create
 
 Variable warning  0 warning !
 
@@ -1660,18 +1660,18 @@ Variable warning  0 warning !
  IF space  last @ .name ." exists " ?cr
  THEN  ;
 
-Variable ?heapmovetx  0 ?heapmovetx !
+Variable ?headmove-xt  0 ?headmove-xt !
 
 | : heapmove   ( from size -- offset )
    over >r  dup hallot ( from size ) heap swap cmove ( )
    heap r> - ;
 
 | : heapmove1x   ( from size -- offset )
-   heapmove  ?heapmovetx off ;
+   heapmove  ?headmove-xt off ;
 
-: |     ['] heapmove1x  ?heapmovetx ! ;
-: |on   ['] heapmove    ?heapmovetx ! ;
-: |off  ?heapmovetx off ;
+: |     ['] heapmove1x  ?headmove-xt ! ;
+: |on   ['] heapmove    ?headmove-xt ! ;
+: |off  ?headmove-xt off ;
 
 : Create
  here
@@ -1679,10 +1679,10 @@ Variable ?heapmovetx  0 ?heapmovetx !
  name c@
  dup 1 $20 uwithin not  Abort" invalid name"
  here last !  1+ allot  exists?
- ?heapmovetx @
+ ?headmove-xt @
  IF dup  6502-align/1 ,  \ Pointer to code
     dup  here  over -
-    ?heapmovetx perform  last +!
+    ?headmove-xt perform  last +!
     $20 flag! 6502-align/1 dp !
  ELSE  6502-align/2  drop
  THEN  reveal  0 ,

@@ -36,7 +36,7 @@ then
   mcopy -i "${sdcard}" "${emulatordir}/notdone" "::NOTDONE"
   warp="-warp"
 else
-  scale="-scale 2"
+  # scale="-scale 2"
   debug="-debug"
 fi
 

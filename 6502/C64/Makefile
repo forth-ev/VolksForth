@@ -34,7 +34,7 @@ clean:
 
 binaries: $(vf_binaries)
 
-test: $(test_resuls)
+test: $(test_resuls) test-v4th-x16-39.result
 
 test64: std64 blk64
 
@@ -142,6 +142,9 @@ test-v4th-x16-39.log: cbmfiles/v4th-x16 emulator/sdcard.img
 	  "include run-std-tests.fth\n1234567890\n"
 	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
 	petscii2ascii cbmfiles/test.log $@
+
+test-v4th-x16-39.golden: test-v4th-x16.golden
+	cp $< $@
 
 test-%.result: test-%.log test-%.golden tests/evaluate-test.sh
 	rm -f $@

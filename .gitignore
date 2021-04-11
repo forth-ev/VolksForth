@@ -1,3 +1,4 @@
 *.fossil
 *.log
 /.DS_Store
+*~

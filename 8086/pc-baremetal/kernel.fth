@@ -12,44 +12,43 @@ Port to C16 "ultraFORTH" by C.Vogt
 Port to 8088/86 and MS-DOS by K.Schleisiek  dez 87
 ( ----- 001 )
 \ MS-DOS   volksForth Load Screen                 ks cas 18jul20
+  warning off          \ disable warnings during compilation
   Onlyforth  \needs Transient   include meta.fb
-
   2 loadfrom META.fb
 
   new FORTH.COM   Onlyforth Target definitions
 
   4 &111 thru          \ Standard 8088-System
-
+  warning on
   flush                 \ close FORTH.COM
 
-cr .( new kernel as "FORTH.COM" written) cr bell bye
+cr .( new kernel as "FORTH.COM" written) cr bell ( bye )
 ( ----- 002 )
-\\ Die Nutzung der 8088/86 Register                ks 27 oct 86
+\\ The use of the 8088/86 register                ks 27 oct 86
 
-Im Assembler sind Forthgemaesse Namen fuer die Register gewaehlt
-Dabei ist die Zuordnung zu den Intel Namen folgendermassen:
+The assembler uses forth style names for the register
+The assiciation to the Intel register names:
 
 A <=> AX      A- <=> AL     A+ <=> AH
 C <=> CX      C- <=> CL     C+ <=> CH
-  Register A und C sind zur allgemeinen Benutzung frei
+  Register A and C are available for general use
 
 D <=> DX      D- <=> DL     D+ <=> DH
-  das oberste Element des (Daten)-Stacks.
+  the Top of (Data-) Stack (TOS)
 
 R <=> BX      R- <=> RL     R+ <=> RH
-  der Return_stack_pointer
+  the Return_stack_pointer
 ( ----- 003 )
-\\ Die Nutzung der 8088/86 Register                ks 27 oct 86
+\\ The use of the 8088/86 register                ks 27 oct 86
 
 U <=> BP     User_area_pointer
 S <=> SP     Daten_stack_pointer
 I <=> SI     Instruction_pointer
-W <=> DI     Word_pointer, im allgemeinen zur Benutzung frei.
+W <=> DI     Word_pointer, free for general use
 
 D: <=> DS    E: <=> ES    S: <=> SS    C: <=> CS
-   Alle Segmentregister werden beim booten auf den Wert des
-   Codesegments C: gesetzt und muessen, wenn sie "verstellt"
-   werden, wieder auf C: zurueckgesetzt werden.
+   All segment registers are set to the value of code-segment
+   C: and must be restored to the same if changed in the code
 ( ----- 004 )
 \ FORTH Preamble and ID                           ks 11 m„r 89
 Assembler
@@ -58,12 +57,12 @@ nop   5555 # jmp              here 2- >label >cold
 nop   5555 # jmp              here 2- >label >restart
 
 Create origin   here origin!    here $100 0 fill
-\ Hier beginnen die Kaltstartwerte der Benutzervariablen
+\ Coldstart valued for user variables
 
   $E9 int  end-code  -4 ,  $FC allot
 \ this is the multitasker initialization in the user area
 
-| Create logo ," volksFORTH-83 rev. 3.81.41"
+| Create logo ," volksFORTH-83 Version 3.9.3"
 ( ----- 005 )
 \ Next                                            ks 27 oct 86
 
@@ -74,8 +73,8 @@ Create origin   here origin!    here $100 0 fill
   : Next    lods   A W xchg   W ) jmp
             there tnext-link @ T , H tnext-link ! ;
 
-\ Next ist in-line code. Fuer den debugger werden daher alle
-\ "nexts" in einer Liste mit dem Anker NEXT-LINK verbunden.
+\ Next is in-line code. All "nexts" are linked into a
+\ list with the anchor NEXT-LINK for the debugger
 
   : u'       ( -- offset )    T ' 2+ c@ H ;
 
@@ -99,9 +98,9 @@ Target
   Code noop        here 2- !   end-code
 ( ----- 007 )
 \ User variables                                  ks 16 sep 88
-  8 uallot drop  \ Platz fuer Multitasker
-       \ Felder: entry  link  spare  SPsave
-       \ Laenge kompatibel zum 68000, 6502 und 8080 volksFORTH
+  8 uallot drop  \ Space for the multitasker
+       \ Fields: entry  link  spare  SPsave
+       \ Length compatible to 68000, 6502 and 8080 volksFORTH
   User s0
   User r0
   User dp
@@ -112,7 +111,7 @@ Target
   User errorhandler   \ pointer for Abort" -code
   User aborted        \ code address of latest error
   User voc-link
-  User file-link   cr .( Wieso ist UDP Uservariable? )
+  User file-link      ( TODO: Why is  UDP a user variable? )
   User udp            \ points to next free addr in User_area
 ( ----- 008 )
 \ manipulate system pointers                      ks 03 aug 87
@@ -723,7 +722,7 @@ Label domove   I W cmp   moveup CS ?]
              A- W ) mov  W inc  C0= ?]  ]?   Next
   end-code
 
-\\ high level, ohne Umlaute
+\\ high level definition, without umlauts
 
   : capital ( char -- char')
      dup  Ascii a   [ Ascii z 1+ ] Literal
@@ -757,10 +756,9 @@ swap ]?  C >in #) add
 ( ----- 054 )
 \ source word parse name                          ks 03 aug 87
 
-  Variable loadfile     loadfile off
-
-  : source ( -- addr len )   blk @ ?dup
-     IF  loadfile @ (block b/blk  exit  THEN  tib #tib @ exit ;
+  defer source
+  : (source ( -- addr len )  tib #tib @ exit ;
+  ' source Is (source
 
   : word ( char -- addr )   source (word ;
 
@@ -911,10 +909,10 @@ swap ]?  C >in #) add
 
   : |                ?head @  ?exit  ?head on ;
 
+ \ no alignment required on x86
   : even   ( addr -- addr1 ) ; immediate
   : align  ( -- )            ; immediate
   : halign ( -- )            ; immediate
-\ machen nichts beim 8088. 8086 koennte etwas schneller werden
 
   Variable warning    warning on
 
@@ -1154,7 +1152,7 @@ Target  Forth also definitions
 \ : ?stack     sp@ here - $100 u< IF  stackfull  THEN
 \              sp@ s0 @ u> Abort" stack empty" ;
 ( ----- 080 )
-\ .status push load                               ks 29 oct 86
+\ .status push                                    ks 29 oct 86
 
 | Create: pull  r> r> ! ;
   : push   ( addr -- )
@@ -1162,27 +1160,13 @@ Target  Forth also definitions
 
   Defer .status   ' noop Is .status
 
-  : (load  ( blk offset -- )   isfile@ >r
-     loadfile @ >r   fromfile @ >r   blk @ >r   >in @ >r
-     >in !   blk !  isfile@ loadfile !  .status  interpret
-     r> >in !   r> blk !   r> fromfile !   r> loadfile !
-     r> isfile ! ;
 
-  : load   ( blk -- )     ?dup 0=exit  0 (load ;
 ( ----- 081 )
-\ +load thru +thru --> rdepth depth               ks 26 jul 87
-
-  : +load    ( offset -- )       blk @ + load ;
-
-  : thru     ( from to -- )      1+ swap DO I  load LOOP ;
-
-  : +thru    ( off0 off1 -- )    1+ swap DO I +load LOOP ;
-
-  : -->        1 blk +! >in off .status ; immediate
 
   : rdepth   ( -- +n )           r0 @ rp@ 2+   - 2/ ;
 
   : depth    ( -- +n )           sp@ s0 @ swap - 2/ ;
+
 ( ----- 082 )
 \  prompt  quit                                   ks 16 sep 88
 
@@ -1272,18 +1256,11 @@ Target  Forth also definitions
 
   : .s    sp@ s0 @ over - $20 umin bounds ?DO I @ u. 2 +LOOP ;
 ( ----- 088 )
-\ list c/l l/s                                    ks 19 m„r 88
+\ c/l l/s                                    ks 19 m„r 88
 
   &64 Constant c/l        \ Screen line length
   &16 Constant l/s        \ lines per screen
 
-  : list ( scr -- )  dup capacity u<
-     IF  scr !  ."  Scr " scr @ .
-         ." Dr " drv .  isfile@ .file
-         l/s 0 DO  cr I 2 .r space   scr @ block
-                   I c/l * +   c/l -trailing type
-               LOOP  cr exit
-     THEN  9 ?diskerror ;
 ( ----- 089 )
 \ multitasker primitives                          ks 29 oct 86
 
@@ -1302,140 +1279,28 @@ Target  Forth also definitions
   end-code
   $E9 4 * >label >taskINT
 ( ----- 090 )
-\\ Struktur der Blockpuffer                       ks 04 jul 87
 
-   0 : link zum naechsten Puffer
-   2 : file     0 = direct access
-               -1 = leer,
-               sonst adresse eines file control blocks
-   4 : blocknummer
-   6 : statusflags   Vorzeichenbit kennzeichnet update
-   8 : Data ... 1 Kb ...
 ( ----- 091 )
-\ buffer mechanism                                ks 04 okt 87
-
-  Variable isfile      isfile off   \ addr of file control block
-  Variable fromfile    fromfile off \ fcb in kopieroperationen
-
-  Variable prev        prev off     \ Listhead
-| Variable buffers     buffers off  \ Semaphor
-
+  $10000 Constant limit     Variable first
   $408 Constant b/buf               \ physikalische Groesse
   $400 Constant b/blk               \ bytes/block
 
   Defer r/w                         \ physikalischer Diskzugriff
-  Variable error#      error# off   \ Nummer des letzten Fehlers
-  Defer ?diskerror                  \ Fehlerbehandlung
+
 ( ----- 092 )
-\ (core?                                          ks 28 mai 87
 
-  Code (core? ( blk file -- dataaddr / blk file )
-     A pop   A push   D D or  0= ?[  u' offset U D) A add  ]?
-     prev #) W mov   2 W D) D cmp  0=
-     ?[  4 W D) A cmp  0=
-         ?[  8 W D) D lea   A pop   ' exit @ # jmp  ]? ]?
-     [[ [[  W ) C mov   C C or  0= ?[  Next  ]?
-            C W xchg   4 W D) A cmp  0= ?]  2 W D) D cmp  0= ?]
-     W ) A mov   prev #) D mov   D W ) mov   W prev #) mov
-     8 W D) D lea   C W mov   A W ) mov   A pop
-     ' exit @ # jmp
-  end-code
 ( ----- 093 )
-\\ (core?                                          ks 31 oct 86
 
-| : this? ( blk file bufadr -- flag )
-     dup 4+ @  swap 2+ @  d= ;
-
-  .( (core?:  offset is handled differently in code! )
-
-| : (core? ( blk file -- dataaddr / blk file )
-     BEGIN  over offset @ + over prev @ this?
-        IF  rdrop 2drop prev @ 8 + exit  THEN
-        2dup >r offset @ + >r prev @
-        BEGIN dup @ ?dup 0= IF  rdrop rdrop drop exit  THEN
-              dup r> r> 2dup >r >r rot this?  0=
-        WHILE nip REPEAT
-        dup @ rot ! prev @ over ! prev ! rdrop rdrop
-     REPEAT ;
 ( ----- 094 )
-\ backup emptybuf readblk                         ks 23 jul 87
 
-| : backup ( bufaddr -- )       dup 6+ @ 0<
-     IF  2+ dup @ 1+         \ buffer empty if file = -1
-         IF  BEGIN  dup 6+ over 2+ @ 2 pick @ 0 r/w
-             WHILE  1 ?diskerror  REPEAT
-         THEN  4+ dup @ $7FFF and over !  THEN
-     drop ;
-
-  : emptybuf ( bufaddr -- )      2+ dup on 4+ off ;
-
-| : readblk ( blk file addr -- blk file addr )
-     dup emptybuf  >r
-     BEGIN  2dup   0= offset @ and  +
-            over   r@ 8 + -rot 1 r/w
-     WHILE  2 ?diskerror  REPEAT r>  ;
 ( ----- 095 )
-\ take mark updates? full? core?                  ks 04 jul 87
 
-| : take ( -- bufaddr)    prev
-     BEGIN  dup @ WHILE  @ dup 2+ @ -1 = UNTIL
-     buffers lock   dup backup ;
-
-| : mark ( blk file bufaddr -- blk file )   2+ >r
-     2dup r@ !  over 0= offset @ and +   r@ 2+ !
-     r> 4+ off   buffers unlock ;
-
-| : updates? ( -- bufaddr / flag)
-     prev  BEGIN  @ dup  WHILE  dup 6+ @ 0< UNTIL ;
-
-  : core? ( blk file -- addr /false )   (core? 2drop false ;
 ( ----- 096 )
-\ block & buffer manipulation                     ks 01 okt 87
 
-  : (buffer ( blk file -- addr )
-      BEGIN  (core? take mark  REPEAT ;
-
-  : (block ( blk file -- addr )
-      BEGIN  (core? take readblk mark  REPEAT ;
-
-  Code isfile@  ( -- addr )
-     D push   isfile #) D mov   Next   end-code
-\ : isfile@ ( -- addr )    isfile @ ;
-
-  : buffer  ( blk -- addr )   isfile@ (buffer ;
-
-  : block   ( blk -- addr )   isfile@ (block ;
 ( ----- 097 )
-\ block & buffer manipulation                     ks 02 okt 87
 
-  : update          $80 prev @ 6+ 1+ ( Byte-Order! )  c! ;
-
-  : save-buffers    buffers lock
-     BEGIN  updates? ?dup WHILE  backup REPEAT  buffers unlock ;
-
-  : empty-buffers   buffers lock prev
-     BEGIN  @ ?dup WHILE  dup emptybuf  REPEAT  buffers unlock ;
-
-  : flush   file-link
-     BEGIN  @ ?dup WHILE  dup fclose  REPEAT
-     save-buffers empty-buffers ;
 ( ----- 098 )
-\ Allocating buffers                              ks 31 oct 86
-  $10000 Constant limit     Variable first
 
-  : allotbuffer ( -- )
-     first @  r0 @  -  b/buf 2+  u< ?exit
-     b/buf negate first +!  first @ dup emptybuf
-     prev @ over !  prev ! ;
-
-  : freebuffer ( -- )   first @ limit b/buf - u<
-     IF first @  backup  prev
-       BEGIN dup @  first @ -  WHILE  @  REPEAT
-     first @  @ swap !  b/buf first +!  THEN ;
-
-  : all-buffers  BEGIN  first @ allotbuffer first @ =  UNTIL ;
-
-| : init-buffers    prev off  limit first !  all-buffers ;
 ( ----- 099 )
 \ endpoints of forget                             uh 27 apr 88
 
@@ -1483,7 +1348,7 @@ Target  Forth also definitions
   Defer custom-remove     ' noop Is custom-remove
 
   : trim   ( dic symb -- )  next-link remove
-     over  remove-tasks remove-vocs remove-words remove-files
+     over  remove-tasks remove-vocs remove-words 
      custom-remove  heap swap - hallot dp !  last off ;
 ( ----- 102 )
 \ deleting words from dict.                       ks 02 okt 87
@@ -1557,7 +1422,7 @@ Target  Forth also definitions
 
 | : (cold      origin up@ $100 cmove   $80 count
      $50 umin >r tib r@ move  r> #tib !  >in off  blk off
-     init-vocabularys init-buffers flush 'cold
+     init-vocabularys 'cold
      Onlyforth page &24 spaces logo count type cr (restart ;
 ( ----- 107 )
 \ (boot                                           ks 11 m„r 89
@@ -1599,7 +1464,7 @@ Target  Forth also definitions
      $21 int   warmboot # call
   end-code
 
-  : bye       flush empty page (bye ;
+  : bye       empty page (bye ;
 ( ----- 110 )
 \ cold                                            ks 09 m„r 89
 
@@ -1616,7 +1481,7 @@ Target  Forth also definitions
 ( ----- 111 )
 \ System patchup                                  ks 16 sep 88
 
-  1 &35 +thru      \ MS-DOS interface
+  1 &9 +thru      \ MS-DOS interface
 
   : forth-83 ;     \ last word in Dictionary
 
@@ -1660,10 +1525,10 @@ Target  Forth also definitions
      A D: mov   D pop   Next   end-code
 ( ----- 114 )
 \  BDOS  keyboard input                           ks 16 sep 88
-\ es muss wirklich so kompliziert sein, da sonst kein ^C und ^P
+\ it really needs to be this complicated, else ^C und ^P would
+\ not work
 \\
 | Variable newkey   newkey off
-
   Code (key@  ( -- 8b )    D push   newkey #) D mov   D+ D+ or
      0= ?[  $7 # A+ mov   $21 int   A- D- mov  ]?
      0 # D+ mov   D+ newkey 1+ #) mov   Next
@@ -1739,407 +1604,5 @@ Target  Forth also definitions
 
   Output: display [ here output ! ]
            (emit (cr  tipp (del (page (at (at? [ drop
+
 ( ----- 120 )
-\ MSDOS printer   I/O Port access                 ks 09 aug 87
-
-  Code lst! ( 8b -- )  $5 # A+ mov   $21 int   D pop   Next
-  end-code
-
-  Code pc@    ( port -- 8b )
-     D byte in   A- D- mov   D+ D+ xor   Next
-  end-code
-
-  Code pc!    ( 8b port -- )
-     A pop   D byte out   D pop   Next
-  end-code
-( ----- 121 )
-\ zero terminated strings                         ks 09 aug 87
-
-  : counted   ( asciz -- addr len )
-     dup -1 0 scan drop over - ;
-
-  : >asciz   ( string addr -- asciz )   2dup >r  -
-     IF  count r@ place  r@  THEN  0 r> count + c!  1+ ;
-
-
-
-  : asciz    ( -- asciz )   name here >asciz ;
-( ----- 122 )
-\ Disk capacities                                 ks 08 aug 88
-  Vocabulary Dos   Dos also definitions
-
-  6 Constant #drives
-
-  Create capacities   $4B0 , $4B0 , $1B31 , $1B31 , $1B0F , 0 ,
-
-| Code ?capacity ( +n -- cap )  D shl   capacities # W mov
-     D W add   W ) D mov   Next   end-code
-( ----- 123 )
-\ MS-dos disk handlers direct access              ks 31 jul 87
-
-| Code block@  ( addr blk drv -- ff )
-     D- A- mov   D pop   C pop   R push   U push
-     I push   C R mov   2 # C mov   D shl   $25 int
-  Label end-r/w    I pop   I pop   U pop   R pop   0 # D mov
-     CS ?[  D+ A+ mov   A error# #) mov   D dec  ]?  Next
-  end-code
-
-| Code block!  ( addr blk drv -- ff )  D- A- mov   D pop
-     C pop   R push   U push   I push   C R mov   2 # C mov
-     D shl   $26 int   end-r/w # jmp
-  end-code
-( ----- 124 )
-\ MS-dos disk handlers direct access              ks cas 18jul20
-
-| : ?drive  ( +n -- +n )   dup #drives u< ?exit
-     Error" beyond drive capacity" ;
-
-  : /drive ( blk1 -- blk2 drive )  0 swap  #drives 0
-     DO  dup I ?capacity under u< IF drop LEAVE THEN
-         - swap 1+ swap  LOOP  swap ;
-
-  : blk/drv  ( -- capacity )  drv ?capacity ;
-
-  Forth definitions
-
-  : >drive    ( blk1 +n -- blk2 )   ?drive
-     0 swap  drv  2dup u> dup >r  0= IF  swap  THEN
-     ?DO  I ?capacity + LOOP  r> IF  negate  THEN - ;
-( ----- 125 )
-\ MS-DOS   file access                            ks 18 m„r 88
-  Dos definitions
-
-| Variable fcb         fcb off      \ last fcb accessed
-| Variable prevfile                 \ previous active file
-
-  &30 Constant fnamelen             \ default length in FCB
-
-  Create filename   &62 allot       \ max 60 + count + null
-
-  Variable attribut   7 attribut !  \ read-only, hidden, system
-( ----- 126 )
-\ MS-DOS   disk errors                            ks cas 18jul20
-
-| : .error#   ." error # " base push decimal error# @ . ;
-
-| : .ferrors   error# @ &18 case? IF  2  THEN
-       1 case? Abort" file exists"
-       2 case? Abort" file not found"
-       3 case? Abort" path not found"
-       4 case? Abort" too many open files"
-       5 case? Abort" no access"
-       9 case? Abort" beyond end of file"
-     &15 case? Abort" illegal drive"
-     &16 case? Abort" current directory"
-     &17 case? Abort" wrong drive"
-     drop ." Disk" .error# abort ;
-( ----- 127 )
-\ MS-DOS   disk errors                            ks cas 18jul20
-
-  : (diskerror   ( *f -- )   ?dup 0=exit
-     fcb @ IF  error# !  .ferrors exit  THEN
-     input push   output push   standardi/o   1-
-     IF  ." read"  ELSE  ." write"  THEN
-     .error# ."  retry? (y/n)"
-     key cr capital Ascii Y = not Abort" aborted" ;
-
-  ' (diskerror Is ?diskerror
-( ----- 128 )
-\ ~open  ~creat  ~close                           ks 04 aug 87
-
-  Code ~open  ( asciz mode -- handle ff / err# )
-     A D xchg   $3D # A+ mov
-  Label >open   D pop   $21 int   A D xchg
-     CS not ?[  D push   0 # D mov  ]?  Next
-  end-code
-
-  Code ~creat  ( asciz attribut -- handle ff / err# )
-     D C mov   $3C # A+ mov   >open ]]   end-code
-
-  Code ~close   ( handle -- )   D R xchg
-     $3E # A+ mov   $21 int   R D xchg   D pop   Next
-  end-code
-( ----- 129 )
-\ ~first  ~unlink  ~select  ~disk?                ks 04 aug 87
-
-  Code ~first  ( asciz attr -- err# )
-     D C mov   D pop   $4E # A+ mov
- [[  $21 int   0 # D mov   CS ?[  A D xchg  ]?   Next
-  end-code
-
-  Code ~unlink  ( asciz -- err# )    $41 # A+ mov  ]]  end-code
-
-  Code ~select  ( n -- )
-     $E # A+ mov   $21 int   D pop   Next   end-code
-
-  Code ~disk?  ( -- n )   D push   $19 # A+ mov
-     $21 int   A- D- mov   0 # D+ mov   Next
-  end-code
-( ----- 130 )
-\ ~next  ~dir                                     ks 04 aug 87
-
-  Code ~next    ( -- err# )   D push   $4F # A+ mov
-     $21 int   0 # D mov   CS ?[  A D xchg  ]?   Next
-  end-code
-
-  Code ~dir    ( addr drive -- err# )   I W mov
-     I pop   $47 # A+ mov   $21 int   W I mov
-     0 # D mov   CS ?[  A D xchg  ]?   Next
-  end-code
-( ----- 131 )
-\ MS-DOS file control Block                          cas 19jun20
-
-| : Fcbytes  ( n1 len -- n2 )  Create over c, +
-  Does>      ( fcbaddr -- fcbfield )  c@ + ;
-
-\ first field for file-link
-2        1 Fcbytes f.no       \ must be first field
-         2 Fcbytes f.handle
-         2 Fcbytes f.date
-         2 Fcbytes f.time
-         4 Fcbytes f.size
-  fnamelen Fcbytes f.name     Constant b/fcb
-
-b/fcb  Host   ' tb/fcb >body !
-       Target Forth also Dos also definitions
-( ----- 132 )
-\ (.file fname  fname!                            ks 10 okt 87
-
-  : fname!   ( string fcb -- )   f.name >r   count
-     dup fnamelen < not Abort" file name too long"  r> place ;
-
-| : filebuffer?   ( fcb -- fcb bufaddr / fcb ff )
-     prev  BEGIN  @ dup WHILE  2dup 2+ @  = UNTIL ;
-
-| : flushfile     ( fcb -- )
-     BEGIN  filebuffer? ?dup
-     WHILE  dup backup emptybuf  REPEAT  drop ;
-
-  : fclose   ( fcb  -- )   ?dup 0=exit
-     dup f.handle @ ?dup 0= IF  drop exit  THEN
-     over flushfile  ~close  f.handle off ;
-( ----- 133 )
-\ (.file fname  fname!                            ks 18 m„r 88
-
-| : getsize   ( -- d )     [ $80 &26 + ] Literal 2@ swap ;
-
-  : (fsearch  ( string -- asciz *f )
-     filename >asciz dup attribut @ ~first ;
-
-  Defer fsearch   ( string -- asciz *f )
-
-  ' (fsearch Is fsearch
-
-\ graceful behaviour if file does not exist
-| : ?notfound  ( f* -- )  ?dup 0=exit  last' @  [fcb] =
-     IF  hide   file-link @ @ file-link !  prevfile @ setfiles
-         last @ 4 - dp !  last off   filename count here place
-     THEN  ?diskerror ;
-( ----- 134 )
-\ freset fseek                                    ks 19 m„r 88
-
-  : freset  ( fcb -- )   ?dup 0=exit
-     dup f.handle @ ?dup IF  ~close  THEN   dup >r
-     f.name fsearch ?notfound   getsize r@ f.size 2!
-     [ $80 &22 + ] Literal @ r@ f.time !
-     [ $80 &24 + ] Literal @ r@ f.date !
-     2 ~open ?diskerror  r> f.handle ! ;
-
-
-  Code fseek ( dfaddr fcb -- )
-     D W mov   u' f.handle W D) W mov   W W or  0=
-     ?[  ;c: dup freset fseek ; Assembler ]?  R W xchg
-     C pop   D pop   $4200 # A mov  $21 int   W R mov
-     CS not ?[  D pop   Next  ]?  A D xchg  ;c: ?diskerror ;
-( ----- 135 )
-\ lfgets  fgetc  file@                            ks 07 jul 88
-
-\ Code ~read   ( seg:addr quan handle -- #read )  D W mov
-Assembler  [[   W R xchg   C pop   D pop
-     D: pop   $3F # A+ mov   $21 int   C: C mov   C D: mov
-     W R mov  A D xchg  CS not ?[  Next  ]?  ;c: ?diskerror ;
-
-  Code lfgets  ( seg:addr quan fcb -- #read )
-     D W mov   u' f.handle W D) W mov   ]]  end-code
-
-  true Constant eof
-
-  : fgetc  ( fcb -- 8b / eof )
-     >r 0 sp@ ds@ swap 1 r> lfgets ?exit 0= ;
-
-  : file@  ( dfaddr fcb -- 8b / eof )  dup >r fseek r> fgetc ;
-( ----- 136 )
-\ lfputs  fputc  file!                            ks 24 jul 87
-
-| Code ~write  ( seg:addr quan handle -- )   D W mov
-[[   W R xchg   C pop   D pop
-     D: pop   $40 # A+ mov   $21 int   W R mov  A D xchg
-     C: W mov   W D: mov  CS ?[  ;c: ?diskerror ; Assembler  ]?
-     C D sub  0= ?[  D pop   Next  ]?  ;c: Abort" Disk voll" ;
-
-  Code lfputs  ( seg:addr quan fcb -- )
-     D W mov   u' f.handle W D) W mov  ]]  end-code
-
-  : fputc  ( 8b fcb -- )  >r sp@ ds@ swap 1 r> lfputs drop ;
-
-  : file!  ( 8b dfaddr fcb -- )  dup >r fseek r> fputc ;
-( ----- 137 )
-\ /block  *block                                  ks 02 okt 87
-
-  Code /block  ( d -- rest blk )   A D xchg   C pop
-     C D mov   A shr   D rcr   A shr   D rcr   D+ D- mov
-     A- D+ xchg   $3FF # C and   C push   Next
-  end-code
-\ : /block  ( d -- rest blk )   b/blk um/mod ;
-
-  Code *block  ( blk -- d )  A A xor   D+ D- xchg   D+ A+ xchg
-     A+ sal   D rcl   A+ sal   D rcl   A push   Next
-  end-code
-\ : *block  ( blk -- d )   b/blk um* ;
-( ----- 138 )
-\ fblock@  fblock!                                ks 19 m„r 88
-  Dos definitions
-
-| : ?beyond   ( blk -- blk )  dup 0< 0=exit  9 ?diskerror ;
-
-| : fblock   ( addr blk fcb -- seg:addr quan fcb )
-     fcb !  ?beyond dup *block  fcb @  fseek   ds@ -rot
-     fcb @ f.size 2@ /block rot -  ?beyond
-     IF  drop b/blk  THEN  fcb @ ;
-
-  : fblock@  ( addr blk fcb -- )    fblock lfgets drop ;
-
-  : fblock!  ( addr blk fcb -- )    fblock lfputs ;
-( ----- 139 )
-\ (r/w  flush                                     ks 18 m„r 88
-  Forth definitions
-
-  : (r/w   ( addr blk fcb r/wf -- *f )  over fcb !  over
-     IF  IF  fblock@ false exit  THEN  fblock! false exit
-     THEN  >r drop  /drive ?drive
-     r> IF  block@ exit  THEN  block! ;
-
-  ' (r/w Is r/w
-
-| : setfiles  ( fcb -- )   isfile@ prevfile !
-     dup isfile !   fromfile ! ;
-
-  : direct   0 setfiles ;
-( ----- 140 )
-\ File  >file                                     ks 23 m„r 88
-
-  : File    Create   file-link @   here file-link !  ,
-     here [ b/fcb 2 - ] Literal   dup allot   erase
-     file-link @   dup @ f.no c@ 1+   over f.no c!
-     last @ count $1F and   rot f.name place
-  Does> setfiles ;
-
-  File kernel.scr    ' kernel.scr @  Constant [fcb]
-
-  Dos definitions
-
-  : .file   ( fcb -- )
-     ?dup IF  body> >name .name exit  THEN  ." direct" ;
-( ----- 141 )
-\ .file  pushfile  close  open                    ks 12 mai 88
-  Forth  definitions
-
-  : file?    isfile@ .file ;
-
-  : pushfile    r>  isfile push  fromfile push  >r ; restrict
-
-  : close    isfile@ fclose ;
-
-  : open     isfile@ freset ;
-
-  : assign   isfile@ dup fclose   name swap fname!   open ;
-( ----- 142 )
-\      use from loadfrom include                  ks 18 m„r 88
-
-  : use      >in @   name find
-     0= IF  swap >in !   File   last'  THEN  nip
-     dup @ [fcb] =  over ['] direct = or
-     0= Abort" not a file"   execute open ;
-
-  : from         isfile push   use ;
-
-  : loadfrom     ( n -- )   pushfile  use load close ;
-
-  : include      1 loadfrom ;
-( ----- 143 )
-\ drive  drv  capacity   drivenames               ks 18 m„r 88
-
-  : drive ( n -- )   isfile@ IF  ~select exit  THEN
-     ?drive   offset off 0 ?DO  I ?capacity offset +!  LOOP ;
-
-  : drv   ( -- n )
-     isfile@ IF  ~disk? exit  THEN  offset @ /drive nip ;
-
-  : capacity   ( -- n )   isfile@ ?dup
-     IF  dup f.handle @ 0= IF  dup freset  THEN
-         f.size 2@ /block swap 0<> - exit  THEN  blk/drv ;
-
-| : Drv:   Create c,  Does> c@ drive ;
-
-  0 Drv: A:     1 Drv: B:     2 Drv: C:     3 Drv: D:
-  4 Drv: E:     5 Drv: F:     6 Drv: G:     7 Drv: H:
-( ----- 144 )
-\ lfsave  savefile  savesystem                    ks 10 okt 87
-
-  : lfsave   ( seg:addr quan string -- )
-     filename >asciz 0 ~creat ?diskerror
-     dup >r  ~write  r> ~close ;
-
-  : savefile ( addr len -- )  ds@ -rot
-     name nullstring? Abort" needs name" lfsave ;
-
-  : savesystem   save flush   $100 here savefile ;
-( ----- 145 )
-\ viewing                                         ks 19 m„r 88
-  Dos definitions
-| $400 Constant viewoffset
-
-  : (makeview   ( -- n )
-     blk @ dup 0=exit   loadfile @ ?dup 0=exit   f.no c@ ?dup
-     IF  viewoffset * + $8000 or exit  THEN  0= ;
-  ' (makeview Is makeview
-
-  : @view  ( acf -- blk fno )   >name 4 - @   dup 0<
-     IF  $7FFF and viewoffset u/mod  exit  THEN
-     ?dup 0= Error" eingetippt"  0 ;
-
-  : >file   ( fno -- fcb )   dup 0=exit    file-link
-     BEGIN  @  dup WHILE  2dup f.no c@ = UNTIL  nip ;
-( ----- 146 )
-\ forget FCB's                                    ks 23 okt 88
-  Forth definitions
-| : 'file  ( -- scr )  r>   scr push   isfile push   >r
-     [ Dos ] ' @view >file isfile ! ;
-
-  : view   'file list ;
-  : help   'file capacity 2/ + list ;
-
-| : remove?   ( dic symb addr -- dic symb addr f )
-     2 pick over 1+ u< ;
-
-| : remove-files  ( dic symb -- dic symb )  file-link
-     BEGIN  @ ?dup WHILE  remove? IF  dup fclose  THEN  REPEAT
-     file-link remove
-     isfile@    remove? nip IF  file-link @ isfile !  THEN
-     fromfile @ remove? nip 0=exit isfile@ fromfile ! ;
-( ----- 147 )
-\ BIOS  keyboard input                            ks 16 sep 88
-
-  Code (key@  ( -- 8b )  D push   A+ A+ xor   $16 int
-     0 # D+ mov   A- D- mov   A- A- or
-     0= ?[  A+ D- mov   D+ com  ]?   Next   end-code
-
-  : test  BEGIN  (key@ #esc case? ?exit
-                 cr dup emit 5 .r  key 5 .r  REPEAT ;
-\\
-  Code (key?  ( -- f )   D push   1 # A+ mov   D D xor
-     $16 int   0= not ?[  D dec  ]?   Next   end-code
-
-  Code empty-keys   $C00 # A mov   $21 int   Next   end-code
-
-  : (key  ( -- 8b )   BEGIN  pause (key? UNTIL  (key@ ;

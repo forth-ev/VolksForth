@@ -1,15 +1,13 @@
 ( ----- 000 )
-\  ####  volksFORTH   ####                           cas 18jul20
-VolksForth has been developed by
+\  ####  volksFORTH   ####                           cas 11apr21
+   volksFORTH designed and developed by
+   the volksFORTH team
 
-   K. Schleisiek, B. Pennemann, G. Rehfeld, D. Weineck
-   Ulli Hoffmann, Philip Zembrod, Carsten Strotmann
-6502 version by B.Pennemann and K.Schleisiek
-Port to C64 "ultraFORTH"   by G. Rehfeld
-Port to 68000 and Atari ST by D.Weineck and B.Pennemann
-Port to 8080  and CP/M by U.Hoffmann    jul 86
-Port to C16 "ultraFORTH" by C.Vogt
-Port to 8088/86 and MS-DOS by K.Schleisiek  dez 87
+    see https://volksforth.sf.net
+        https://github.com/forth-ev/VolksForth
+
+    for documentation, updated versions and development
+    information
 ( ----- 001 )
 \ MS-DOS   volksForth Load Screen                 ks cas 18jul20
   warning off          \ disable warnings during compilation
@@ -27,11 +25,11 @@ cr .( new kernel as "FORTH.COM" written) cr bell
 \\ The use of the 8088/86 register                ks 27 oct 86
 
 The assembler uses forth style names for the register
-The assiciation to the Intel register names:
+Mapping of Forth Registernames to INTEL Register Names:
 
 A <=> AX      A- <=> AL     A+ <=> AH
 C <=> CX      C- <=> CL     C+ <=> CH
-  Register A and C are available for general use
+  Register A and C are free to use
 
 D <=> DX      D- <=> DL     D+ <=> DH
   the Top of (Data-) Stack (TOS)
@@ -57,7 +55,7 @@ nop   5555 # jmp              here 2- >label >cold
 nop   5555 # jmp              here 2- >label >restart
 
 Create origin   here origin!    here $100 0 fill
-\ Coldstart valued for user variables
+\ Coldstart values for user variables
 
   $E9 int  end-code  -4 ,  $FC allot
 \ this is the multitasker initialization in the user area
@@ -667,7 +665,7 @@ Label domove   I W cmp   moveup CS ?]
 
   : tib ( -- addr )  >tib @ ;
 
-  : query    tib $50 expect span @ #tib !  >in off ;
+  : query  tib $50 expect span @ #tib !  >in off ;
 ( ----- 048 )
 \ skip scan /string                               ks 22 dez 87
 
@@ -1178,10 +1176,10 @@ Target  Forth also definitions
 
   Defer 'quit     ' (quit Is 'quit
 
-  : quit  r0 @ rp!   [compile] [   blk off   'quit ;
+  : quit  r0 @ rp!   [compile] [   blk off
+    key? IF key drop THEN
+    'quit ;
 
-\ : classical   cr .status  state @
-\    IF  ." C> " exit  THEN  ." I> " ;
 ( ----- 083 )
 \ end-trace abort                                 ks 26 jul 87
 
@@ -1347,7 +1345,7 @@ Target  Forth also definitions
   Defer custom-remove     ' noop Is custom-remove
 
   : trim   ( dic symb -- )  next-link remove
-     over  remove-tasks remove-vocs remove-words 
+     over  remove-tasks remove-vocs remove-words
      custom-remove  heap swap - hallot dp !  last off ;
 ( ----- 102 )
 \ deleting words from dict.                       ks 02 okt 87
@@ -1363,7 +1361,7 @@ Target  Forth also definitions
   : empty   [ dp ] Literal @ up@ trim
             [ udp ] Literal @ udp ! ;
 ( ----- 103 )
-\ save bye stop? ?cr                              ks 1UH 26sep88
+\ save stop? ?cr                              ks 1UH 26sep88
 
   : save    here  up@ trim   up@ origin $100 cmove
      voc-link @ BEGIN  dup 4- @ over 2- ! @ ?dup  0= UNTIL ;
@@ -1421,8 +1419,8 @@ Target  Forth also definitions
 
 | : (cold      origin up@ $100 cmove   $80 count
      $50 umin >r tib r@ move  r> #tib !  >in off  blk off
-     init-vocabularys 'cold
-     Onlyforth page &24 spaces logo count type cr (restart ;
+     init-vocabularys 'cold  Onlyforth $80 c@ 0= IF
+     page logo count type cr THEN (restart ;
 ( ----- 107 )
 \ (boot                                           ks 11 m„r 89
 
@@ -1459,8 +1457,8 @@ Target  Forth also definitions
 | Code (bye   cli   A A xor   A E: mov   #segs # call
      C: D mov   D R add   R D: mov   0 # I mov   I W mov
      $200 # C mov   rep movs   sti      \ restore interrupts
-     $4C # A+ mov   C: seg return_code #) A- mov
-     $21 int   warmboot # call
+  \  $4C # A+ mov   C: seg return_code #) A- mov  $21 int
+     warmboot # call
   end-code
 
   : bye       empty page (bye ;
@@ -1469,9 +1467,9 @@ Target  Forth also definitions
 
   here  >cold 2+  -   >cold !  Assembler
      (boot # call   C: A mov   A D: mov  A E: mov
-     #segs # call   $41 # R add  \ another k for the ints
-     $4A # A+ mov   $21 int        \ alloc memory
-     CS ?[  $10 # return_code #) byte mov   ' (bye @ # jmp  ]?
+  \  #segs # call   $41 # R add  \ another k for the ints
+  \  $4A # A+ mov   $21 int        \ alloc memory
+  \ CS ?[  $10 # return_code #) byte mov   ' (bye @ # jmp  ]?
   here   s0 #) W mov   6 # W add   origin # I mov   $20 # C mov
      rep movs   ' (cold >body # I mov   bootsystem # jmp
   end-code
@@ -1480,7 +1478,7 @@ Target  Forth also definitions
 ( ----- 111 )
 \ System patchup                                  ks 16 sep 88
 
-  1 &10 +thru      \ MS-DOS interface
+  1 &11 +thru      \ PC-BIOS interface
   : forth-83 ;     \ last word in Dictionary
 
   0 ' limit >body !   $DFF6 s0 !    $E77C r0 !
@@ -1522,30 +1520,9 @@ Target  Forth also definitions
      ]?  A I xchg   C: A mov   A E: mov
      A D: mov   D pop   Next   end-code
 ( ----- 114 )
-\  BDOS  keyboard input                           ks 16 sep 88
-\ it really needs to be this complicated, else ^C und ^P would
-\ not work
-\\
-| Variable newkey   newkey off
-  Code (key@  ( -- 8b )    D push   newkey #) D mov   D+ D+ or
-     0= ?[  $7 # A+ mov   $21 int   A- D- mov  ]?
-     0 # D+ mov   D+ newkey 1+ #) mov   Next
-  end-code
 
-  Code (key?  ( -- f )    D push   newkey #) D mov   D+ D+ or
-     0= ?[  -1 # D- mov   6 # A+ mov   $21 int  0=
-            ?[  0 # D+ mov
-            ][  -1 # A+ mov   A newkey #) mov   -1 # D+ mov
-        ]?  ]?  D+ D- mov   Next
-  end-code
 ( ----- 115 )
-\ empty-keys  (key                                ks 16 sep 88
-\\
-  Code empty-keys   $C00 # A mov   $21 int
-     0 # newkey 1+ #) byte mov   Next   end-code
 
-  : (key   ( -- 16b )   BEGIN  pause (key?  UNTIL
-     (key@ ?dup ?exit  (key? IF  (key@ negate exit  THEN  0 ;
 ( ----- 116 )
 \ BIOS  keyboard input                           ks 16 sep 88
 
@@ -1555,22 +1532,20 @@ Target  Forth also definitions
   Code (key?  ( -- f )   D push   1 # A+ mov   D D xor
      $16 int   0= not ?[  D dec  ]?   Next   end-code
 
-  Code empty-keys   $C00 # A mov   $21 int   Next   end-code
+  : empty-keys ;
 
   : (key  ( -- 8b )   BEGIN  pause (key? UNTIL  (key@ ;
 
-\ when this kernel driver are active the function keys
-\ cannot be used for ANSI.SYS makros
 ( ----- 117 )
 \ (decode expect                                  ks 16 sep 88
-
    7 Constant #bel            8 Constant #bs
    9 Constant #tab           $A Constant #lf
-  $D Constant #cr
-
+  $D Constant #cr           $26 Constant #eof
   : (decode  ( addr pos1 key -- addr pos2 )
-     #bs case? IF  dup 0=exit del 1- exit  THEN
-     #cr case? IF  dup span ! space   exit  THEN
+     #bs  case? IF  dup 0=exit del 1- exit  THEN
+     #cr  case? IF  dup span ! space  exit  THEN
+     #lf  case? IF  exit THEN
+     #eof case? IF  bye  THEN
      >r  2dup +  r@ swap c!  r> emit  1+ ;
 
   : (expect ( addr len1 -- )  span !   0
@@ -1579,10 +1554,10 @@ Target  Forth also definitions
   Input: keyboard [ here input ! ]
           (key (key? (decode (expect [ drop
 ( ----- 118 )
-\ MSDOS character output                          ks 29 jun 87
+\ BIOS character output                          ks 29 jun 87
 
-  Code charout  ( char -- )   $FF # D- cmp  0= ?[  D- dec  ]?
-     6 # A+ mov   $21 int   D pop   ' pause # W mov   W ) jmp
+  Code charout  ( char -- )   D- A- mov
+     $E # A+ mov   $10 int   D pop   ' pause # W mov   W ) jmp
   end-code
 
   &80 Constant c/row            &25 Constant c/col
@@ -1594,7 +1569,7 @@ Target  Forth also definitions
   : (at?                 0 0 ;
   : (page                c/col 0 DO  cr  LOOP ;
 ( ----- 119 )
-\ MSDOS character output                          ks  7 may 85
+\ BIOS character output                          ks  7 may 85
 
   : bell   #bel charout ;
 
@@ -1605,3 +1580,20 @@ Target  Forth also definitions
 
 ( ----- 120 )
 
+  Code pc@    ( port -- 8b )
+     D byte in   A- D- mov   D+ D+ xor   Next
+  end-code
+
+  Code pc!    ( 8b port -- )
+     A pop   D byte out   D pop   Next
+  end-code
+( ----- 121 )
+\ zero terminated strings                            cas 25jan06
+
+  : counted   ( asciz -- addr len )
+     dup -1 0 scan drop over - ;
+
+  : >asciz   ( string addr -- asciz )   2dup >r  -
+     IF  count r@ place  r@  THEN  0 r> count + c!  1+ ;
+
+  : asciz    ( -- asciz )   name here >asciz ;

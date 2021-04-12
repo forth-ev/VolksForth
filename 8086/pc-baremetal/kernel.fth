@@ -22,7 +22,7 @@ Port to 8088/86 and MS-DOS by K.Schleisiek  dez 87
   warning on
   flush                 \ close FORTH.COM
 
-cr .( new kernel as "FORTH.COM" written) cr bell ( bye )
+cr .( new kernel as "FORTH.COM" written) cr bell bye
 ( ----- 002 )
 \\ The use of the 8088/86 register                ks 27 oct 86
 
@@ -757,7 +757,7 @@ swap ]?  C >in #) add
 \ source word parse name                          ks 03 aug 87
 
   defer source
-  : (source ( -- addr len )  tib #tib @ exit ;
+  : (source ( -- addr len )  tib #tib @ ;
   ' source Is (source
 
   : word ( char -- addr )   source (word ;
@@ -1482,7 +1482,6 @@ Target  Forth also definitions
 \ System patchup                                  ks 16 sep 88
 
   1 &9 +thru      \ MS-DOS interface
-
   : forth-83 ;     \ last word in Dictionary
 
   0 ' limit >body !   $DFF6 s0 !    $E77C r0 !
@@ -1527,7 +1526,7 @@ Target  Forth also definitions
 \  BDOS  keyboard input                           ks 16 sep 88
 \ it really needs to be this complicated, else ^C und ^P would
 \ not work
-\\
+
 | Variable newkey   newkey off
   Code (key@  ( -- 8b )    D push   newkey #) D mov   D+ D+ or
      0= ?[  $7 # A+ mov   $21 int   A- D- mov  ]?
@@ -1542,7 +1541,7 @@ Target  Forth also definitions
   end-code
 ( ----- 115 )
 \ empty-keys  (key                                ks 16 sep 88
-\\
+
   Code empty-keys   $C00 # A mov   $21 int
      0 # newkey 1+ #) byte mov   Next   end-code
 
@@ -1550,7 +1549,7 @@ Target  Forth also definitions
      (key@ ?dup ?exit  (key? IF  (key@ negate exit  THEN  0 ;
 ( ----- 116 )
 \ BIOS  keyboard input                           ks 16 sep 88
-
+\\
   Code (key@  ( -- 8b )  D push   A+ A+ xor   $16 int
      A- D- xchg   0 # D+ mov   Next   end-code
 

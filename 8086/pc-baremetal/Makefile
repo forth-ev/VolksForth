@@ -9,7 +9,7 @@ all: $(TARGET)
 	$(BLKPACK) < $< > $@
 
 $(TARGET): kernel.fb meta.fb
-	emu2 $(BASE)/8086/msdos/volks4th.com "include kernel.fb"
+	emu2 $(BASE)/8086/msdos/volks4th.com "include kernel.fb bye"
 
 .PHONY: clean
 clean:

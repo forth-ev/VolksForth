@@ -22,7 +22,7 @@ Port to 8088/86 and MS-DOS by K.Schleisiek  dez 87
   warning on
   flush                 \ close FORTH.COM
 
-cr .( new kernel as "FORTH.COM" written) cr bell bye
+cr .( new kernel as "FORTH.COM" written) cr bell
 ( ----- 002 )
 \\ The use of the 8088/86 register                ks 27 oct 86
 
@@ -667,7 +667,7 @@ Label domove   I W cmp   moveup CS ?]
 
   : tib ( -- addr )  >tib @ ;
 
-  : query     tib $50 expect span @ #tib !  >in off ;
+  : query    tib $50 expect span @ #tib !  >in off ;
 ( ----- 048 )
 \ skip scan /string                               ks 22 dez 87
 
@@ -758,7 +758,7 @@ swap ]?  C >in #) add
 
   defer source
   : (source ( -- addr len )  tib #tib @ ;
-  ' source Is (source
+  ' (source Is source
 
   : word ( char -- addr )   source (word ;
 
@@ -1169,7 +1169,6 @@ Target  Forth also definitions
 
 ( ----- 082 )
 \  prompt  quit                                   ks 16 sep 88
-
   : (prompt   .status  state @ IF  cr ." ] " exit  THEN
      aborted @ 0= IF  ."  ok"  THEN  cr ;
 
@@ -1179,7 +1178,7 @@ Target  Forth also definitions
 
   Defer 'quit     ' (quit Is 'quit
 
-  : quit     r0 @ rp!   [compile] [   blk off   'quit ;
+  : quit  r0 @ rp!   [compile] [   blk off   'quit ;
 
 \ : classical   cr .status  state @
 \    IF  ." C> " exit  THEN  ." I> " ;
@@ -1256,7 +1255,7 @@ Target  Forth also definitions
 
   : .s    sp@ s0 @ over - $20 umin bounds ?DO I @ u. 2 +LOOP ;
 ( ----- 088 )
-\ c/l l/s                                    ks 19 m„r 88
+\ c/l l/s 
 
   &64 Constant c/l        \ Screen line length
   &16 Constant l/s        \ lines per screen
@@ -1282,10 +1281,10 @@ Target  Forth also definitions
 
 ( ----- 091 )
   $10000 Constant limit     Variable first
-  $408 Constant b/buf               \ physikalische Groesse
+  $408 Constant b/buf               \ real size of block buffer
   $400 Constant b/blk               \ bytes/block
 
-  Defer r/w                         \ physikalischer Diskzugriff
+  Defer r/w                         \ low level disk access word
 
 ( ----- 092 )
 
@@ -1481,7 +1480,7 @@ Target  Forth also definitions
 ( ----- 111 )
 \ System patchup                                  ks 16 sep 88
 
-  1 &9 +thru      \ MS-DOS interface
+  1 &10 +thru      \ MS-DOS interface
   : forth-83 ;     \ last word in Dictionary
 
   0 ' limit >body !   $DFF6 s0 !    $E77C r0 !
@@ -1526,7 +1525,7 @@ Target  Forth also definitions
 \  BDOS  keyboard input                           ks 16 sep 88
 \ it really needs to be this complicated, else ^C und ^P would
 \ not work
-
+\\
 | Variable newkey   newkey off
   Code (key@  ( -- 8b )    D push   newkey #) D mov   D+ D+ or
      0= ?[  $7 # A+ mov   $21 int   A- D- mov  ]?
@@ -1541,7 +1540,7 @@ Target  Forth also definitions
   end-code
 ( ----- 115 )
 \ empty-keys  (key                                ks 16 sep 88
-
+\\
   Code empty-keys   $C00 # A mov   $21 int
      0 # newkey 1+ #) byte mov   Next   end-code
 
@@ -1549,7 +1548,7 @@ Target  Forth also definitions
      (key@ ?dup ?exit  (key? IF  (key@ negate exit  THEN  0 ;
 ( ----- 116 )
 \ BIOS  keyboard input                           ks 16 sep 88
-\\
+
   Code (key@  ( -- 8b )  D push   A+ A+ xor   $16 int
      A- D- xchg   0 # D+ mov   Next   end-code
 
@@ -1560,8 +1559,8 @@ Target  Forth also definitions
 
   : (key  ( -- 8b )   BEGIN  pause (key? UNTIL  (key@ ;
 
-\ mit diesen Keytreibern sind die Funktionstasten nicht
-\ mehr durch ANSI.SYS Sequenzen vorbelegt.
+\ when this kernel driver are active the function keys
+\ cannot be used for ANSI.SYS makros
 ( ----- 117 )
 \ (decode expect                                  ks 16 sep 88
 
@@ -1605,3 +1604,4 @@ Target  Forth also definitions
            (emit (cr  tipp (del (page (at (at? [ drop
 
 ( ----- 120 )
+

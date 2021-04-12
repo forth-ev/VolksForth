@@ -18,7 +18,7 @@ floppy:
 
 .PHONY: qemu
 qemu:
-	qemu-system-i386 -curses -drive file=floppy.img,if=floppy,format=raw
+	qemu-system-i386 -curses -drive file=floppy.img,if=floppy,format=raw  -monitor telnet:127.0.0.1:1234,server,nowait
 
 .PHONY: clean
 clean:

@@ -1522,7 +1522,16 @@ Target  Forth also definitions
 ( ----- 114 )
 
 ( ----- 115 )
-
+\ APM PC Shutdown - poweroff
+   
+ CODE poweroff ( -- )
+   \ Connect to APM API
+   $5301 # A mov   R R xor   $15 int
+   \ Try to set APM version (to 1.2)
+   $530E # A mov   R R xor   $0102 # C mov  $15 int
+   \ Turn off the system
+   $5307 # A mov  $01 # R mov  $03 # C mov  $15 int
+ END-CODE
 ( ----- 116 )
 \ BIOS  keyboard input                           ks 16 sep 88
 

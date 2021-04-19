@@ -1160,10 +1160,16 @@ Target  Forth also definitions
 
 
 ( ----- 081 )
-
+\ depth rdepth postpone value to
   : rdepth   ( -- +n )           r0 @ rp@ 2+   - 2/ ;
-
   : depth    ( -- +n )           sp@ s0 @ swap - 2/ ;
+  : postpone
+    ' dup >name c@ $40 and
+    IF , ELSE [compile] compile compile , THEN ; immediate
+  : value create , DOES> @ ;
+  : TO ( x "<spaces>name" -- )
+    ' >body state @
+    IF [compile] Literal ! ELSE ! THEN ; immediate
 
 ( ----- 082 )
 \  prompt  quit                                   ks 16 sep 88
@@ -1253,7 +1259,7 @@ Target  Forth also definitions
 
   : .s    sp@ s0 @ over - $20 umin bounds ?DO I @ u. 2 +LOOP ;
 ( ----- 088 )
-\ c/l l/s 
+\ c/l l/s
 
   &64 Constant c/l        \ Screen line length
   &16 Constant l/s        \ lines per screen
@@ -1452,16 +1458,8 @@ Target  Forth also definitions
 ( ----- 109 )
 \  bye                                            ks 11 m„r 89
 
-  Variable return_code    return_code off
+  : bye       empty poweroff ;
 
-| Code (bye   cli   A A xor   A E: mov   #segs # call
-     C: D mov   D R add   R D: mov   0 # I mov   I W mov
-     $200 # C mov   rep movs   sti      \ restore interrupts
-  \  $4C # A+ mov   C: seg return_code #) A- mov  $21 int
-     warmboot # call
-  end-code
-
-  : bye       empty page (bye ;
 ( ----- 110 )
 \ cold                                            ks 09 m„r 89
 
@@ -1523,7 +1521,7 @@ Target  Forth also definitions
 
 ( ----- 115 )
 \ APM PC Shutdown - poweroff
-   
+
  CODE poweroff ( -- )
    \ Connect to APM API
    $5301 # A mov   R R xor   $15 int

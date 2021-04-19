@@ -723,8 +723,8 @@ Label domove   I W cmp   moveup CS ?]
 \\ high level definition, without umlauts
 
   : capital ( char -- char')
-     dup  Ascii a   [ Ascii z 1+ ] Literal
-     uwithin not ?exit   [ Ascii a Ascii A - ] Literal - ;
+     dup  [char] a   [ char z 1+ ] Literal
+     uwithin not ?exit   [ char a  char A - ] Literal - ;
 
   : upper  ( addr len -- )
      bounds ?DO  I c@ capital I c!  LOOP ;
@@ -745,12 +745,18 @@ swap ]?  C >in #) add
          ]?  u' dp U D) W mov   $2000 # W ) mov   W D mov   Next
   end-code
 ( ----- 053 )
-\\  (word                                          ks 27 oct 86
+\  postpone                               cs 19 apr 21
 
+  : postpone
+    ' dup >name c@ $40 and
+    IF , ELSE [compile] compile compile , THEN ; immediate
+
+\\  (word
 | : (word  ( char adr0 len0 -- addr )
      rot  >r  over swap   >in @ /string   r@ skip
      over swap   r> scan >r   rot over swap - r> 0<> - >in !
      over - here  dup >r  place  bl r@ count  + c!  r> ;
+
 ( ----- 054 )
 \ source word parse name                          ks 03 aug 87
 
@@ -765,21 +771,17 @@ swap ]?  C >in #) add
 
   : name ( -- string )   bl word dup count upper exit ;
 ( ----- 055 )
-\ state Ascii ," "lit ("  "                       ks 16 sep 88
+\ state char [char] ," "lit (" "            cs 19 apr 21
   Variable state   state off
-
-  : Ascii  ( char -- n )   bl word  1+ c@
-     state @ 0=exit   [compile] Literal ; immediate
-
-  : ,"    Ascii " parse  here over 1+ allot place ;
-
+  : char ( "char" -- c ) bl word 1+ c@ ;
+  : [char]  ( "char" --  )
+    char [compile] Literal ; immediate restrict
+   : ,"  [char] " parse  here over 1+ allot place ;
   Code "lit    ( -- addr )   D push   R ) D mov   D W mov
      W ) A- mov   0 # A+ mov   A inc   A R ) add   Next
   end-code restrict
 \ : "lit  r> r> under  count + even >r >r ;   restrict
-
   : ("    "lit ; restrict
-
   : "     compile (" ," align ; immediate restrict
 ( ----- 056 )
 \ ." ( .( \ \\ hex decimal                        ks 12 dez 88
@@ -787,8 +789,8 @@ swap ]?  C >in #) add
   : (."      "lit count type ; restrict
   : ."       compile (." ," align ; immediate restrict
 
-  : (        Ascii ) parse 2drop ; immediate
-  : .(       Ascii ) parse type ; immediate
+  : (        [char] ) parse 2drop ; immediate
+  : .(       [char] ) parse type ; immediate
 
   : \        >in @ negate   c/l mod   >in +! ; immediate
   : \\       b/blk >in ! ; immediate
@@ -800,9 +802,10 @@ swap ]?  C >in #) add
 ( ----- 057 )
 \ number conversion: digit? accumulate convert    ks 08 okt 87
 
-  : digit? ( char -- digit true/ false )  dup  Ascii 9 >
-     IF  [ Ascii A Ascii 9 - 1- ] Literal -  dup Ascii 9 >  and
-     THEN  Ascii 0 -   dup base @ u<  dup ?exit  nip ;
+  : digit? ( char -- digit true/ false )  dup  [char] 9 >
+ ( IF  [ char A char 9 - 1- ] Literal -  dup [char] 9 >  and)
+     IF 7 - dup [char] 9 > and
+     THEN  [char] 0 -   dup base @ u<  dup ?exit  nip ;
 
   : accumulate ( +d0 adr digit -- +d1 adr )   swap >r
      swap  base @ um* drop   rot  base @ um*  d+   r> ;
@@ -813,19 +816,19 @@ swap ]?  C >in #) add
 \ number conversion                               ks 29 jun 87
 | : end?       ( -- flag )               >in @ 0= ;
 
-| : char       ( addr0 -- addr1 char )   count -1 >in +! ;
+| : nchr       ( addr0 -- addr1 char )   count -1 >in +! ;
 
 | : previous   ( addr0 -- addr0 char )   1- count ;
 
 | : punctuation?   ( char -- flag )
-     Ascii , over =   swap Ascii . =  or ;
+     [char] , over =   swap [char] . =  or ;
 \ : punctuation?  ( char -- f )   ?" .," ;
 
 | : fixbase?   ( char -- char false / newbase true )  capital
-     Ascii $ case? IF $10 true exit  THEN
-     Ascii H case? IF $10 true exit  THEN
-     Ascii & case? IF &10 true exit  THEN
-     Ascii % case? IF   2 true exit  THEN     false ;
+     [char] $ case? IF $10 true exit  THEN
+     [char] H case? IF $10 true exit  THEN
+     [char] & case? IF &10 true exit  THEN
+     [char] % case? IF   2 true exit  THEN     false ;
 ( ----- 059 )
 \ number conversion: dpl ?num ?nonum ?dpl         ks 27 oct 86
 
@@ -844,13 +847,13 @@ swap ]?  C >in #) add
 
   : number?   ( string -- string false / n 0< / d 0> )
      base push  >in push  dup count >in !  dpl on
-     0 >r ( +sign)   0.0   rot end? ?nonum char
-     Ascii - case?  IF  rdrop true >r end? ?nonum char  THEN
-     fixbase?       IF  base !        end? ?nonum char  THEN
+     0 >r ( +sign)   0.0   rot end? ?nonum nchr
+     [char] - case?  IF  rdrop true >r end? ?nonum nchr  THEN
+     fixbase?       IF  base !        end? ?nonum nchr  THEN
      BEGIN digit? 0= ?nonum
-           BEGIN  accumulate ?dpl end? ?num char digit?
+           BEGIN  accumulate ?dpl end? ?num nchr digit?
         0= UNTIL  previous  punctuation?  0= ?nonum
-           dpl off  end? ?num  char
+           dpl off  end? ?num  nchr
      REPEAT ;
 
   : number ( string -- d )
@@ -1041,7 +1044,7 @@ Target  Forth also definitions
   : vocs   voc-link
      BEGIN  @ ?dup WHILE  dup 6 - >name .name  REPEAT ;
 
-  : words  ( -- )   [compile] Ascii capital >r   context @
+  : words  ( -- )   [compile] char capital >r   context @
      BEGIN  @ dup  stop? 0=  and
      WHILE  ?cr dup 2+  r@ bl = over 1+ c@ r@ = or
        IF  .name space  ELSE  drop  THEN
@@ -1163,9 +1166,7 @@ Target  Forth also definitions
 \ depth rdepth postpone value to
   : rdepth   ( -- +n )           r0 @ rp@ 2+   - 2/ ;
   : depth    ( -- +n )           sp@ s0 @ swap - 2/ ;
-  : postpone
-    ' dup >name c@ $40 and
-    IF , ELSE [compile] compile compile , THEN ; immediate
+
   : value create , DOES> @ ;
   : TO ( x "<spaces>name" -- )
     ' >body state @
@@ -1238,10 +1239,10 @@ Target  Forth also definitions
 
   : #>      ( 32b -- addr +n )    2drop   hld @   hld over - ;
 
-  : sign    ( n -- )              0< not ?exit  Ascii - hold ;
+  : sign    ( n -- )              0< not ?exit  [char] - hold ;
 
   : #       ( +d1 -- +d2)
-     base @ ud/mod   rot dup 9 >  7 and +  Ascii 0 +  hold ;
+     base @ ud/mod   rot dup 9 >  7 and +  [char] 0 +  hold ;
 
   : #s      ( +d -- 0 0 )         BEGIN # 2dup d0= UNTIL ;
 ( ----- 087 )

@@ -399,8 +399,8 @@ Tools ' trace  Alias trace  immediate
      IF  T compile lit , H exit THEN  T compile clit c, H ;
   immediate
 
-  : Ascii   H bl word 1+ c@  state @ 0=exit
-            T [compile] Literal H ; immediate
+  : char   H bl word 1+ c@  ;
+  : [char] H char T [compile] Literal H ; immediate
 
   : [']     T compile lit           H ; immediate
   : ."      T compile (."  ," align H ; immediate

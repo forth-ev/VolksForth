@@ -10,7 +10,7 @@ all: $(TARGET)
 	$(BLKPACK) < $< > $@
 
 $(TARGET): kernel.fb meta.fb
-	emu2 $(BASE)/8086/msdos/volks4th.com "include kernel.fb bye"
+	emu2 $(BASE)/8086/pc-baremetal/volks4th.com "include kernel.fb bye"
 
 .PHONY: floppy
 floppy:
@@ -22,4 +22,4 @@ qemu:
 
 .PHONY: clean
 clean:
-	rm -f $(TARGET) meta.com *.fb
+	rm -f $(TARGET) meta.com *.fb floppy.img

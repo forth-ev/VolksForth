@@ -1650,7 +1650,7 @@ Label docreate
 \ *** Block No. 76, Hexblock 4c
 4c fthpage
 
-\ warning  ?heapmovetx  |  |on |off  Create
+\ warning  ?headmove-xt  |  |on |off  Create
 
 Variable warning  0 warning !
 
@@ -1660,18 +1660,18 @@ Variable warning  0 warning !
  IF space  last @ .name ." exists " ?cr
  THEN  ;
 
-Variable ?heapmovetx  0 ?heapmovetx !
+Variable ?headmove-xt  0 ?headmove-xt !
 
 | : heapmove   ( from size -- offset )
    over >r  dup hallot ( from size ) heap swap cmove ( )
    heap r> - ;
 
 | : heapmove1x   ( from size -- offset )
-   heapmove  ?heapmovetx off ;
+   heapmove  ?headmove-xt off ;
 
-: |     ['] heapmove1x  ?heapmovetx ! ;
-: |on   ['] heapmove    ?heapmovetx ! ;
-: |off  ?heapmovetx off ;
+: |     ['] heapmove1x  ?headmove-xt ! ;
+: |on   ['] heapmove    ?headmove-xt ! ;
+: |off  ?headmove-xt off ;
 
 : Create
  here
@@ -1679,10 +1679,10 @@ Variable ?heapmovetx  0 ?heapmovetx !
  name c@
  dup 1 $20 uwithin not  Abort" invalid name"
  here last !  1+ allot  exists?
- ?heapmovetx @
+ ?headmove-xt @
  IF dup  6502-align/1 ,  \ Pointer to code
     dup  here  over -
-    ?heapmovetx perform  last +!
+    ?headmove-xt perform  last +!
     $20 flag! 6502-align/1 dp !
  ELSE  6502-align/2  drop
  THEN  reveal  0 ,
@@ -2122,7 +2122,7 @@ Code ?stack
 \ *** Block No. 92, Hexblock 5c
 5c fthpage
 
-( .status push load           08sep84ks)
+( .status push           08sep84ks)
 
 Defer .status    ' noop Is .status
 
@@ -2132,37 +2132,10 @@ Defer .status    ' noop Is .status
  r> swap dup >r @ >r  pull >r >r  ;
  restrict
 
-: load   ( blk --)
- ?dup 0= ?exit blk push  blk !
- >in push  >in off
- .status interpret ;
-
-
-
-
-
-
-
-
-
-
-
-
 \ *** Block No. 93, Hexblock 5d
 5d fthpage
 
-( +load thru +thru --> rdepth depth  ks)
-
-: +load  ( offset --)  blk @  + load ;
-
-: thru  ( from to --)
- 1+  swap  DO  I load  LOOP ;
-
-: +thru  ( off0 off1 --)
- 1+  swap  DO  I +load LOOP ;
-
-: -->
- 1 blk +! >in off .status  ;  immediate
+( rdepth depth  ks)
 
 : rdepth  ( -- +n)  r0 @  rp@ 2+ - 2/ ;
 

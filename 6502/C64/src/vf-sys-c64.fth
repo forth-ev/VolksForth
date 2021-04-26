@@ -20,6 +20,12 @@ include vf-lbls-cbm.fth
   0d8 >label InsCnt
  028a >label KeyRep
 
+  0cc >label blnsw
+  0cd >label blnct
+  0ce >label gdbln
+  0cf >label blnon
+  0d1 >label pnt
+  0d3 >label pntr
 
 \ *** Block No. 129, Hexblock 81
 81 fthpage
@@ -48,12 +54,12 @@ Code getkey  ( -- 8b)
 \ C64 curon curoff
 
 Code curon   ( --)
- 0D3 ldy  0D1 )Y lda  0CE sta  0CC stx
+ pntr ldy  pnt )Y lda  gdbln sta  blnsw stx
  xyNext jmp   end-code
 
 Code curoff   ( --)
- iny  0CC sty  0CD sty  0CF stx
- 0CE lda  0D3 ldy  0D1 )Y sta
+ iny  blnsw sty  blnct sty  blnon stx
+ gdbln lda  pntr ldy  pnt )Y sta
  1 # ldy  Next jmp   end-code
 
 

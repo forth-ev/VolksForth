@@ -14,14 +14,17 @@
   create fload-dev  8 ,
   create fload-2nd  f ,
 
-| : eol? ( c -- f )
+| : eolf? ( c -- f )
+   \ f=-1: not yet eol; store c and continue
+   \ f=0: eol but not yet eof; return line and flag continue
+   \ f=1: not eol but eof; store c, return line and flag eof
    dup 0= swap #cr = or IF 0 exit THEN
    i/o-status? IF 1 exit THEN  -1 ;
 
 | : freadline ( -- eof )
  fload-dev @ fload-2nd @ busin
  tib /tib bounds
- DO bus@ dup eol? under
+ DO bus@ dup eolf? under
      IF I c! ELSE drop THEN
  dup 0<
    IF drop ELSE I + tib - #tib ! UNLOOP
@@ -29,7 +32,7 @@
  LOOP /tib #tib !
  ." warning: line exceeds max " /tib .
  cr ." extra chars ignored" cr
- BEGIN bus@ eol? 1+ UNTIL
+ BEGIN bus@ eolf? 1+ UNTIL
  i/o-status? busoff ;
 
 

@@ -4,6 +4,11 @@ test: logtest.result
 clean:
 	rm -f *.log *.LOG *.result *.golden
 
+v4thfile.com: volks4th.com  src/V4THFILE.FB \
+    emulator/run-in-dosbox.sh
+	rm -f V4THFILE.COM v4thfile.com
+	./emulator/run-in-dosbox.sh volks4th.com v4thfile
+	mv V4THFILE.COM v4thfile.com
 
 logtest.log: volks4th.com tests/LOG2FILE.FB tests/LOGTEST.FB \
     emulator/run-in-dosbox.sh

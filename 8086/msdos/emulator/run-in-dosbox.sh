@@ -25,7 +25,7 @@ auto_c=""
 autocmd=""
 if [ -n "${forth}" ]; then
   auto_c="-c"
-  autocmd="${forth} path f:\\;f:\\tests ${forthcmd} ${bye}"
+  autocmd="${forth} path f:\\;f:\\src;f:\\tests ${forthcmd} ${bye}"
 fi
 
 dosbox -c "mount f ${basedir}" -c "f:" "${auto_c}" "${autocmd}" $exit

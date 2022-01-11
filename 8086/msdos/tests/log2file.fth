@@ -58,14 +58,14 @@ Output: alsologtofile
 
 \ *** Block No. 3, Hexblock 3
 
-\ logopen logclose                                   phz 04jan22
+\ logopen logclose                                   phz 11jan22
 
   : logopen ( -- )
+     isfile push
      logfile make  isfile@ dup freset logfcb !
      alsologtofile ;
 
   : logclose ( -- )  display  logfcb @ fclose ;
-
 
 
 

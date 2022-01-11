@@ -1,17 +1,19 @@
 #!/bin/bash
 
 set -e
+set -x
 
 emulatordir="$(realpath --relative-to="$PWD" "$(dirname "${BASH_SOURCE[0]}")")"
 basedir="$(realpath --relative-to="$PWD" "${emulatordir}/..")"
 
 forth="$1"
-include_basename="$2"
+include_filename="$2"
+include_basename="${include_filename%.*}"
 forthcmd=""
 exit=""
 bye=""
 if [ -n "${include_basename}" ]; then
-  forthcmd="include ${include_basename}.fb"
+  forthcmd="include ${include_filename}"
   logname="${include_basename}.log"
   doslogname="$(echo ${logname}|tr '[:lower:]' '[:upper:]')"
   rm -f "${logname}" "${doslogname}"

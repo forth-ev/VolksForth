@@ -20,9 +20,9 @@
 
 \ *** Block No. 1, Hexblock 1
 
-\ load screen                                        phz 06jan22
+\ load screen                                        phz 15jan22
 
-  1 3 +thru
+  1 4 +thru
 
 
 
@@ -77,18 +77,37 @@
 
 \ *** Block No. 4, Hexblock 4
 
-\ interpret-via-tib include                          phz 06jan22
+\ save/restoretib                                    phz 15jan22
+
+  100 constant /stash
+  create stash[  /stash allot  here constant ]stash
+  variable stash>   stash[ stash> !
+
+  : savetib  ( -- n )
+      #tib @ >in @ -  dup stash> @ + ]stash u>
+        abort" tib stash overflow"   >r
+      tib >in @ +  stash> @  r@ cmove
+      r@ stash> +!  r> ;
+
+  : restoretib  ( n -- )
+      dup >r negate stash> +!   stash> @ tib r@ cmove
+      r> #tib !  >in off ;
+
+
+\ *** Block No. 5, Hexblock 5
+
+\ interpret-via-tib include                          phz 15jan22
 
   : interpret-via-tib
   BEGIN freadline >r .status >in off interpret
   r> UNTIL ;
 
   : include ( -- )
-  pushfile use
+  pushfile  use
   probe-for-fb isfile@ freset IF 1 load close exit THEN
-  blk @ Abort" no include from blk"
-  interpret-via-tib close
-  #tib off  >in off ;
+  savetib >r  interpret-via-tib close  r> restoretib ;
+
+
 
 
 

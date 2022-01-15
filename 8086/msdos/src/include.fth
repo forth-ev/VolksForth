@@ -77,9 +77,9 @@
 
 \ *** Block No. 4, Hexblock 4
 
-\ save/restoretib                                    phz 15jan22
+\ save/restoretib                                    phz 16jan22
 
-  100 constant /stash
+  $50 constant /stash
   create stash[  /stash allot  here constant ]stash
   variable stash>   stash[ stash> !
 
@@ -96,7 +96,7 @@
 
 \ *** Block No. 5, Hexblock 5
 
-\ interpret-via-tib include                          phz 15jan22
+\ interpret-via-tib include                          phz 16jan22
 
   : interpret-via-tib
   BEGIN freadline >r .status >in off interpret
@@ -107,8 +107,8 @@
   probe-for-fb isfile@ freset IF 1 load close exit THEN
   savetib >r  interpret-via-tib close  r> restoretib ;
 
-
-
-
+  : (stashquit  stash[ stash> !  (quit ;
+  : stashrestore  ['] (stashquit IS 'quit ;
+  ' stashrestore IS 'restart
 
 

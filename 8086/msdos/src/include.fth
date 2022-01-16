@@ -20,9 +20,9 @@
 
 \ *** Block No. 1, Hexblock 1
 
-\ load screen                                        phz 15jan22
+\ load screen                                        phz 16jan22
 
-  1 4 +thru
+  1 5 +thru
 
 
 
@@ -110,5 +110,24 @@
   : (stashquit  stash[ stash> !  (quit ;
   : stashrestore  ['] (stashquit IS 'quit ;
   ' stashrestore IS 'restart
+
+
+
+\ *** Block No. 6, Hexblock 6
+
+\ \                                                  phz 16jan22
+
+  : \  blk @ IF >in @ negate  c/l mod  >in +!
+       ELSE #tib @ >in ! THEN ; immediate
+
+
+
+
+
+
+
+
+
+
 
 

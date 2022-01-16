@@ -103,7 +103,7 @@
   r> UNTIL ;
 
   : include ( -- )
-  pushfile  use  file? cr
+  pushfile  use  cr file?
   probe-for-fb isfile@ freset IF 1 load close exit THEN
   savetib >r  interpret-via-tib close  r> restoretib ;
 

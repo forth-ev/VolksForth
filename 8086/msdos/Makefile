@@ -6,7 +6,7 @@ fbfiles_uppercase = $(wildcard src/*.FB tests/*.FB)
 fthfiles_caseconverted = $(patsubst %.fb, %.fth, \
     $(shell ../../tools/echo-tolower.py $(fbfiles_uppercase)))
 
-test: incltest.result logtest.result
+test: incltest.result logtest.result test-min.result
 
 fth: $(fthfiles) $(fthfiles_caseconverted)
 
@@ -20,18 +20,29 @@ v4thfile.com: volks4th.com  src/include.fb src/v4thfile.fb \
 	./emulator/run-in-dosbox.sh volks4th.com v4thfile.fb
 	mv V4THFILE.COM v4thfile.com
 
-incltest.log: v4thfile.com tests/log2file.fb tests/incltest.fth \
-    emulator/run-in-dosbox.sh
-	./emulator/run-in-dosbox.sh v4thfile.com incltest.fth
-
-incltest.golden: tests/golden/incltest.golden
-	cp -p $< $@
-
 logtest.log: volks4th.com tests/log2file.fb tests/logtest.fb \
     emulator/run-in-dosbox.sh
 	./emulator/run-in-dosbox.sh volks4th.com logtest.fb
 
-logtest.golden: tests/golden/logtest.golden
+incltest.log: v4thfile.com tests/log2file.fb tests/incltest.fth \
+    emulator/run-in-dosbox.sh
+	./emulator/run-in-dosbox.sh v4thfile.com incltest.fth
+
+test-min.log: v4thfile.com tests/* emulator/run-in-dosbox.sh
+	rm -f TEST.LOG
+	./emulator/run-in-dosbox.sh v4thfile.com test-min.fth
+	mv TEST.LOG $@
+
+
+test-min.golden: $(patsubst %, tests/golden/%.golden, prelim core)
+	cat $? > $@
+
+test-std.golden: $(patsubst %, tests/golden/%.golden, \
+    prelim core coreext double report-noblk)
+	cat $? > $@
+
+
+%.golden: tests/golden/%.golden
 	cp -p $< $@
 
 %.result: %.log %.golden tests/evaluate-test.sh

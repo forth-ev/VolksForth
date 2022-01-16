@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -e
-set -x
 
 emulatordir="$(realpath --relative-to="$PWD" "$(dirname "${BASH_SOURCE[0]}")")"
 basedir="$(realpath --relative-to="$PWD" "${emulatordir}/..")"

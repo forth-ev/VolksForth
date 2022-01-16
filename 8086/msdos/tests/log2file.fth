@@ -20,11 +20,11 @@
 
 \ *** Block No. 1, Hexblock 1
 
-\ load screen                                        phz 04jan22
+\ load screen                                        phz 16jan22
 
-  1 2 +thru
+  : (blk  blk @ 0= IF ascii ) parse 2drop THEN ;
 
-
+  (blk  1 2 +thru  ( )
 
 
 

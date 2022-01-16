@@ -50,7 +50,7 @@ tests/%.fth: tests/%.fb ../../tools/fb2fth.py
 # rules doesn't seem feasible here, hence the one collective rule.
 
 .ONESHELL:
-$(fthfiles): $(fbfiles)
+$(fthfiles_caseconverted): $(fbfiles_uppercase)
 	set -x
 	for fb in $^
 	do

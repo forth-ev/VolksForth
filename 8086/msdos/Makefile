@@ -13,6 +13,11 @@ fth: $(fthfiles) $(fthfiles_caseconverted)
 clean:
 	rm -f *.log *.LOG *.result *.golden
 
+v4th.com:  volks4th.com  kernel.fb \
+    emulator/run-in-dosbox.sh
+	rm -f FORTH.COM forth.com v4th.com
+	./emulator/run-in-dosbox.sh volks4th.com kernel.fb
+	mv FORTH.COM v4th.com
 
 v4thfile.com: volks4th.com  src/include.fb src/v4thfile.fb \
     emulator/run-in-dosbox.sh

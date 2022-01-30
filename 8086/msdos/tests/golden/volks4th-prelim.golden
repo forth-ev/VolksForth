@@ -25,7 +25,7 @@ Pass #16: testing 2*
 Pass #17: testing AND
 Pass #18: testing AND
 Pass #19: testing AND
-Pass #20: testing ?F~ ?~~ Pass Error
+ PASS exists Pass #20: testing ?F~ ?~~ Pass Error
 Pass #21: testing ?~
 Pass #22: testing EMIT
 Pass #23: testing S"

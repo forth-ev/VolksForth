@@ -1,6 +1,6 @@
 
 include log2file.fth
-logopen test.log
+logopen output.log
 
 include ans-shim.fth
 : \vf  [compile] \ ; immediate

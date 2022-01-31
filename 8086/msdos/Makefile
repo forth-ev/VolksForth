@@ -7,7 +7,7 @@ fthfiles_caseconverted = $(patsubst %.fb, %.fth, \
     $(shell ../../tools/echo-tolower.py $(fbfiles_uppercase)))
 
 test: incltest.result logtest.result test-min.result \
-    test-volks4th-min.result
+    incltest-volks4th.result test-volks4th-min.result
 
 fth: $(fthfiles) $(fthfiles_caseconverted)
 
@@ -36,7 +36,26 @@ logtest.log: volks4th.com tests/log2file.fb tests/logtest.fb
 	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh volks4th.com "include logtest.fb"
 	dos2unix -n OUTPUT.LOG $@
 
-incltest.log: v4thfile.com tests/log2file.fb tests/incltest.fth
+prepsrcs = asm.fb extend.fb multi.vid dos.fb include.fb
+
+incltest.log: \
+    $(patsubst %, dosfiles/%, v4th.com $(prepsrcs) log2file.fb \
+        incltest.fth)
+	rm -f dosfiles/OUTPUT.LOG
+	(cd dosfiles && ../emulator/run-in-dosbox.sh \
+	    v4th.com "include include.fb include incltest.fth")
+	dos2unix -n dosfiles/OUTPUT.LOG $@
+
+test-min.log: \
+    $(patsubst %, dosfiles/%, v4th.com $(prepsrcs)) \
+    $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
+	rm -f dosfiles/OUTPUT.LOG
+	(cd dosfiles && ../emulator/run-in-dosbox.sh v4th.com \
+	    "include testprep.fb include test-min.fth")
+	dos2unix -n dosfiles/OUTPUT.LOG $@
+
+
+incltest-volks4th.log: v4thfile.com tests/log2file.fb tests/incltest.fth
 	rm -f OUTPUT.LOG
 	FORTHPATH="f:\\;f:\\tests" ./emulator/run-in-dosbox.sh \
 	    v4thfile.com "include incltest.fth"
@@ -44,16 +63,14 @@ incltest.log: v4thfile.com tests/log2file.fb tests/incltest.fth
 
 test-volks4th-min.log: v4thfile.com tests/* emulator/run-in-dosbox.sh
 	rm -f OUTPUT.LOG
-	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh v4thfile.com "include test-min.fth"
+	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
+	    v4thfile.com "include test-min.fth"
 	dos2unix -n OUTPUT.LOG $@
 
-test-min.log: dosfiles/v4th.com dosfiles/asm.fb dosfiles/extend.fb \
-    dosfiles/multi.vid dosfiles/dos.fb dosfiles/include.fb \
-    $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
-	rm -f dosfiles/OUTPUT.LOG
-	(cd dosfiles && ../emulator/run-in-dosbox.sh v4th.com \
-	    "include testprep.fb include test-min.fth")
-	dos2unix -n dosfiles/OUTPUT.LOG $@
+
+run-editor: volks4th.com emulator/run-in-dosbox.sh
+	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh volks4th.com
+
 
 test-min.golden: $(patsubst %, tests/golden/%.golden, prelim core)
 	cat $? > $@
@@ -68,6 +85,9 @@ test-volks4th-min.golden: $(patsubst %, tests/golden/%.golden, \
 
 
 %.golden: tests/golden/%.golden
+	cp -p $< $@
+
+%-volks4th.golden: tests/golden/%.golden
 	cp -p $< $@
 
 %.result: %.log %.golden tests/evaluate-test.sh

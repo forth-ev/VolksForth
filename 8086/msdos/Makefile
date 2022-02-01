@@ -18,7 +18,7 @@ clean:
 *.log: emulator/run-in-dosbox.sh
 
 # TODO: Make v4th.log contain something and check its contents
-v4th.com v4th.log:  volks4th.com  kernel.fb tests/log2file.fb
+v4th.com v4th.log:  volks4th.com  src/kernel.fb tests/log2file.fb
 	rm -f FORTH.COM forth.com v4th.com
 	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
 	    volks4th.com "include kernel.fb"

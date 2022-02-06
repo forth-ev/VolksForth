@@ -58,22 +58,22 @@
 
 \ *** Block No. 3, Hexblock 3
 
-\ freadline probe-for-fb                             phz 06jan22
+\ freadline probe-for-fb                             phz 06feb22
+  variable incfile
 
   : freadline ( -- eof )
   tib /tib bounds DO
-    isfile@ fgetc dup eolf? under 0< IF I c! ELSE drop THEN
+    incfile @ fgetc dup eolf? under 0< IF I c! ELSE drop THEN
     0< 0= IF I tib - #tib ! ENDLOOP tibeof @ exit THEN
   LOOP /tib #tib !
   ." warning: line exteeds max " /tib . cr
   ." extra chars ignored" cr
-  BEGIN isfile@ fgetc eolf? 1+ UNTIL tibeof @ ;
+  BEGIN incfile @ fgetc eolf? 1+ UNTIL tibeof @ ;
 
-  : probe-for-fb  ( -- flag )
+| : probe-for-fb  ( -- flag )
     \ probes whether current file looks like a block file
   /tib 2+ 0 DO isfile@ fgetc #lf = IF ENDLOOP false exit THEN
   LOOP true ;
-
 
 \ *** Block No. 4, Hexblock 4
 
@@ -96,7 +96,7 @@
 
 \ *** Block No. 5, Hexblock 5
 
-\ interpret-via-tib include                          phz 16jan22
+\ interpret-via-tib include                          phz 06feb22
 
   : interpret-via-tib
   BEGIN freadline >r .status >in off interpret
@@ -105,12 +105,12 @@
   : include ( -- )
   pushfile  use  cr file?
   probe-for-fb isfile@ freset IF 1 load close exit THEN
+  incfile push  isfile@ incfile !
   savetib >r  interpret-via-tib close  r> restoretib ;
 
   : (stashquit  stash[ stash> !  (quit ;
   : stashrestore  ['] (stashquit IS 'quit ;
   ' stashrestore IS 'restart
-
 
 
 \ *** Block No. 6, Hexblock 6

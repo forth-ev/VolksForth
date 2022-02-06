@@ -20,9 +20,9 @@
 
 \ *** Block No. 1, Hexblock 1
 
-\ load screen                                        phz 16jan22
+\ load screen                                        phz 06feb22
 
-  1 5 +thru
+  1 6 +thru
 
 
 
@@ -39,7 +39,7 @@
 
 \ *** Block No. 2, Hexblock 2
 
-\ fib /fib #fib eolf?                                phz 06jan22
+\ fib /fib #fib eolf?                                phz 06feb22
 
   context @ dos also context !
   $50 constant /tib
@@ -58,24 +58,43 @@
 
 \ *** Block No. 3, Hexblock 3
 
-\ freadline probe-for-fb                             phz 06feb22
+\ incfile incpos inc-fgetc                           phz 06feb22
+
   variable incfile
+  variable incpos 2 allot
+
+  : inc-fgetc  ( -- c )
+    incfile @ f.handle @ 0= IF
+      incpos 2@  incfile @  fseek THEN
+    incfile @ fgetc
+    incpos 2@ 1. d+ incpos 2! ;
+
+
+
+
+
+
+
+\ *** Block No. 4, Hexblock 4
+
+\ freadline probe-for-fb                             phz 06feb22
 
   : freadline ( -- eof )
   tib /tib bounds DO
-    incfile @ fgetc dup eolf? under 0< IF I c! ELSE drop THEN
+    inc-fgetc dup eolf? under 0< IF I c! ELSE drop THEN
     0< 0= IF I tib - #tib ! ENDLOOP tibeof @ exit THEN
   LOOP /tib #tib !
   ." warning: line exteeds max " /tib . cr
   ." extra chars ignored" cr
-  BEGIN incfile @ fgetc eolf? 1+ UNTIL tibeof @ ;
+  BEGIN inc-fgetc eolf? 1+ UNTIL tibeof @ ;
 
 | : probe-for-fb  ( -- flag )
     \ probes whether current file looks like a block file
   /tib 2+ 0 DO isfile@ fgetc #lf = IF ENDLOOP false exit THEN
   LOOP true ;
 
-\ *** Block No. 4, Hexblock 4
+
+\ *** Block No. 5, Hexblock 5
 
 \ save/restoretib                                    phz 16jan22
 
@@ -94,7 +113,7 @@
       r> #tib !  >in off ;
 
 
-\ *** Block No. 5, Hexblock 5
+\ *** Block No. 6, Hexblock 6
 
 \ interpret-via-tib include                          phz 06feb22
 
@@ -106,14 +125,14 @@
   pushfile  use  cr file?
   probe-for-fb isfile@ freset IF 1 load close exit THEN
   incfile push  isfile@ incfile !
+  incpos push  incpos off  incpos 2+ dup push off
   savetib >r  interpret-via-tib close  r> restoretib ;
 
   : (stashquit  stash[ stash> !  (quit ;
   : stashrestore  ['] (stashquit IS 'quit ;
   ' stashrestore IS 'restart
 
-
-\ *** Block No. 6, Hexblock 6
+\ *** Block No. 7, Hexblock 7
 
 \ \                                                  phz 16jan22
 

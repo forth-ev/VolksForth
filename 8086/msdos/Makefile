@@ -17,13 +17,29 @@ clean:
 
 *.log: emulator/run-in-dosbox.sh
 
-# TODO: Make v4th.log contain something and check its contents
-v4th.com v4th.log:  volks4th.com  src/kernel.fb tests/log2file.fb
+metafile.com: v4thfile.com src/meta.fb src/mk-meta.fth tests/log2file.fb
+	rm -f METAFILE.COM OUTPUT.LOG
+	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
+	    v4thfile.com "include mk-meta.fth"
+	dos2unix -n OUTPUT.LOG metafile.log
+	grep -F 'Metacompiler saved as metafile.com' metafile.log
+
+v4th.com: metafile.com src/meta.fb src/mk-v4th.fth
+	rm -f v4th.com V4TH.COM OUTPUT.LOG
+	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
+	    metafile.com "include mk-v4th.fth"
+	dos2unix -n OUTPUT.LOG v4th.log
+	mv V4TH.COM v4th.com
+	grep -F 'new kernel written as v4th.com' v4th.log
+
+# o4th for old volks4th - the new v4th is built with precompiled
+# metacompiler metafile.com and mk-v4th.fth which writes a compile log.
+o4th.com o4th.log: volks4th.com  src/kernel.fb
 	rm -f FORTH.COM forth.com v4th.com
 	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
 	    volks4th.com "include kernel.fb"
-	dos2unix -n OUTPUT.LOG v4th.log
-	mv FORTH.COM v4th.com
+	dos2unix -n OUTPUT.LOG o4th.log
+	mv FORTH.COM o4th.com
 
 v4thfile.com: volks4th.com  src/include.fb src/v4thfile.fb \
     emulator/run-in-dosbox.sh
@@ -34,6 +50,11 @@ v4thfile.com: volks4th.com  src/include.fb src/v4thfile.fb \
 logtest.log: volks4th.com tests/log2file.fb tests/logtest.fb
 	rm -f OUTPUT.LOG
 	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh volks4th.com "include logtest.fb"
+	dos2unix -n OUTPUT.LOG $@
+
+logappendtest.log: v4thfile.com tests/logapp.fth
+	rm -f OUTPUT.LOG
+	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh v4thfile.com "include logapp.fth"
 	dos2unix -n OUTPUT.LOG $@
 
 prepsrcs = asm.fb extend.fb multi.vid dos.fb include.fb

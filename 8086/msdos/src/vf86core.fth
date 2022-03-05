@@ -513,17 +513,17 @@ Code d<    ( d1 d2 -- flag )    C pop   A pop
 
 \ *** Block No. 31, Hexblock 1f
 
-\\ min max umax umin extend                               10Mar8
+\ min max umax umin extend                               10Mar8
 
-| : minimax  ( n1 n2 flag -- n3 )   rdrop IF swap THEN drop ;
+\ | : minimax  ( n1 n2 flag -- n3 )   rdrop IF swap THEN drop ;
 
-: min  ( n1 n2 -- n3 )              2dup  > minimax ;
-: max  ( n1 n2 -- n3 )              2dup  < minimax ;
-: umax  ( u1 u2 -- u3 )             2dup u< minimax ;
-: umin  ( u1 u2 -- u3 )             2dup u> minimax ;
-: extend   ( n -- d )               dup 0< ;
-: dabs  ( d -- ud )                 extend IF dnegate THEN ;
-: abs   ( n -- u)                   extend IF  negate THEN ;
+\ : min  ( n1 n2 -- n3 )              2dup  > minimax ;
+\ : max  ( n1 n2 -- n3 )              2dup  < minimax ;
+\ : umax  ( u1 u2 -- u3 )             2dup u< minimax ;
+\ : umin  ( u1 u2 -- u3 )             2dup u> minimax ;
+\ : extend   ( n -- d )               dup 0< ;
+\ : dabs  ( d -- ud )                 extend IF dnegate THEN ;
+\ : abs   ( n -- u)                   extend IF  negate THEN ;
 
 
 
@@ -558,14 +558,14 @@ Code d<    ( d1 d2 -- flag )    C pop   A pop
 
   Code (+loop   D R ) add   D pop  ]]  end-code restrict
 
-\\
+\
 
-| : dodo              rdrop r> 2+ dup >r rot >r swap >r >r ;
+\ | : dodo              rdrop r> 2+ dup >r rot >r swap >r >r ;
 \ dodo puts "index | limit | adr.of.DO" on return-stack
 
-  : (do  ( limit start -- )  over - dodo ;  restrict
-  : (?do ( limit start -- )  over - ?dup IF dodo THEN
-                           r> dup  @ +  >r drop ; restrict
+\   : (do  ( limit start -- )  over - dodo ;  restrict
+\   : (?do ( limit start -- )  over - ?dup IF dodo THEN
+\                            r> dup  @ +  >r drop ; restrict
 
 
 \ *** Block No. 34, Hexblock 22
@@ -855,20 +855,20 @@ Label domove   I W cmp   moveup CS ?]
 
 \ *** Block No. 49, Hexblock 31
 
-\\ scan skip /string                              ks 29 jul 87
+\ scan skip /string                              ks 29 jul 87
 
-  : skip ( addr0 len0 char -- addr1 len1 )   >r
-     BEGIN  dup
-     WHILE  over c@ r@ = WHILE  1- swap 1+ swap
-     REPEAT  rdrop ;
+\  : skip ( addr0 len0 char -- addr1 len1 )   >r
+\     BEGIN  dup
+\     WHILE  over c@ r@ = WHILE  1- swap 1+ swap
+\     REPEAT  rdrop ;
 
-  : scan ( addr0 len0 char -- addr1 len1 )   >r
-     BEGIN  dup
-     WHILE  over c@ r@ - WHILE  1- swap 1+ swap
-     REPEAT  rdrop ;
+\  : scan ( addr0 len0 char -- addr1 len1 )   >r
+\     BEGIN  dup
+\     WHILE  over c@ r@ - WHILE  1- swap 1+ swap
+\     REPEAT  rdrop ;
 
-  : /string ( addr0 len0 +n -- addr1 len1 )
-     over umin rot over + -rot - ;
+\  : /string ( addr0 len0 +n -- addr1 len1 )
+\     over umin rot over + -rot - ;
 
 
 
@@ -901,14 +901,14 @@ Label domove   I W cmp   moveup CS ?]
              A- W ) mov  W inc  C0= ?]  ]?   Next
   end-code
 
-\\ high level, ohne Umlaute
+\ high level, ohne Umlaute
 
-  : capital ( char -- char')
-     dup  Ascii a   [ Ascii z 1+ ] Literal
-     uwithin not ?exit   [ Ascii a Ascii A - ] Literal - ;
+\  : capital ( char -- char')
+\     dup  Ascii a   [ Ascii z 1+ ] Literal
+\     uwithin not ?exit   [ Ascii a Ascii A - ] Literal - ;
 
-  : upper  ( addr len -- )
-     bounds ?DO  I c@ capital I c!  LOOP ;
+\  : upper  ( addr len -- )
+\     bounds ?DO  I c@ capital I c!  LOOP ;
 
 \ *** Block No. 52, Hexblock 34
 
@@ -931,12 +931,12 @@ swap ]?  C >in #) add
 
 \ *** Block No. 53, Hexblock 35
 
-\\  (word                                          ks 27 oct 86
+\  (word                                          ks 27 oct 86
 
-| : (word  ( char adr0 len0 -- addr )
-     rot  >r  over swap   >in @ /string   r@ skip
-     over swap   r> scan >r   rot over swap - r> 0<> - >in !
-     over - here  dup >r  place  bl r@ count  + c!  r> ;
+\ | : (word  ( char adr0 len0 -- addr )
+\     rot  >r  over swap   >in @ /string   r@ skip
+\     over swap   r> scan >r   rot over swap - r> 0<> - >in !
+\     over - here  dup >r  place  bl r@ count  + c!  r> ;
 
 
 
@@ -1188,11 +1188,10 @@ swap ]?  C >in #) add
           D R cmp  0= ?]  2 W D) W lea
      ]?  W D mov   A R mov   Next   end-code
 
-\\
 
-  : nfa?    ( thread cfa -- nfa / false )   >r
-     BEGIN  @ dup 0= IF  rdrop exit  THEN
-            dup 2+ name> r@ = UNTIL  2+ rdrop ;
+\  : nfa?    ( thread cfa -- nfa / false )   >r
+\     BEGIN  @ dup 0= IF  rdrop exit  THEN
+\            dup 2+ name> r@ = UNTIL  2+ rdrop ;
 
 
 \ *** Block No. 67, Hexblock 43
@@ -1274,8 +1273,8 @@ swap ]?  C >in #) add
 \ *** Block No. 71, Hexblock 47
 
 \ Vocabulary Forth Only Onlyforth definitions     ks 19 jun 88
-  : Vocabulary  Create  0 , 0 ,  here  voc-link @ ,  voc-link !
-  Does>   context ! ;
+  : Vocabulary
+    Create  0 , 0 ,  here  voc-link @ ,  voc-link ! Does>   context ! ;
 \  | Name | Code | Thread | Coldthread | Voc-link |
 
   Vocabulary Forth
@@ -1330,19 +1329,19 @@ Target  Forth also definitions
 
 \ *** Block No. 74, Hexblock 4a
 
-\\  -text (find                                   ks 02 okt 87
+\  -text (find                                   ks 02 okt 87
 
-  : -text ( adr1 len adr2 -- 0< 1<2 / 0= 1=2 / 0> 1>2 )
-     over bounds
-     DO  drop count I c@ - dup IF LEAVE THEN  LOOP nip ;
+\  : -text ( adr1 len adr2 -- 0< 1<2 / 0= 1=2 / 0> 1>2 )
+\     over bounds
+\     DO  drop count I c@ - dup IF LEAVE THEN  LOOP nip ;
 
-  : (find    ( string thread -- str false / NFA +n )
-     over c@ $1F and >r  @
-     BEGIN  dup WHILE  dup @   swap 2+   dup c@ $1F and  r@  =
-                       IF  dup 1+  r@  4 pick 1+ -text
-                           0= IF  rdrop -rot drop exit
-                       THEN   THEN  drop
-     REPEAT  rdrop ;
+\  : (find    ( string thread -- str false / NFA +n )
+\     over c@ $1F and >r  @
+\     BEGIN  dup WHILE  dup @   swap 2+   dup c@ $1F and  r@  =
+\                       IF  dup 1+  r@  4 pick 1+ -text
+\                           0= IF  rdrop -rot drop exit
+\                       THEN   THEN  drop
+\     REPEAT  rdrop ;
 
 
 
@@ -1634,15 +1633,15 @@ Target  Forth also definitions
 
 \ *** Block No. 90, Hexblock 5a
 
-\\ Struktur der Blockpuffer                       ks 04 jul 87
+\ Struktur der Blockpuffer                       ks 04 jul 87
 
-   0 : link zum naechsten Puffer
-   2 : file     0 = direct access
-               -1 = leer,
-               sonst adresse eines file control blocks
-   4 : blocknummer
-   6 : statusflags   Vorzeichenbit kennzeichnet update
-   8 : Data ... 1 Kb ...
+\   0 : link zum naechsten Puffer
+\   2 : file     0 = direct access
+\               -1 = leer,
+\               sonst adresse eines file control blocks
+\   4 : blocknummer
+\   6 : statusflags   Vorzeichenbit kennzeichnet update
+\   8 : Data ... 1 Kb ...
 
 
 
@@ -1691,22 +1690,22 @@ Target  Forth also definitions
 
 \ *** Block No. 93, Hexblock 5d
 
-\\ (core?                                          ks 31 oct 86
+\ (core?                                          ks 31 oct 86
 
-| : this? ( blk file bufadr -- flag )
-     dup 4+ @  swap 2+ @  d= ;
+\ | : this? ( blk file bufadr -- flag )
+\     dup 4+ @  swap 2+ @  d= ;
 
-  .( (core?:  offset is handled differently in code! )
+\  .( (core?:  offset is handled differently in code! )
 
-| : (core? ( blk file -- dataaddr / blk file )
-     BEGIN  over offset @ + over prev @ this?
-        IF  rdrop 2drop prev @ 8 + exit  THEN
-        2dup >r offset @ + >r prev @
-        BEGIN dup @ ?dup 0= IF  rdrop rdrop drop exit  THEN
-              dup r> r> 2dup >r >r rot this?  0=
-        WHILE nip REPEAT
-        dup @ rot ! prev @ over ! prev ! rdrop rdrop
-     REPEAT ;
+\ | : (core? ( blk file -- dataaddr / blk file )
+\     BEGIN  over offset @ + over prev @ this?
+\        IF  rdrop 2drop prev @ 8 + exit  THEN
+\        2dup >r offset @ + >r prev @
+\        BEGIN dup @ ?dup 0= IF  rdrop rdrop drop exit  THEN
+\              dup r> r> 2dup >r >r rot this?  0=
+\        WHILE nip REPEAT
+\        dup @ rot ! prev @ over ! prev ! rdrop rdrop
+\     REPEAT ;
 
 \ *** Block No. 94, Hexblock 5e
 
@@ -2026,8 +2025,3 @@ Target  Forth also definitions
   end-code
 
   Code cold   here 2- !   end-code
-
-
-
-
-

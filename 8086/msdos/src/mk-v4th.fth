@@ -1,6 +1,12 @@
 
   logopen output.log
 
+  \ : .blk|tib
+  \     blk @ ?dup IF  ."  Blk " u. ?cr  exit THEN
+  \     incfile @ IF tib #tib @ cr type THEN ;
+
+  \ ' .blk|tib Is .status
+
   Onlyforth
 
   2 loadfrom META.fb
@@ -8,9 +14,11 @@
 
   new v4th.com   Onlyforth Target definitions
 
-  4 &110 thru          \ Standard 8088-System
+  \ 4 &110 thru          \ Standard 8088-System
+  include vf86core.fth
 
-  &112 &146 thru      \ MS-DOS interface
+  \ &112 &146 thru      \ MS-DOS interface
+  include vf86dos.fth
 
   : forth-83 ;     \ last word in Dictionary
 

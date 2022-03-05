@@ -76,17 +76,17 @@
 
 \ *** Block No. 116, Hexblock 74
 
-\\ BIOS  keyboard input                           ks 16 sep 88
+\ BIOS  keyboard input                           ks 16 sep 88
 
-  Code (key@  ( -- 8b )  D push   A+ A+ xor   $16 int
-     A- D- xchg   0 # D+ mov   Next   end-code
+\  Code (key@  ( -- 8b )  D push   A+ A+ xor   $16 int
+\     A- D- xchg   0 # D+ mov   Next   end-code
 
-  Code (key?  ( -- f )   D push   1 # A+ mov   D D xor
-     $16 int   0= not ?[  D dec  ]?   Next   end-code
+\  Code (key?  ( -- f )   D push   1 # A+ mov   D D xor
+\     $16 int   0= not ?[  D dec  ]?   Next   end-code
 
-  Code empty-keys   $C00 # A mov   $21 int   Next   end-code
+\  Code empty-keys   $C00 # A mov   $21 int   Next   end-code
 
-  : (key  ( -- 8b )   BEGIN  pause (key? UNTIL  (key@ ;
+\  : (key  ( -- 8b )   BEGIN  pause (key? UNTIL  (key@ ;
 
 \ mit diesen Keytreibern sind die Funktionstasten nicht
 \ mehr durch ANSI.SYS Sequenzen vorbelegt.
@@ -363,8 +363,9 @@
 
 \ MS-DOS file control Block                          cas 19jun20
 
-| : Fcbytes  ( n1 len -- n2 )  Create over c, +
-  Does>      ( fcbaddr -- fcbfield )  c@ + ;
+\ | : Fcbytes  ( n1 len -- n2 )  Create over c, +
+\   Does>      ( fcbaddr -- fcbfield )  c@ + ;
+| : Fcbytes  Create over c, + Does> c@ + ;
 
 \ first field for file-link
 2        1 Fcbytes f.no       \ must be first field
@@ -662,4 +663,3 @@ Assembler  [[   W R xchg   C pop   D pop
      file-link remove
      isfile@    remove? nip IF  file-link @ isfile !  THEN
      fromfile @ remove? nip 0=exit isfile@ fromfile ! ;
-

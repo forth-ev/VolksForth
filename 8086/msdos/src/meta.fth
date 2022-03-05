@@ -381,7 +381,7 @@ Transient definitions
 
 \ *** Block No. 20, Hexblock 14
 
-( Transient primitives                           ks 17 dec 83 )
+\ Transient primitives                           ks 1phz 05mär22
 
 ' exit Alias exit           ' load Alias load
 ' /    Alias /              ' thru Alias thru
@@ -395,7 +395,7 @@ Transient definitions
 ' 2-   Alias 2-           ' negate Alias negate
 ' 2swap Alias 2swap         ' 2dup Alias 2dup
 
-
+' include Alias include
 
 
 \ *** Block No. 21, Hexblock 15

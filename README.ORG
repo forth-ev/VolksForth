@@ -11,9 +11,13 @@ resources.
 Some modern Forth Systems were influenced by or were derived from
 VolksForth (GNU-Forth, bigForth).
 
-The current Version of VolksForth is 3.81. Version 3.9.x will be
-interim versions on the way to sync all VolksForth targets and move
-towards compliance with the 2012 Forth standard.
+On most platforms the current version of VolksForth is 3.8x.
+Versions 3.9.x are interim versions towards compliance with the
+2012 Forth standard, and at the same time towards a unification
+(as far as feasible) of the sources of the different platforms.
+Also included in 3.9.x versions is the transition from block files
+to stream files as primary source format.
+So far the 6502/C64 VolksForth (C64/Plus4/X16) is on a 3.9.x version.
 
 Version 3.8.x is based on the Forth 83 standard, Version 4.00 will be
 based on the current 2012 Standard (https://forth-standard.org).

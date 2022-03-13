@@ -16,7 +16,8 @@ Versions 3.9.x are interim versions towards compliance with the
 2012 Forth standard, and at the same time towards a unification
 (as far as feasible) of the sources of the different platforms.
 Also included in 3.9.x versions is the transition from block files
-to stream files as primary source format.
+to stream files as primary source format, and an introduction of
+make-based build and test automation.
 So far the 6502/C64 VolksForth (C64/Plus4/X16) is on a 3.9.x version.
 
 Version 3.8.x is based on the Forth 83 standard, Version 4.00 will be

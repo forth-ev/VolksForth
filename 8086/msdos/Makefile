@@ -24,7 +24,8 @@ metafile.com: v4thfile.com src/meta.fb src/mk-meta.fth tests/log2file.fb
 	dos2unix -n OUTPUT.LOG metafile.log
 	grep -F 'Metacompiler saved as metafile.com' metafile.log
 
-v4th.com: metafile.com src/meta.fb src/mk-v4th.fth
+v4th.com: metafile.com src/meta.fb src/mk-v4th.fth \
+    src/vf86dos.fth
 	rm -f v4th.com V4TH.COM OUTPUT.LOG
 	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
 	    metafile.com "include mk-v4th.fth"
@@ -35,7 +36,7 @@ v4th.com: metafile.com src/meta.fb src/mk-v4th.fth
 # o4th for old volks4th - the new v4th is built with precompiled
 # metacompiler metafile.com and mk-v4th.fth which writes a compile log.
 o4th.com o4th.log: volks4th.com  src/kernel.fb
-	rm -f FORTH.COM forth.com v4th.com
+	rm -f FORTH.COM forth.com o4th.com
 	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
 	    volks4th.com "include kernel.fb"
 	dos2unix -n OUTPUT.LOG o4th.log

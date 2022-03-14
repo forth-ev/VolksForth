@@ -819,8 +819,9 @@ Label domove   I W cmp   moveup CS ?]
 
 \ input strings                                   ks 23 dez 87
 
+  $84 Constant /tib
   Variable #tib     #tib off
-  Variable >tib     here >tib ! $50 allot
+  Variable >tib     here >tib ! /tib allot
   Variable >in      >in off
   Variable blk      blk off
   Variable span     span off

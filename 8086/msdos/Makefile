@@ -25,7 +25,7 @@ metafile.com: v4thfile.com src/meta.fb src/mk-meta.fth tests/log2file.fb
 	grep -F 'Metacompiler saved as metafile.com' metafile.log
 
 v4th.com: metafile.com src/meta.fb src/mk-v4th.fth \
-    src/vf86core.fth src/vf86dos.fth
+    src/vf86core.fth src/vf86dos.fth src/vf86file.fth
 	rm -f v4th.com V4TH.COM OUTPUT.LOG
 	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
 	    metafile.com "include mk-v4th.fth"
@@ -73,7 +73,7 @@ test-min.log: \
     $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
 	rm -f dosfiles/OUTPUT.LOG
 	(cd dosfiles && ../emulator/run-in-dosbox.sh v4th.com \
-	    "include testprep.fb include test-min.fth")
+	    "include logprep.fth include test-min.fth")
 	dos2unix -n dosfiles/OUTPUT.LOG $@
 
 

@@ -87,22 +87,3 @@
   : (stashquit  stash[ stash> !  (quit ;
   : stashrestore  ['] (stashquit IS 'quit ;
   ' stashrestore IS 'restart
-
-\ *** Block No. 7, Hexblock 7
-
-\ \                                                  phz 25feb22
-
-  : \  blk @ IF >in @ negate  c/l mod  >in +!
-       ELSE #tib @ >in ! THEN ; immediate
-
-\ : \needs  have 0=exit
-\      blk @ IF >in @ negate  c/l mod  >in +!
-\      ELSE #tib @ >in ! THEN ;
-
-
-
-
-
-
-
-

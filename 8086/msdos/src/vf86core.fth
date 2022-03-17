@@ -997,7 +997,8 @@ swap ]?  C >in #) add
   : (        Ascii ) parse 2drop ; immediate
   : .(       Ascii ) parse type ; immediate
 
-  : \        >in @ negate   c/l mod   >in +! ; immediate
+  : \  blk @ IF >in @ negate  c/l mod  >in +!
+       ELSE #tib @ >in ! THEN ; immediate
   : \\       b/blk >in ! ; immediate
   : have   ( <name> -- f )  name find nip   0<> ; immediate
   : \needs   have 0=exit  [compile] \  ;

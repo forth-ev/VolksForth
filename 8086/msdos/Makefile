@@ -6,7 +6,7 @@ fbfiles_uppercase = $(wildcard src/*.FB tests/*.FB)
 fthfiles_caseconverted = $(patsubst %.fb, %.fth, \
     $(shell ../../tools/echo-tolower.py $(fbfiles_uppercase)))
 
-test: incltest.result logtest.result test-min.result \
+test: incltest.result logtest.result test-min.result test-std.result \
     incltest-volks4th.result test-volks4th-min.result
 
 fth: $(fthfiles) $(fthfiles_caseconverted)
@@ -76,6 +76,14 @@ test-min.log: \
 	    "include logprep.fth include test-min.fth")
 	dos2unix -n dosfiles/OUTPUT.LOG $@
 
+test-std.log: \
+    $(patsubst %, dosfiles/%, v4th.com $(prepsrcs)) \
+    $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
+	rm -f dosfiles/OUTPUT.LOG
+	(cd dosfiles && ../emulator/run-in-dosbox.sh v4th.com \
+	    "include logprep.fth include test-std.fth")
+	dos2unix -n dosfiles/OUTPUT.LOG $@
+
 
 incltest-volks4th.log: v4thfile.com tests/log2file.fb tests/incltest.fth
 	rm -f OUTPUT.LOG
@@ -95,15 +103,15 @@ run-editor: volks4th.com emulator/run-in-dosbox.sh
 
 
 test-min.golden: $(patsubst %, tests/golden/%.golden, prelim core)
-	cat $? > $@
+	cat $^ > $@
 
 test-std.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core coreext double report-noblk)
-	cat $? > $@
+    prelim core coreplus coreext doubltst report-noblk)
+	cat $^ > $@
 
 test-volks4th-min.golden: $(patsubst %, tests/golden/%.golden, \
     volks4th-prelim core)
-	cat $? > $@
+	cat $^ > $@
 
 
 %.golden: tests/golden/%.golden

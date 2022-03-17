@@ -1,11 +1,15 @@
 
+\ : .blk|tib
+\     blk @ ?dup IF  ."  Blk " u. ?cr  exit THEN
+\     incfile @ IF tib #tib @ cr type THEN ;
+
 include log2file.fth
 logopen output.log
 
 include ans-shim.fth
 : \vf  [compile] \ ; immediate
 
-include prelimtest.fth
+include prelim.fth
 include tester.fth
 \ 1 verbose !
 include core.fr
@@ -15,7 +19,10 @@ include util.fth
 include errorrep.fth
 
 include coreext.fth
-include double.fth
+
+\ ' .blk|tib Is .status
+
+include doubltst.fth
 
 REPORT-ERRORS
 

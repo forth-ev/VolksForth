@@ -25,7 +25,7 @@ metafile.com: v4thfile.com src/meta.fb src/mk-meta.fth tests/log2file.fb
 	grep -F 'Metacompiler saved as metafile.com' metafile.log
 
 v4th.com: metafile.com src/meta.fb src/mk-v4th.fth \
-    src/vf86core.fth src/vf86dos.fth src/vf86file.fth
+    src/vf86core.fth src/vf86dos.fth src/vf86file.fth src/vf86bufs.fth
 	rm -f v4th.com V4TH.COM OUTPUT.LOG
 	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
 	    metafile.com "include mk-v4th.fth"

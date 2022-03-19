@@ -27,6 +27,9 @@
 \     - errorreport.fth has been loaded prior to this file
 \     - utilities.fth has been loaded prioir to this file
 \ ------------------------------------------------------------------------------
+
+use empty.fb
+
 TESTING Block word set
 
 DECIMAL

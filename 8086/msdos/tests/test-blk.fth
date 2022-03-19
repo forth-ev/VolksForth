@@ -16,7 +16,8 @@ include errorrep.fth
 
 include coreext.fth
 include doubltst.fth
-use empty.fb
+
+: flush  logclose flush logreopen ;
 include block.fth
 
 REPORT-ERRORS

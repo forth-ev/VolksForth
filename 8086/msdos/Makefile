@@ -117,6 +117,10 @@ test-std.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreplus coreext doubltst report-noblk)
 	cat $^ > $@
 
+test-blk.golden: $(patsubst %, tests/golden/%.golden, \
+    prelim core coreplus coreext doubltst block report-blk)
+	cat $^ > $@
+
 test-volks4th-min.golden: $(patsubst %, tests/golden/%.golden, \
     volks4th-prelim core)
 	cat $^ > $@

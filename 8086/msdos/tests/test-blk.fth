@@ -1,25 +1,25 @@
 
 include log2file.fth
-logopen test.log
+logopen output.log
 
 include ans-shim.fth
 : \vf  [compile] \ ; immediate
 
-include prelimtest.fth
+include prelim.fth
 include tester.fth
 \ 1 verbose !
 include core.fr
-include coreplustest.fth
+include coreplus.fth
 
-include utilities.fth
-include errorreport.fth
+include util.fth
+include errorrep.fth
 
-include coreexttest.fth
-include doubletest.fth
-1 drive include blocktest.fth
+include coreext.fth
+include doubltst.fth
+use empty.fb
+include block.fth
 
 REPORT-ERRORS
 
 logclose
 
-dos s0:notdone

@@ -84,6 +84,14 @@ test-std.log: \
 	    "include logprep.fth include test-std.fth")
 	dos2unix -n dosfiles/OUTPUT.LOG $@
 
+test-blk.log: \
+    $(patsubst %, dosfiles/%, v4th.com $(prepsrcs)) \
+    $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
+	rm -f dosfiles/OUTPUT.LOG
+	(cd dosfiles && ../emulator/run-in-dosbox.sh v4th.com \
+	    "include logprep.fth include test-blk.fth")
+	dos2unix -n dosfiles/OUTPUT.LOG $@
+
 
 incltest-volks4th.log: v4thfile.com tests/log2file.fb tests/incltest.fth
 	rm -f OUTPUT.LOG

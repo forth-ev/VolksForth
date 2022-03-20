@@ -32,6 +32,7 @@ v4th.com: metafile.com src/meta.fb src/mk-v4th.fth \
 	dos2unix -n OUTPUT.LOG v4th.log
 	mv V4TH.COM v4th.com
 	grep -F 'new kernel written as v4th.com' v4th.log
+	grep -i 'unresolved:.*[^ ]' v4th.log && exit 1 || true
 
 # o4th for old volks4th - the new v4th is built with precompiled
 # metacompiler metafile.com and mk-v4th.fth which writes a compile log.
@@ -60,6 +61,9 @@ logappendtest.log: v4thfile.com tests/logapp.fth
 
 prepsrcs = asm.fb extend.fb multi.vid dos.fb include.fb
 
+prepfths = asm.fb extend.fb multi.vid dos.fb include.fb 86asm.fth \
+    t86asm.fth extend2.fth multivid.fth dos2.fth dos3.fth
+
 incltest.log: \
     $(patsubst %, dosfiles/%, v4th.com $(prepsrcs) log2file.fb \
         incltest.fth)
@@ -69,7 +73,7 @@ incltest.log: \
 	dos2unix -n dosfiles/OUTPUT.LOG $@
 
 test-min.log: \
-    $(patsubst %, dosfiles/%, v4th.com $(prepsrcs)) \
+    $(patsubst %, dosfiles/%, v4th.com $(prepfths)) \
     $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
 	rm -f dosfiles/OUTPUT.LOG
 	(cd dosfiles && ../emulator/run-in-dosbox.sh v4th.com \
@@ -77,7 +81,7 @@ test-min.log: \
 	dos2unix -n dosfiles/OUTPUT.LOG $@
 
 test-std.log: \
-    $(patsubst %, dosfiles/%, v4th.com $(prepsrcs)) \
+    $(patsubst %, dosfiles/%, v4th.com $(prepfths)) \
     $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
 	rm -f dosfiles/OUTPUT.LOG
 	(cd dosfiles && ../emulator/run-in-dosbox.sh v4th.com \
@@ -85,7 +89,7 @@ test-std.log: \
 	dos2unix -n dosfiles/OUTPUT.LOG $@
 
 test-blk.log: \
-    $(patsubst %, dosfiles/%, v4th.com $(prepsrcs)) \
+    $(patsubst %, dosfiles/%, v4th.com $(prepfths)) \
     $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
 	rm -f dosfiles/OUTPUT.LOG
 	(cd dosfiles && ../emulator/run-in-dosbox.sh v4th.com \

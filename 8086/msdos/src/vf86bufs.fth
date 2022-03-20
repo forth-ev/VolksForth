@@ -14,6 +14,26 @@
 
 
 
+\ *** Block No. 81, Hexblock 51
+
+\ +load thru +thru --> rdepth depth               ks 26 jul 87
+
+  : (load  ( blk offset -- )   isfile@ >r
+     loadfile @ >r   fromfile @ >r   blk @ >r   >in @ >r
+     >in !   blk !  isfile@ loadfile !  .status  interpret
+     r> >in !   r> blk !   r> fromfile !   r> loadfile !
+     r> isfile ! ;
+
+  : load   ( blk -- )     ?dup 0=exit  0 (load ;
+
+  : +load    ( offset -- )       blk @ + load ;
+
+  : thru     ( from to -- )      1+ swap DO I  load LOOP ;
+
+  : +thru    ( off0 off1 -- )    1+ swap DO I +load LOOP ;
+
+  : -->        1 blk +! >in off .status ; immediate
+
 
 
 
@@ -22,18 +42,12 @@
 
 \ buffer mechanism                                ks 04 okt 87
 
-  Variable isfile      isfile off   \ addr of file control block
   Variable fromfile    fromfile off \ fcb in kopieroperationen
 
   Variable prev        prev off     \ Listhead
-| Variable buffers     buffers off  \ Semaphor
 
   $408 Constant b/buf               \ physikalische Groesse
   $400 Constant b/blk               \ bytes/block
-
-  Defer r/w                         \ physikalischer Diskzugriff
-  Variable error#      error# off   \ Nummer des letzten Fehlers
-  Defer ?diskerror                  \ Fehlerbehandlung
 
 
 
@@ -123,13 +137,14 @@
   : (block ( blk file -- addr )
       BEGIN  (core? take readblk mark  REPEAT ;
 
-  Code isfile@  ( -- addr )
-     D push   isfile #) D mov   Next   end-code
-\ : isfile@ ( -- addr )    isfile @ ;
-
   : buffer  ( blk -- addr )   isfile@ (buffer ;
 
   : block   ( blk -- addr )   isfile@ (block ;
+
+  : (blk-source ( -- addr len )   blk @ ?dup
+     IF  loadfile @ (block b/blk  exit  THEN  tib #tib @ ;
+
+  ' (blk-source IS source
 
 
 \ *** Block No. 97, Hexblock 61
@@ -138,8 +153,10 @@
 
   : update          $80 prev @ 6+ 1+ ( Byte-Order! )  c! ;
 
-  : save-buffers    buffers lock
+  : (save-buffers    buffers lock
      BEGIN  updates? ?dup WHILE  backup REPEAT  buffers unlock ;
+
+' (save-buffers IS save-buffers
 
   : empty-buffers   buffers lock prev
      BEGIN  @ ?dup WHILE  dup emptybuf  REPEAT  buffers unlock ;
@@ -148,13 +165,20 @@
      BEGIN  @ ?dup WHILE  dup fclose  REPEAT
      save-buffers empty-buffers ;
 
+  : list ( scr -- )  dup capacity u<
+     IF  scr !  ."  Scr " scr @ .
+         ." Dr " drv .  isfile@ .file
+         l/s 0 DO  cr I 2 .r space   scr @ block
+                   I c/l * +   c/l -trailing type
+               LOOP  cr exit
+     THEN  9 ?diskerror ;
+
 
 
 
 \ *** Block No. 98, Hexblock 62
 
 \ Allocating buffers                              ks 31 oct 86
-  $10000 Constant limit     Variable first
 
   : allotbuffer ( -- )
      first @  r0 @  -  b/buf 2+  u< ?exit
@@ -168,4 +192,6 @@
 
   : all-buffers  BEGIN  first @ allotbuffer first @ =  UNTIL ;
 
-| : init-buffers    prev off  limit first !  all-buffers ;
+| : (init-buffers    prev off  limit first !  all-buffers ;
+
+' (init-buffers IS init-buffers

@@ -955,8 +955,11 @@ swap ]?  C >in #) add
 
   Variable loadfile     loadfile off
 
-  : source ( -- addr len )   blk @ ?dup
-     IF  loadfile @ (block b/blk  exit  THEN  tib #tib @ exit ;
+  defer source
+
+  : (source ( -- addr len )   tib #tib @ ;
+
+  ' (source IS source
 
   : word ( char -- addr )   source (word ;
 
@@ -1453,26 +1456,6 @@ Target  Forth also definitions
 
   Defer .status   ' noop Is .status
 
-  : (load  ( blk offset -- )   isfile@ >r
-     loadfile @ >r   fromfile @ >r   blk @ >r   >in @ >r
-     >in !   blk !  isfile@ loadfile !  .status  interpret
-     r> >in !   r> blk !   r> fromfile !   r> loadfile !
-     r> isfile ! ;
-
-  : load   ( blk -- )     ?dup 0=exit  0 (load ;
-
-
-\ *** Block No. 81, Hexblock 51
-
-\ +load thru +thru --> rdepth depth               ks 26 jul 87
-
-  : +load    ( offset -- )       blk @ + load ;
-
-  : thru     ( from to -- )      1+ swap DO I  load LOOP ;
-
-  : +thru    ( off0 off1 -- )    1+ swap DO I +load LOOP ;
-
-  : -->        1 blk +! >in off .status ; immediate
 
   : rdepth   ( -- +n )           r0 @ rp@ 2+   - 2/ ;
 
@@ -1602,14 +1585,6 @@ Target  Forth also definitions
   &64 Constant c/l        \ Screen line length
   &16 Constant l/s        \ lines per screen
 
-  : list ( scr -- )  dup capacity u<
-     IF  scr !  ."  Scr " scr @ .
-         ." Dr " drv .  isfile@ .file
-         l/s 0 DO  cr I 2 .r space   scr @ block
-                   I c/l * +   c/l -trailing type
-               LOOP  cr exit
-     THEN  9 ?diskerror ;
-
 
 
 
@@ -1632,6 +1607,23 @@ Target  Forth also definitions
      popf   6 U D) S mov   R pop   I pop   D pop   Next
   end-code
   $E9 4 * >label >taskINT
+
+
+  $10000 Constant limit     Variable first
+
+  Variable isfile      isfile off   \ addr of file control block
+  Code isfile@  ( -- addr )
+     D push   isfile #) D mov   Next   end-code
+\ : isfile@ ( -- addr )    isfile @ ;
+
+| Variable buffers     buffers off  \ Semaphor
+
+  Defer r/w                         \ physikalischer Diskzugriff
+  Variable error#      error# off   \ Nummer des letzten Fehlers
+  Defer ?diskerror                  \ Fehlerbehandlung
+
+  Defer save-buffers  ' noop IS save-buffers
+  Defer init-buffers  ' noop IS init-buffers
 
 
   include vf86bufs.fth

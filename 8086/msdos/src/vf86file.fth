@@ -77,9 +77,13 @@
   BEGIN freadline >r .status >in off interpret
   r> UNTIL ;
 
+  Defer include-load
+| : block-not-implemented 1 abort" block file access not implemented" ;
+  ' block-not-implemented IS include-load
+
   : include ( -- )
   pushfile  use  cr file?
-  probe-for-fb isfile@ freset IF 1 load close exit THEN
+  probe-for-fb isfile@ freset IF 1 include-load close exit THEN
   incfile push  isfile@ incfile !
   incpos push  incpos off  incpos 2+ dup push off
   savetib >r  interpret-via-tib close  r> restoretib ;

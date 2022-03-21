@@ -31,6 +31,7 @@ v4th.com: metafile.com src/meta.fb src/mk-v4th.fth \
 	    metafile.com "include mk-v4th.fth"
 	dos2unix -n OUTPUT.LOG v4th.log
 	mv V4TH.COM v4th.com
+	grep -F 'unresolved:' v4th.log
 	grep -F 'new kernel written as v4th.com' v4th.log
 	grep -i 'unresolved:.*[^ ]' v4th.log && exit 1 || true
 

@@ -1,3 +1,24 @@
+
+  Forth definitions
+
+  Defer save-buffers   ' noop IS save-buffers
+  Defer init-buffers   ' noop IS init-buffers
+  Defer empty-buffers  ' noop IS empty-buffers
+
+  Defer flush-file-buffers  ( fcb  -- )
+  ' drop IS flush-file-buffers
+
+  Variable isfile      isfile off   \ addr of file control block
+  Variable fromfile    fromfile off \ fcb in kopieroperationen
+
+  Code isfile@  ( -- addr )
+     D push   isfile #) D mov   Next   end-code
+\ : isfile@ ( -- addr )    isfile @ ;
+
+  Variable error#      error# off   \ Nummer des letzten Fehlers
+  Defer ?diskerror                  \ Fehlerbehandlung
+
+
 \ *** Block No. 112, Hexblock 70
 
 \ lc@ lc!  l@ l!  special 8088 operators          ks 27 oct 86
@@ -188,67 +209,10 @@
 
 
 
-\ *** Block No. 122, Hexblock 7a
-
-\ Disk capacities                                 ks 08 aug 88
-  Vocabulary Dos   Dos also definitions
-
-  6 Constant #drives
-
-  Create capacities   $4B0 , $4B0 , $1B31 , $1B31 , $1B0F , 0 ,
-
-| Code ?capacity ( +n -- cap )  D shl   capacities # W mov
-     D W add   W ) D mov   Next   end-code
-
-
-
-
-
-
-
-
-\ *** Block No. 123, Hexblock 7b
-
-\ MS-dos disk handlers direct access              ks 31 jul 87
-
-| Code block@  ( addr blk drv -- ff )
-     D- A- mov   D pop   C pop   R push   U push
-     I push   C R mov   2 # C mov   D shl   $25 int
-  Label end-r/w    I pop   I pop   U pop   R pop   0 # D mov
-     CS ?[  D+ A+ mov   A error# #) mov   D dec  ]?  Next
-  end-code
-
-| Code block!  ( addr blk drv -- ff )  D- A- mov   D pop
-     C pop   R push   U push   I push   C R mov   2 # C mov
-     D shl   $26 int   end-r/w # jmp
-  end-code
-
-
-
-
-\ *** Block No. 124, Hexblock 7c
-
-\ MS-dos disk handlers direct access              ks cas 18jul20
-
-| : ?drive  ( +n -- +n )   dup #drives u< ?exit
-     Error" beyond drive capacity" ;
-
-  : /drive ( blk1 -- blk2 drive )  0 swap  #drives 0
-     DO  dup I ?capacity under u< IF drop LEAVE THEN
-         - swap 1+ swap  LOOP  swap ;
-
-  : blk/drv  ( -- capacity )  drv ?capacity ;
-
-  Forth definitions
-
-  : >drive    ( blk1 +n -- blk2 )   ?drive
-     0 swap  drv  2dup u> dup >r  0= IF  swap  THEN
-     ?DO  I ?capacity + LOOP  r> IF  negate  THEN - ;
-
 \ *** Block No. 125, Hexblock 7d
 
 \ MS-DOS   file access                            ks 18 mär 88
-  Dos definitions
+  Vocabulary Dos   Dos also definitions
 
 | Variable fcb         fcb off      \ last fcb accessed
 | Variable prevfile                 \ previous active file
@@ -386,16 +350,9 @@ b/fcb  Host   ' tb/fcb >body !
   : fname!   ( string fcb -- )   f.name >r   count
      dup fnamelen < not Abort" file name too long"  r> place ;
 
-| : filebuffer?   ( fcb -- fcb bufaddr / fcb ff )
-     prev  BEGIN  @ dup WHILE  2dup 2+ @  = UNTIL ;
-
-| : flushfile     ( fcb -- )
-     BEGIN  filebuffer? ?dup
-     WHILE  dup backup emptybuf  REPEAT  drop ;
-
   : fclose   ( fcb  -- )   ?dup 0=exit
      dup f.handle @ ?dup 0= IF  drop exit  THEN
-     over flushfile  ~close  f.handle off ;
+     over flush-file-buffers  ~close  f.handle off ;
 
 
 \ *** Block No. 133, Hexblock 85
@@ -473,66 +430,20 @@ Assembler  [[   W R xchg   C pop   D pop
   : file!  ( 8b dfaddr fcb -- )  dup >r fseek r> fputc ;
 
 
-
-\ *** Block No. 137, Hexblock 89
-
-\ /block  *block                                  ks 02 okt 87
-
-  Code /block  ( d -- rest blk )   A D xchg   C pop
-     C D mov   A shr   D rcr   A shr   D rcr   D+ D- mov
-     A- D+ xchg   $3FF # C and   C push   Next
-  end-code
-\ : /block  ( d -- rest blk )   b/blk um/mod ;
-
-  Code *block  ( blk -- d )  A A xor   D+ D- xchg   D+ A+ xchg
-     A+ sal   D rcl   A+ sal   D rcl   A push   Next
-  end-code
-\ : *block  ( blk -- d )   b/blk um* ;
-
-
-
-
-
-\ *** Block No. 138, Hexblock 8a
-
-\ fblock@  fblock!                                ks 19 mär 88
-  Dos definitions
-
-| : ?beyond   ( blk -- blk )  dup 0< 0=exit  9 ?diskerror ;
-
-| : fblock   ( addr blk fcb -- seg:addr quan fcb )
-     fcb !  ?beyond dup *block  fcb @  fseek   ds@ -rot
-     fcb @ f.size 2@ /block rot -  ?beyond
-     IF  drop b/blk  THEN  fcb @ ;
-
-  : fblock@  ( addr blk fcb -- )    fblock lfgets drop ;
-
-  : fblock!  ( addr blk fcb -- )    fblock lfputs ;
-
-
-
-
-\ *** Block No. 139, Hexblock 8b
-
-\ (r/w  flush                                     ks 18 mär 88
   Forth definitions
-
-  : (r/w   ( addr blk fcb r/wf -- *f )  over fcb !  over
-     IF  IF  fblock@ false exit  THEN  fblock! false exit
-     THEN  >r drop  /drive ?drive
-     r> IF  block@ exit  THEN  block! ;
-
-  ' (r/w Is r/w
 
 | : setfiles  ( fcb -- )   isfile@ prevfile !
      dup isfile !   fromfile ! ;
 
   : direct   0 setfiles ;
 
+  : flush   file-link
+     BEGIN  @ ?dup WHILE  dup fclose  REPEAT
+     save-buffers empty-buffers ;
 
 
 \ *** Block No. 140, Hexblock 8c
-
+  Dos definitions
 \ File  >file                                     ks 23 mär 88
 
   : File    Create   file-link @   here file-link !  ,
@@ -580,32 +491,12 @@ Assembler  [[   W R xchg   C pop   D pop
 
   : from         isfile push   use ;
 
-  : loadfrom     ( n -- )   pushfile  use load close ;
-
-  : include      1 loadfrom ;
-
+\ Old pure-block-file include:
+\  : include      1 loadfrom ;
 
 
 
 
-\ *** Block No. 143, Hexblock 8f
-
-\ drive  drv  capacity   drivenames               ks 18 mär 88
-
-  : drive ( n -- )   isfile@ IF  ~select exit  THEN
-     ?drive   offset off 0 ?DO  I ?capacity offset +!  LOOP ;
-
-  : drv   ( -- n )
-     isfile@ IF  ~disk? exit  THEN  offset @ /drive nip ;
-
-  : capacity   ( -- n )   isfile@ ?dup
-     IF  dup f.handle @ 0= IF  dup freset  THEN
-         f.size 2@ /block swap 0<> - exit  THEN  blk/drv ;
-
-| : Drv:   Create c,  Does> c@ drive ;
-
-  0 Drv: A:     1 Drv: B:     2 Drv: C:     3 Drv: D:
-  4 Drv: E:     5 Drv: F:     6 Drv: G:     7 Drv: H:
 
 \ *** Block No. 144, Hexblock 90
 
@@ -651,9 +542,6 @@ Assembler  [[   W R xchg   C pop   D pop
   Forth definitions
 | : 'file  ( -- scr )  r>   scr push   isfile push   >r
      [ Dos ] ' @view >file isfile ! ;
-
-  : view   'file list ;
-  : help   'file capacity 2/ + list ;
 
 | : remove?   ( dic symb addr -- dic symb addr f )
      2 pick over 1+ u< ;

@@ -22,6 +22,8 @@
 
   include vf86file.fth
 
+  include vf86bufs.fth
+
   : forth-83 ;     \ last word in Dictionary
 
   0 ' limit >body !   $DFF6 s0 !    $E77C r0 !

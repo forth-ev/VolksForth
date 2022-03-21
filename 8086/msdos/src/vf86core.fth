@@ -1002,7 +1002,7 @@ swap ]?  C >in #) add
 
   : \  blk @ IF >in @ negate  c/l mod  >in +!
        ELSE #tib @ >in ! THEN ; immediate
-  : \\       b/blk >in ! ; immediate
+
   : have   ( <name> -- f )  name find nip   0<> ; immediate
   : \needs   have 0=exit  [compile] \  ;
 
@@ -1610,23 +1610,6 @@ Target  Forth also definitions
 
 
   $10000 Constant limit     Variable first
-
-  Variable isfile      isfile off   \ addr of file control block
-  Code isfile@  ( -- addr )
-     D push   isfile #) D mov   Next   end-code
-\ : isfile@ ( -- addr )    isfile @ ;
-
-| Variable buffers     buffers off  \ Semaphor
-
-  Defer r/w                         \ physikalischer Diskzugriff
-  Variable error#      error# off   \ Nummer des letzten Fehlers
-  Defer ?diskerror                  \ Fehlerbehandlung
-
-  Defer save-buffers  ' noop IS save-buffers
-  Defer init-buffers  ' noop IS init-buffers
-
-
-  include vf86bufs.fth
 
 
 \ *** Block No. 99, Hexblock 63

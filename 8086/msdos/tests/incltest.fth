@@ -1,6 +1,7 @@
 
+\needs (type include extend.fb include multi.vid include dos.fb
 include log2file.fb
-logopen incltest.log
+logopen output.log
 
 .( hello, world) cr
 : test-hello ." hello, world, from test-hello" cr ;

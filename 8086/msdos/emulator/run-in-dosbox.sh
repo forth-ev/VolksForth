@@ -2,18 +2,12 @@
 
 set -e
 
-emulatordir="$(realpath --relative-to="$PWD" "$(dirname "${BASH_SOURCE[0]}")")"
-basedir="$(realpath --relative-to="$PWD" "${emulatordir}/..")"
-
 forth="$1"
-include_filename="$2"
-include_basename="${include_filename%.*}"
-forthcmd=""
+forthcmd="$2"
 exit=""
 bye=""
-if [ -n "${include_basename}" ]; then
-  forthcmd="include ${include_filename}"
-  logname="${include_basename}.log"
+if [ -n "${forthcmd}" ]; then
+  logname="output.log"
   doslogname="$(echo ${logname}|tr '[:lower:]' '[:upper:]')"
   rm -f "${logname}" "${doslogname}"
   if [ -z "${KEEPEMU}" ]; then
@@ -24,13 +18,13 @@ fi
 
 auto_c=""
 autocmd=""
+pathcmd=""
 if [ -n "${forth}" ]; then
   auto_c="-c"
-  autocmd="${forth} path f:\\;f:\\src;f:\\tests ${forthcmd} ${bye}"
+  if [ -n "${FORTHPATH}" ]; then
+    pathcmd="path ${FORTHPATH}"
+  fi
+  autocmd="${forth} ${pathcmd} ${forthcmd} ${bye}"
 fi
 
-dosbox -c "mount f ${basedir}" -c "f:" "${auto_c}" "${autocmd}" $exit
-
-if [ -n "${include_basename}" ]; then
-  dos2unix -n "${doslogname}" "${logname}"
-fi
+dosbox -c "mount f ." -c "f:" "${auto_c}" "${autocmd}" $exit

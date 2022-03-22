@@ -1,0 +1,58 @@
+
+\ *** Block No. 0, Hexblock 0
+
+\^@ ####  volksFORTH   ####                           cas 18jul20
+VolksForth has been developed by
+
+   K. Schleisiek, B. Pennemann, G. Rehfeld, D. Weineck
+   Ulli Hoffmann, Philip Zembrod, Carsten Strotmann
+6502 version by B.Pennemann and K.Schleisiek
+Port to C64 "ultraFORTH"   by G. Rehfeld
+Port to 68000 and Atari ST by D.Weineck and B.Pennemann
+Port to 8080  and CP/M by U.Hoffmann    jul 86
+Port to C16 "ultraFORTH" by C.Vogt
+Port to 8088/86 and MS-DOS by K.Schleisiek  dez 87
+
+
+
+
+
+
+\ *** Block No. 2, Hexblock 2
+
+\\ Die Nutzung der 8088/86 Register                ks 27 oct 86
+
+Im Assembler sind Forthgemaesse Namen fuer die Register gewaehlt
+Dabei ist die Zuordnung zu den Intel Namen folgendermassen:
+
+A <=> AX      A- <=> AL     A+ <=> AH
+C <=> CX      C- <=> CL     C+ <=> CH
+  Register A und C sind zur allgemeinen Benutzung frei
+
+D <=> DX      D- <=> DL     D+ <=> DH
+  das oberste Element des (Daten)-Stacks.
+
+R <=> BX      R- <=> RL     R+ <=> RH
+  der Return_stack_pointer
+
+
+
+\ *** Block No. 3, Hexblock 3
+
+\\ Die Nutzung der 8088/86 Register                ks 27 oct 86
+
+U <=> BP     User_area_pointer
+S <=> SP     Daten_stack_pointer
+I <=> SI     Instruction_pointer
+W <=> DI     Word_pointer, im allgemeinen zur Benutzung frei.
+
+D: <=> DS    E: <=> ES    S: <=> SS    C: <=> CS
+   Alle Segmentregister werden beim booten auf den Wert des
+   Codesegments C: gesetzt und muessen, wenn sie "verstellt"
+   werden, wieder auf C: zurueckgesetzt werden.
+
+
+
+
+
+

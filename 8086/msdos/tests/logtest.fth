@@ -20,11 +20,11 @@
 
 \ *** Block No. 1, Hexblock 1
 
-\ loadscreen                                         phz 04jan22
+\ loadscreen                                         phz 22jan22
 
   include log2file.fb
 
-  logopen logtest.log
+  logopen output.log
   .( logtest done) cr
   logclose
 

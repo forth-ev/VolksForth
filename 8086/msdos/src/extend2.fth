@@ -124,17 +124,17 @@
 
 \ *** Block No. 7, Hexblock 7
 
-\\ string operators   append attach detract        ks 21 jun 87
+\ string operators   append attach detract        ks 21 jun 87
 
-  : append   ( char addr -- )
-     under   count + c!   dup c@ 1+ swap c! ;
+\  : append   ( char addr -- )
+\     under   count + c!   dup c@ 1+ swap c! ;
 
-  : attach ( addr len addr.to -- )
-     >r under   r@ count + swap move   r@ c@ + r> c! ;
+\  : attach ( addr len addr.to -- )
+\     >r under   r@ count + swap move   r@ c@ + r> c! ;
 
-  : detract ( addr -- char )
-     dup c@ 1- dup 0> and  over c!
-     count >r  dup count -rot  swap r> cmove ;
+\  : detract ( addr -- char )
+\     dup c@ 1- dup 0> and  over c!
+\     count >r  dup count -rot  swap r> cmove ;
 
 
 

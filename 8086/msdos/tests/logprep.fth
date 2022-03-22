@@ -1,5 +1,6 @@
 
   include extend2.fth
+\needs drv  : drv 2 ;  \ showing C: if drv isn't defined
   include multivid.fth
 
 \ : .blk|tib

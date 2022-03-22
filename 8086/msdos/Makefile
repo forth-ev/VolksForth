@@ -24,16 +24,27 @@ metafile.com: v4thfile.com src/meta.fb src/mk-meta.fth tests/log2file.fb
 	dos2unix -n OUTPUT.LOG metafile.log
 	grep -F 'Metacompiler saved as metafile.com' metafile.log
 
-v4th.com: metafile.com src/meta.fb src/mk-v4th.fth \
-    src/vf86core.fth src/vf86dos.fth src/vf86file.fth src/vf86bufs.fth
+v4th.com: metafile.com src/meta.fb src/v4th.fth src/vf86core.fth \
+    src/vf86dos.fth src/vf86file.fth src/vf86end.fth
 	rm -f v4th.com V4TH.COM OUTPUT.LOG
 	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
-	    metafile.com "include mk-v4th.fth"
+	    metafile.com "include v4th.fth"
 	dos2unix -n OUTPUT.LOG v4th.log
 	mv V4TH.COM v4th.com
 	grep -F 'unresolved:' v4th.log
 	grep -F 'new kernel written as v4th.com' v4th.log
 	grep -i 'unresolved:.*[^ ]' v4th.log && exit 1 || true
+
+v4thblk.com: metafile.com src/meta.fb src/v4thblk.fth src/vf86core.fth \
+    src/vf86dos.fth src/vf86file.fth src/vf86bufs.fth src/vf86end.fth
+	rm -f v4thblk.com V4THBLK.COM OUTPUT.LOG
+	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
+	    metafile.com "include v4thblk.fth"
+	dos2unix -n OUTPUT.LOG v4thblk.log
+	mv V4THBLK.COM v4thblk.com
+	grep -F 'unresolved:' v4thblk.log
+	grep -F 'new kernel written as v4thblk.com' v4thblk.log
+	grep -i 'unresolved:.*[^ ]' v4thblk.log && exit 1 || true
 
 # o4th for old volks4th - the new v4th is built with precompiled
 # metacompiler metafile.com and mk-v4th.fth which writes a compile log.
@@ -90,10 +101,10 @@ test-std.log: \
 	dos2unix -n dosfiles/OUTPUT.LOG $@
 
 test-blk.log: \
-    $(patsubst %, dosfiles/%, v4th.com $(prepfths)) \
+    $(patsubst %, dosfiles/%, v4thblk.com $(prepfths)) \
     $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
 	rm -f dosfiles/OUTPUT.LOG
-	(cd dosfiles && ../emulator/run-in-dosbox.sh v4th.com \
+	(cd dosfiles && ../emulator/run-in-dosbox.sh v4thblk.com \
 	    "include logprep.fth include test-blk.fth")
 	dos2unix -n dosfiles/OUTPUT.LOG $@
 

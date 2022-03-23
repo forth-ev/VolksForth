@@ -100,6 +100,63 @@ test-blk.log: \
 	    "include logprep.fth include test-blk.fth")
 	dos2unix -n dosfiles/OUTPUT.LOG $@
 
+forthblkdos: v4thblk.dos v4thblk.forth
+
+forthdos: forthblkdos v4thfile.dos v4thfile.forth v4th0.dos v4th0.forth
+
+v4th0.dos: \
+    $(patsubst %, dosfiles/%, v4th.com $(prepfths)) \
+    $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
+	rm -f dosfiles/OUTPUT.LOG
+	(cd dosfiles && ../emulator/run-in-dosbox.sh v4th.com \
+	    "include logprep.fth include vocdos.fth")
+	dos2unix -n dosfiles/OUTPUT.LOG output.log
+	tr " " "\n" <output.log | sort >$@
+
+v4th0.forth: \
+    $(patsubst %, dosfiles/%, v4th.com $(prepfths)) \
+    $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
+	rm -f dosfiles/OUTPUT.LOG
+	(cd dosfiles && ../emulator/run-in-dosbox.sh v4th.com \
+	    "include logprep.fth include vocforth.fth")
+	dos2unix -n dosfiles/OUTPUT.LOG output.log
+	tr " " "\n" <output.log | sort >$@
+
+v4thblk.dos: \
+    $(patsubst %, dosfiles/%, v4thblk.com $(prepfths)) \
+    $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
+	rm -f dosfiles/OUTPUT.LOG
+	(cd dosfiles && ../emulator/run-in-dosbox.sh v4thblk.com \
+	    "include logprep.fth include vocdos.fth")
+	dos2unix -n dosfiles/OUTPUT.LOG output.log
+	tr " " "\n" <output.log | sort >$@
+
+v4thblk.forth: \
+    $(patsubst %, dosfiles/%, v4thblk.com $(prepfths)) \
+    $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
+	rm -f dosfiles/OUTPUT.LOG
+	(cd dosfiles && ../emulator/run-in-dosbox.sh v4thblk.com \
+	    "include logprep.fth include vocforth.fth")
+	dos2unix -n dosfiles/OUTPUT.LOG output.log
+	tr " " "\n" <output.log | sort >$@
+
+v4thfile.dos: \
+    $(patsubst %, dosfiles/%, v4thfile.com $(prepfths)) \
+    $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
+	rm -f dosfiles/OUTPUT.LOG
+	(cd dosfiles && ../emulator/run-in-dosbox.sh v4thfile.com \
+	    "include log2file.fth include vocdos.fth")
+	dos2unix -n dosfiles/OUTPUT.LOG output.log
+	tr " " "\n" <output.log | sort >$@
+
+v4thfile.forth: \
+    $(patsubst %, dosfiles/%, v4thfile.com $(prepfths)) \
+    $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
+	rm -f dosfiles/OUTPUT.LOG
+	(cd dosfiles && ../emulator/run-in-dosbox.sh v4thfile.com \
+	    "include log2file.fth include vocforth.fth")
+	dos2unix -n dosfiles/OUTPUT.LOG output.log
+	tr " " "\n" <output.log | sort >$@
 
 incltest-volks4th.log: v4thfile.com tests/log2file.fb tests/incltest.fth
 	rm -f OUTPUT.LOG

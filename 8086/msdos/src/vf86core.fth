@@ -12,7 +12,7 @@ Create origin   here origin!    here $100 0 fill
   $E9 int  end-code  -4 ,  $FC allot
 \ this is the multitasker initialization in the user area
 
-| Create logo ," volksFORTH-83 rev. 3.81.41"
+| Create logo ," volksFORTH-83 rev. 3.9.1-MSDOS"
 
 
 

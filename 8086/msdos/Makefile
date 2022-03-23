@@ -77,11 +77,11 @@ prepfths = asm.fb extend.fb multi.vid dos.fb include.fb 86asm.fth \
     t86asm.fth extend2.fth multivid.fth dos2.fth dos3.fth
 
 incltest.log: \
-    $(patsubst %, dosfiles/%, v4th.com $(prepsrcs) log2file.fb \
+    $(patsubst %, dosfiles/%, v4thblk.com $(prepsrcs) log2file.fb \
         incltest.fth)
 	rm -f dosfiles/OUTPUT.LOG
 	(cd dosfiles && ../emulator/run-in-dosbox.sh \
-	    v4th.com "include include.fb include incltest.fth")
+	    v4thblk.com "include incltest.fth")
 	dos2unix -n dosfiles/OUTPUT.LOG $@
 
 test-std.log: \

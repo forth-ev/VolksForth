@@ -443,7 +443,7 @@ Assembler  [[   W R xchg   C pop   D pop
 
 
 \ *** Block No. 140, Hexblock 8c
-  Dos definitions
+
 \ File  >file                                     ks 23 mär 88
 
   : File    Create   file-link @   here file-link !  ,

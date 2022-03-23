@@ -6,7 +6,7 @@ fbfiles_uppercase = $(wildcard src/*.FB tests/*.FB)
 fthfiles_caseconverted = $(patsubst %.fb, %.fth, \
     $(shell ../../tools/echo-tolower.py $(fbfiles_uppercase)))
 
-test: incltest.result logtest.result test-min.result test-std.result \
+test: incltest.result logtest.result test-std.result test-blk.result \
     incltest-volks4th.result test-volks4th-min.result
 
 fth: $(fthfiles) $(fthfiles_caseconverted)
@@ -82,14 +82,6 @@ incltest.log: \
 	rm -f dosfiles/OUTPUT.LOG
 	(cd dosfiles && ../emulator/run-in-dosbox.sh \
 	    v4th.com "include include.fb include incltest.fth")
-	dos2unix -n dosfiles/OUTPUT.LOG $@
-
-test-min.log: \
-    $(patsubst %, dosfiles/%, v4th.com $(prepfths)) \
-    $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
-	rm -f dosfiles/OUTPUT.LOG
-	(cd dosfiles && ../emulator/run-in-dosbox.sh v4th.com \
-	    "include logprep.fth include test-min.fth")
 	dos2unix -n dosfiles/OUTPUT.LOG $@
 
 test-std.log: \

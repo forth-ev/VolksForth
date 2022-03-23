@@ -25,8 +25,16 @@ kernels with build-in .fth interface.
 ** Binary make targets
 
 =make v4th.com=
-builds the new minimal VolksForth kernel v4th.com from
-.fth sources using metafile.com.
+builds the new minimal VolksForth kernel v4th.com
+from .fth sources using metafile.com. v4th.com does not have the block
+words and the buffer mechanism anymore. The only way to load code from
+files is via =include filename.fth=.
+
+=make v4thblk.com=
+builds the new minimal VolksForth kernel v4thblk.com
+from .fth sources using metafile.com. v4thblk.com contains the block
+words and the buffer mechanism and can load and include both .fth
+stream sources and .fb block sources.
 
 =make metafile.com=
 builds the metacompiler with included .fth file interface.
@@ -47,8 +55,13 @@ adds the .fth file interface to the old volks4th binary.
 =make test=
 runs all current tests.
 
-=make test-min.result=
-runs v4th.com through the initial minimal set of unit tests.
+=make test-std.result=
+runs v4th.com through the standard set of unit tests, without the block
+tests, of course
+
+=make test-blk.result=
+runs v4thblk.com through full set of unit tests, including the block
+tests.
 
 =make test-volks4th-min.result=
 runs the same initial minimal set of unit tests on v4thfile.com

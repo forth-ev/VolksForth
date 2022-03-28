@@ -10,6 +10,5 @@ include tester.fth
 
 \ 1 verbose !
 include core.fr
-\ include coreplus.fth
 
 logclose

@@ -1,9 +1,9 @@
 
-utilities.fth ?DEFTEST1 exists
+UTIL.FTH  ?DEFTEST1 exists
 Test utilities loaded
 
-errorreport.fth
-coreexttest.fth**************
+ERRORREP.FTH
+COREEXT.FTH **************
 
 Output from .(
 You should see -9876: -9876

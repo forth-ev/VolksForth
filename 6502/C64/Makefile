@@ -28,6 +28,7 @@ clean:
 	rm -f *.log *.result *.golden
 	rm -f cbmfiles/c??-testbase
 	rm -f disks/scratch.d64 emulator/sdcard.img
+	rm -f cbmfiles/tcbase16
 
 
 # Convenience targets
@@ -87,6 +88,18 @@ cbmfiles/v4th-c16-:
 
 cbmfiles/v4th-x16:
 	emulator/build-vf.sh v4th-x16
+
+
+# Proof-of-concept self-hosted C16 target compile
+
+cbmfiles/tcbase16: emulator/v4thblk-c16+.T64 emulator/build-tcbase.sh \
+    disks/tc38q.d64 disks/file-words.d64 cbmfiles/tc-base.fth
+	VICE=xplus4 TCVF=v4thblk-c16+ TCBASE=tcbase16 emulator/build-tcbase.sh
+
+cbmfiles/v4th-c16+self: emulator/tcbase16.T64
+	VICE=xplus4 TCBASE=tcbase16 emulator/build-vf.sh v4th-c16+
+	rm -f $@
+	cp cbmfiles/v4th-c16+ $@
 
 
 # Core test targets

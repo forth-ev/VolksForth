@@ -4,6 +4,15 @@ set -e
 
 forth="$1"
 forthcmd="$2"
+pathcmd=""
+if [ -n "${FORTHPATH}" ]; then
+  pathcmd="path ${FORTHPATH}"
+fi
+f_mountpoint="."
+if [ -n "${F_MOUNTPOINT}" ]; then
+  f_mountpoint="${F_MOUNTPOINT}"
+fi
+
 exit=""
 bye=""
 if [ -n "${forthcmd}" ]; then
@@ -18,13 +27,9 @@ fi
 
 auto_c=""
 autocmd=""
-pathcmd=""
 if [ -n "${forth}" ]; then
   auto_c="-c"
-  if [ -n "${FORTHPATH}" ]; then
-    pathcmd="path ${FORTHPATH}"
-  fi
   autocmd="${forth} ${pathcmd} ${forthcmd} ${bye}"
 fi
 
-dosbox -c "mount f ." -c "f:" "${auto_c}" "${autocmd}" $exit
+dosbox -c "mount f ${f_mountpoint}" -c "f:" "${auto_c}" "${autocmd}" $exit

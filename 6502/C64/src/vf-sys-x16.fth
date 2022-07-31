@@ -9,8 +9,6 @@ include vf-lbls-cbm.fth
 0febd >label KbdbufPeek
  0289 >label IOStatus
  028c >label MsgFlg
- 028e >label OutDev
- 028d >label  InDev
 09f2c >label BrdCol
  0266 >label BkgCol
  0284 >label PenCol

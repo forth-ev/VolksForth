@@ -100,7 +100,7 @@ Output: display   [ here output ! ]
 87 fthpage
 
 Code i/o-status?  ( -- n )
-  IOStatus lda  Push0A jmp  end-code
+  READST jsr  Push0A jmp  end-code
 
 \ b/blk drive >drive drvinit  clv14:2x87
 
@@ -131,7 +131,12 @@ Variable (drv    0 (drv !
 
 Variable i/o  0 i/o !  \ Semaphore
 
-Code busoff  ( --)   CLRCHN jsr
+Label LsnDev 0 c,
+Label TlkDev 0 c,
+
+Code busoff  ( --)
+ LsnDev lda  0<> ?[ LsnDev stx  UNLSN jsr ]?
+ TlkDev lda  0<> ?[ TlkDev stx  UNTLK jsr ]?
 Label unlocki/o  1 # ldy  0 # ldx
  ;c:  i/o unlock ;
 
@@ -164,7 +169,7 @@ Label (?dev
  N 2+ lda  (?dev jsr
  N 2+ lda  LISTEN jsr
  N lda  60 # ora SECOND jsr
- N 2+ ldx  OutDev stx
+ N 2+ ldx  LsnDev stx
  xyNext jmp  end-code
 
 
@@ -188,8 +193,7 @@ Label (?dev
  N 2+ lda  TALK jsr
  N lda  60 # ora (C16 $ad sta ( )
  TKSA jsr
-\ because of error in old C16 OS
- N 2+ ldx  InDev stx
+ N 2+ ldx  TlkDev stx
  xyNext jmp end-code
 
 : busin  ( dev 2nd -- )

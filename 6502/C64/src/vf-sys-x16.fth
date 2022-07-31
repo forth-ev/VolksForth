@@ -6,10 +6,11 @@ include vf-lbls-cbm.fth
 \ X16 labels
 
 0ffd2 >label ConOut
- 0286 >label IOStatus
+0febd >label KbdbufPeek
+ 0289 >label IOStatus
  028c >label MsgFlg
- 028b >label OutDev
- 028a >label  InDev
+ 028e >label OutDev
+ 028d >label  InDev
 09f2c >label BrdCol
  0266 >label BkgCol
  0284 >label PenCol
@@ -46,33 +47,12 @@ include vf-lbls-cbm.fth
 \ X16 c64key? getkey
 
 Code c64key? ( -- flag)
- RamBank ldx
-\ TODO(issues/33): Remove the lines accessing RamBank38.
- RamBank38 ldy
- 0 # lda  RamBank sta
- RamBank38 sta
- Ndx lda
- 0<> ?[  0FF # lda  ]? pha
- RamBank stx
- RamBank38 sty
+ KbdbufPeek jsr
+ txa  pha
  Push jmp  end-code
 
 Code getkey  ( -- 8b)
- RamBank lda  N sta
-\ TODO(issues/33): Remove the lines accessing RamBank38.
- RamBank38 lda  N 1+ sta
- 0 # lda  RamBank sta
- RamBank38 sta
- Ndx lda  0<>
- ?[  sei  KeyD ldy
-  [[  KeyD 1+ ,X lda  KeyD ,X sta  inx
-      Ndx cpx  0= ?]
-  Ndx dec
-  N lda  RamBank sta
-  N 1+ lda  RamBank38 sta
-  tya  cli  0A0 # cmp
-  0= ?[  bl # lda  ]?
- ]?
+ GETIN jsr
  Push0A jmp   end-code
 
 

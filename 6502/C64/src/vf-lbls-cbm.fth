@@ -18,6 +18,7 @@ $FF84 >label IOINIT
 $FFB1 >label LISTEN
 $FFC0 >label OPEN
 $FFF0 >label PLOT
+$FFB7 >label READST
 $FF8A >label RESTOR
 $FF93 >label SECOND
 $FFE1 >label STOP

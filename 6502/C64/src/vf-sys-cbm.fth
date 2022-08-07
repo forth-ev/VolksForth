@@ -152,6 +152,9 @@ Label nodevice     0 # ldx  1 # ldy
 
 Label (?dev
  IOStatus stx  \ because IOStatus isn't cleared by LISTEN or TALK
+ \ It's unclear in which situation or use case the following
+ \ workaround for a C16 OS error is needed. The v4th tests pass
+ \ even with the following line removed.
  (C16 CurDev sta ( )  \ current device number - because of error in OS
  LISTEN jsr
  60 # lda  SECOND jsr  UNLSN jsr

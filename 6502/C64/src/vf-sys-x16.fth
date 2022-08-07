@@ -12,19 +12,11 @@ include vf-lbls-cbm.fth
 09f2c >label BrdCol
  0266 >label BkgCol
  0284 >label PenCol
-   8a >label PrgEnd  \ aka eal; seems unused
- 0292 >label IOBeg   \ aka stal; seems unused
  0381 >label CurFlg  \ aka qtsw
  0385 >label InsCnt  \ aka insrt
 
-\ TODO(issues/33): Remove the R?mBank38 labels.
-09f60 >label RomBank38
-09f61 >label RamBank38
 1 >label RomBank
 0 >label RamBank
-
-0a000 >label KeyD  \ keyboard buffer
-0a00a >label Ndx   \ #keys in keyboard buffer
 
   037B >label blnsw  \ C64: $cc
 \   037C >label blnct  \ C64: $cd
@@ -102,8 +94,6 @@ Label restore   pha txa pha tya pha cld
 Label first-init
  sei cld
  RomBank lda  $f8 # and  RomBank sta \ map in KERNAL ROM
-\ TODO(issues/33): Remove this line accessing RomBank38.
- RomBank38 lda  $f8 # and  RomBank38 sta \ map in KERNAL ROM for R38
  IOINIT jsr  CINT jsr  RESTOR jsr  \ init. and set I/O-Vectors
  ink-pot    lda BrdCol sta \ border
  ink-pot 1+ lda BkgCol sta \ backgrnd

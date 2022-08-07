@@ -151,10 +151,11 @@ Label nodevice     0 # ldx  1 # ldy
 \ ?device                     clv12jul87
 
 Label (?dev
- IOStatus stx (C16 $ae sta ( ) LISTEN jsr
-        \ because of error in OS
+ IOStatus stx  \ because IOStatus isn't cleared by LISTEN or TALK
+ (C16 CurDev sta ( )  \ current device number - because of error in OS
+ LISTEN jsr
  60 # lda  SECOND jsr  UNLSN jsr
- IOStatus lda  0<> ?[ pla pla nodevice jmp ]?
+ READST jsr  0<> ?[ pla pla nodevice jmp ]?
  rts    end-code
 
  Code (?device  ( dev --)

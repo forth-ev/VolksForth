@@ -18,7 +18,7 @@ nosave="${2}"
 test -z "${nosave}" && rm -f "${basedir}/cbmfiles/${target}"
 rm -f "${basedir}/cbmfiles/${logfile}"
 
-keybuf="include ${source}\nsave-target ${target}\ndos s0:notdone\n"
+keybuf="include ${source}\nsave-target ${target}\ndos s0:notdone"
 test -n "${nosave}" && keybuf="include ${source}\n"
 
 DISK10=tc38q "${emulatordir}/run-in-vice.sh" \

@@ -8,20 +8,26 @@ test -n "$DISK11" || DISK11=empty
 emulatordir="$(realpath --relative-to="$PWD" "$(dirname "${BASH_SOURCE[0]}")")"
 basedir="$(realpath --relative-to="$PWD" "${emulatordir}/..")"
 
+executable="${1}"
+keybuf="${2}"
+
 autostart=""
-if [ -n "$1" ]
+if [ -n "${executable}" ]
 then
-  autostart="-autostart ${emulatordir}/${1}.T64"
+  autostart="-autostart ${emulatordir}/${executable}.T64"
 fi
 
-keybuf=""
 warp=""
-if [ -n "$2" ]
+if [ -n "${keybuf}" ]
 then
-  keybuf="${2}"
+  # keybuf="${2}"
   # The following could also just be a cp.
   ascii2petscii "${emulatordir}/notdone" "${basedir}/cbmfiles/notdone"
   warp="-warp"
+  # Magic env variable KEEPEMU: Only if not set, send in the final CR.
+  if [ -z "${KEEPEMU}" ]; then
+    keybuf="${keybuf}\n"
+  fi
 fi
 
 "$VICE" \

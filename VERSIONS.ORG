@@ -1,0 +1,37 @@
+#+Title: VolksForth versions
+
+* C64/C16/Plus4/CommanderX16
+
+*3.9.4*
+
+ * X16 version adapted to Kernal/Emulator version R41
+ * Some reduction in use of and dependence on Kernal variables in RAM
+
+*3.9.3*
+
+ * X16 version adapted to work with both versions R38 and R39 of
+ Kernal and Emulator, and thus with prototype boards #1 and #2
+ * Some code cleanup around moving word headers to the heap
+ and related tmpheap cleanup
+ * load, thru, +load, +thru were removed from the v4th versions
+ like the x16 version that don't have block/buffer disk access.
+
+*3.9.2*
+
+ * X16: Zero page area used by v4th moved from $30-$5b to $50-$7b,
+ inclusive, so that it now doesn't collide with the ROM version of X16Edit
+ * Initial prepartion for and implementation of tmpheap
+ * Some minor cleanups and bug fixes.
+
+*3.91*
+
+ * X16: Initial version
+
+*3.90*
+
+ * Built-in INCLUDE stream file interface
+ * Separate versions with and without BLOCK words
+ * C16-32k version resurrected and fixed
+ * An adapted subset of the ANS test suite is made to pass
+ * Makefile setup for build and test
+ * Build sources moved from BLOCK disk images to stream sources

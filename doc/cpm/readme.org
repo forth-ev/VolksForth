@@ -14,11 +14,11 @@ FORTH-Gesellschaft e.V. In ihrem Vereinsorgan dem Forth-Magazin
 
 Die Adresse der Forth-Gesellschaft e.V. lautet:
 
-                           Forth-Gesellschaft e.V.
-                           Postfach 1030
-                           48481 Neuenkirchen
-                           E-Mail: secretary@forth-ev.de
-                           Web: https://www.forth-ev.de
+   Forth-Gesellschaft e.V.\\
+   Postfach 1030\\
+   48481 Neuenkirchen\\
+   E-Mail: secretary@forth-ev.de\\
+   Web: https://www.forth-ev.de\\
 
 * Wie fange ich an?
 
@@ -34,7 +34,7 @@ werden. Auf der ausgelieferten Diskette finden sich folgende Dateien:
 | FILEINT  SCR | Das volksFORTH Fileinterface zu CP/M 2.2               |
 | HASHCASH SCR | Ein schnelles Dictionary-Suchverfahren                 |
 | INSTALL  SCR | Der Installer für die Editor-Befehlstasten             |
-| KERNEL   COM | Der volksFORTH Kern (Terminal unabh{ngig)              |
+| KERNEL   COM | Der volksFORTH Kern (Terminal unabhängig)              |
 | PORT8080 SCR | Definitionen für 8080 Portzugriff                      |
 | PORTZ80  SCR | Definitionen für Z80 Protzugriff                       |
 | PRIMED   SCR | Der primitivst Editor zum Installieren                 |
@@ -97,7 +97,7 @@ anwählen. =PRIMED= arbeitet dann auf diesem File.
 Im File =EDITOR.SCR= gibt es eine Tabelle mit Namen =KEYTABLE=, in der
 die Tasten zu den in der Tabelle =ACTIONTABLE= definierten Befehlen
 angegeben werden. Durch Ändern der Tabelle =KEYTABLE= können die
-Befehlstasten des Editors ver{ndert werden. Zum einfachen Anpassen des
+Befehlstasten des Editors verändert werden. Zum einfachen Anpassen des
 Editors gibt es das File =INSTALL.SCR=, indem interaktiv die neuen
 Befehlstasten abgefragt werden. (Achtung!: Der Sourcetext wird nicht
 mitgeändert!!)
@@ -267,87 +267,83 @@ Screen in =A:TEST.SCR=. Beachten Sie bitte, daß dieses File noch leer
 ist, und daher eine Fehlerbedingung besteht, wenn Zugriffsoperationen
 ausgeführt werden sollen.
 
-MAKEFILE       ( -- ) "makefile"
-     Wird in der folgender Form benutzt:
-          MAKEFILE <name>
-     Erzeugt  ein Forthfile mit dem Namen <NAME> und erzeugt abschlie~end  ein
-     DOS-File  mit  demselben Namen  (und  eindeutiger  Laufwerksangabe).  Die
-     folgende Sequenz w}rde genau dasselber bewirken:
-          FILE <name>
-          <name> MAKE <name>
+=MAKEFILE ( -- )= "makefile" - Wird in der folgender Form benutzt:
+=MAKEFILE <name>=. Erzeugt ein Forthfile mit dem Namen <NAME> und
+erzeugt abschließend ein DOS-File mit demselben Namen (und eindeutiger
+Laufwerksangabe). Die folgende Sequenz würde genau dasselber bewirken:
+#+begin_example
+FILE <name>
+<name> MAKE <name>
+#+end_example
 
-SAVEFILE       ( addr len -- ) "savefile"
-     Wird in der folgenden Form benutzt:
-          SAVEFILE <name>
-     Schreibt den String, der an der Adresse addr begint und die L{nge len hat
-     als File mit dem Namen <name> auf die Diskette.
+=SAVEFILE ( addr len -- )= "savefile" - Wird in der folgenden Form
+benutzt: =SAVEFILE <name>=. Schreibt den String, der an der Adresse
+=addr= beginnt und die Länge =len= hat als File mit dem Namen =<name>=
+auf die Diskette.
 
-KILLFILE       ( -- ) "killfile"
-     L|scht das aktuelle File.  Unsch|n, da dann das Forthfile noch existiert,
-     das Dosfile aber gel|scht ist, soda~ es bei dem n{chsten Diskettenzugriff
-     einen Fehler gibt, wenn nicht ein anderes File angew{hlt wird.
-.pa
-ASSIGN         ( -- ) "assign"
-     Wird in der Form
-          ASSIGN cccc
-     benutzt.  Ordnet  dem  aktuellen File das DOS-File mit Namen  cccc   (mit
-     eindeutiger Laufwerksangabe) zu.  Eine Fehlerbedingung besteht,  wenn das
-     File nicht gefunden werden kann.
+=KILLFILE ( -- )= "killfile" - Löscht das aktuelle File. Unschön, da
+dann das Forthfile noch existiert, das Dosfile aber gelöscht ist,
+sodaß es bei dem nächsten Diskettenzugriff einen Fehler gibt, wenn
+nicht ein anderes File angewählt wird.
 
-USE            ( -- ) "use"
-     Dieses Wort ist das wichtigste Wort zum Ausw{hlen von Files.     ____________________________________________________________
+=ASSIGN ( -- )= "assign" - Wird in der Form =ASSIGN cccc= benutzt.
+Ordnet dem aktuellen File das DOS-File mit Namen cccc (mit eindeutiger
+Laufwerksangabe) zu. Eine Fehlerbedingung besteht, wenn das File nicht
+gefunden werden kann.
 
-     Es wird in der folgenden Form benutzt:
-          USE <name>
-     Dieses  Wort macht das File mit Namen <NAME> zum aktuellen File,  auf das
-     sich LOAD, LIST usw. beziehen. Es erzeugt ein Forthfile mit Namen <NAME>,
-     falls der Name noch nicht vorhanden war.  Anschlie~end wird das File  auf
-     dem  aktuellen (oder angegebenem) Laufwerk gesucht.  Wird das File  nicht
-     gefunden,  so  wird  eine  Fehlermeldung  ausgegeben.  Das  (automatisch)
-     erzeugte  Forthfile  verbleibt  im Dictionary und  mu~  ggf.  mit  FORGET
-     vergessen werden.
+=USE ( -- )= "use" - Dieses Wort ist das wichtigste Wort zum Auswählen
+von Files. Es wird in der folgenden Form benutzt: =USE <name>=. Dieses
+Wort macht das File mit Namen =<NAME>= zum aktuellen File, auf das
+sich =LOAD=, =LIST= usw. beziehen. Es erzeugt ein Forthfile mit Namen
+=<NAME>=, falls der Name noch nicht vorhanden war. Anschließend wird
+das File auf dem aktuellen (oder angegebenem) Laufwerk gesucht. Wird
+das File nicht gefunden, so wird eine Fehlermeldung ausgegeben. Das
+(automatisch) erzeugte Forthfile verbleibt im Dictionary und muß ggf.
+mit =FORGET= vergessen werden.
 
-CLOSE          ( -- ) "close"
-     Schlie~t das aktuelle File. Dabei wird das Inhaltsverzeichnis (Directory)
-     der  Diskette  aktualisiert.  Es  werden die zu  diesem  File  geh|renden
-     ge{nderten  Bl|cke auf Diskette zur}ckgeschrieben und alle zu diesem File
-     geh|renden Bl|cke in den Block-Puffern gel|scht.
+=CLOSE ( -- )= "close" - Schließt das aktuelle File. Dabei wird das
+Inhaltsverzeichnis (Directory) der Diskette aktualisiert. Es werden
+die zu diesem File gehörenden geänderten Blöcke auf Diskette
+zurückgeschrieben und alle zu diesem File gehörenden Blöcke in den
+Block-Puffern gelöscht.
 
-OPEN           ( -- ) "open"
-     Offnet  das aktuelle File.  Eine Fehlerbedingung besteht,  wenn das  File
-     nicht  gefunden  werden  kann.  Die Benutzung dieses Wortes  ist  in  den
-     meisten  F{llen  }berfl}ssig,  da  Files automatisch  bei  einem  Zugriff
-     ge|ffnet werden.
+=OPEN ( -- )= "open" - Öffnet das aktuelle File. Eine Fehlerbedingung
+besteht, wenn das File nicht gefunden werden kann. Die Benutzung
+dieses Wortes ist in den meisten Fällen überflüssig, da Files
+automatisch bei einem Zugriff geöffnet werden.
 
-EMPTYFILE      ( -- ) "emptyfile"
-     K}rzt das aktuelle File auf die L{nge null.
+=EMPTYFILE ( -- )= "emptyfile" - Kürzt das aktuelle File auf die Länge
+null.
 
-FROM           ( -- ) "from"
-     Wird in der folgenden Form benutzt:
-          FROM <name>
-     <name> ist der Name eines Forthfile,  aus dem beim Aufruf von CONVEY  und
-     COPY Bl|cke herauskopiert werden sollen.
+=FROM ( -- )= "from" - Wird in der folgenden Form benutzt: =FROM
+<name>=. <name> ist der Name eines Forthfile, aus dem beim Aufruf von
+CONVEY und COPY Blöcke herauskopiert werden sollen.
 
-     Beispiel: filea   1 FROM fileb  3 COPY
+Beispiel:
+#+begin_example
+filea 1 FROM fileb 3 COPY
+#+end_example
 
-     Kopiert den Block 1 aus FILEB auf den Block 3 von FILEA.
-     Dieses Wort benutzt USE und das File auszuw{hlen. Das bedeutet, da~ FILEB
-     automatisch  als  Forthfile angelegt wird,  wenn es noch nicht im  System
-     vorhanden ist.
-.pa
-LOADFROM       ( n -- ) "loadfrom"
-     Wird in der folgenden Form benutzt:
-          LOADFROM <name>
-     <name> ist der Name eines Forthfiles, aus dem der Block n geladen wird.
+Kopiert den Block 1 aus =FILEB= auf den Block 3 von =FILEA=. Dieses Wort
+benutzt =USE= und das File auszuwählen. Das bedeutet, daß =FILEB=
+automatisch als Forthfile angelegt wird, wenn es noch nicht im System
+vorhanden ist.
 
-     Beispiel:      15 LOADFROM filea
+=LOADFROM ( n -- )= "loadfrom" - Wird in der folgenden Form benutzt:
+=LOADFROM <name>=. =<name>= ist der Name eines Forthfiles, aus dem der
+Block n geladen wird.
 
-     L{dt den Block 15 aus FILEA.  Dieses Wort ist wichtig,  wenn w{hrend  des
-     Ladens  eines  Files  Teile eines anderen Files  geladen  werden  sollen.
-     Dieses Wort benutzt USE, um FILEA zu selektieren. Das bedeutet, da~ automatisch  ein Forthfile mit Namen FILEA erzeugt wird,  falls es im  System
-     noch nicht vorhanden war.
-     Beachten Sie bitte,  da~ dieses Wort nichts mit FROM oder FROMFILE zu tun
-     hat, obwohl es {hnlich hei~t!
+Beispiel:
+#+begin_example
+15 LOADFROM filea
+#+end_example
+
+Lädt den Block 15 aus FILEA. Dieses Wort ist wichtig, wenn während des
+Ladens eines Files Teile eines anderen Files geladen werden sollen.
+Dieses Wort benutzt USE, um FILEA zu selektieren. Das bedeutet, da~
+automatisch ein Forthfile mit Namen FILEA erzeugt wird, falls es im
+System noch nicht vorhanden war. Beachten Sie bitte, da~ dieses Wort
+nichts mit FROM oder FROMFILE zu tun hat, obwohl es ähnlich heißt!
 
 INCLUDE        ( -- ) "include"
      Wird in der folgenden Form benutzt:

@@ -20,7 +20,7 @@ ende 123
 
 \ *** Block No. 1, Hexblock 1
 
-\ volksFORTH Loadscreen for py65 target           cas 15juli2020
+\ volksFORTH Loadscreen for py65 target         cas    02aug2020
 forth definitions
 : (C [compile] ( ; IMMEDIATE  \ : ) ; IMMEDIATE
 
@@ -58,7 +58,7 @@ HERE DUP ORIGIN!
 
 \ *** Block No. 3, Hexblock 3
 
-\ Coldstartvalues and user variables              cas 15juli2020
+\ Coldstartvalues and user variables            cas    02aug2020
 \
 
 0 JMP  0 JSR  HERE 2- >LABEL >WAKE
@@ -67,7 +67,7 @@ HERE DUP ORIGIN!
 0D6 ALLOT
 
 \ Bootlabel
-," VOLKSFORTH-83 3.8 py65 15july2020 CS"
+," VolksForth-83 3.8.1 py65 02aug2020  CS"
 
 
 
@@ -172,7 +172,7 @@ USER UDP                \ POINTS TO NEXT FREE ADDR IN USER
 
 \ *** Block No. 9, Hexblock 9
 
-\ MANIPULATE SYSTEM POINTERS  29JAN85BP)
+\ MANIPULATE SYSTEM POINTERS  29JAN85BP)        cas    02aug2020
 
 CODE SP@   ( -- ADDR)
  SP LDA  N STA  SP 1+ LDA  N 1+ STA
@@ -628,12 +628,12 @@ CODE U<   ( U1 U2 -- FLAG)
 
 \ *** Block No. 33, Hexblock 21
 
-\ COMPARISION WORDS           24DEC83KS)
+\ COMPARISION WORDS           24DEC83KS)        cas    02aug2020
 
 | : 0<   8000 AND  0<> ;
 
 : >   ( N1 N2 -- FLAG)  SWAP < ;
-: 0>  ( N --     FLAG)  NEGATE 0<  ;
+: 0>  ( N --     FLAG)  DUP 0< SWAP 0= OR NOT ;
 : 0<> ( N --     FLAG)  0= NOT ;
 : U>  ( U1 U2 -- FLAG)  SWAP U< ;
 : =   ( N1 N2 -- FLAG)  - 0= ;
@@ -2300,7 +2300,7 @@ HOST TARGET
 
 \ *** Block No. 121, Hexblock 79
 
-\ 'COLD                       07JUN85BP)          cas 15juli2020
+\ 'COLD                       07JUN85BP)        cas    02aug2020
 | : INIT-VOCABULARYS   VOC-LINK @
      BEGIN  DUP  2- @  OVER 4 - ! @ ?DUP 0= UNTIL ;
 
@@ -2309,7 +2309,7 @@ HOST TARGET
 DEFER  'COLD    ' NOOP IS 'COLD
 
 | : (COLD INIT-VOCABULARYS  INIT-BUFFERS  PAGE 'COLD ONLYFORTH
-     ." volksFORTH-83  3.8 py65 202007" CR   RESTART ; -2 ALLOT
+   ." volksFORTH-83  3.8.1 py65 202008" CR   RESTART ; -2 ALLOT
 
 DEFER 'RESTART  ' NOOP IS 'RESTART
 | : (RESTART ['] (QUIT IS 'QUIT

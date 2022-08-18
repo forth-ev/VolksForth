@@ -1,0 +1,123 @@
+[nderungen im CP/M-volksFORTH von Version 3.80 zu Version 3.80a    UH 04M{r88
+=============================================================================
+
+Die Unvertr{glichkeit des urspr}nglichen CP/M-volksFORTHs mit CP/M+ und die
+damit verbundene Vielzahl von unterschiedlichen Versionen hat eine allgmeine
+]berarbeitung des CP/M-volksFORTHs notwendig gemacht. 
+Bei dieser Gelegenheit wurden gleich einige Fehler beseitigt und einige
+neue Funktionen eingef}hrt. 
+
+1. [nderungen im Kern (SOURCE.SCR)
+
+    - Die Terminal-Ein- und Ausgabe wurde auf ein Mindestma~ begrenzt, 
+      soda~ auch unmittelbar mit dem Kern gearbeitet werden kann.
+      Es gibt keinen Zeileneditor f}r die Eingabezeile mehr, dieser wurde
+      zusammen mit der "Terminal:" Funktion in das File XINOUT.SCR ausgelagert.
+      	
+    - Der Kern enth{lt kein Fileinterface mehr, sondern arbeitet nur in dem
+      File, da~ bei Aufruf in der Kommandozeile mit angegeben wird (default- 
+      file). Typischerweise wird mit diesem Mechanismus zuerst das 
+      File-Interface geladen.
+
+    - Direkter Diskettezugriff wird im Kern nicht mehr unterst}tzt, da er
+      unter CP/M+ nicht problemlos zu implementieren ist. Au~erdem kann
+      in Ermangelung eines CP/M+ Systems der Code hier nicht getestet werden.
+      Diskettenzugriff findet nur noch }ber das BDOS statt.
+
+    - Zahlreiche Funktionen des Kerns wurden neu }berarbeitet und in Code 
+      geschrieben, als wichtige neue Funktion des Kerns ist "search hinzu-
+      gekommen, das eine schnelle Suche mit Ber}cksichtigung der Gro~/Klein-
+      schreibung erm|glicht.
+         
+    - Die Funktion CAPITALIZE ist durch die {hnliche Funktion UPPER ersetzt
+      worden. Das EXIT in NAME verschiebt sich dadurch.
+
+    - Der Kern gibt beim Verlassen eine Gr|~enangabe in (256 Byte)-Seiten aus.
+      Diese Angabe kann direkt benutzt werden, um mit dem CP/M SAVE Kommando
+      das System auf Diskette zu schreiben. (Forth: SAVE nicht vergessen! )
+ 	    
+    - SAVE-BUFFERS ist um ein defered Wort SAVE-DOS-BUFFERS erweitert worden.
+      Damit sollte der l{stige CP/M+ Fehler ausgeschaltet sein.
+      
+    - Das defered Wort POSTLUDE regelt die letzte Handlung des Systems vor dem 
+      CP/M Warmstart (Cursor anschalten, Bildschirm l|schen oder Systemgr|~e
+      ausgeben...) 
+
+    - Die Kommandozeile des Aufrufs wird in den TIB kopiert und kann dort
+      interpretiert werden. Das \ffnen des default-Files l|scht allerdings den
+      TIB wieder, soda~ diese Funktion erst ausgenutzt werden kann, wenn das
+      Fileinterface geladen ist. (DRVINIT |ffnet nicht mehr das default-File.)
+       
+    - Die Interpret-Loop wurde }berarbeitet und um das Wort PROMPT erweitert.
+      Das Sonderwort >INTERPRET ist weggefallen. Seine Funktion uebernimmt 
+      jetzt das (normale) defered Wort PARSER.
+
+    - Die Kontrollstruktur-Anweisungen (IF, WHILE ... ) sind jetzt auch inter-
+      aktiv verwendbar.
+
+    - Diverse kleinere [nderungen haben stattgefunden.
+
+
+2. [nderungen im Editor (EDITOR.SCR, STRING.SCR)
+
+    - Das Markieren der Screens wurde korrigiert und geschieht jetzt auch
+      beim Suchen/Ersetzen und bei showload richtig.
+    
+    - VIEW wurde ge{ndert und sucht nun nach dem in Blanks eingerahmten Wort.
+
+    - Es wird nun zus{tzlich das Associative File angezeigt.
+
+    - Beim Suchen/Ersetzen wird die Screennummer hochgez{hlt, um eine Kontrolle
+      }ber das Suchen zu geben.
+
+    - Die Textsuche ist nun schon im Kern definiert, die elementaren String-
+      funktionen sind mit in das EDITOR.SCR genommen worden. STRING.SCR ist
+      daher entfallen.
+
+
+3. [nderungen im Multi-Tasker  (TASKER.SCR)
+    
+    - Das Wort TASK wurde ge{ndert: Die Konstante ist nun vor der Task 
+      definiert. Man kann also nun mit FORGET <taskname> tats{chlich die Task
+      vergessen.
+
+    - Der PAUSE/WAKE/STOP-Mechanismus wurde ge{ndert. In der benutzung ergibt 
+      sich daraus keine [nderung.
+
+
+4. [nderungen im Fileinterface (FILEINT.SCR)
+
+    - Das Fileinterface wurde }berarbeitet und einige Fehler beseitigt.
+      Die Namen zahlreicher Worte haben sich ge{ndert, sind dadurch aber
+      systematischer geworden. Die Funktionen sind im Wesentlichen gleich
+      geblieben. 
+
+
+5. Terminal-Installation (Zusatz zu Anpassung von volksFORTH an den Computer)
+   
+    - Da der Kern kein Fileinterface mehr enth{lt, mu~ dies noch vor
+      dem Primitivst-Editor geladen werden. Es ergibt sich also die Kommando-
+      sequenz:
+           A> kernel fileint.scr 
+              1 load
+              use primed.scr  1 load
+              use terminal.scr
+      
+     
+6. Erstellen eines Standard-Systems    
+
+      - Mit folgender Kommandosequenz wird aus KERNEL.COM das File 
+        VOLKS4TH.COM gemacht:
+
+	     A> kernel fileint.scr
+                1 load
+                include startup.scr
+
+7. Neue Files auf der Diskette
+      
+      - READ.ME  	dieses File
+      - XINOUT.SCR	Terminalfunktionen und Zeileneditor f}r Eingabe
+      - COPY.SCR        Die Funktionen COPY und CONVEY (fr}her im Kern).
+
+      - STRING.SCR	Entf{llt, da in EDITOR.SCR und SOURCE.SCR integriert. 
+

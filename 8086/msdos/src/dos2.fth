@@ -1,0 +1,255 @@
+
+\ *** Block No. 0, Hexblock 0
+
+\                                                    28 jun 88
+
+\ This file is a pure .fth-version of dos.fb.
+
+\ DOS loads higher level file functions which go beyond
+\ including a screen file. Calls to MS-DOS are implemented
+\ and used for directory manipulation. These functions may
+\ not work for versions before MS-DOS 3.0.
+
+
+\ *** Block No. 1, Hexblock 1
+
+\ MS-DOS file handli                                 cas 09jun20
+  Onlyforth   \needs Assembler   2 loadfrom asm.fb
+
+  : fswap      isfile@  fromfile @   isfile !  fromfile ! ;
+
+  $80 Constant dta
+
+| : COMSPEC  ( -- string )   [ dos ]
+     $2C @ ( DOS-environment:seg) 8   ds@ filename   &60 lmove
+     filename counted &60 min filename place  filename ;
+
+\  1 &12 +thru   .( MS-DOS functions loaed ) cr
+
+
+
+
+\ *** Block No. 2, Hexblock 2
+
+\ moving blocks                                   ks 04 okt 87
+
+| : full? ( -- flag )  prev  BEGIN @ dup @ 0= UNTIL  6 + @ 0< ;
+
+  : used?  ( blk -- f )
+     block count b/blk 1- swap skip nip 0<> ;
+
+| : (copy   ( from to -- )
+     full? IF  save-buffers  THEN   isfile@ fromfile @ -
+     IF  dup used? Abort" target block not empty"  THEN
+     dup isfile@ core? IF  prev @ emptybuf  THEN
+     isfile@ 0= IF  offset @ +  THEN
+     isfile@ rot   fromfile @ (block 6 -   2! update ;
+
+
+
+
+\ *** Block No. 3, Hexblock 3
+
+\ moving blocks                                   ks 04 okt 87
+
+| : blkmove ( from to quan -- ) 3 arguments save-buffers
+     >r over r@ + over u> >r 2dup u< r> and
+     IF    r@ r@ d+ r> 0 ?DO  -1 -2 d+   2dup (copy  LOOP
+     ELSE           r> 0 ?DO  2dup (copy     1 1 d+  LOOP
+     THEN  save-buffers 2drop ;
+
+  : copy    ( from to -- )         1 blkmove ;
+
+  : convey  ( blk1 blk2 to.blk -- )
+     3 arguments   >r   2dup swap - >r
+     fswap dup capacity 1- > isfile@ 0<> and
+     fswap r> r@ + capacity 1- > isfile@ 0<> and or >r
+     1+ over - dup 0> not r> or Abort" nein" r> swap blkmove ;
+
+
+\ *** Block No. 4, Hexblock 4
+
+\ MORE  extending forth files                     ks 10 okt 87
+  Dos also definitions
+
+| : addblock   ( blk -- )   dup buffer  dup b/blk blank
+     isfile@ f.size dup  2@ b/blk 0 d+  rot 2!
+     swap isfile@ fblock! ;
+
+  Forth definitions
+
+  : more   ( n -- )  1 arguments  isfile@
+     IF  capacity swap bounds ?DO  I addblock  LOOP  close exit
+     THEN  drop ;
+
+
+
+
+
+\ *** Block No. 5, Hexblock 5
+
+\ file  eof? create   dta-addressing              ks 03 apr 88
+  Dos definitions
+
+  : ftime  ( -- mm hh )
+     isfile@ f.time @ $20 u/mod nip $40 u/mod ;
+
+  : fdate  ( -- dd mm yy )
+     isfile@ f.date @ $20 u/mod $10 u/mod &80 + ;
+
+  : .when  base push decimal
+     fdate rot 3 .r ." ." swap 2 .r ." ." 2 .r
+     ftime 3 .r ." :" 2 .r ;
+
+
+
+
+
+\ *** Block No. 6, Hexblock 6
+
+\ ks 20mar88
+
+  : (.fcb     ( fcb -- )
+     dup .file ?dup 0=exit  pushfile
+     isfile !  &13 tab ." is"
+     isfile@ f.handle @ 2 .r
+     isfile@ f.size 2@ 7 d.r  .when
+     space isfile@ f.name count type ;
+
+  Forth definitions
+
+  : files   file-link
+     BEGIN  @ dup WHILE  cr dup (.fcb  stop? UNTIL  drop ;
+
+  : ?file    isfile@ (.fcb ;
+
+
+\ *** Block No. 7, Hexblock 7
+
+\ dir make makefile                               ks 25 okt 87
+  Forth definitions
+
+  : killfile   close
+     isfile@ f.name filename >asciz ~unlink drop ;
+
+  : emptyfile      isfile@ 0=exit
+     isfile@ f.name filename >asciz  0 ~creat ?diskerror
+     isfile@ f.handle !    isfile@ f.size 4 erase ;
+
+  : make      close   name isfile@ fname!   emptyfile ;
+
+  : makefile  File   last @ name> execute   emptyfile ;
+
+
+
+
+\ *** Block No. 8, Hexblock 8
+
+\ getpath                                         ks 10 okt 87
+  Dos definitions
+
+| &40 Constant pathlen
+| Create pathes  0 c, pathlen allot
+
+| : (setpath   ( string -- )   count
+     dup pathlen u> Abort" path too long"  pathes place ;
+
+| : getpath  ( +n -- string / ff )
+     >r  0   pathes count   r> 0
+     DO  rot drop Ascii ; skip  stash  Ascii ; scan  LOOP
+     drop over - ?dup
+     IF  here place   here   dup count + 1- c@
+         ?" :\" ?exit  Ascii \ here append exit
+     THEN  0= ;
+
+\ *** Block No. 9, Hexblock 9
+
+\ pathsearch   .path  path                        ks 09 okt 87
+
+  : pathsearch  ( string -- asciz *f )   dup >r
+     (fsearch dup 0= IF  rdrop exit  THEN  2drop  0 0
+     BEGIN  drop 1+  dup getpath ?dup 0=
+            IF  drop r> filename >asciz 2 exit  THEN
+            r@ count 2 pick attach (fsearch
+     0= UNTIL nip rdrop false ;
+
+  ' pathsearch Is fsearch
+
+  Forth  definitions
+
+  : .path    pathes count type ;
+
+  : path     name nullstring? IF  .path exit  THEN  (setpath ;
+
+\ *** Block No. 10, Hexblock a
+
+\ call another executable file                    ks 04 aug 87
+  Dos definitions
+
+| Create cpb   0 , \ inherit parent environment
+   dta , ds@ , $5C , ds@ , $6C , ds@ ,  Label ssave  0 ,
+
+| Code ~exec  ( asciz -- *f )
+     I push   R push   U push   S ssave #) mov   cpb # R mov
+     $4B00 # A mov   $21 int   C: D mov   D D: mov   D S: mov
+     D E: mov   ssave #) S mov  CS not
+     ?[  A A xor   A push   $2F # A+ mov   $21 int   E: A mov
+         A D: mov   C: A mov   A E: mov   R I mov   dta # W mov
+         $40 # C mov   rep movs   A D: mov   A pop
+     ]?  A W xchg   dta # D mov   $1A # A+ mov   $21 int
+     W D mov   U pop   R pop   I pop   Next
+  end-code
+
+\ *** Block No. 11, Hexblock b
+
+\ calling MS-DOS thru forth interpreter           ks 19 mr 88
+
+| : execute?  ( extension -- *f )
+     count   filename count Ascii . scan drop swap
+     2dup 1+ erase  move   filename 1+ ~exec ;
+
+  : fcall   ( string -- )  count filename place   ds@ cpb 4+ !
+     " .EXE" execute? dup IF  drop " .COM" execute?  THEN
+     ?diskerror ;
+
+  : fdos  ( string -- )
+     dta $80 erase   " /c " count dta place   count dta attach
+     status push  status off .status COMSPEC fcall  curat? at ;
+
+
+
+
+\ *** Block No. 12, Hexblock c
+
+\ einige MS-DOS Funktionen  msdos  call           ks 10 okt 87
+
+  : dos:  Create ,"  Does> count here place
+     Ascii " parse here attach  here fdos ;
+
+  Forth definitions
+
+  dos: dir dir "
+  dos: ren ren "
+  dos: md md "
+  dos: cd cd "
+  dos: rd rd "
+  dos: fcopy copy "
+  dos: delete del "
+  dos: ftype type "
+
+
+\ *** Block No. 13, Hexblock d
+
+\ msdos  call                                     ks 23 okt 88
+
+  : msdos  savevideo   status push  status off .status
+     flush dta off COMSPEC fcall restorevideo ;
+
+  : call    name   source >in @ /string c/l umin
+     dta place   dta dta >asciz drop   [compile] \
+     status push  status off .status fcall   curat? at ;
+
+
+  .( MS-DOS functions loaed ) cr
+
+  Onlyforth

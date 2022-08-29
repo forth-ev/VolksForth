@@ -1,0 +1,1055 @@
+#+Title: volksFORTH für CP/M 2.2
+#+Author: Ulli Hoffmann, Carsten Strotmann
+#+Date: <2022-08-18 Thu>
+
+Nach den Implementierungen von volksFORTH auf dem 6502 (C64) und dem
+68000 (Atari ST), liegt hier nun die dritte Implementierung, die auf
+dem 8080/Z80, vor. Sie stützt sich dabei auf das CP/M 2.2
+Betriebssystem, sodaß volksFORTH damit auf einer großen Zahl von
+Mikrokomputersystemen zur Verfügung steht.
+
+Um die Verbreitung von FORTH allgemein kümmert sich die
+FORTH-Gesellschaft e.V. In ihrem Vereinsorgan dem Forth-Magazin
+(Vierte-Dimension) erscheinen regelmäßig Artikel über Forth.
+
+Die Adresse der Forth-Gesellschaft e.V. lautet:
+
+                           Forth-Gesellschaft e.V.
+                           Postfach 1030
+                           48481 Neuenkirchen
+                           E-Mail: secretary@forth-ev.de
+                           Web: https://www.forth-ev.de
+
+* Wie fange ich an?
+
+In diesem Text soll der Vorgang der Installation von volksFORTH an ein
+CP/M-ComputerSystem (Bildschirm, Tastatur, Drucker) beschrieben
+werden. Auf der ausgelieferten Diskette finden sich folgende Dateien:
+
+| ASS8080  SCR | Der volksFORTH 8080-Assembler                          |
+| ASSTRAN  SCR | Zum Laden des Assembler auf den Heap                   |
+| DISASS   SCR | Ein Z80-Disassembler fuer volksFORTH                   |
+| DOUBLE   SCR | Definitionsn fuer doppeltgenaue Zahlen                 |
+| EDITOR   SCR | Der volksFORTH Full-Screen Editor                      |
+| FILEINT  SCR | Das volksFORTH Fileinterface zu CP/M 2.2               |
+| HASHCASH SCR | Ein schnelles Dictionary-Suchverfahren                 |
+| INSTALL  SCR | Der Installer für die Editor-Befehlstasten             |
+| KERNEL   COM | Der volksFORTH Kern (Terminal unabh{ngig)              |
+| PORT8080 SCR | Definitionen für 8080 Portzugriff                      |
+| PORTZ80  SCR | Definitionen für Z80 Protzugriff                       |
+| PRIMED   SCR | Der primitivst Editor zum Installieren                 |
+| PRINTER  SCR | Anpassung von volksFORTH an den Drucker                |
+| RELOCATE SCR | Das Utility-Wort BUFFERS                               |
+| SAVESYS  SCR | Das Utility-Wort SAVESYSTEM                            |
+| SEE      SCR | Der automatische Decompiler                            |
+| SIMPFILE SCR | Ein einfaches Filesystem für Direktzugriff             |
+| SOURCE   SCR | Der Quelltext des volksFORTH Kerns                     |
+| STARTUP  SCR | Load-File, welches aus KERNEL.COM VOLKS4TH.COM erzeugt |
+| STRING   SCR | Definitionen für Stringoperationen                     |
+| TASKER   SCR | Der volksFORTH Multitasker                             |
+| TERMINAL SCR | Definitionen für das installierte Terminal             |
+| TIMES    SCR | Die Utility-Worte OFTEN und TIMES                      |
+| TOOLS    SCR | Der manuelle Decompiler, DUMP und der Tracer           |
+| VOLKS4TH COM | Das volksFORTH Standard-System                         |
+
+** Drei wichtige Worte:  USE, LIST und LOAD
+
+VolksForth bearbeitet seine Programmtexte in sogenannten Screen Files
+(Dateiendung: .SCR), das sind Files, die in 1 kB große Screens
+aufgeteit sind, die wiederum in 16 Zeilen mit je 64 Zeichen
+strukturiert sind. Um ein schon existentes File als aktuelles File
+anzuwählen wird das Wort USE <filename> benutzt. (Beispiel: =USE
+TERMINAL.SCR=, wählt =TERMINAL.SCR= als aktuelles File.) Um sich nun
+einen bestimmten Screen anzusehen, wird =nn LIST= benutzt. (Beispiel:
+=1 LIST=, zeigt Screen 1 des aktuellen Files.) Mit =nn LOAD= wird ein
+bestimmter Screen geladen: Die Definitionen in diesem Screen werden in
+eine für den Computer ausführbare Form gebracht. (Beispiel: =1 LOAD=,
+lädt Screen 1 des aktuellen Files.) Per Konvention soll der Screen
+null (0) eines jeden Files eine Erklärung des Inhaltes des Files
+enthalten. Wird Screen eins, der sogenannte LOAD-Screen, geladen, so
+soll er das Laden der gesamten Definitionen des Files veranlassen.
+Zeile Null eines jeden Screens soll Auskunft über den Inhalt des
+Screens geben.
+
+** Die Anpassung von VolksForth an den Computer
+
+Damit das VolksForth in vollem Umfang benutzt werden kann, ist
+zunächst eine Installation erforderlich. Für Schneider-Computer
+(Amstrad CPC) ist diese schon von uns vorgenommen worden, sodaß es
+gleich richtig losgehen kann. Die Anpassung an einen anderen Computer
+beinhaltet:
+
+*** Anpassung der Bildschirmfunktionen
+
+In dem File =TERMINAL.SCR= werden die notwendigen Bildschirmfunktionen
+definiert. Diese müssen auf den neuen Bildschirm angepaßt werden. Da
+der Editor erst nach erfolgreicher Anpassung benutzt werden kann,
+müssen diese Screens auf andere Art und Weise geändert werden. Dazu
+kann der Primitivst-Editor im File =PRIMED.SCR= benutzt werden. Die
+normalerweise zu benutzenden Escape-Sequenzen, sind dem entsprechenden
+Terminal-Handbuch zu entnehmen. Mit =USE PRIMED.SCR 1 LOAD= den
+primitivst Editor laden. (Screen 0 enthält Anleitung, Screen 2 ein
+Beispiel). Dann mit =USE TERMINAL.SCR= dieses File zur Benutzung
+anwählen. =PRIMED= arbeitet dann auf diesem File.
+
+*** Anpassung der Editor-Befehlstasten
+
+Im File =EDITOR.SCR= gibt es eine Tabelle mit Namen =KEYTABLE=, in der
+die Tasten zu den in der Tabelle =ACTIONTABLE= definierten Befehlen
+angegeben werden. Durch Ändern der Tabelle =KEYTABLE= können die
+Befehlstasten des Editors ver{ndert werden. Zum einfachen Anpassen des
+Editors gibt es das File =INSTALL.SCR=, indem interaktiv die neuen
+Befehlstasten abgefragt werden. (Achtung!: Der Sourcetext wird nicht
+mitgeändert!!)
+
+** Die Anpassung von VolksForth an den Drucker
+
+In dem File =PRINTER.SCR= wird die Ansteuerung des Druckers (hier
+Epson FX80) definiert. Sollte kein Epson-kompatibler Drucker
+vorliegen, müssen auch hier die Escape-Sequenzen geändert
+werden.(Siehe Druckerhandbuch!) Dies sollte aber möglichst erst dann
+geschehen, wenn die restlichen Anpassungen laufen!
+
+
+* Das Fileinterface
+
+** Wie geht es los?
+
+Bevor Sie das Glossar lesen, sollten Sie diese kleine Einf}hrung lesen
+und auf einer leeren Diskette die Beispiele ausprobieren.
+
+** Wie erzeuge ich ein File, in das ich ein Programm eingeben kann?
+
+Geben Sie bitte folgendes ein:
+#+begin_example
+MAKEFILE test.scr
+#+end_example
+
+Das File =test.scr= wird auf der Diskette erzeugt, auf dem Sie das
+Forth gebootet haben.
+
+Als nächstes schätzen Sie bitte ab, wie lang Ihr Programm etwa wird.
+Beachten Sie dabei bitte, daß der Screen 0 eines Files für Hinweise
+zur Handhabung Ihres Programms und der Screen 1 für einen sog.
+Loadscreen (das ist ein Screen, der den Rest des File lädt) reserviert
+sind. Wollen Sie also z.B. 3 Screens Programm eingeben, so muß das
+File 5 Screens lang sein; Sie geben also ein:
+#+begin_example
+5 MORE
+#+end_example
+
+Fertig! Sie haben jetzt ein File, das die Screens 0..4 enthält. Geben
+Sie jetzt
+#+begin_example
+1 L
+#+end_example
+ein. Sie editieren jetzt den Screen 1 Ihres neuen Files =test.scr=.
+Sie können, falls der Platz nicht ausreicht, Ihr File später einfach
+mit =MORE= verlängern. Ein File kann leider nicht verkürzt werden.
+
+** Wie spreche ich ein bereits auf der Diskette vorhandenes File an?
+
+Das geht noch einfacher. Geben Sie einfach den Filenamen ein. Reagiert
+das System mit der Meldung "Haeh?", so kennt das Forth dieses File
+noch nicht. Sie müssen in diesem Fall das Wort =USE= vor dem Filenamen
+eingeben, also z.B.
+#+begin_example
+USE test.scr
+#+end_example
+
+Jetzt können Sie wie oben beschrieben mit =1 L= (oder einer anderen
+Zahl) das File editieren, Das Wort =USE= erzeugt übrigens im Forthsystem
+das Wort =TEST.SCR=, falls es noch nicht vorhanden war. Wissen Sie also
+nicht mehr, ob Sie ein File schon benutzt haben, so können Sie mit
+=WORDS= nachsehen oder das Wort =USE= voranstellen.
+
+** Wie erzeuge ich ein File auf einem vorgegebenem Laufwerk, z.B. A: ?
+Durch Voranstellen des Laufwerks etwa:
+#+begin_example
+MAKEFILE a:test.scr
+#+end_example
+Oder durch Eingabe von
+#+begin_example
+A:
+#+end_example
+Hierbei wird =A:= zum aktuellen Laufwerk gemacht. Files ohne
+Laufwerksangabe werden immer auf dem aktuellen Laufwerk erzeugt.
+
+** Allgemeines
+
+Im folgenden wird die Benutzung des Fileinterfaces beschrieben. Dieses
+Fileinterface benutzt die Files des CP/M.
+
+Benutzt man ein File von Forth aus, so wird es in Blöcke zu je 1024
+Bytes aufgeteilt, die in gewohnter Wiese anzusprechen sind. Dies
+trifft auch für Files zu, die nicht vom Forth aus erzeugt wurden. Als
+Konvention wird vorgeschlagen, da~ Files, die Forth-Screens, also
+Quelltexte, enthalten, mit =.FB= erweitert werden. Files, die Daten
+enthalten, die nicht unmittelbar lesbar sind, sollten auf =.BLK=
+enden.
+
+Zum Umschalten vom Filesystem auf Direktzugriff und umgekehrt gibt es
+das Wort:
+
+=DIRECT ( -- )= "direct" - Schaltet auf Direktzugriff um. Auf den
+Filezugriff schalten wir durch das Nennen eines Filenamens.
+
+** Die Laufwerkswahl
+
+Files werden immer auf dem aktuellen Laufwerk erzeugt, solange der
+Filename nicht ausdrücklich ein anderes Laufwerk vorsieht. Als
+Betriebssystemname wird dann der vollständige Filename eingetragen,
+also mit eindeutig festgelegtem Laufwerk.
+
+Zum Ändern des aktuellen Laufwerks stehen die folgenden Worte zur
+Verfügung:
+
+=A: ( -- )= "a-colon" - Macht Diskettenstation =A:= zum aktuellen
+Laufwerk entsprechend der Funktion im CCP. Siehe =SETDRIVE=.
+
+=B: ( -- )= "b-colon" - Macht Diskettenstation =B:= zum aktuellen
+Laufwerk entsprechend der Funktion im CCP. Siehe =SETDRIVE=.
+
+=SETDRIVE ( n -- )= "setdrive" - Macht die Diskettenstation mit der
+Nummer n zum aktuellen Laufwerk. Hierbei entspricht n=0 der
+Diskstation A, n=1 der Diskstation B usw.
+
+Um sich den Inhalt einer Diskette anzusehen, gibt es die Worte:
+
+=FILES ( -- )= "files" - Listet den Inhalt des aktuellen Laufwerks
+(siehe =SETDRIVE=) auf dem Bildschirm auf. Dieses Wort, zusammen mit dem
+Wort =FILES"= entspricht dem Kommando =DIR= des CCP. In anderen
+VolksForth-Filesystemen wird =DIR= benutzt um Direktories umzuschalten
+(MS-DOS, GEM-DOS).
+
+=FILES" ( -- )= "files-quote" - Benutzt in der Form =FILES" cccc"=.
+Listet die Files auf, deren Name cccc ist. Der String cccc darf
+die bekannten Wildcards ('?','*') sowie eine Laufwerksbezeichnung
+enthalten. Wird kein Laufwerk angegeben, so werden die Files des
+aktuellen Laufwerks ausgegeben.
+
+** Files
+
+Files bestehen aus einem Forthname und einem Betriebssystemnamen, die
+nicht übereinstimmen müssen.
+
+Ist das Forthwort, unter dem ein File zugreifbar ist, gemeint, so wird
+im folgenden vom /Forthfile/ gesprochen. Ist das File auf der Diskette
+gemeint, das vom CP/M-BDOS verwaltet wird, so wird vom /DOS-File/
+gesprochen. Durch das Nennen des Forthnamens wird das Forthfile (und
+das zugehörige DOS-File) zum /aktuellen File/, auf das sich alle
+Operationen wir =LIST=, =LOAD=, =CONVEY= usw. beziehen. Beim
+Bekanntmachen des Files mit =USE=, =MAKEFILE= und =ASSIGN= u.a. wird das
+File auf dem aktuellen Laufwerk gesucht, wenn kein Laufwerk im Namen
+angegeben wird. Danach darf das aktuelle Laufwerk beliebig geändert
+werden, ohne daß das File dann auf einem anderen Laufwerk gesucht
+wird. Mit =FORTHFILES= können die aktuellen Zuordnungen zwischen
+Forthfile und DOS-File angezeigt werden.
+
+=FILE ( -- )= "file" - Wird in der Form: =FILE <name>= benutzt.
+Erzeugt ein Forthwort mit Name <name>. Wird <name> später ausgeführt,
+so vermerkt es sich als aktuelles File. Ebenso vermerkt es sich als
+=FROMFILE=, was für =CONVEY= wichtig ist. Einem Forthfile wird mit
+=MAKE= oder =ASSIGN= ein DOS-File zugeordnet.
+
+=MAKE ( -- )= "make" - Wird in der Form: =MAKE cccc= benutzt. Erzeugt
+ein DOS-File mit Namen cccc auf dem aktuellen (oder angegebenem
+Laufwerk) und ordnet es dem aktuellen Forthfile zu. Das File wird auch
+gleich geöffnet. Es hat die Länge Null (siehe =MORE=). Beispiel:
+#+begin_example
+FILE ausgabe
+ausgabe MAKE test.scr
+#+end_example
+erzeugt ein Forthwort =AUSGABE= und ein File mit dem Namen
+=A:TEST.SCR=. (Angenommen A: ist aktuelles Laufwerk.) Alle Operationen
+wie =LOAD=, =LIST= usw. beziehen sich nun auf den entsprechenden
+Screen in =A:TEST.SCR=. Beachten Sie bitte, daß dieses File noch leer
+ist, und daher eine Fehlerbedingung besteht, wenn Zugriffsoperationen
+ausgeführt werden sollen.
+
+MAKEFILE       ( -- ) "makefile"
+     Wird in der folgender Form benutzt:
+          MAKEFILE <name>
+     Erzeugt  ein Forthfile mit dem Namen <NAME> und erzeugt abschlie~end  ein
+     DOS-File  mit  demselben Namen  (und  eindeutiger  Laufwerksangabe).  Die
+     folgende Sequenz w}rde genau dasselber bewirken:
+          FILE <name>
+          <name> MAKE <name>
+
+SAVEFILE       ( addr len -- ) "savefile"
+     Wird in der folgenden Form benutzt:
+          SAVEFILE <name>
+     Schreibt den String, der an der Adresse addr begint und die L{nge len hat
+     als File mit dem Namen <name> auf die Diskette.
+
+KILLFILE       ( -- ) "killfile"
+     L|scht das aktuelle File.  Unsch|n, da dann das Forthfile noch existiert,
+     das Dosfile aber gel|scht ist, soda~ es bei dem n{chsten Diskettenzugriff
+     einen Fehler gibt, wenn nicht ein anderes File angew{hlt wird.
+.pa
+ASSIGN         ( -- ) "assign"
+     Wird in der Form
+          ASSIGN cccc
+     benutzt.  Ordnet  dem  aktuellen File das DOS-File mit Namen  cccc   (mit
+     eindeutiger Laufwerksangabe) zu.  Eine Fehlerbedingung besteht,  wenn das
+     File nicht gefunden werden kann.
+
+USE            ( -- ) "use"
+     Dieses Wort ist das wichtigste Wort zum Ausw{hlen von Files.     ____________________________________________________________
+
+     Es wird in der folgenden Form benutzt:
+          USE <name>
+     Dieses  Wort macht das File mit Namen <NAME> zum aktuellen File,  auf das
+     sich LOAD, LIST usw. beziehen. Es erzeugt ein Forthfile mit Namen <NAME>,
+     falls der Name noch nicht vorhanden war.  Anschlie~end wird das File  auf
+     dem  aktuellen (oder angegebenem) Laufwerk gesucht.  Wird das File  nicht
+     gefunden,  so  wird  eine  Fehlermeldung  ausgegeben.  Das  (automatisch)
+     erzeugte  Forthfile  verbleibt  im Dictionary und  mu~  ggf.  mit  FORGET
+     vergessen werden.
+
+CLOSE          ( -- ) "close"
+     Schlie~t das aktuelle File. Dabei wird das Inhaltsverzeichnis (Directory)
+     der  Diskette  aktualisiert.  Es  werden die zu  diesem  File  geh|renden
+     ge{nderten  Bl|cke auf Diskette zur}ckgeschrieben und alle zu diesem File
+     geh|renden Bl|cke in den Block-Puffern gel|scht.
+
+OPEN           ( -- ) "open"
+     Offnet  das aktuelle File.  Eine Fehlerbedingung besteht,  wenn das  File
+     nicht  gefunden  werden  kann.  Die Benutzung dieses Wortes  ist  in  den
+     meisten  F{llen  }berfl}ssig,  da  Files automatisch  bei  einem  Zugriff
+     ge|ffnet werden.
+
+EMPTYFILE      ( -- ) "emptyfile"
+     K}rzt das aktuelle File auf die L{nge null.
+
+FROM           ( -- ) "from"
+     Wird in der folgenden Form benutzt:
+          FROM <name>
+     <name> ist der Name eines Forthfile,  aus dem beim Aufruf von CONVEY  und
+     COPY Bl|cke herauskopiert werden sollen.
+
+     Beispiel: filea   1 FROM fileb  3 COPY
+
+     Kopiert den Block 1 aus FILEB auf den Block 3 von FILEA.
+     Dieses Wort benutzt USE und das File auszuw{hlen. Das bedeutet, da~ FILEB
+     automatisch  als  Forthfile angelegt wird,  wenn es noch nicht im  System
+     vorhanden ist.
+.pa
+LOADFROM       ( n -- ) "loadfrom"
+     Wird in der folgenden Form benutzt:
+          LOADFROM <name>
+     <name> ist der Name eines Forthfiles, aus dem der Block n geladen wird.
+
+     Beispiel:      15 LOADFROM filea
+
+     L{dt den Block 15 aus FILEA.  Dieses Wort ist wichtig,  wenn w{hrend  des
+     Ladens  eines  Files  Teile eines anderen Files  geladen  werden  sollen.
+     Dieses Wort benutzt USE, um FILEA zu selektieren. Das bedeutet, da~ automatisch  ein Forthfile mit Namen FILEA erzeugt wird,  falls es im  System
+     noch nicht vorhanden war.
+     Beachten Sie bitte,  da~ dieses Wort nichts mit FROM oder FROMFILE zu tun
+     hat, obwohl es {hnlich hei~t!
+
+INCLUDE        ( -- ) "include"
+     Wird in der folgenden Form benutzt:
+          INCLUDE <name>
+     <name> ist der Name eines Forthfiles, das vollst{ndig geladen wird. Dabei
+     ist Voraussetzung,  da~ auf Screen 1 dieses Files Anweisungen stehen, die
+     zum Laden aller Screens dieses Files f}hren. Siehe auch LOADFROM.
+
+CAPACITY       ( -- u ) "capacity"
+     u  ist  die  L{nge  des aktuellen Files in  Forth-Bl|cken  (1024  Bytes).
+     Beachten  Sie bitte,  da~ die L{nge des Files um eins gr|~er ist als  die
+     Nummer des letzten Blocks, da der Block 0 mitgez{hlt wird.
+
+FORTHFILES     ( -- ) "forthfiles"
+     Druckt  eine  Liste aller Forthfiles,  zusammen mit den Namen  der  zugeh|rigen DOS-Files, deren L{nge und deren Status (ge|ffnet / geschlossen).
+
+FROMFILE       ( -- addr ) "fromfile"
+     Addr ist die Adresse einer Variablen,  die auf das Forth-File zeigt,  aus
+     dem  COPY  und CONVEY Bl|cke lesen.  Siehe auch FROM.  Bei  Nennen  eines
+     Forthfiles wird diese Variable gesetzt.
+
+LOADFILE       ( -- addr ) "loadfile"
+     Addr ist die Adresse einer Variablen,  die auf das Forthfile  zeigt,  das
+     gerade geladen wird.  Diese Variable wird bei Aufruf von LOAD,  THRU usw.
+     auf das aktuelle File gesetzt.
+
+ISFILE         ( -- addr ) "isfile"
+     Addr  ist  die Adresse einer Variablen,  die auf das  aktuelle  Forthfile
+     zeigt. Sie wird bei Ausf}hrung eines Forthfiles gesetzt.
+
+FILE?          ( -- ) "file-question"
+     Druckt den Namen des aktuellen Forthfiles.
+
+MORE           ( n -- ) "more"
+     Verl{ngert  das  aktuelle File um n Screens.  Die Screens  werden  hinten
+     angeh{ngt. Anschlie~end wird das File geschloseen.
+
+EOF            ( -- f) "end-of-file"
+     f ist ein Flag, das wahr ist, falls }ber das Ende des Files hinausgelesen
+     wurde.  f ist falsch,  falls auf den zuletzt gelesenen Block noch weitere
+     folgen.
+
+.PA
+3) Verschiedenes________________
+
+Beim  Vergessen  eines Forth-Files mit Hilfe von  FORGET,  EMPTY  usw.  werden
+automatisch  alle Blockpuffer,  die aus diesem File stammen,  gel|scht,   und,
+wenn  sie ge{ndert waren,  auf die Diskette zur}ckgeschrieben.  Das File  wird
+anschlie~end geschlossen.
+
+Bei Verwendung von FLUSH werden alle Files geschlossen. FLUSH sollte VOR jedem
+Diskettenwechsel  ausgef}hrt werden,  und zwar nicht nur,  um  die  ge{nderten
+Bl|cke  zur}ckzuschreiebn,  sondern auch damit alle Files geschlossen  werden.
+Sind  n{mlich Files gleichen Namens auf der neuen Diskette vorhanden,  so wird
+sonst eine abweichende L{nge des neuen Files vom Forth nicht erkannt.
+Nach dem Diskettenwechsel verlangt CP/M das "einloggen" der neuen Diskette.
+Dies  geschieht mit DOS RESET.  Wenn dies vergessen wird,  so erh{lt man  nach
+einem Schreibversuch auf die neue Diskette "BDOS-ERROR ON xx  R/O" und  landet
+zu allem ]berflu~ im CCP. Warum?? Fragen Sie Digital Research!
+
+Bei Verwendung von VIEW wird automatisch das richtige File ge|ffnet.
+
+
+.PA
+4) CP/M 2.2. interne Worte des Filesystems (Implementation)
+
+     In  diesem  Abschnitt findet sich das Glossary für  die  Worte,  die  zur
+     Implementation  des  Filesystems benutzt werden.  Da das Filesystem  noch
+     recht  neu ist,  sind noch fast alle Namen sichtbar.  Das kann sich  aber
+     {ndern, wenn klar ist, welche Worte man nicht mehr benutzt.
+     Im  Glossary wird oft von Forth-FCB (File-Control-Block) gesprochen.  Das
+     sind  Speicherbereiche,  mit denen Files beschrieben  werden.  Auch  CP/M
+     kennt  FCBs.  Die  CP/M  Filefunktionen erwarten alle einen  DOS-FCB  zur
+     Beschreibung der Files. Die Worte, die diese Funktionen ausl|sen erwarten
+     aber einen Forth-FCB,  die im VolksForth-Filesystem }bliche  Beschreibung
+     von Files.  Wenn die Gefahr der Verwechselung besteht,  so wird ausdr}cklich von Forth-FCBs und DOS-FCBs gesprochen. Allgemein ist mit der Angabe
+     von  FCB  ein  Forth-FCB gemeint.  Seine Struktur ist aus  dem  Quelltext
+     ersichtlich. (Befehlsfolge: DOS VIEW B/FCB)
+
+!fcb           ( fcb -- ) "store-f-c-b"
+     Interpretiert  das als n{chstes in der Eingabe sthende Wort als  Filename
+     und weist es dem fcb zu.
+
+!name          ( addr len fcb -- ) "store-name"
+     addr gibt die Anfangsadresse eines Strings an,  der die L{nge len hat und
+     einen Filenamen enth{lt. Dieser Name wird in den fcb eingetragen.
+     Enth{lt er keine Laufwerksangabe,  so wird das aktuelle Laufwerk benutzt
+     und in den FCB geschrieben.
+
+(capacity      ( forthfcb -- n ) "paren-capacity"
+     n  ist  die  Filegr|~e des durch forthfcb  beschrieben  Files  in  Forth-
+     Bl|cken.
+
+(close         ( fcb -- ) "paren-close"
+     Schlie~t  das  File,  das  durch  fcb  beschrieben  wird.  Schreibt  alle
+     ver{nderten  Bl|cke dieses Files auf die Diskette zur}ck und l|scht  alle
+     Bl|cke dieses Files in den Blockpuffern.
+
+(closefile     ( forthfcb -- f ) "paren-closefile"
+     Schlie~t das durch den Forth-FCB angegebene File. f=$FF bedeutet, da~ das
+     File nicht gefunden werden konnte. (Siehe CP/M Operating System Manual)
+
+(createfile    ( forthfcb -- f ) "paren-createfile"
+     Erzeugt ein File,  das durch den angegebenen Forth-FCB beschrieben  wird.
+     f=$FF  bedeutet,  da~ im Inhaltsverzeichnis der Diskette kein Platz  mehr
+     ist. (Siehe CP/M Operating System Manual)
+
+(dir           ( addr len -- ) "paren-dir"
+     addr  ist  die  Anfangsadresse  eines Strings  der  L{nge  len,  der  ein
+     Suchmuster  enth{lt.  (dir zeigt die Files an,  die auf dieses suchmuster
+     passen. Siehe SEARCH0, SEARCHNEXT, FILES, FILES".
+
+(file-read     ( forthfcb -- f ) "paren-file-read"
+     Liest den im Record-Feld des angegebenen Forth-FCB's bestimten Sektor  in
+     den Sektorpuffer ein.  f<>0 bedeutet,  da~ Daten fehlen.
+     (Siehe CP/M Operating System Manual)
+
+(file-write    ( forthfcb -- f ) "paren-file-write"
+     Schreibt  den Sektorpuffer auf den im Record-Feld des angegebenen  Forth-
+     FCB's bestimten Sektor. f<>0 bedeutet, da~ die Diskette voll ist.
+     (Siehe CP/M Operating System Manual)
+.pa
+(killfile      ( forthfcb -- f ) "paren-killfile"
+     L|scht das durch den Forth-FCB angegebene File.  f=$FF bedeutet,  da~ das
+     File nicht gefunden werden konnte. (Siehe CP/M Operating System Manual)
+
+(makeview      ( -- n ) "paren-make-view"
+     n ist eine Zahl die aus dem momentanen Block (BLK) und dem aktuellen File
+     (LOADFILE)  berechnet  wird.  Sie  wird  in  das  VIEW-Feld  einer  neuen
+     Definition  geschrieben,  und dient dazu sp{ter mit VIEW den Definitions-
+     Ort zu bestimmen.
+
+(open          ( fcb -- ) "paren-open"
+     \ffnet  das  durch den FCB angegebene File und tr{gt  dessen  L{nge  ein.
+     Meldet einen Fehler, falls das File nicht gefunden werden konnte.
+
+(openfile      ( forthfcb -- f ) "paren-open-file"
+     \ffnet das durch den Forth-FCB angegebene File.  f=$FF bedeutet,  da~ das
+     File nicht gefunden werden konnte. (Siehe CP/M Operating System Manual)
+
+(read-seq      ( forthfcb -- f ) "paren-read-sequential"
+     Liest den n{chsten Sektor aus dem durch den Forth-FCB angegebene File  in
+     den Sektorpuffer ein.  f<>0 bedeutet,  da~ keine Daten mehr zur Verf}gung
+     stehen.
+     (Siehe CP/M Operating System Manual)
+
+(view          ( viewblk -- blk' ) "paren-view"
+     blk'  ist die relative Blocknummer zum Anfang des in viewblk  enthaltenen
+     Files.  viewblock hat die Form:  fffffffbbbbbbbbb.  Wobei f Bits für  die
+     Filenummer,  b Bits für den Block angeben.  Das File wird von (VIEW automatisch ge|ffnet.
+
+(write-seq     ( forthfcb -- f ) "paren-write-sequential"
+     Schreibt den n{chsten Sektor aus dem Sektorpuffer in das durch den Forth-
+     FCB  angegebene File.  f<>0 bedeutet,  da~ die Diskette voll ist.
+     (Siehe CP/M Operating System Manual)
+
+ .buffers      ( -- ) "dot-buffers"
+     Gibt  eine  Liste der Block-puffer aus,  die angibt,  welchen  Block  aus
+     welchem File die Puffer enthalten, und ob sie als UPDATEd markiert sind.
+
+ .dosfile      ( fcb -- ) "dot-dosfile"
+     Gibt den Dos-Namen des durch fcb angegebenen Files aus.
+
+ .fcb          ( fcb -- ) "dot-f-c-b"
+     Gibt  den  Forth-Namen,  den  Dos-Namen,  die Filegr|~e  und  den  Status
+     (ge|ffnet / geschlossen ) des durch fcb angegebenen Files aus.
+
+ .file         ( fcb -- ) "dot-file"
+     Gibt den Forth-Namen des durch fcb angegebenen Files aus.
+
+b/fcb          ( -- n ) "bytes-per-f-c-b"
+     n gibt an, wieviele Bytes ein Forth-FCB belegt.
+
+b/rec          ( -- n ) "bytes-per-record"
+     n gibt an,  wieviele Bytes in die Sektoren passen, die vom Betriebssystem
+     benutzt werden. Bei CP/M 2.2 sind dies 128 Bytes.
+.pa
+bdos           ( arg fun# -- res ) "bdos"
+     Veranla~t  einen Sprung ins BDOS.  fun# ist der Wert,  der ins C-Register
+     geladen wird,  die Nummer der aufzurufenden Funktion.  arg ist der  Wert,
+     der ins DE-Register geladen werden soll,  und res ist der Wert,  der  vom
+     BDOS  im  A-Register  zur}ckgeliefert wird.  CP/M  BDOS-Aufrufe  sind  im
+     Operating System Manual beschrieben.
+
+createfile     ( fcb -- ) "createfile"
+     Erzeugt  ein  File,  da~  durch den FCB beschrieben  wird.  Meldet  einen
+     Fehler, falls dies nicht m|glich ist.
+
+default-buffer ( -- addr ) "default-buffer"
+      addr ist die Adresse des Standard Sektorpuffers des BDOS.
+
+Dos            ( -- ) "dos"
+     Das  Vocabulary,  indem die meisten Definitionen des Filesystems  gemacht
+     werden.
+
+dos-error?     ( n -- f ) "dos-error-question"
+     f  ist TRUE,  wenn n=$FF ist,  denn das ist das Kennzeichen des BDOS  für
+     einen Fehler.
+
+drive          ( forthfcb -- addr ) "drive"
+     Berechnet  aus der Adresse eines Forth-FCBs die Adresse,  unter  der  das
+     Laufwerk eingetragen ist.
+
+extension      ( forthfcb -- addr ) "extension"
+     Berechnet  aus  der  Adresse eines Forth-FCBs die  Adresse,  an  der  die
+     Extension beginnt.
+
+fcb0           ( -- addr ) "f-c-b-zero"
+     addr ist die Adresse, des vom CCP-benutzten Standard-File-Control-Blocks,
+     so ver{ndert, da~ er einen Forth-FCB halten kann.
+
+file-link      ( -- addr ) "file-link"
+     addr ist die Adresse einer User-Variablen,  die auf den Anfang der Forth-
+     file-liste zeigt.
+
+file-r/w       ( buffer block fcb r/wf -- f ) "file-r-w"
+     Liest oder schreibt einen Forth-Block von der / auf die Diskette.
+     r/wf  gibt an,  ob gelesen (rw/f<>FALSE) oder  geschrieben  (rw/f=FALSE)
+     werden soll.
+     block ist die Nummer des Blocks, buffer die Adresse des Puffers.
+     fcb  bestimmt,  ob ein File benutzt wird (fcb<>0  ist dann  die  Adresse
+     eines FCB) oder ob im Direktzugriff gearbeitet werden soll (fcb=0).
+     f ist TRUE, falls ein Fehler aufgetreten ist. Vergleiche R/W.
+
+filename       ( forthfcb -- addr ) "filename"
+     Berechnet  aus  der  Adresse eines Forth-FCBs die  Adresse,  an  der  der
+     Filename beginnt.
+
+filenamelen    ( -- n ) "filenamelen"
+     n gibt die L{nge der im Betriebssystem benutzten Filenamen an.  Bei  CP/M
+     sind dies 11 Zeichen (8 Name + 3 Extension)
+
+fileno         ( forthfcb -- addr ) "file-number"
+     Berechnet  aus  der  Adresse eines Forth-FCBs die  Adresse,  an  der  die
+     Filenummer abgelegt ist.
+.pa
+filesize       ( forthfcb -- addr ) "filesize"
+     Berechnet  aus  der  Adresse eines Forth-FCBs die  Adresse,  an  der  die
+     Filegr|~e (in Sectoren) abgelegt ist.
+
+in-range       ( block fcb -- ) "in-range"
+     Testet, ob der Forth-Block block in dem durch fcb angegebenen File liegt,
+     und gibt eine Fehlermeldung aus, falls dies nicht der Fall ist.
+
+
+opened         ( forthfcb -- addr ) "opened"
+     Berechnet aus der Adresse eines Forth-FCBs die Adresse, an der  das open-
+     Flag abgelegt ist.
+
+read-seq       ( -- ) "read-sequential"
+     Liest den n{chsten Sektor aus dem aktuellen File in den Sektorpuffer  und
+     liefert einen Fehler, falls dies nicht m|glich ist.
+
+rec/blk        ( -- n ) "bytes-per-record"
+     n  gibt an,  wieviele logische CP/M-Sectoren (128 Bytes) in einen  Forth-
+     Block  passen.  Nach dem Forth-83 Standard ist ein Forth-Block 1024 Bytes
+     gro~, B/REC ist dann also 8.
+
+record         ( forthfcb -- addr ) "record"
+     Berechnet  aus  der  Adresse eines Forth-FCBs die  Adresse,  an  der  der
+     Recordz{hler für Random-Access-Files beginnt.
+
+reset          ( -- ) "reset"
+     Initialisiert  das  Diskettensystem des BDOS.  Mu~ nach einem  Diskettenwechsel benutzt werden! (Siehe CP/M Operating System Manual)
+
+search0        ( forthfcb -- f ) "search-zero"
+     Sucht  im Inhaltsverzeichnis der Diskette nach dem ersten Vorkommen,  des
+     durch den Forth-FCB angegebenen Files. f=$FF bedeutet, da~ das File nicht
+     gefunden werden konnte.
+     (Siehe CP/M Operating System Manual)
+
+searchnext     ( forthfcb -- f ) "serach-next"
+     Sucht im Inhaltsverzeichnis der Diskette nach dem n{chsten Vorkommen, des
+     durch den Forth-FCB angegebenen Files. f=$FF bedeutet, da~ das File nicht
+     gefunden werden konnte.
+     (Siehe CP/M Operating System Manual)
+
+setdma         ( dma -- ) "set-d-m-a"
+     dma ist die Adresse des Sektorpuffers, der beim n{chsten Diskettenzugriff
+     benutzt werden soll (Siehe CP/M Operating System Manual)
+
+size           ( forthfcb -- ) "size"
+     Berechnet die Filegr|~e in dem durch den Forth-FCB beschriebenen File und
+     tr{gt sie in das Feld record ein. (Siehe CP/M Operating System Manual)
+
+tab            ( -- ) "tab"
+     Geht auf die n{chste Tabulatorposition (alle 20 Spalten).
+
+write-seq      ( -- ) "write-sequential"
+     Schreibt  einen  Sektor  aus  dem Sektorpuffer als  n{chsten  Sektor  des
+     aktuellen Files und meldet einen Fehler, falls dies nicht m|glich ist.
+
+.HE VolksForth Editor für CP/M 2.2 Implementation                     Seite #
+.OP
+Der  für  die  CP/M  2.2 Version von VolksForth  benutzte  Editor  enth{lt  im
+wesentlichen  die  gleichen  Funktionen  wie  die des  Editors  auf  dem  C64,
+beschrieben im Handbuch Seite 147ff.
+Im  Gegensatz  zum  C64-Editor  benutzt  der  neue  Editor  das  Forth-Screen-
+Standardformat von 16 Zeilen a 64 Zeichen.
+Aufgerufen wird der Editor mit:     <screennummer> L    .
+Den zuletzt edititierten Screen erh{lt man mit: V   , und mit:
+VIEW <name>  kann man sich ansehen, wo <name> definiert worden ist.
+
+Die Tastenbelegung ist neu organisiert.  Im folgenden wird die  Tastenbelegung
+für die allgemeine CP/M-Version und für die Schneider Version beschrieben. Mit
+Hilfe  des  Files INSTALL.SCR k|nnen die Tasten neu  angepa~t  werden.  (Siehe
+Installationshinweis: "Wie fange ich an?")
+
+Tastenbelegung für die allgemeine CP/M Version:
+
+Komando (siehe Handbuch S. 152ff)            Taste_______________________________________________________
+
+Cursor up                                    Control E
+Cursor left                                  Control S
+Cursor down                                  Control X
+Cursor right                                 Control D
+push-line                                    Control I
+push-char                                    Control J
+pull-line                                    Control O
+pull-char                                    Control K
+copy-line                                    Control P
+copy-char                                    Control L
+backspace                                    Control H
+backspace                                    delete
+delete-char                                  Control G
+insert-char                                  Control T
+delete-line                                  Control Y
+insert-line                                  Control N
+insert-mode-on insert-mode-off               Control V
+clear-to-right                               Control Z
+new-line                                     return
++tab                                         Control F
+-tab                                         Control A
+search                                       Control \ = Control \
+undo                                         Control U
+update-exit                                  Control Q
+flushed-exit                                 escape
+shadow-screen                                Control W
+next-screen                                  Control C
+back-screen                                  Control R
+alter-screen                                 Control [ = Control [
+mark-alter-screen                            Control B
+
+.pa
+Tastenbelegung für die Schneider CP/M Version:
+
+Komando (siehe Handbuch S. 152ff)            Taste_______________________________________________________
+
+Cursor up                                    Pfeil nach oben
+Cursor left                                  Pfeil nach links
+Cursor down                                  Pfeil nach unten
+Cursor right                                 Pfeil nach rechts
+push-line                                    shift Pfeil nach oben
+push-char                                    shift Pfeil nach links
+pull-line                                    shift Pfeil nach unten
+pull-char                                    shift Pfeil nach rechts
+copy-line                                    Control Q
+copy-char                                    Control Z
+backspace                                    Control H
+backspace                                    delete
+delete-char                                  Control P (clr)
+insert-char                                  copy
+delete-line                                  Control D
+insert-line                                  Control T
+insert-mode-on                               Control I
+overwrite-mode-on                            Control O
+eraser-line                                  Control C
+clear-to-right                               Control E
+new-line                                     return
++tab                                         Control Pfeil nach rechts
+-tab                                         Control Pfeil nach links
+home                                         Control Pfeil noch oben
+to-end                                       Control Pfeil nach unten
+search                                       Control F
+undo                                         Control U
+update-exit                                  Control X
+flushed-exit                                 escape
+show-load                                    Control L
+shadow-screen                                Control W
+next-screen                                  Control N
+back-screen                                  Control B
+alter-screen                                 Control A
+mark-alter-screen                            Control R
+
+.HE                         CP/M 2.2 - spezifische Worte
+#bs            ( -- n ) "number-backspace"
+          n ist der Ascii-Wert für Backspace.
+
+#cr            ( -- n ) "number-c-r"
+          n ist der Ascii-Wert für Carriage-Return.
+
+#esc           ( -- n ) "number-escape"
+          n ist der Ascii-Wert für Escape.
+
+#lf            ( -- n ) "number-linefeed"
+          n ist der Ascii-Wert für Linefeed.
+
+(at            ( row col -- ) "paren-at"
+          Positioniert den Cursor in die Zeile row,  Spalte col und setzt OUT.
+          Benutzt dabei LOCATE. Siehe auch AT.
+
+(at?           ( -- row col ) "paren-at-question"
+          row ist die aktuelle Zeilennummer, col die aktuelle Spaltennummer.
+          Vergleiche AT?
+
+(blk/drv       ( drv -- blocks ) "paren-blocks-per-drive"
+          blocks  gibt  an wieviele Forth-Bl|cke (1kB) auf  dem  Laufwerk  drv
+          sind.  Ist  blocks=0,  dann existiert dieses Laufwerk  nicht.
+          Siehe BLK/DRV.
+
+(cr            ( -- ) "paren-c-r"
+          Setzt den Cursor in die erste Spalte der n{chsten Zeile.  PAUSE wird
+          ausgef}hrt.
+
+(decode        ( addr pos1 key --- addr pos2 ) "paren-decode"
+          Wertet key aus. key wird in der Speicherzelle addr+pos1 abgelegt und
+          als Echo auf dem Bildschirm ausgegeben.  Die Variable SPAN und  pos1
+          werden  inkrementiert.  Folgende Tasten werden besonders  behandelt:
+          Control-S und Control-D beeinflussen nur pos1 und den Cursor. Ctrl-G
+          l|scht   das  Zeichen  unter  dem  Cursor  und  dekrementiert  SPAN.
+          Backspace (Control-H) und Delete ($7F) l|schen das Zeichen links vom
+          Cursor  und  dekrementieren pos1 und SPAN.  Control T  f}gt  an  der
+          Cursorposition ein Leerzeichen ein.  SPAN wird inkrementiert. Return
+          positioniert  den Cursor auf das letzte Zeichen.
+          Vergleiche INPUT: und (EXPECT.
+
+(del           ( -- ) "paren-del"
+          L|scht ein Zeichen links vom Cursor. Benutzt dabei CURLEFT.
+          Vergleiche auch DEL.
+
+(emit          ( 8b -- ) "paren-emit"
+          Gib 8b auf dem Bildschirm aus. Ein PAUSE wird ausgef}hrt. Alle Werte
+          werden als Zeichen ausgegeben.  Steuercodes sind nicht m|glich, d.h.
+          alle Werte < $20 werden als Punkt "." ausgegeben.
+          Vergleiche CON! und EMIT.
+
+(expect        ( addr len -- ) "paren-expect"
+          Erwartet  len  Zeichen  vom Eingabeger{t,  die ab addr  im  Speicher
+          abgelegt werden.  Ein Echo der Zeichne wird ausgegeben.  Return  beendet  die  Eingabe vorzeitig.  Ein abschlie~endes Leerzeichen  wird
+          immer ausgegeben.  Die L{nge der Zeichenkette wird in der  Variablen
+          SPAN }bergeben. Vergleiche EXPECT.
+.PA
+(key           ( -- char ) "paren-key"
+          Wartet  auf  einen Tastendruck.  W{hrend der  Wartezeit  wird  PAUSE
+          ausgef}hrt.  Die  untersten 7 Bit von char enthalten den  Ascii-Code
+          der  gedr}ckten  Taste.   Steuerzeichen  werden  nicht  ausgewertet,
+          sondern unver{ndert abgeliefert. Vergleiche KEY.
+
+(key?          ( -- flag ) "paren-key-question"
+          flag  ist  TRUE,  wenn  eine  Taste  gedr}ckt  wurde,  sonst  false.
+          Vergleiche auch KEY?.
+
+(page          ( -- ) "paren-page"
+          L|scht  den Bildschirm,  positioniert den Cursor in die linke  obere
+          Ecke und setzt OUT auf null. Siehe auch LOCATE und PAGE.
+
+(r/w           ( adr blk file r/wf -- flag ) "paren-r-w"
+          Ist r/wf<>FALSE,  wird der Forth-Block mit der absoluten Blocknummer
+          blk von der Diskette gelesen. Ist r/wf=FALSE so wird er geschrieben.
+          adr gibt die Addresse des Block-Puffers an.  file mu~ null sein,  da
+          (r/w den Zugriff auf Files nicht unterst}tzt. flag ist TRUE wenn ein
+          Diskettenfehler vorlag.
+
+(type          ( addr len -- ) "paren-type"
+          Gibt den String,  der im Speicher bei addr beginnt und die L{nge len
+          hat,  auf dem Blidschirm aus.  Genau ein PAUSE wird nach der Ausgabe
+          ausgf}hrt. Vergleiche TYPE, OUTPUT: und (EMIT.
+
+/drive         ( blk -- blk' drv ) "per-drive"
+          blk   gibt  die  absolute  Nummer  eines  Forth-Blocks  an.   /DRIVE
+          berechnet,  auf  welchem Laufwerk (drv) dieser Block zu finden  ist,
+          und  welche  relative  Blocknummer  (blk')  er  zum  Anfang   dieses
+          Laufwerks hat.  Siehe DRV?, >DRIVE.
+
+>drive         ( blk drv -- block' ) "to-drive"
+          blk  gibt die relative Blocknummer eine Forth-Blocks  bez}glich  des
+          Anfangs von Laufwerk drv an.  >DRIVE berechnet daraus, unter welcher
+          Blocknummer  dieser Block beim momentanen Stand von OFFSET  erreicht
+          werden kann (block'). In gewisser Weise Umkehrung von /DRIVE.
+
+?drive-error   ( f -- ) "question-drive-error"
+          Ist f=FALSE, so wird "beyond capacity" als Fehlermeldung ausgegeben.
+
+?drive         ( n -- n ) "question-drive"
+          ]berpr}ft,  ob das Laufwerk n existiert,  und gibt "beyond capacity"
+          als Fehlermeldung aus, wenn dies nicht der Fall ist.
+
+b/blk          ( -- b/blk ) "bytes-per-block"
+          Eine  Konstante  die  angibt,  wieviele Bytes in  einen  Forth-Block
+          passen. Nach dem Forth-83 Standard ist B/BLK = &1024.
+
+bios           ( -- addr )  "bios"
+          Adresse  eines 8080-Unterprogramms,  das einen Sprung ins BIOS  ausf}hrt. Das Low-Byte der Einsprungadresse steht dabei in HL. Wird von
+          con!, (key?, getkey und read/write benutzt.
+
+blk/drv        ( -- #blk ) "blocks-per-drive"
+          #blk  gibt  die Kapazit{t des aktuellen  Laufwerks  (bestimmt  durch
+          OFFSET) in Forth-Bl|cken (1kB) an. Siehe (BLK/DRV.
+.PA
+con!           ( 8b -- )  "con-store"
+          Gibt  8b auf die CONsole (Bildschirm) aus.  Ascii-Werte < $20 werden
+          als Steuercodes interpretiert.
+
+curleft        ( -- ) "cur-left"
+          Bewegt  den Cursor ein Zeichen nach links.  Eine der  vordefinierten
+          Terminalfunktionen.
+
+curoff         ( -- ) "cur-off"
+          Schaltet den Cursor aus. Eine der vordefinierten Terminalfunktionen.
+
+curon          ( -- ) "cur-on"
+          Schaltet den Cursor an. Eine der vordefinierten Terminalfunktionen.
+
+currite        ( -- ) "cur-right"
+          Bewegt den Cursor ein Zeichen nach rechts. Eine der  vordefinierten
+          Terminalfunktionen.
+
+dark           ( -- ) "dark"
+          L|scht den Bildschirm. Eine der vordefinierten Terminalfunktionen.
+
+display        ( -- ) "display"
+          Ein  mit OUTPUT:  definiertes Wort,  das den Bildschirm als Ausgabeger{t anw{hlt,  wenn es ausgef}hrt wird.  Die Worte EMIT,  CR, TYPE,
+          DEL, PAGE, AT, und AT? beziehen sich dann auf das aktuelle Terminal.
+          Siehe TERMINAL:.
+
+dma!           ( addr -- ) "d-m-a-store"
+          addr  ist die Adresse des Diskettenpuffers,  der beim n{chsten  Diskettenzugriff verwendet werden soll.
+
+drive          ( n -- ) "drive"
+          W{hlt n als aktuelles Laufwerk an. [ndert OFFSET entsprechend.
+          Siehe BLK/DRV.
+
+drv!           ( drv f -- dph ) "drive-store"
+          drv  ist  die Nummer des Diskettenlaufwerks,  das als n{chstes  verwendet  werden soll.  f=0 gibt an,  ob es sich um den erste  Zugriff
+          nach  einem  CP/M Warmstart handelt.  dph ist die Adresse  des  CP/M
+          Disk-Parameter-Headders. (Siehe CP/M Operating System Manual)
+          Ist  dph=0,  so  ist das angesprochene Laufwerk in diesem  Computersystem nicht unterst}tzt.
+
+drv?           ( blk -- drv ) "drive-question"
+          blk gibt die absolute Nummer eines FORTH-Blocks an,  DRV?  berechnet
+          daraus das Laufwerk (drv) auf dem er zu finden ist.
+          Siehe /DRIVE, >DRIVE.
+
+drv0           ( -- ) "drive-zero"
+          W{hlt Laufwerk 0 (A) als aktuelles Laufwerk für R/W an.  Siehe DRIVE
+          und >DRIVE.
+
+drv1           ( -- ) "drive-one"
+          W{hlt Laufwerk 1 (B) als aktuelles Laufwerk für R/W an.  Siehe DRIVE
+          und >DRIVE.
+
+drvinit        ( -- ) "drive-init"
+          Initialisiert das VolksForth-Disk-System.
+          Die  im Computer-System vorhandenen Laufwerke werden der Reihe  nach
+          selektiert  und  deren  Kapazit{t  berechnet.  Dann  wird  das  CP/M
+          default-Laufwerk selektiert.
+dumb           ( -- ) "dumb"
+          Ein  mit TERMINAL:  definiertes Wort,  das ein ignorantes  Terminal
+          anw{hlt,  wenn es ausgef}hrt wird.  CURON, CUROFF, CURLEFT, CURRITE,
+          RVSON,  RVSOFF,  DARK und LOCATE haben dann keine Wirkung. Mit ihnen
+          auch  die  sie benutzenden Worte  (PAGE,  (AT,  (DEL.  Wenn  DISPLAY
+          eingeschaltet ist, sind also auch PAGE, AT und DEL wirkungslos.
+          DUMB  ist als aktuelles Terminal angew{hlt,  bis  die  Installierung
+          eines leistungsf{higeren Terminals abgeschlossen ist.
+
+getkey         ( -- char ) "getkey"
+          die  unteren  7  Bit von char enthalten den Ascii-Code  des  letzten
+          Tastendrucks.  Ist  noch keine Taste gedr}ckt,  dann wartet  getkey.
+          Siehe auch KEY? und KEY.
+
+home           ( -- ) "home"
+          Der  Kopf des momentan selektierte Diskettenlaufwerks wird auf  Spur
+          null  gefahren.  Spur  null wird als  n{chste  Spur  angew{hlt,  die
+          verwendet werden soll. Siehe TRK!, DRV!.
+
+index          ( from to -- ) "index"
+          Liest  die  Blocks from bis to einschlie~lich und gibt  deren  erste
+          Zeilen aus.  Index kann mit einer beliebigen Taste angehalten werden
+          und  mit RETURN abgebrochen werden.  (Siehe STOP?) Die ersten Zeilen
+          von  Screens enthalten typischer Weise Kommentare,  die  den  Inhalt
+          chararkterisieren.
+
+keyboard       ( -- ) "keyboard"
+          Ein mit INPUT:  definiertes Wort,  das die Tastatur als Eingabeger{t
+          anw{hlt.  Die Worte KEY,  KEY?,  DECODE und EXPECT beziehen sich nun
+          auf die Tastatur. Siehe (KEY, (KEY? (DECODE, (EXPECT.
+
+locate         ( row col -- ) "locate"
+          Bewegt den Cursor absolut auf Spalte col, Zeile row.
+          Eine der vordefinierten Terminalfunktionen.
+
+
+out            ( -- addr ) "out"
+          Adresse  einer  Variablen,  die die Anzahl der ausgegebenen  Zeichen
+          enth{lt.
+
+read/write     ( r/wf sponti -- f ) "read-write"
+          Bewirkt  das  physikalische  Lesen  (r/wf  =  FALSE)  und  Schreiben
+          (r/wf=TRUE) eines Sektors (=128 Bytes) von der/auf die Diskette. Das
+          Laufwerk,  die Spur , der Sektor sowie der Sektor-Puffer sind vorher
+          mit DRV!, TRK!, SEC! und DMA! gew{hlt worden.
+          sponti  gibt  an,  ob  beim Schreiben unmittelbar auf  die  Diskette
+          geschrieben  werden  soll (sponti=TRUE) oder,  ob  der  geschriebene
+          Sektor im BIOS zwischengepuffert werden darf (sponti=FALSE).
+
+rvsoff         ( -- ) "reverse-off"
+          Schaltet   die  Inversdarstellung  aus.   Eine  der   vordefinierten
+          Terminalfunktionen.
+
+rvson          ( -- ) "reverse-on"
+          Schaltet   die  Inversedarstellung  ein.   Eine  der  vordefinierten
+          Terminalfunktionen.
+
+sec!           ( sec -- ) "sec-store"
+          sec ist der beim n{chsten Diskettenzugriff zu verwendende Sektor.
+.PA
+Term:          ( offset -- offset' ) "term-colon"
+          Ein definierendes Wort für Terminalfunktionen.  Wird benutzt um  die
+          einzelnen   Komponenten   eines  Terminal-Vektors   zu   definieren.
+          Vordefinierte  Terminalfunktionen  sind  CURON,   CUROFF,   CURLEFT,
+          CURRITE, RVSON, RVSOFF, DARK und LOCATE. Siehe auch TERMINAL:
+
+Terminal:      ( -- ) "terminal-colon"
+          Ein definierendes Wort für Terminals. Benutzt in der Form:
+             Terminal: <name>
+               newCURON newCUROFF newCURLEFT newCURRITE
+               newRVSON newRVSOFF newDARK    newLOACTE ;
+          TERMINAL: erzeugt einen Kopf für <name> im Dictionary und kompiliert
+          einen  Vektor von Zeigern auf Worte die für die Ausf}hrung von  Terminalfunktionen  zust{ndig sind.  Wird <name> ausgef}hrt,  so werden
+          die  Terminalfunktionen  von  <name>  zu  den  aktuellen   Terminalfunktionen gemacht,  das Terminal <name> ist damit aktiv.  Terminalfunktionen werden von AT, PAGE, DEL ausgef}hrt, wenn die Ausgabe auf
+          DISPLAY geschaltet ist. Siehe OUTPUT:, DISPLAY, DUMB.
+
+trk!           ( trk -- ) "track-store"
+          trk ist die beim n{chsten Diskettenzugriff zu verwendende Spur.
+
+.OP
+.HE                        Der volksForth-8080-Assembler            Seite #
+Die  CP/M-Version  von VolksForth ist mit einem Assembler für den  Intel  8080
+ausgestattet.  Dieser  Assembler  kann aber auch unter den  anderen  Versionen
+geladen werden und so als Cross-Assembler arbeiten.
+Diese  Beschreibung enth{lt kein vollst{ndiges Glossar,  da die Mnemonics  des
+Assemblers  den  meisten Programmierern vertraut sein d}rften.  Sie dient  als
+Erg{nzung der Beschreibung des 6502-Assemblers im UltraForth83-Handbuch  Seite
+175ff.
+Eine genaue Darstellung der Funktionsweise findet sich in dem Artikel von John
+J.  Cassady  in  den FORTH-Dimensions (Jahrgang III/6 Seite 180f),  an  dessen
+Implementation sich die VolksForth-Version anlehnt.
+Der  8080-Assmebler  erlaubt strukturierte Programmierung.  Er  verwendet  die
+gleichen Strukturelemente, wie der 6502-Assembler.
+Vor den Kontrollstrukturen sind folgende Condition Codes zul{ssig:
+
+   c0=    c0<>   cs   0=   0<>    pe   0<   0>=
+
+Sie entsprechen den Flags im Processor Status Word des 8080.
+Neben den Kontrollstrukturen gibt es auch noch absoluten Spr}nge (jc, jm, jmp,
+jnc, jnz, jp, jpe, jpo, jz).
+
+Beispiele für die Verwendung des 8080-Assemblers:
+
+VolksForth                         Intel
+
+A xra                              xra A
+A L mov                            mov L,A
+0 H mvi                            mvi H,0
+H pop                              pop H
+vector lxi                         lxi vektor
+D dad                              dad D
+ ...                                ...
+
+
+Die Belegung der Forth-Register sieht folgenderma~en aus:
+
+IP  im BC-Registerpaar
+ W  im DE-Registerpaar
+SP  im SP
+UP  im Speicher
+RP  im Speicher
+
+Die beiden 8-Bit-H{lften von IP und W k|nnen auch getrennt angesprochen werden
+durch (IP und IP', bzw. W und W').
+Zum Ansprechen der 8080-Register d}rfen die FORTH-Namen sowie die Intel  Namen
+benutzt werden.
+
+Zus{tzlich enth{lt das System noch mehrere Macros:
+
+  R rpop    : Hole   das 16-Bit-Register R (R<>H) vom Returnstack.
+  R rpush   : Bringe das 16-Bit-Register R (R<>H) zum Returnstack.
+  R1 R2 mvx : Kopiere 16-Bit-Register R1 nach R2.
+  Next      : Springe zum Address-Interpreter.
+  ;c:       : Schalte den Assembler ab und den Forth-Compiler an.
+
+.pa
+Vordefinierte Labels sind:
+
+  Hpush      : Adresse der Routine,  die das H-Register auf den Stack bringt
+               und dann zu Next springt.
+  Dpush      : Adresse der Routine, die das D- und H-Register auf
+               den Stack bringt und dann zu Next springt.
+  >Next      : Adresse des Address-Interpreters.
+  UP         : Adresse der Speicherzelle für den User-Pointer
+  RP         : Adresse der Speicherzelle für den  Returnstack-
+               pointer
+  IPsave     : Adresse einer Hilfszelle um den IP zwischenzuspeichern
+
+Neue Labels k|nnen mit >LABEL und LABEL erzeugt werden, wie im 6502-Assembler.

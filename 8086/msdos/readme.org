@@ -1,15 +1,82 @@
 #+TITLE: VolksForth MS-DOS README
-#+AUTHOR: Carsten Strotmann
-#+DATE: <2020-06-19 Fri>
+#+AUTHOR: Carsten Strotmann, Philip Zembrod
+#+DATE: <2022-03-13 Sun>
 
-* How to meta-compile a new kernel
+* Refactoring in progress
+
+MSDOS VolksForth is currently in transition towards make based
+and stream file (.fth) based builds.
+
+* Documentation for make based builds
+
+The central Makefile is written for GNU make on Linux and uses
+the DOS emulator dosbox to run VolksForth and Metacompiler
+binaries for building new VolksForth binaries and for running
+tests. The make rules also use several Linux tools, e.g.
+bash, Python, grep or dos2unix.
+
+volks4th.com is the old checked-in full VolksForth binary
+with editor etc, manually compiled from block sources as
+described in the "Previous .fb-based manual build instructions".
+It is intended to remain untouched throughout the transition
+period until it can be safely replaced by new .fth-based
+kernels with build-in .fth interface.
+
+** Binary make targets
+
+=make v4th.com=
+builds the new minimal VolksForth kernel v4th.com
+from .fth sources using metafile.com. v4th.com does not have the block
+words and the buffer mechanism anymore. The only way to load code from
+files is via =include filename.fth=.
+
+=make v4thblk.com=
+builds the new minimal VolksForth kernel v4thblk.com
+from .fth sources using metafile.com. v4thblk.com contains the block
+words and the buffer mechanism and can load and include both .fth
+stream sources and .fb block sources.
+
+=make metafile.com=
+builds the metacompiler with included .fth file interface.
+It is used to build v4th.com, so metafile.com will be built
+as part of the make rule for v4th.com. Note: metafile.com
+is mostly still built from meta.fb, i.e. from block sources.
+
+=make o4th.com=
+builds a new minimal VolksForth kernel from kernel.fb, i.e.
+from block sources. This is equivalent to the previous
+"How to meta-compile a new kernel" instruction.
+
+=make v4thfile.com=
+adds the .fth file interface to the old volks4th binary.
+
+** Test make targets
+
+=make test=
+runs all current tests.
+
+=make test-std.result=
+runs v4th.com through the standard set of unit tests, without the block
+tests, of course
+
+=make test-blk.result=
+runs v4thblk.com through full set of unit tests, including the block
+tests.
+
+=make test-volks4th-min.result=
+runs the same initial minimal set of unit tests on v4thfile.com
+which is the old volks4th.com binary with added .fth file interface.
+
+* Previous .fb-based manual build instructions
+
+** How to meta-compile a new kernel
 
   After making changes the the Forth kernel source in =kernel.fb=,
   restart =volksforth.com= to have a clean system and compile a new
   "minimal" kernel with =include kernel.fb=. This will create a new
   =FORTH.COM= executable.
 
-* creating a minimal system with a simple editor
+** creating a minimal system with a simple editor
 
   Execute =forth.com include minimal.sys= to generate the file
   =minimal.com= which contains a minimal VolksForth system with the
@@ -19,11 +86,12 @@
   This system can be used to edit the file =volksforth.sys= or other
   Forth source block files needed to create a full VolksForth system.
 
-* creating a full VolksForth system from the minimal kernel
+** creating a full VolksForth system from the minimal kernel
 
   Execute =forth.com include volks4th.sys= to create a new fully
   equipped VolksForth executable =volks4th.com=.
-* creating a version of VolksForth that works with emu2
+
+** creating a version of VolksForth that works with emu2
 
   EMU2 is a nice PC Emulator that can run MS-DOS console applications
   as Linux/MacOS/Windows console applications. EMU2 can be found at

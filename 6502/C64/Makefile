@@ -175,31 +175,31 @@ emulator/sdcard.img: emulator/sdcard.sfdisk
 
 test-v4thblk-c64.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreext double block report-blk)
-	cat $? > $@
+	cat $^ > $@
 
 test-v4th-c64.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreext double report-noblk)
-	cat $? > $@
+	cat $^ > $@
 
 test-v4thblk-c16+.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreext double block report-blk)
-	cat $? > $@
+	cat $^ > $@
 
 test-v4th-c16+.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreext double report-noblk)
-	cat $? > $@
+	cat $^ > $@
 
 test-v4thblk-c16-.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core)
-	cat $? > $@
+	cat $^ > $@
 
 test-v4th-c16-.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreext double report-noblk)
-	cat $? > $@
+	cat $^ > $@
 
 test-v4th-x16.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreext double report-noblk)
-	cat $? > $@
+	cat $^ > $@
 
 # Rules for building Forth binaries on top of the plain vanilla
 # c64-volksforth83.

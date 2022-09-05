@@ -21,10 +21,14 @@
    dup 0= swap #cr = or IF 0 exit THEN
    i/o-status? IF 1 exit THEN  -1 ;
 
+| : i/o-status?abort  i/o-status? 3 and IF c64cr
+   fload-dev @ dos-error abort THEN ;
+
 | : freadline ( -- eof )
  fload-dev @ fload-2nd @ busin
+ i/o-status?abort
  tib /tib bounds
- DO bus@ dup eolf? under
+ DO bus@ i/o-status?abort dup eolf? under
      IF I c! ELSE drop THEN
  dup 0<
    IF drop ELSE I + tib - #tib ! UNLOOP
@@ -37,9 +41,6 @@
 
 
 \   fload-open  fload-close    30jun20pz
-
-| : i/o-status?abort  i/o-status? IF cr
-   fload-dev @ dos-error abort THEN ;
 
   defer on-fload  ' noop is on-fload
 | : fload-open ( addr c -- )

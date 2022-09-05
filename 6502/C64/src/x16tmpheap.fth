@@ -13,11 +13,10 @@ User tmpheap[
 User tmpheap>
 User ]tmpheap
 
-\ $9f61 is the X16 RAM bank select register. This will change to $0001
-\ in the next X16 board version.
+\ $0000 is the X16 RAM bank select register.
 \ 1 is the RAM bank selected for the tmpheap. RAM bank 0 is used by the
 \ X16 KERNAL. The banked RAM lives from $a000 to $bfff.
- 1 $9f61 c!  $a000 tmpheap[ !  $c000 dup ]tmpheap ! tmpheap> !
+ 1 $0000 c!  $a000 tmpheap[ !  $c000 dup ]tmpheap ! tmpheap> !
 
 : tmp-hallot  ( size -- addr )
     tmpheap> @ swap -

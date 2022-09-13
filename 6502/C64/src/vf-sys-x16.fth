@@ -6,26 +6,17 @@ include vf-lbls-cbm.fth
 \ X16 labels
 
 0ffd2 >label ConOut
- 0286 >label IOStatus
+0febd >label KbdbufPeek
+ 0289 >label IOStatus
  028c >label MsgFlg
- 028b >label OutDev
- 028a >label  InDev
 09f2c >label BrdCol
  0266 >label BkgCol
  0284 >label PenCol
-   8a >label PrgEnd  \ aka eal; seems unused
- 0292 >label IOBeg   \ aka stal; seems unused
  0381 >label CurFlg  \ aka qtsw
  0385 >label InsCnt  \ aka insrt
 
-\ TODO(issues/33): Remove the R?mBank38 labels.
-09f60 >label RomBank38
-09f61 >label RamBank38
 1 >label RomBank
 0 >label RamBank
-
-0a000 >label KeyD  \ keyboard buffer
-0a00a >label Ndx   \ #keys in keyboard buffer
 
   037B >label blnsw  \ C64: $cc
 \   037C >label blnct  \ C64: $cd
@@ -46,33 +37,12 @@ include vf-lbls-cbm.fth
 \ X16 c64key? getkey
 
 Code c64key? ( -- flag)
- RamBank ldx
-\ TODO(issues/33): Remove the lines accessing RamBank38.
- RamBank38 ldy
- 0 # lda  RamBank sta
- RamBank38 sta
- Ndx lda
- 0<> ?[  0FF # lda  ]? pha
- RamBank stx
- RamBank38 sty
+ KbdbufPeek jsr
+ txa  pha
  Push jmp  end-code
 
 Code getkey  ( -- 8b)
- RamBank lda  N sta
-\ TODO(issues/33): Remove the lines accessing RamBank38.
- RamBank38 lda  N 1+ sta
- 0 # lda  RamBank sta
- RamBank38 sta
- Ndx lda  0<>
- ?[  sei  KeyD ldy
-  [[  KeyD 1+ ,X lda  KeyD ,X sta  inx
-      Ndx cpx  0= ?]
-  Ndx dec
-  N lda  RamBank sta
-  N 1+ lda  RamBank38 sta
-  tya  cli  0A0 # cmp
-  0= ?[  bl # lda  ]?
- ]?
+ GETIN jsr
  Push0A jmp   end-code
 
 
@@ -124,8 +94,6 @@ Label restore   pha txa pha tya pha cld
 Label first-init
  sei cld
  RomBank lda  $f8 # and  RomBank sta \ map in KERNAL ROM
-\ TODO(issues/33): Remove this line accessing RomBank38.
- RomBank38 lda  $f8 # and  RomBank38 sta \ map in KERNAL ROM for R38
  IOINIT jsr  CINT jsr  RESTOR jsr  \ init. and set I/O-Vectors
  ink-pot    lda BrdCol sta \ border
  ink-pot 1+ lda BkgCol sta \ backgrnd

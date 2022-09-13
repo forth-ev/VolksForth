@@ -1,0 +1,8 @@
+* Creating Disk Images for Amstrad/Schneider CPC
+
+The script =makedisks.sh= will create disk images to use in Amstrad CPC
+Emulator or modern disk emulator systems for the Amstrad CPC system.
+
+The script requires =iDSK= (https://github.com/cpcsdk/idsk) to be
+installed.
+

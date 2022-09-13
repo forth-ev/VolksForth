@@ -35,7 +35,7 @@ clean:
 
 binaries: $(vf_binaries)
 
-test: $(test_resuls) test-v4th-x16-39.result
+test: $(test_resuls)
 
 test64: std64 blk64
 
@@ -106,65 +106,78 @@ cbmfiles/v4th-c16+self: emulator/tcbase16.T64
 
 $(test_logs): $(test_files_petscii) emulator/run-in-vice.sh
 
-test-v4thblk-c64.log: emulator/v4thblk-c64.T64 disks/scratch.d64
-	rm -f cbmfiles/test.log
+test-v4thblk-c64.log: emulator/v4thblk-c64.T64 disks/empty.d64
+	rm -f cbmfiles/test.log disks/scratch.d64
+	cp disks/empty.d64 disks/scratch.d64
 	DISK9=scratch emulator/run-in-vice.sh v4thblk-c64 \
-	  "include run-blk-tests.fth\n1234567890\n"
+	  "include run-blk-tests.fth\n1234567890"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4th-c64.log: emulator/v4th-c64.T64
 	rm -f cbmfiles/test.log
 	emulator/run-in-vice.sh v4th-c64 \
-	  "include run-std-tests.fth\n1234567890\n"
+	  "include run-std-tests.fth\n1234567890"
 	petscii2ascii cbmfiles/test.log $@
 
-test-v4thblk-c16+.log: emulator/v4thblk-c16+.T64 disks/scratch.d64
-	rm -f cbmfiles/test.log
-	VICE=xplus4 emulator/run-in-vice.sh v4thblk-c16+ \
-	  "include run-blk-tests.fth\n1234567890\n"
+test-v4thblk-c16+.log: emulator/v4thblk-c16+.T64 disks/empty.d64
+	rm -f cbmfiles/test.log disks/scratch.d64
+	cp disks/empty.d64 disks/scratch.d64
+	VICE=xplus4 DISK9=scratch emulator/run-in-vice.sh v4thblk-c16+ \
+	  "include run-blk-tests.fth\n1234567890"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4th-c16+.log: emulator/v4th-c16+.T64
 	rm -f cbmfiles/test.log
 	VICE=xplus4 emulator/run-in-vice.sh v4th-c16+ \
-	  "include run-std-tests.fth\n1234567890\n"
+	  "include run-std-tests.fth\n1234567890"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4thblk-c16-.log: emulator/v4thblk-c16-.T64
 	rm -f cbmfiles/test.log
 	VICE=xplus4 emulator/run-in-vice.sh v4thblk-c16- \
-	  "include run-min-tests.fth\n1234567890\n"
+	  "include run-min-tests.fth\n1234567890"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4th-c16-.log: emulator/v4th-c16-.T64
 	rm -f cbmfiles/test.log
 	VICE=xplus4 emulator/run-in-vice.sh v4th-c16- \
-	  "include run-std-tests.fth\n1234567890\n"
+	  "include run-std-tests.fth\n1234567890"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4th-x16.log: cbmfiles/v4th-x16 emulator/sdcard.img
 	rm -f cbmfiles/test.log
 	emulator/run-in-x16emu.sh v4th-x16 \
-	  "include run-std-tests.fth\n1234567890\n"
+	  "include run-std-tests.fth\n1234567890"
 	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
 	petscii2ascii cbmfiles/test.log $@
+
+test-v4th-x16-39.log: $(test_files_petscii) emulator/run-in-vice.sh
 
 test-v4th-x16-39.log: cbmfiles/v4th-x16 emulator/sdcard.img
 	rm -f cbmfiles/test.log
 	emulator/run-in-x16-39.sh v4th-x16 \
-	  "include run-std-tests.fth\n1234567890\n"
+	  "include run-std-tests.fth\n1234567890"
 	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4th-x16-39.golden: test-v4th-x16.golden
 	cp $< $@
 
+test-v4th-x16-41.log: $(test_files_petscii) emulator/run-in-vice.sh
+
+test-v4th-x16-41.log: cbmfiles/v4th-x16 emulator/sdcard.img
+	rm -f cbmfiles/test.log
+	emulator/run-in-x16-41.sh v4th-x16 \
+	  "include run-std-tests.fth\n1234567890"
+	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
+	petscii2ascii cbmfiles/test.log $@
+
+test-v4th-x16-41.golden: test-v4th-x16.golden
+	cp $< $@
+
 test-%.result: test-%.log test-%.golden tests/evaluate-test.sh
 	rm -f $@
 	tests/evaluate-test.sh $(basename $@)
-
-disks/scratch.d64: disks/empty.d64
-	cp $< $@
 
 emulator/sdcard.img: emulator/sdcard.sfdisk
 	rm -f $@ $@.tmp

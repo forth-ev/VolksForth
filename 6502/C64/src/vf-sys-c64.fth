@@ -9,13 +9,9 @@ include vf-lbls-cbm.fth
 0E716 >label ConOut
   090 >label IOStatus
   09d >label MsgFlg
-  09a >label OutDev
-  099 >label  InDev
 0d020 >label BrdCol
 0d021 >label BkgCol
  0286 >label PenCol
-  0ae >label PrgEnd  \ aka eal; seems unused
-  0c1 >label IOBeg   \ aka stal; seems unused
   0d4 >label CurFlg
   0d8 >label InsCnt
  028a >label KeyRep

@@ -22,10 +22,12 @@ msdos:
 %.fth: %.fb ../../tools/fb2fth.py
 	../../tools/fb2fth.py $< $@
 
-inctest.log: $(patsubst %, $(cpmfilesdir)/%, volks4th.com include.fb) \
+inctest.log: $(patsubst %, $(cpmfilesdir)/%, \
+    volks4th.com include.fb inctest.fth) \
     | emu
 	echo "volks4th" > $(runcpmdir)/input.script
 	echo "include include.fb" >> $(runcpmdir)/input.script
+	echo "xinclude inctest.fth" >> $(runcpmdir)/input.script
 	echo "bye" >> $(runcpmdir)/input.script
 	echo "exit" >> $(runcpmdir)/input.script
 	./emulator/run-in-runcpm.sh volks4th

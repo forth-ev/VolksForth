@@ -39,11 +39,12 @@
 
 \ *** Block No. 2, Hexblock 2
 
-\ fib /fib #fib eolf?                                phz 06okt22
+\ fib /fib #fib eolf?                                phz 07mai23
 
   context @ dos also context !
   $50 constant /tib
   variable tibeof tibeof off
+  $1a constant ctrl-z
 
   : eolf? ( c -- f )
     \ f=-1: not yet eol; store c and continue
@@ -51,8 +52,7 @@
     \ f=1: eof: return line and flag eof
    tibeof off
     dup #lf = IF drop 0 exit THEN
-    -1 = IF tibeof on  1 ELSE -1 THEN ;
-
+    ctrl-z = IF tibeof on  1 ELSE -1 THEN ;
 
 
 
@@ -66,7 +66,7 @@
 
   : inc-fgetc  ( -- c )
     rec-offset c@ b/rec u< 0= IF dmabuf dma!
-      incfile @ drive  iread-seq IF ." eof" -1 exit THEN
+      incfile @ drive  iread-seq IF ctrl-z exit THEN
       0 rec-offset c! THEN
     rec-offset c@ dup 1+ rec-offset c! dmabuf + c@
            ; \\

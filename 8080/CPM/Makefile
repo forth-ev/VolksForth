@@ -27,7 +27,7 @@ inctest.log: $(patsubst %, $(cpmfilesdir)/%, \
     | emu
 	echo "volks4th" > $(runcpmdir)/input.script
 	echo "include include.fb" >> $(runcpmdir)/input.script
-	echo "xinclude inctest.fth" >> $(runcpmdir)/input.script
+	echo "include inctest.fth" >> $(runcpmdir)/input.script
 	echo "bye" >> $(runcpmdir)/input.script
 	echo "exit" >> $(runcpmdir)/input.script
 	./emulator/run-in-runcpm.sh volks4th

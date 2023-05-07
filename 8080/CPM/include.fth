@@ -69,7 +69,7 @@
       incfile @ drive  iread-seq IF ctrl-z exit THEN
       0 rec-offset c! THEN
     rec-offset c@ dup 1+ rec-offset c! dmabuf + c@
-           ; \\
+  ; \\
     incfile @ f.handle @ 0= IF
       incpos 2@  incfile @  fseek THEN
     incfile @ fgetc
@@ -116,13 +116,13 @@
 \ *** Block No. 6, Hexblock 6
 
 \ interpret-via-tib include                          phz 07mai23
-  : xinterpret  tib #tib @ type cr ;
+
   : interpret-via-tib
-  BEGIN freadline >r .status >in off xinterpret
-  r> UNTIL ;
+  BEGIN freadline >r .status >in off  interpret  r> UNTIL ;
+
   : pushfile r> isfile push fromfile push >r ; restrict
-  : xinclude ( -- )
-  pushfile  use  cr file? cr
+  : include ( -- )
+  pushfile  use  cr file?
   probe-for-fb                IF 1 load       exit THEN
   incfile push  isfile@ incfile !   b/rec rec-offset c!
   incpos push  incpos off  incpos 2+ dup push off

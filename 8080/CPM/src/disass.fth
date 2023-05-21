@@ -1,0 +1,342 @@
+
+\ *** Block No. 0, Hexblock 0
+
+\\ Z80-Disassembler                                      08Nov86
+
+Dieses File enthaelt einen Z80-Disassembler, der assemblierten
+Code in Standard Zilog-Z80 Mnemonics umsetzt.
+
+Benutzung:
+
+     TOOLS ALSO   \ Schalte Disassembler-Vokabular an
+
+       addr DIS   \ Disassembliere ab Adresse addr
+
+ xxxx displace !  \ Beruecksichte bei allen Adressen einen
+                  \ Versatz von xxxx.
+                  \ Wird gebraucht, wenn ein Assemblerstueck
+                  \ nicht an dem Platz disassembliert wird,
+                  \ an dem es ablaeuft.
+
+\ *** Block No. 1, Hexblock 1
+
+\ Z80-Disassembler Load Screen                           08Nov86
+
+Onlyforth Tools also definitions hex
+
+' Forth | Alias F: immediate
+' Tools | Alias T: immediate
+
+  1 $10 +THRU  cr .( Disassembler geladen. ) cr
+
+OnlyForth
+
+
+\\ Fragen Anregungen & Kritik an:
+                    U. Hoffmann
+                    Harmsstrasse 71
+                    2300 Kiel 1
+
+\ *** Block No. 2, Hexblock 2
+
+   \ Speicherzugriff und Ausgabe                         07Jul86
+internal
+\needs Case:  : Case: Create: Does> swap 2* + perform ;
+
+Variable index      Variable address    Variable offset
+Variable oldoutput
+external  Variable displace  displace off   internal
+
+' pad Alias str1  ( -- addr )
+: str2  ( -- addr )  str1  $40 + ;
+
+: byte ( -- b )  address @ displace @ +  c@ ;
+: word ( -- w )  address @ displace @ +   @ ;
+
+: .byte ( byte -- )   0 <# # #s #> type ;
+: .word ( addr -- )   0 <# # # # #s #> type ;
+
+\ *** Block No. 3, Hexblock 3
+
+   \ neue Bytes lesen    Byte-Fraktionen                 07Jul86
+
+: next-byte   output push  oldoutput @ output !
+   byte .byte space   1 address +! ;
+
+: next-word   next-byte next-byte ;
+
+: f    ( -- b )  byte $40 / ;
+: g    ( -- b )  byte 8 / 7 and ;
+: h    ( -- b )  byte 7 and ;
+: j    ( -- b )  g 2/ ;
+: k    ( -- b )  g 1 and ;
+
+\\  76543210
+    ffggghhh
+      jjk
+
+\ *** Block No. 4, Hexblock 4
+
+   \ Select"                                             08Nov86
+
+: scan/ ( limit start -- limit start' ) over swap
+    DO I c@ Ascii / = IF I F: ENDLOOP T: exit THEN LOOP dup ;
+
+: select ( n addr len -- addr' len' )
+   bounds rot
+   0 ?DO scan/ 1+ 2dup < IF 2drop " -" count ENDLOOP exit THEN
+     LOOP under scan/ nip over - ;
+
+: (select" ( n -- ) "lit count select type ;
+
+: select" ( -- )  compile (select" ," ; immediate
+
+: append ( c str -- )
+   under count + c!  dup c@ 1+ swap c! ;
+
+\ *** Block No. 5, Hexblock 5
+
+   \ StringOutput                                        07Jul86
+
+Variable $
+
+: $emit ( c -- )  $ @  append  pause ;
+
+: $type ( adr len -- )  0 ?DO count $emit LOOP drop ;
+
+: $cr ( -- )   $ @ off ;
+
+: $at? ( -- row col )  0   $ @ c@ ;
+
+Output: $output
+  $emit $cr $type noop $cr 2drop $at? ;
+
+
+
+\ *** Block No. 6, Hexblock 6
+
+   \ Register                                            07Jul86
+
+: reg ( n -- )  dup 5 = IF index @ negate index ! THEN
+   select" B/C/D/E/H/L/$/A" ;
+
+: double-reg ( n -- ) select" BC/DE/%/SP" ;
+
+: double-reg2 ( n -- ) select" BC/DE/%/AF" ;
+
+: num ( n -- ) select" 0/1/2/3/4/5/6/7" ;
+
+: cond ( n -- ) select" nz/z/nc/c/po/pe/p/m" ;
+
+: arith ( n -- )
+   select" add A,/adc A,/sub /sbc A,/and /xor /or /cp " ;
+
+
+\ *** Block No. 7, Hexblock 7
+
+   \ no-prefix  Einteilung der Befehle in Klassen        07Jul86
+
+: 00xxx000
+   g dup 3 > IF ." jr " 4- cond  ." ,?" exit THEN
+     select" nop/ex AF,AF'/djnz ?/jr ?" ;
+
+: 00xxx001
+   k IF ." add %," j double-reg exit THEN
+   ." ld " j double-reg ." ,&" ;
+
+: 00xxx010  ." ld " g
+   select" (BC),A/A,(BC)/(DE),A/A,(DE)/(&),%/%,(&)/(&),A/A,(&)"
+;
+
+: 00xxx011   k IF ." dec " ELSE ." inc " THEN  j double-reg ;
+
+
+\ *** Block No. 8, Hexblock 8
+
+      \ no-prefix                                        07Jul86
+
+: 00xxx100  ." inc "  g reg ;
+
+: 00xxx101  ." dec "  g reg ;
+
+: 00xxx110  ." ld "  g reg ." ,#" ;
+
+: 00xxx111  g select" rlca/rrca/rla/rra/daa/cpl/scf/ccf" ;
+
+: 01xxxxxx  ." ld "  g reg ." ," h reg ;
+
+: 10xxxxxx  g arith   h reg ;
+
+
+
+
+\ *** Block No. 9, Hexblock 9
+
+      \ no-prefix                                        07Jul86
+
+: 11xxx000  ." ret " g cond ;
+
+: 11xxx001  k IF  j select" ret/exx/jp (%)/ld sp,%" exit THEN
+            ." pop " j double-reg2 ;
+
+: 11xxx010 ." JP " g  cond ." ,&" ;
+
+: 11xxx011  g
+ select" jp &/-/out (#),A/in a,(#)/ex (SP),%/ex DE,HL/di/ei" ;
+
+: 11xxx100 ." call " g cond ;
+: 11xxx101 k IF ." call &" exit THEN ." push " j double-reg2 ;
+: 11xxx110  g arith  ." #" ;
+: 11xxx111  ." rst " g select" 00/08/10/18/20/28/30/38" ;
+
+\ *** Block No. 10, Hexblock a
+
+      \ no-prefix                                        07Jul86
+
+Case: 00xxxhhh
+  00xxx000 00xxx001 00xxx010 00xxx011
+  00xxx100 00xxx101 00xxx110 00xxx111 ;
+
+Case: 11xxxhhh
+  11xxx000 11xxx001 11xxx010 11xxx011
+  11xxx100 11xxx101 11xxx110 11xxx111 ;
+
+: 00xxxxxx h 00xxxhhh ;
+: 11xxxxxx h 11xxxhhh ;
+
+Case: ffxxxxxx
+  00xxxxxx 01xxxxxx 10xxxxxx 11xxxxxx ;
+
+
+\ *** Block No. 11, Hexblock b
+
+      \ no-prefix                                        07Jul86
+
+: get-offset   index @ 0> IF byte offset ! next-byte THEN ;
+
+: no-prefix  f ffxxxxxx  next-byte  get-offset ;
+
+
+
+
+
+
+
+
+
+
+
+
+\ *** Block No. 12, Hexblock c
+
+   \ CB-Prefix                                           07Jul86
+
+: CB-00xxxxxx
+   g select" rlc /rrc /rl /rr /sla /sra /-/srl "  h reg ;
+
+: CB-01xxxxxx  ." bit "  g num  ." ,"   h reg ;
+
+: CB-10xxxxxx  ." res "  g num  ." ,"   h reg ;
+
+: CB-11xxxxxx  ." set "  g num  ." ,"   h reg ;
+
+case: singlebit
+  CB-00xxxxxx   CB-01xxxxxx  CB-10xxxxxx  CB-11xxxxxx ;
+
+: CB-prefix  get-offset  f singlebit  next-byte ;
+
+
+\ *** Block No. 13, Hexblock d
+
+   \ ED-Prefix                                           30Sep86
+: ED-01xxx000  ." in (C),"  g reg ;
+: ED-01xxx001  ." out (C)," g reg ;
+: ED-01xxx010  k IF ." adc " ELSE ." sbc " THEN
+               ." HL," j double-reg ;
+: ED-01xxx011  ." ld "  k IF  j double-reg ." ,(&)" exit THEN
+               ." (&),"  j double-reg ;
+: ED-01xxx100  ." neg" ;
+: ED-01xxx101  k IF ." reti" exit THEN ." retn" ;
+: ED-01xxx110  g select" im 0/-/im 1/im 2" ;
+: ED-01xxx111  g select" ld I,A/ld R,A/ld A,I/ld A,R/rrd/rld" ;
+: ED-10xxxxxx  h select" ld/cp/in/ot" g 4- select" i/d/ir/dr" ;
+Case: ED-01xxxhhh
+  ED-01xxx000  ED-01xxx001  ED-01xxx010  ED-01xxx011
+  ED-01xxx100  ED-01xxx101  ED-01xxx110  ED-01xxx111 ;
+: ED-01xxxxxx  h ED-01xxxhhh ;
+
+\ *** Block No. 14, Hexblock e
+
+      \ ED-Prefix                                        07Jul86
+
+Case: extended
+  noop  ED-01xxxxxx  ED-10xxxxxx noop ;
+
+: ED-prefix  get-offset  f extended  next-byte ;
+
+
+
+
+
+
+
+
+
+
+
+\ *** Block No. 15, Hexblock f
+
+   \ Disassassemblieren eines einzelnen Befehls          30Sep86
+
+: index-register ( n -- )   index ! next-byte ;
+
+: get-instruction ( -- )
+   index off  str1 $ !  cr
+   byte $DD = IF 1 index-register ELSE
+   byte $FD = IF 2 index-register THEN THEN
+   byte $76 case? IF next-byte ." halt"  exit THEN
+        $CB case? IF next-byte CB-prefix exit THEN
+        $ED case? IF next-byte ED-prefix exit THEN
+   drop no-prefix ;
+
+
+
+
+
+\ *** Block No. 16, Hexblock 10
+
+   \ Adressierungsarten ausgeben               07Jul86   27Nov87
+: .index-register ( -- )  index @ abs select" HL/IX/IY" ;
+
+: offset-sign ( o -- o' ) dup $7F > IF $100 -  THEN ;
+: +- ( s -- ) 0< IF Ascii - ELSE Ascii + THEN hold ;
+
+: .offset ( -- )   offset @  offset-sign
+    extend under dabs <# # #s rot +- #> type ;
+: .index-register-offset
+   index @ abs dup select" (HL)/(IX/(IY" IF .offset ." )" THEN ;
+
+: .inline-byte ( -- )    byte .byte next-byte ;
+: .inline-word ( -- )    word .word next-word ;
+
+: .displace ( -- )
+    byte offset-sign address @ + 1+  .word next-byte ;
+
+\ *** Block No. 17, Hexblock 11
+
+   \ Hauptebene: dis                                     07Jul86
+: .char ( c -- )
+   Ascii % case? IF .index-register exit THEN
+   Ascii $ case? IF .index-register-offset exit THEN
+   Ascii # case? IF .inline-byte exit THEN
+   Ascii & case? IF .inline-word exit THEN
+   Ascii ? case? IF .displace exit THEN  emit ;
+
+: instruction ( -- )  cr  address @ .word  2 spaces
+   output @  oldoutput !  $output  get-instruction
+   str2 $ ! cr str1 count 0 ?DO count .char LOOP drop
+   oldoutput @ output ! $20 col - 0 max spaces str2 count type ;
+
+external
+: dis ( addr -- )  address !
+   BEGIN  instruction stop? UNTIL ;

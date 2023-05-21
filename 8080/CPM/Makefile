@@ -1,6 +1,6 @@
 
 fbfiles = $(wildcard src/*.fb)
-fthfiles = $(patsubst src/%.fb, %.fth, $(fbfiles))
+fthfiles = $(patsubst src/%.fb, src/%.fth, $(fbfiles))
 
 whitch_runcpm = $(shell which RunCPM)
 runcpmdir = runcpm
@@ -19,13 +19,12 @@ run-editor: | msdos
 msdos:
 	ln -s ../../8086/msdos msdos
 
-%.fth: src/%.fb ../../tools/fb2fth.py
+src/%.fth: src/%.fb ../../tools/fb2fth.py
 	../../tools/fb2fth.py $< $@
 
-inctest.log: $(patsubst %, $(cpmfilesdir)/%, \
-    volks4th.com inctest.fth) \
+inctest.log: $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
     $(patsubst src/%, $(cpmfilesdir)/%, \
-    src/include.fb) \
+    src/include.fb src/inctest.fth) \
     | emu
 	echo "volks4th" > $(runcpmdir)/input.script
 	echo "include include.fb" >> $(runcpmdir)/input.script

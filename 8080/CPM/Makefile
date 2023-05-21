@@ -1,6 +1,6 @@
 
-fbfiles = $(wildcard *.fb)
-fthfiles = $(patsubst %.fb, %.fth, $(fbfiles))
+fbfiles = $(wildcard src/*.fb)
+fthfiles = $(patsubst src/%.fb, %.fth, $(fbfiles))
 
 whitch_runcpm = $(shell which RunCPM)
 runcpmdir = runcpm
@@ -14,16 +14,18 @@ clean:
 	rm -f msdos
 
 run-editor: | msdos
-	FORTHPATH="f:\\;f:\\msdos" ../../8086/msdos/emulator/run-in-dosbox.sh f:\\msdos\\volks4th.com
+	FORTHPATH="f:\\src;f:\\msdos" ../../8086/msdos/emulator/run-in-dosbox.sh f:\\msdos\\volks4th.com
 
 msdos:
 	ln -s ../../8086/msdos msdos
 
-%.fth: %.fb ../../tools/fb2fth.py
+%.fth: src/%.fb ../../tools/fb2fth.py
 	../../tools/fb2fth.py $< $@
 
 inctest.log: $(patsubst %, $(cpmfilesdir)/%, \
-    volks4th.com include.fb inctest.fth) \
+    volks4th.com inctest.fth) \
+    $(patsubst src/%, $(cpmfilesdir)/%, \
+    src/include.fb) \
     | emu
 	echo "volks4th" > $(runcpmdir)/input.script
 	echo "include include.fb" >> $(runcpmdir)/input.script
@@ -37,6 +39,10 @@ emu: $(runcpmdir)/RunCPM
 
 $(runcpmdir)/RunCPM: $(whitch_runcpm)
 	test -d $(runcpmdir) || mkdir -p $(runcpmdir)
+	cp $< $@
+
+$(cpmfilesdir)/%: src/%
+	test -d $(cpmfilesdir) || mkdir -p $(cpmfilesdir)
 	cp $< $@
 
 $(cpmfilesdir)/%: %

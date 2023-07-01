@@ -12,7 +12,7 @@ cpmfilesdir = cpmfiles
 fth: $(fthfiles)
 
 clean:
-	rm -f *.log
+	rm -f *.log *.golden *.result
 	rm -rf $(runcpmdir)
 	rm -f msdos
 
@@ -54,9 +54,18 @@ logtest.log: $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
 	echo "exit" >> $(runcpmdir)/input.script
 	./emulator/run-in-runcpm.sh volks4th
 	cp $(runcpmdir)/output.log output.log
-	cp $(runcpmdir)/A/0/LOGFILE.TXT $@
+	../../tools/trunc-ctrl-z.py $(runcpmdir)/A/0/LOGFILE.TXT \
+	    $(runcpmdir)/logfile.txt
+	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 emu: $(runcpmdir)/RunCPM
+
+%.golden: tests/golden/%.golden
+	cp -p $< $@
+
+%.result: %.log %.golden tests/evaluate-test.sh
+	rm -f $@
+	tests/evaluate-test.sh $(basename $@)
 
 $(runcpmdir)/RunCPM: $(whitch_runcpm)
 	test -d $(runcpmdir) || mkdir -p $(runcpmdir)

@@ -86,7 +86,7 @@ Output: alsologtofile
       alsologtofile ;
 
   : logclose  ( -- )
-      cr display  logflush  logfile closefile ;
+      cr display  &26 logc!  logflush  logfile closefile ;
 
 
 

@@ -1,0 +1,4 @@
+ ok
+.( hello world) cr hello world
+ ok
+logclose 

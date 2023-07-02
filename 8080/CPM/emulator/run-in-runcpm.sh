@@ -12,6 +12,10 @@ toolsdir="${basedir}/../../tools"
 logfile="${runcpmdir}/output.log"
 scriptfile="${runcpmdir}/input.script"
 rm -f "${logfile}"
+rm -f "${scriptfile}"
+for line in "$@"; do
+  echo "${line}" >> "${scriptfile}"
+done
 
 test -d "${runcpm_a0}" || mkdir -p "${runcpm_a0}"
 

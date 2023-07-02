@@ -33,26 +33,26 @@ inctest.log: $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
     $(patsubst src/%, $(cpmfilesdir)/%, \
     src/include.fb src/inctest.fth) \
     | emu
-	echo "volks4th" > $(runcpmdir)/input.script
-	echo "include include.fb" >> $(runcpmdir)/input.script
-	echo "include inctest.fth" >> $(runcpmdir)/input.script
-	echo "bye" >> $(runcpmdir)/input.script
-	echo "exit" >> $(runcpmdir)/input.script
-	./emulator/run-in-runcpm.sh volks4th
+	./emulator/run-in-runcpm.sh \
+	    "volks4th" \
+	    "include include.fb" \
+	    "include inctest.fth" \
+	    "bye" \
+	    "exit"
 	cp $(runcpmdir)/output.log $@
 
 logtest.log: $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
     $(patsubst tests/%, $(cpmfilesdir)/%, \
     tests/log2file.fb) \
     | emu
-	echo "volks4th" > $(runcpmdir)/input.script
-	echo "include log2file.fb" >> $(runcpmdir)/input.script
-	echo "logopen" >> $(runcpmdir)/input.script
-	echo ".( hello world) cr" >> $(runcpmdir)/input.script
-	echo "logclose" >> $(runcpmdir)/input.script
-	echo "bye" >> $(runcpmdir)/input.script
-	echo "exit" >> $(runcpmdir)/input.script
-	./emulator/run-in-runcpm.sh volks4th
+	./emulator/run-in-runcpm.sh \
+	    "volks4th" \
+	    "include log2file.fb" \
+	    "logopen" \
+	    ".( hello world) cr" \
+	    "logclose" \
+	    "bye" \
+	    "exit"
 	cp $(runcpmdir)/output.log output.log
 	../../tools/trunc-ctrl-z.py $(runcpmdir)/A/0/LOGFILE.TXT \
 	    $(runcpmdir)/logfile.txt

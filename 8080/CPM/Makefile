@@ -32,15 +32,22 @@ tests/%.fth: tests/%.fb ../../tools/fb2fth.py
 inctest.log: \
     $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
     $(patsubst src/%, $(cpmfilesdir)/%, src/include.fb) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, tests/log2file.fb) \
     $(patsubst tests/%, $(cpmfilesdir)/%, tests/inctest.fth) \
     | emu
 	./emulator/run-in-runcpm.sh \
 	    "volks4th" \
 	    "include include.fb" \
+	    "include log2file.fb" \
+	    "logopen" \
 	    "include inctest.fth" \
+	    "logclose" \
 	    "bye" \
 	    "exit"
-	cp $(runcpmdir)/output.log $@
+	cp $(runcpmdir)/output.log output.log
+	../../tools/trunc-ctrl-z.py $(runcpmdir)/A/0/LOGFILE.TXT \
+	    $(runcpmdir)/logfile.txt
+	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 logtest.log: \
     $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \

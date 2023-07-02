@@ -9,7 +9,7 @@ runcpmdir="${basedir}/runcpm"
 runcpm_a0="${runcpmdir}/A/0"
 toolsdir="${basedir}/../../tools"
 
-logfile="${runcpmdir}/output.log"
+logfile="${runcpmdir}/runcpm.log"
 scriptfile="${runcpmdir}/input.script"
 rm -f "${logfile}"
 rm -f "${scriptfile}"
@@ -34,3 +34,7 @@ if [[ -f "${scriptfile}" ]]; then
 else
   "${runcpmdir}/RunCPM" -o "${logfile}"
 fi
+
+cp "${logfile}" runcpm.log
+"${toolsdir}/trunc-ctrl-z.py" "${runcpmdir}/A/0/LOGFILE.TXT" \
+    "${runcpmdir}/logfile.txt"

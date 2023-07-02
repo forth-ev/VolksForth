@@ -16,6 +16,8 @@ clean:
 	rm -rf $(runcpmdir)
 	rm -f msdos
 
+test: logtest.result inctest.log
+
 run-editor: | msdos
 	FORTHPATH="f:\\src;f:\\tests;f:\\msdos" \
 	../../8086/msdos/emulator/run-in-dosbox.sh f:\\msdos\\volks4th.com
@@ -44,9 +46,6 @@ inctest.log: \
 	    "logclose" \
 	    "bye" \
 	    "exit"
-	cp $(runcpmdir)/output.log output.log
-	../../tools/trunc-ctrl-z.py $(runcpmdir)/A/0/LOGFILE.TXT \
-	    $(runcpmdir)/logfile.txt
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 logtest.log: \
@@ -61,9 +60,6 @@ logtest.log: \
 	    "logclose" \
 	    "bye" \
 	    "exit"
-	cp $(runcpmdir)/output.log output.log
-	../../tools/trunc-ctrl-z.py $(runcpmdir)/A/0/LOGFILE.TXT \
-	    $(runcpmdir)/logfile.txt
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 emu: $(runcpmdir)/RunCPM

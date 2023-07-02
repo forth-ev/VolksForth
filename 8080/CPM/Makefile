@@ -29,9 +29,10 @@ src/%.fth: src/%.fb ../../tools/fb2fth.py
 tests/%.fth: tests/%.fb ../../tools/fb2fth.py
 	../../tools/fb2fth.py $< $@
 
-inctest.log: $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
-    $(patsubst src/%, $(cpmfilesdir)/%, \
-    src/include.fb src/inctest.fth) \
+inctest.log: \
+    $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
+    $(patsubst src/%, $(cpmfilesdir)/%, src/include.fb) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, tests/inctest.fth) \
     | emu
 	./emulator/run-in-runcpm.sh \
 	    "volks4th" \
@@ -41,9 +42,9 @@ inctest.log: $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
 	    "exit"
 	cp $(runcpmdir)/output.log $@
 
-logtest.log: $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, \
-    tests/log2file.fb) \
+logtest.log: \
+    $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, tests/log2file.fb) \
     | emu
 	./emulator/run-in-runcpm.sh \
 	    "volks4th" \

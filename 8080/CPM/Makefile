@@ -31,6 +31,20 @@ src/%.fth: src/%.fb ../../tools/fb2fth.py
 tests/%.fth: tests/%.fb ../../tools/fb2fth.py
 	../../tools/fb2fth.py $< $@
 
+logtest.log: \
+    $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, tests/log2file.fb) \
+    | emu
+	./emulator/run-in-runcpm.sh \
+	    "volks4th" \
+	    "include log2file.fb" \
+	    "logopen" \
+	    ".( hello world) cr" \
+	    "logclose" \
+	    "bye" \
+	    "exit"
+	dos2unix -n $(runcpmdir)/logfile.txt $@
+
 inctest.log: \
     $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
     $(patsubst src/%, $(cpmfilesdir)/%, src/include.fb) \
@@ -48,18 +62,24 @@ inctest.log: \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
-logtest.log: \
+test-std.log: \
     $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
+    $(patsubst src/%, $(cpmfilesdir)/%, src/include.fb) \
     $(patsubst tests/%, $(cpmfilesdir)/%, tests/log2file.fb) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, tests/ans-shim.fth) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, tests/prelim.fth) \
     | emu
 	./emulator/run-in-runcpm.sh \
 	    "volks4th" \
+	    "include include.fb" \
 	    "include log2file.fb" \
 	    "logopen" \
-	    ".( hello world) cr" \
-	    "logclose" \
-	    "bye" \
-	    "exit"
+	    "include ans-shim.fth" \
+	    ": \\vf  [compile] \\ ; immediate" \
+	    "include prelim.fth" \
+	    "" \
+	    "" \
+	    ""
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 emu: $(runcpmdir)/RunCPM

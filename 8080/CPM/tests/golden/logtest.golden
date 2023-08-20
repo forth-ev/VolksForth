@@ -1,4 +1,12 @@
  ok
 .( hello world) cr hello world
  ok
+.( 0123456789abcdef0123456789abcdef) cr 0123456789abcdef0123456789abcdef
+ ok
+.( 1123456789abcdef0123456789abcdef) cr 1123456789abcdef0123456789abcdef
+ ok
+.( 2123456789abcdef0123456789abcdef) cr 2123456789abcdef0123456789abcdef
+ ok
+.( 3123456789abcdef0123456789abcdef) cr 3123456789abcdef0123456789abcdef
+ ok
 logclose 

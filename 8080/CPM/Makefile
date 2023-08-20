@@ -16,7 +16,7 @@ clean:
 	rm -rf $(runcpmdir)
 	rm -f msdos
 
-test: logtest.result inctest.log
+test: logtest.result inctest.result test-std.result
 
 run-editor: | msdos
 	FORTHPATH="f:\\src;f:\\tests;f:\\msdos" \
@@ -40,6 +40,10 @@ logtest.log: \
 	    "include log2file.fb" \
 	    "logopen" \
 	    ".( hello world) cr" \
+	    ".( 0123456789abcdef0123456789abcdef) cr" \
+	    ".( 1123456789abcdef0123456789abcdef) cr" \
+	    ".( 2123456789abcdef0123456789abcdef) cr" \
+	    ".( 3123456789abcdef0123456789abcdef) cr" \
 	    "logclose" \
 	    "bye" \
 	    "exit"
@@ -77,9 +81,9 @@ test-std.log: \
 	    "include ans-shim.fth" \
 	    ": \\vf  [compile] \\ ; immediate" \
 	    "include prelim.fth" \
-	    "" \
-	    "" \
-	    ""
+	    "logclose" \
+	    "bye" \
+	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 emu: $(runcpmdir)/RunCPM

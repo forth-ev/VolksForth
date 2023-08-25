@@ -58,22 +58,22 @@
 
 \ *** Block No. 3, Hexblock 3
 
-\ incfile incpos inc-fgetc                           phz 07mai23
+\ incfile incpos inc-fgetc                           phz 25aug23
 
   variable incfile
   variable incpos 2 allot
   create rec-offset 1 allot   $80 constant dmabuf
 
+  : inc-readrec  ( -- f )
+    0 rec-offset c!  dmabuf dma!
+    incfile @ drive  iread-seq ;
+
   : inc-fgetc  ( -- c )
-    rec-offset c@ b/rec u< 0= IF dmabuf dma!
-      incfile @ drive  iread-seq IF ctrl-z exit THEN
-      0 rec-offset c! THEN
-    rec-offset c@ dup 1+ rec-offset c! dmabuf + c@
-  ; \\
-    incfile @ f.handle @ 0= IF
-      incpos 2@  incfile @  fseek THEN
-    incfile @ fgetc
-    incpos 2@ 1. d+ incpos 2! ;
+    rec-offset c@ b/rec u< 0=
+      IF inc-readrec IF ctrl-z exit THEN THEN
+    rec-offset c@ dup 1+ rec-offset c! dmabuf + c@ ;
+
+
 
 \ *** Block No. 4, Hexblock 4
 

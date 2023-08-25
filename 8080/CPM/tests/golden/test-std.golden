@@ -45,8 +45,8 @@ and no error messages
  ok
 include tester.fth
 TESTER.FTH  ERROR exists  ok
-include core.fth
-CORE.FTH
+include core.fr
+CORE.FR
 *********************YOU SHOULD SEE THE STANDARD GRAPHIC CHARACTERS:
  !"#$%&'()*+,-./0123456789:;<=>?@
 ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`

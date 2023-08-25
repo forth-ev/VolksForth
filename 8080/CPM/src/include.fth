@@ -62,7 +62,8 @@
 
   variable incfile
   variable incpos 2 allot
-  create rec-offset 1 allot   $80 constant dmabuf
+  create rec-offset 1 allot
+  $80 constant dmabuf    | $ff constant dmabuf-last
 
   : readrec  ( fcb -- f )
     0 rec-offset c!  dmabuf dma!  drive  iread-seq ;
@@ -74,10 +75,9 @@
 
 
 
-
 \ *** Block No. 4, Hexblock 4
 
-\ freadline probe-for-fb                             phz 06okt22
+\ freadline probe-for-fb                             phz 25aug23
 
   : freadline ( -- eof )
   tib /tib bounds DO
@@ -89,9 +89,9 @@
   BEGIN inc-fgetc eolf? 1+ UNTIL tibeof @ ;
 
 | : probe-for-fb  ( -- flag )
-    \ probes whether current file name has no .FTH extension
-  isfile@ extension dup @ $dfdf and $5446 =
-  swap 2+ c@ $df and $48 = and not ;
+  dmabuf BEGIN dup c@ #lf = IF drop 0 exit THEN
+         1+ dup dmabuf-last u> UNTIL drop 1 ;
+
 
 
 \ *** Block No. 5, Hexblock 5

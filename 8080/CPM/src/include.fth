@@ -64,14 +64,14 @@
   variable incpos 2 allot
   create rec-offset 1 allot   $80 constant dmabuf
 
-  : inc-readrec  ( -- f )
-    0 rec-offset c!  dmabuf dma!
-    incfile @ drive  iread-seq ;
+  : readrec  ( fcb -- f )
+    0 rec-offset c!  dmabuf dma!  drive  iread-seq ;
 
   : inc-fgetc  ( -- c )
     rec-offset c@ b/rec u< 0=
-      IF inc-readrec IF ctrl-z exit THEN THEN
+      IF incfile @ readrec IF ctrl-z exit THEN THEN
     rec-offset c@ dup 1+ rec-offset c! dmabuf + c@ ;
+
 
 
 
@@ -115,7 +115,7 @@
 
 \ *** Block No. 6, Hexblock 6
 
-\ interpret-via-tib include                          phz 07mai23
+\ interpret-via-tib include                          phz 25aug23
 
   : interpret-via-tib
   BEGIN freadline >r .status >in off  interpret  r> UNTIL ;
@@ -123,10 +123,10 @@
   : pushfile r> isfile push fromfile push >r ; restrict
   : include ( -- )
   pushfile  use  cr file?
+  0 isfile@ record 1- c!  isfile@ readrec IF close exit THEN
   probe-for-fb                IF 1 load       exit THEN
-  incfile push  isfile@ incfile !   b/rec rec-offset c!
+  incfile push  isfile@ incfile !
   incpos push  incpos off  incpos 2+ dup push off
-  0 incfile @ record 1- c!
   savetib >r  interpret-via-tib close  r> restoretib ;
   : (stashquit  stash[ stash> !  (quit ;
   : stashrestore  ['] (stashquit IS 'quit ;

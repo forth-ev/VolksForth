@@ -134,8 +134,8 @@
 
 \ *** Block No. 7, Hexblock 7
 
-\ \                                                  phz 05apr22
-\\
+\ \                                                  phz 25aug23
+
   : \  blk @ IF >in @ negate  c/l mod  >in +!
        ELSE #tib @ >in ! THEN ; immediate
 

@@ -72,6 +72,8 @@ test-std.log: \
     $(patsubst tests/%, $(cpmfilesdir)/%, tests/log2file.fb) \
     $(patsubst tests/%, $(cpmfilesdir)/%, tests/ans-shim.fth) \
     $(patsubst tests/%, $(cpmfilesdir)/%, tests/prelim.fth) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, tests/tester.fth) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, tests/core.fth) \
     | emu
 	./emulator/run-in-runcpm.sh \
 	    "volks4th" \
@@ -81,10 +83,15 @@ test-std.log: \
 	    "include ans-shim.fth" \
 	    ": \\vf  [compile] \\ ; immediate" \
 	    "include prelim.fth" \
+	    "include tester.fth" \
+	    "include core.fth" \
 	    "logclose" \
 	    "bye" \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
+
+tests/core.fth: tests/core.fr
+	cp -p $< $@
 
 emu: $(runcpmdir)/RunCPM
 

@@ -109,13 +109,15 @@ test-min.log: \
 	./emulator/run-in-runcpm.sh \
 	    "volks4th" \
 	    "include include.fb" \
-	    "include log2file.fb" \
 	    "include test-min.fth" \
 	    "bye" \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 emu: $(runcpmdir)/RunCPM
+
+test-min.golden: $(patsubst %, tests/golden/%.golden, prelim core)
+	cat $^ > $@
 
 %.golden: tests/golden/%.golden
 	cp -p $< $@

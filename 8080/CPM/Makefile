@@ -38,8 +38,7 @@ run-volks4th: \
 	    "volks4th"
 
 logtest.log: \
-    $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, tests/log2file.fb) \
+    $(patsubst %, $(cpmfilesdir)/%, volks4th.com log2file.fb) \
     | emu
 	./emulator/run-in-runcpm.sh \
 	    "volks4th" \
@@ -56,10 +55,8 @@ logtest.log: \
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 inctest.log: \
-    $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
-    $(patsubst src/%, $(cpmfilesdir)/%, src/include.fb) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, tests/log2file.fb) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, tests/inctest.fth) \
+    $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
+    include.fb log2file.fb inctest.fth) \
     | emu
 	./emulator/run-in-runcpm.sh \
 	    "volks4th" \
@@ -73,14 +70,9 @@ inctest.log: \
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 test-min.log: \
-    $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
-    $(patsubst src/%, $(cpmfilesdir)/%, src/include.fb) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, tests/log2file.fb) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, tests/ans-shim.fth) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, tests/prelim.fth) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, tests/tester.fth) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, tests/core.fr) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, tests/test-min.fth) \
+    $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
+    include.fb log2file.fb \
+    ans-shim.fth prelim.fth tester.fth core.fr test-min.fth) \
     | emu
 	./emulator/run-in-runcpm.sh \
 	    "volks4th" \

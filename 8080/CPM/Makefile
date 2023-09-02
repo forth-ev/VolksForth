@@ -16,7 +16,7 @@ clean:
 	rm -rf $(runcpmdir)
 	rm -f msdos
 
-test: logtest.result inctest.result test-std.result
+test: logtest.result inctest.result test-std.result test-min.result
 
 run-editor: | msdos
 	FORTHPATH="f:\\src;f:\\tests;f:\\msdos" \
@@ -30,6 +30,12 @@ src/%.fth: src/%.fb ../../tools/fb2fth.py
 
 tests/%.fth: tests/%.fb ../../tools/fb2fth.py
 	../../tools/fb2fth.py $< $@
+
+run-volks4th: \
+    $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
+    | emu
+	./emulator/run-in-runcpm.sh \
+	    "volks4th"
 
 logtest.log: \
     $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
@@ -86,6 +92,25 @@ test-std.log: \
 	    "include tester.fth" \
 	    "include core.fr" \
 	    "logclose" \
+	    "bye" \
+	    "exit"
+	dos2unix -n $(runcpmdir)/logfile.txt $@
+
+test-min.log: \
+    $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
+    $(patsubst src/%, $(cpmfilesdir)/%, src/include.fb) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, tests/log2file.fb) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, tests/ans-shim.fth) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, tests/prelim.fth) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, tests/tester.fth) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, tests/core.fr) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, tests/test-min.fth) \
+    | emu
+	./emulator/run-in-runcpm.sh \
+	    "volks4th" \
+	    "include include.fb" \
+	    "include log2file.fb" \
+	    "include test-min.fth" \
 	    "bye" \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@

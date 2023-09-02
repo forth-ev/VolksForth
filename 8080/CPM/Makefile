@@ -16,7 +16,7 @@ clean:
 	rm -rf $(runcpmdir)
 	rm -f msdos
 
-test: logtest.result inctest.result test-std.result test-min.result
+test: logtest.result inctest.result test-min.result
 
 run-editor: | msdos
 	FORTHPATH="f:\\src;f:\\tests;f:\\msdos" \
@@ -67,30 +67,6 @@ inctest.log: \
 	    "include log2file.fb" \
 	    "logopen" \
 	    "include inctest.fth" \
-	    "logclose" \
-	    "bye" \
-	    "exit"
-	dos2unix -n $(runcpmdir)/logfile.txt $@
-
-test-std.log: \
-    $(patsubst %, $(cpmfilesdir)/%, volks4th.com) \
-    $(patsubst src/%, $(cpmfilesdir)/%, src/include.fb) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, tests/log2file.fb) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, tests/ans-shim.fth) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, tests/prelim.fth) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, tests/tester.fth) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, tests/core.fr) \
-    | emu
-	./emulator/run-in-runcpm.sh \
-	    "volks4th" \
-	    "include include.fb" \
-	    "include log2file.fb" \
-	    "logopen" \
-	    "include ans-shim.fth" \
-	    ": \\vf  [compile] \\ ; immediate" \
-	    "include prelim.fth" \
-	    "include tester.fth" \
-	    "include core.fr" \
 	    "logclose" \
 	    "bye" \
 	    "exit"

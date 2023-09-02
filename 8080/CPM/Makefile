@@ -69,6 +69,21 @@ inctest.log: \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
+target.log: \
+    $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
+    include.fb log2file.fb target.fb source.fb) \
+    | emu
+	./emulator/run-in-runcpm.sh \
+	    "volks4th" \
+	    "include log2file.fb" \
+	    "logopen" \
+	    "include target.fb" \
+	    "include source.fb" \
+	    "logclose" \
+	    "bye" \
+	    "exit"
+	dos2unix -n $(runcpmdir)/logfile.txt $@
+
 test-min.log: \
     $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
     include.fb log2file.fb \

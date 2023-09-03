@@ -71,7 +71,7 @@ inctest.log: \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
-target.log: \
+target1.log: \
     $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
     include.fb log2file.fb target.fb source.fb) \
     | emu
@@ -79,6 +79,23 @@ target.log: \
 	    "volks4th" \
 	    "include log2file.fb" \
 	    "logopen" \
+	    "include target.fb" \
+	    "include source.fb" \
+	    "logclose" \
+	    "bye" \
+	    "exit"
+	dos2unix -n $(runcpmdir)/logfile.txt $@
+
+target2.log: \
+    $(patsubst %, $(cpmfilesdir)/%, kernel.com fileint.fb ass8080.fb \
+    include.fb log2file.fb target.fb source.fb) \
+    | emu
+	./emulator/run-in-runcpm.sh \
+	    "kernel fileint.fb" \
+	    "1 load onlyforth" \
+	    "include log2file.fb" \
+	    "logopen" \
+	    "include ass8080.fb" \
 	    "include target.fb" \
 	    "include source.fb" \
 	    "logclose" \

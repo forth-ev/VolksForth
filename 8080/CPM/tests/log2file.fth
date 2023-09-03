@@ -58,19 +58,19 @@
 
 \ *** Block No. 3, Hexblock 3
 
-\ log-emit log-type log-cr alsologtofile            pphz 01jul23
+\ log-emit log-type log-cr alsologtofile            pphz 03sep23
 
   : log-emit  ( char -- )
       dup (emit  logc! ;
 
   : log-type  ( addr count -- )
-      2dup (type  0 ?DO count logc! LOOP drop ;
+      0 ?DO count log-emit LOOP drop ;
 
   : log-cr  ( -- )
       (cr  #cr logc!  #lf logc! ;
 
 Output: alsologtofile
-  log-emit log-cr log-type (del (page (at (at? ;
+  log-emit log-cr log-type (del noop 2drop (at? ;
 
 
 

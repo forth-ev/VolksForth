@@ -38,10 +38,11 @@ run-volks4th: \
 	    "volks4th"
 
 logtest.log: \
-    $(patsubst %, $(cpmfilesdir)/%, volks4th.com log2file.fb) \
+    $(patsubst %, $(cpmfilesdir)/%, kernel.com fileint.fb log2file.fb) \
     | emu
 	./emulator/run-in-runcpm.sh \
-	    "volks4th" \
+	    "kernel fileint.fb" \
+	    "1 load onlyforth" \
 	    "include log2file.fb" \
 	    "logopen" \
 	    ".( hello world) cr" \
@@ -55,11 +56,12 @@ logtest.log: \
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 inctest.log: \
-    $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
+    $(patsubst %, $(cpmfilesdir)/%, kernel.com fileint.fb \
     include.fb log2file.fb inctest.fth) \
     | emu
 	./emulator/run-in-runcpm.sh \
-	    "volks4th" \
+	    "kernel fileint.fb" \
+	    "1 load onlyforth" \
 	    "include include.fb" \
 	    "include log2file.fb" \
 	    "logopen" \
@@ -85,12 +87,13 @@ target.log: \
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 test-min.log: \
-    $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
+    $(patsubst %, $(cpmfilesdir)/%, kernel.com fileint.fb \
     include.fb log2file.fb \
     ans-shim.fth prelim.fth tester.fth core.fr test-min.fth) \
     | emu
 	./emulator/run-in-runcpm.sh \
-	    "volks4th" \
+	    "kernel fileint.fb" \
+	    "1 load onlyforth" \
 	    "include include.fb" \
 	    "include test-min.fth" \
 	    "bye" \

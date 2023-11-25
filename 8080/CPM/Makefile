@@ -71,6 +71,16 @@ inctest.log: \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
+target0.log: \
+    $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
+    include.fb log2file.fb target.fb source2.fb) \
+    | emu
+	./emulator/run-in-runcpm.sh \
+	    "volks4th" \
+	    "include target.fb" \
+	    "include source2.fb"
+	#vdos2unix -n $(runcpmdir)/logfile.txt $@
+
 target1.log: \
     $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
     include.fb log2file.fb target.fb source.fb) \
@@ -84,6 +94,23 @@ target1.log: \
 	    "logclose" \
 	    "bye" \
 	    "exit"
+	dos2unix -n $(runcpmdir)/logfile.txt $@
+
+target3.log: \
+    $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
+    include.fb log2file.fb target.fb source.fb) \
+    | emu
+	./emulator/run-in-runcpm.sh \
+	    "volks4th" \
+	    "include log2file.fb" \
+	    "logopen" \
+	    "include target.fb" \
+	    "10 2 / ." \
+	    "use source.fb" \
+	    "Onlyforth" \
+	    "9000 displace !"\
+	    "Target definitions   $100 here!" \
+	    "2 6e thru"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 target2.log: \
@@ -102,6 +129,20 @@ target2.log: \
 	    "bye" \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
+
+target4.log: \
+    $(patsubst %, $(cpmfilesdir)/%, kernel.com fileint.fb ass8080.fb \
+    include.fb log2file.fb target.fb source.fb) \
+    | emu
+	./emulator/run-in-runcpm.sh \
+	    "kernel fileint.fb" \
+	    "1 load onlyforth" \
+	    "include ass8080.fb" \
+	    "include target.fb" \
+	    ': status blk @ ?dup IF ."  blk " u. ." here "  here u. ' \
+	    ' ." there " there u. ." heap "  heap u.  cr THEN ; ' \
+	    "' status is .status " \
+	    "include source.fb"
 
 test-min.log: \
     $(patsubst %, $(cpmfilesdir)/%, kernel.com fileint.fb \

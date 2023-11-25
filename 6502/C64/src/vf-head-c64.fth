@@ -28,4 +28,4 @@ here dup origin!
 $100 allot
 
 Create logo
-  ," volksFORTH-83 3.9.4-C64  "
+  ," volksFORTH-83 3.9.5-C64  "

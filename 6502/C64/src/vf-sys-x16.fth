@@ -7,11 +7,10 @@ include vf-lbls-cbm.fth
 
 0ffd2 >label ConOut
 0febd >label KbdbufPeek
- 0289 >label IOStatus
- 028c >label MsgFlg
+ 0287 >label IOStatus
+ 028d >label MsgFlg
 09f2c >label BrdCol
- 0266 >label BkgCol
- 0284 >label PenCol
+ 0376 >label BkgPenCol
  0381 >label CurFlg  \ aka qtsw
  0385 >label InsCnt  \ aka insrt
 
@@ -95,9 +94,10 @@ Label first-init
  sei cld
  RomBank lda  $f8 # and  RomBank sta \ map in KERNAL ROM
  IOINIT jsr  CINT jsr  RESTOR jsr  \ init. and set I/O-Vectors
- ink-pot    lda BrdCol sta \ border
- ink-pot 1+ lda BkgCol sta \ backgrnd
- ink-pot 2+ lda PenCol sta \ pen
+ ink-pot    lda BrdCol sta  \ border
+ ink-pot 1+ lda
+ .a asl .a asl .a asl .a asl  \ backgrnd
+ ink-pot 2+ ora BkgPenCol sta  \ pen
  $0e # lda  ConOut jsr  \ lower/uppercase
  cli rts end-code
 first-init dup bootsystem 1+ !

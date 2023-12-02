@@ -146,30 +146,6 @@ test-v4th-x16e.log: cbmfiles/v4th-x16e emulator/sdcard.img
 	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
 	petscii2ascii cbmfiles/test.log $@
 
-test-v4th-x16-39.log: $(test_files_petscii) emulator/run-in-vice.sh
-
-test-v4th-x16-39.log: cbmfiles/v4th-x16 emulator/sdcard.img
-	rm -f cbmfiles/test.log
-	emulator/run-in-x16-39.sh v4th-x16 \
-	  "include run-std-tests.fth\n1234567890"
-	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
-	petscii2ascii cbmfiles/test.log $@
-
-test-v4th-x16-39.golden: test-v4th-x16.golden
-	cp $< $@
-
-test-v4th-x16-41.log: $(test_files_petscii) emulator/run-in-vice.sh
-
-test-v4th-x16-41.log: cbmfiles/v4th-x16 emulator/sdcard.img
-	rm -f cbmfiles/test.log
-	emulator/run-in-x16-41.sh v4th-x16 \
-	  "include run-std-tests.fth\n1234567890"
-	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
-	petscii2ascii cbmfiles/test.log $@
-
-test-v4th-x16-41.golden: test-v4th-x16.golden
-	cp $< $@
-
 test-%.result: test-%.log test-%.golden tests/evaluate-test.sh
 	rm -f $@
 	tests/evaluate-test.sh $(basename $@)

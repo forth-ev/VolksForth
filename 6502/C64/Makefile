@@ -9,7 +9,7 @@ vf_fth_files = $(wildcard src/vf-*.fth src/v4th*.fth)
 vf_fth_files_petscii = $(patsubst src/%, cbmfiles/%, $(vf_fth_files))
 vf_flavours = \
     v4thblk-c64 v4thblk-c16+ v4thblk-c16- \
-    v4th-c64 v4th-c16+ v4th-c16- v4th-x16
+    v4th-c64 v4th-c16+ v4th-c16- v4th-x16 v4th-x16e
 vf_binaries = $(patsubst %, cbmfiles/%, $(vf_flavours))
 
 test_files = $(wildcard tests/*.f*)
@@ -88,6 +88,9 @@ cbmfiles/v4th-c16-:
 cbmfiles/v4th-x16:
 	emulator/build-vf.sh v4th-x16
 
+cbmfiles/v4th-x16e:
+	emulator/build-vf.sh v4th-x16e
+
 
 # Core test targets
 
@@ -134,6 +137,13 @@ test-v4th-c16-.log: emulator/v4th-c16-.T64
 test-v4th-x16.log: cbmfiles/v4th-x16 emulator/sdcard.img
 	rm -f cbmfiles/test.log
 	emulator/run-in-x16emu.sh v4th-x16 \
+	  "include run-std-tests.fth\n1234567890"
+	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
+	petscii2ascii cbmfiles/test.log $@
+
+test-v4th-x16e.log: cbmfiles/v4th-x16e emulator/sdcard.img
+	rm -f cbmfiles/test.log
+	emulator/run-in-x16emu.sh v4th-x16e \
 	  "include run-std-tests.fth\n1234567890"
 	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
 	petscii2ascii cbmfiles/test.log $@
@@ -198,6 +208,10 @@ test-v4th-c16-.golden: $(patsubst %, tests/golden/%.golden, \
 	cat $^ > $@
 
 test-v4th-x16.golden: $(patsubst %, tests/golden/%.golden, \
+    prelim core coreext double report-noblk)
+	cat $^ > $@
+
+test-v4th-x16e.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreext double report-noblk)
 	cat $^ > $@
 

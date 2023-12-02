@@ -1,16 +1,15 @@
 
 $0001 | constant RomBank
+create xed-banks  1 c, $ff c,  \ first and last RAM bank xed uses.
 
-| Code (xed?  ( -- n )
-  $c000 lda  pha  $c003 lda  Push jmp  end-code
+| Code (xed?  ( -- f )
+  $4c # lda  $c000 cmp 0= ?[ $c003 cmp 0= ?[ $c006 cmp 0= ?[
+    Push0A jmp ]? ]? ]?  txa Push0A jmp  end-code
 
 | Code (xed  ( -- )
-  2 # ldx  $ff # ldy
-  $4 lda  0= ?[ $c000 jsr ][ $c003 jsr ]?
+  xed-banks ldx  xed-banks 1+ ldy  $c003 jsr
   xyNext jmp  end-code
 
   : xed  ( -- )
-   bl word count $4 c!  $2 !
-   RomBank c@  $d RomBank c!
-   (xed? $4c4c = IF (xed RomBank c!
-   ELSE RomBank c! ." no x16edit" THEN ;
+   bl word count $4 ! $2 !  RomBank c@  $d RomBank c!
+   (xed? IF (xed  RomBank c! ELSE RomBank c! ." no x16edit" THEN ;

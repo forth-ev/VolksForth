@@ -62,10 +62,8 @@ cbmfiles/tcbase: emulator/v4th-c64-4tc.T64 emulator/build-tcbase.sh \
     disks/tc38q.d64 disks/file-words.d64 cbmfiles/tc-base.fth
 	emulator/build-tcbase.sh
 
-$(vf_binaries):  emulator/tcbase.T64 emulator/build-vf.sh \
-    disks/tc38q.d64 $(vf_fth_files_petscii)
-
-$(vf_binaries):  cbmfiles/logtofile.fth
+$(vf_binaries): $(vf_fth_files_petscii) emulator/build-vf.sh \
+    emulator/tcbase.T64 disks/tc38q.d64 cbmfiles/logtofile.fth
 
 cbmfiles/v4thblk-c64:
 	emulator/build-vf.sh v4thblk-c64
@@ -228,18 +226,22 @@ cbmfiles/devenv: emulator/run-in-vice.sh emulator/build-devenv.sh \
 
 emulator/%.T64: cbmfiles/%
 	bin2t64 $< $@
+	touch -m -r $< $@
 
 
 # Generic rule for populating cbmfiles/ with PETSCII text files
 
 cbmfiles/%.fth: src/%.fth
 	ascii2petscii $< $@
+	touch -m -r $< $@
 
 cbmfiles/%.fth: tests/%.fth
 	ascii2petscii $< $@
+	touch -m -r $< $@
 
 cbmfiles/%.fr: tests/%.fr
 	ascii2petscii $< $@
+	touch -m -r $< $@
 
 
 # Generic rule for converting .d64 blk sources into .fth files.

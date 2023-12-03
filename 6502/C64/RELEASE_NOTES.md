@@ -4,7 +4,7 @@ Release notes of VolksForth for 6502 on CBM-like machines (C64/C16/X16)
 
 ## Release content
 
-The latest release zip file volksforth-6502-c64-release.zip contains
+The latest release zip file `volksforth-6502-c64-release.zip` contains
 
 * `binaries/` - the compiled VolksForth binaries, namely:
     * `v4th-c64` - minimal C64 kernel

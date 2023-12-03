@@ -63,13 +63,14 @@ run-testbase16: emulator/testbase16.T64
 	VICE=xplus4 emulator/run-in-vice.sh testbase16
 
 
-release: release/$(release_zipfile)
-
-release/$(release_zipfile): $(vf_binaries) \
-    $(all_src_files) $(all_src_files_petscii) \
-    $(test_files) $(test_files_petscii) COPYING RELEASE_NOTES.md
+release: tmp/$(release_zipfile) COPYING RELEASE_NOTES.md
 	rm -rf release
 	mkdir release
+	cp -p $^ release/
+
+tmp/$(release_zipfile): $(vf_binaries) \
+    $(all_src_files) $(all_src_files_petscii) \
+    $(test_files) $(test_files_petscii) COPYING RELEASE_NOTES.md
 	rm -rf tmp
 	mkdir tmp
 	mkdir tmp/binaries
@@ -83,7 +84,8 @@ release/$(release_zipfile): $(vf_binaries) \
 	cp -p $(all_src_files_petscii) tmp/src_petscii/
 	cp -p $(test_files) tmp/tests/
 	cp -p $(test_files_petscii) tmp/tests_petscii/
-	(cd tmp &&	zip -r ../release/$(release_zipfile) *)
+	(cd tmp &&	zip -r $(release_zipfile) COPYING RELEASE_NOTES.md \
+	    binaries src src_petscii tests tests_petscii)
 
 
 # Targetcompiler targets

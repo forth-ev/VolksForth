@@ -35,7 +35,7 @@ The following version descriptions areonly valid for VolksForth 6502
 C64 Releases. As of now (Dec 2023), the different VolksForth platforms
 (6502, 68k, 8080, 8086) don't have shared code or shared versioning.
 
-### VF 6502-C64 3.9.5
+### 6502-C64 3.9.5
 
 This release adapts the X16 VolksForth to the R46 ROM.
 It also adds an X16 binary with added words to invoke the

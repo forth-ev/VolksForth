@@ -12,10 +12,16 @@ vf_flavours = \
     v4th-c64 v4th-c16+ v4th-c16- v4th-x16 v4th-x16e
 vf_binaries = $(patsubst %, cbmfiles/%, $(vf_flavours))
 
+all_src_files = $(wildcard src/*.fth)
+all_src_files_petscii = $(patsubst src/%, cbmfiles/%, $(all_src_files))
+
 test_files = $(wildcard tests/*.f*)
 test_files_petscii = $(patsubst tests/%, cbmfiles/%, $(test_files))
 test_logs = $(patsubst %, test-%.log, $(vf_flavours))
 test_resuls = $(patsubst %, test-%.result, $(vf_flavours))
+
+release_zipfile = volksforth-6502-c64-release.zip
+
 
 # Target to convert all .d64 images into .fth files for easier reading,
 # and to update all PETSCII files in cbmfiles to the latest state of
@@ -24,7 +30,8 @@ update: $(vf_blk_fth_files) $(vf_fth_files_petscii)
 
 
 clean:
-	rm -f cbmfiles/*.fr cbmfiles/*.fth cbmfiles/*.log tmp/*
+	rm -f cbmfiles/*.fr cbmfiles/*.fth cbmfiles/*.log
+	rm -rf tmp/* release
 	rm -f *.log *.result *.golden
 	rm -f cbmfiles/c??-testbase
 	rm -f disks/scratch.d64 emulator/sdcard.img
@@ -54,6 +61,29 @@ run-testbase: emulator/testbase.T64
 
 run-testbase16: emulator/testbase16.T64
 	VICE=xplus4 emulator/run-in-vice.sh testbase16
+
+
+release: release/$(release_zipfile)
+
+release/$(release_zipfile): $(vf_binaries) \
+    $(all_src_files) $(all_src_files_petscii) \
+    $(test_files) $(test_files_petscii) COPYING RELEASE_NOTES.md
+	rm -rf release
+	mkdir release
+	rm -rf tmp
+	mkdir tmp
+	mkdir tmp/binaries
+	mkdir tmp/src
+	mkdir tmp/src_petscii
+	mkdir tmp/tests
+	mkdir tmp/tests_petscii
+	cp -p COPYING RELEASE_NOTES.md tmp/
+	cp -p $(vf_binaries) tmp/binaries/
+	cp -p $(all_src_files) tmp/src/
+	cp -p $(all_src_files_petscii) tmp/src_petscii/
+	cp -p $(test_files) tmp/tests/
+	cp -p $(test_files_petscii) tmp/tests_petscii/
+	(cd tmp &&	zip -r ../release/$(release_zipfile) *)
 
 
 # Targetcompiler targets

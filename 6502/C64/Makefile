@@ -9,13 +9,19 @@ vf_fth_files = $(wildcard src/vf-*.fth src/v4th*.fth)
 vf_fth_files_petscii = $(patsubst src/%, cbmfiles/%, $(vf_fth_files))
 vf_flavours = \
     v4thblk-c64 v4thblk-c16+ v4thblk-c16- \
-    v4th-c64 v4th-c16+ v4th-c16- v4th-x16
+    v4th-c64 v4th-c16+ v4th-c16- v4th-x16 v4th-x16e
 vf_binaries = $(patsubst %, cbmfiles/%, $(vf_flavours))
+
+all_src_files = $(wildcard src/*.fth)
+all_src_files_petscii = $(patsubst src/%, cbmfiles/%, $(all_src_files))
 
 test_files = $(wildcard tests/*.f*)
 test_files_petscii = $(patsubst tests/%, cbmfiles/%, $(test_files))
 test_logs = $(patsubst %, test-%.log, $(vf_flavours))
 test_resuls = $(patsubst %, test-%.result, $(vf_flavours))
+
+release_zipfile = volksforth-6502-c64-release.zip
+
 
 # Target to convert all .d64 images into .fth files for easier reading,
 # and to update all PETSCII files in cbmfiles to the latest state of
@@ -24,7 +30,8 @@ update: $(vf_blk_fth_files) $(vf_fth_files_petscii)
 
 
 clean:
-	rm -f cbmfiles/*.fr cbmfiles/*.fth cbmfiles/*.log tmp/*
+	rm -f cbmfiles/*.fr cbmfiles/*.fth cbmfiles/*.log
+	rm -rf tmp/* release
 	rm -f *.log *.result *.golden
 	rm -f cbmfiles/c??-testbase
 	rm -f disks/scratch.d64 emulator/sdcard.img
@@ -56,16 +63,37 @@ run-testbase16: emulator/testbase16.T64
 	VICE=xplus4 emulator/run-in-vice.sh testbase16
 
 
+release: release/$(release_zipfile)
+
+release/$(release_zipfile): $(vf_binaries) \
+    $(all_src_files) $(all_src_files_petscii) \
+    $(test_files) $(test_files_petscii) COPYING RELEASE_NOTES.md
+	rm -rf release
+	mkdir release
+	rm -rf tmp
+	mkdir tmp
+	mkdir tmp/binaries
+	mkdir tmp/src
+	mkdir tmp/src_petscii
+	mkdir tmp/tests
+	mkdir tmp/tests_petscii
+	cp -p COPYING RELEASE_NOTES.md tmp/
+	cp -p $(vf_binaries) tmp/binaries/
+	cp -p $(all_src_files) tmp/src/
+	cp -p $(all_src_files_petscii) tmp/src_petscii/
+	cp -p $(test_files) tmp/tests/
+	cp -p $(test_files_petscii) tmp/tests_petscii/
+	(cd tmp &&	zip -r ../release/$(release_zipfile) *)
+
+
 # Targetcompiler targets
 
 cbmfiles/tcbase: emulator/v4th-c64-4tc.T64 emulator/build-tcbase.sh \
     disks/tc38q.d64 disks/file-words.d64 cbmfiles/tc-base.fth
 	emulator/build-tcbase.sh
 
-$(vf_binaries):  emulator/tcbase.T64 emulator/build-vf.sh \
-    disks/tc38q.d64 $(vf_fth_files_petscii)
-
-$(vf_binaries):  cbmfiles/logtofile.fth
+$(vf_binaries): $(vf_fth_files_petscii) emulator/build-vf.sh \
+    emulator/tcbase.T64 disks/tc38q.d64 cbmfiles/logtofile.fth
 
 cbmfiles/v4thblk-c64:
 	emulator/build-vf.sh v4thblk-c64
@@ -87,6 +115,9 @@ cbmfiles/v4th-c16-:
 
 cbmfiles/v4th-x16:
 	emulator/build-vf.sh v4th-x16
+
+cbmfiles/v4th-x16e:
+	emulator/build-vf.sh v4th-x16e
 
 
 # Core test targets
@@ -138,29 +169,12 @@ test-v4th-x16.log: cbmfiles/v4th-x16 emulator/sdcard.img
 	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
 	petscii2ascii cbmfiles/test.log $@
 
-test-v4th-x16-39.log: $(test_files_petscii) emulator/run-in-vice.sh
-
-test-v4th-x16-39.log: cbmfiles/v4th-x16 emulator/sdcard.img
+test-v4th-x16e.log: cbmfiles/v4th-x16e emulator/sdcard.img
 	rm -f cbmfiles/test.log
-	emulator/run-in-x16-39.sh v4th-x16 \
+	emulator/run-in-x16emu.sh v4th-x16e \
 	  "include run-std-tests.fth\n1234567890"
 	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
 	petscii2ascii cbmfiles/test.log $@
-
-test-v4th-x16-39.golden: test-v4th-x16.golden
-	cp $< $@
-
-test-v4th-x16-41.log: $(test_files_petscii) emulator/run-in-vice.sh
-
-test-v4th-x16-41.log: cbmfiles/v4th-x16 emulator/sdcard.img
-	rm -f cbmfiles/test.log
-	emulator/run-in-x16-41.sh v4th-x16 \
-	  "include run-std-tests.fth\n1234567890"
-	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
-	petscii2ascii cbmfiles/test.log $@
-
-test-v4th-x16-41.golden: test-v4th-x16.golden
-	cp $< $@
 
 test-%.result: test-%.log test-%.golden tests/evaluate-test.sh
 	rm -f $@
@@ -201,6 +215,10 @@ test-v4th-x16.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreext double report-noblk)
 	cat $^ > $@
 
+test-v4th-x16e.golden: $(patsubst %, tests/golden/%.golden, \
+    prelim core coreext double report-noblk)
+	cat $^ > $@
+
 # Rules for building Forth binaries on top of the plain vanilla
 # c64-volksforth83.
 
@@ -214,18 +232,22 @@ cbmfiles/devenv: emulator/run-in-vice.sh emulator/build-devenv.sh \
 
 emulator/%.T64: cbmfiles/%
 	bin2t64 $< $@
+	touch -m -r $< $@
 
 
 # Generic rule for populating cbmfiles/ with PETSCII text files
 
 cbmfiles/%.fth: src/%.fth
 	ascii2petscii $< $@
+	touch -m -r $< $@
 
 cbmfiles/%.fth: tests/%.fth
 	ascii2petscii $< $@
+	touch -m -r $< $@
 
 cbmfiles/%.fr: tests/%.fr
 	ascii2petscii $< $@
+	touch -m -r $< $@
 
 
 # Generic rule for converting .d64 blk sources into .fth files.

@@ -31,8 +31,10 @@ done
 
 if [[ -f "${scriptfile}" ]]; then
   "${runcpmdir}/RunCPM" -i "${scriptfile}" -o "${logfile}"
+#  "${runcpmdir}/RunCPM" -s <"${scriptfile}" | tee "${logfile}"
 else
   "${runcpmdir}/RunCPM" -o "${logfile}"
+#  "${runcpmdir}/RunCPM" -s | tee "${logfile}"
 fi
 
 cp "${logfile}" runcpm.log

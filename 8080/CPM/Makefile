@@ -16,6 +16,9 @@ clean:
 	rm -rf $(runcpmdir)
 	rm -f msdos
 
+veryclean: clean
+	rm -rf cpmfiles
+
 test: logtest.result inctest.result test-min.result
 
 run-editor: | msdos

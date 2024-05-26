@@ -171,7 +171,7 @@ Label (?dev  ( a: dev )
  i/o lock  (?device ;
 
  Code (busout  ( dev 2nd -- )
- MsgFlg stx  2 # lda  Setup jsr
+ 2 # lda  Setup jsr
  N 2+ lda  (?dev jsr
  N 2+ lda  LISTEN jsr
  N lda  60 # ora SECOND jsr
@@ -194,7 +194,7 @@ Label (?dev  ( a: dev )
  0E0 or busout busoff ;
 
  Code (busin  ( dev 2nd -- )
- MsgFlg stx  2 # lda  Setup jsr
+ 2 # lda  Setup jsr
  N 2+ lda  (?dev jsr
  N 2+ lda  TALK jsr
  N lda  60 # ora (C16 $ad sta ( )

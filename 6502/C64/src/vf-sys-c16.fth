@@ -8,7 +8,6 @@ include vf-lbls-cbm.fth
 
 0ff4c >label ConOut
   090 >label IOStatus
-  09a >label MsgFlg
   0ae >label CurDev
 0ff19 >label BrdCol
 0ff15 >label BkgCol

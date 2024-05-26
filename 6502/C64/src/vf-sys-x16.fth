@@ -7,7 +7,7 @@ include vf-lbls-cbm.fth
 
 0ffd2 >label ConOut
 0febd >label KbdbufPeek
- 0287 >label IOStatus  \ aka status
+0feab >label ExtApi
  028d >label MsgFlg
 09f2c >label BrdCol
  0376 >label BkgPenCol  \ aka color

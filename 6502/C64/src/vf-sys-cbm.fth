@@ -150,8 +150,10 @@ Label nodevice     0 # ldx  1 # ldy
 
 \ ?device                     clv12jul87
 
-Label (?dev
- IOStatus stx  \ because IOStatus isn't cleared by LISTEN or TALK
+Label (?dev  ( a: dev )
+ \ Clear IOStatus because it isn't cleared by LISTEN or TALK
+ (C64 IOStatus stx ( ) (C16 IOStatus stx ( )
+ (X16 pha  1 # lda  ExtApi jsr  pla ( )
  \ It's unclear in which situation or use case the following
  \ workaround for a C16 OS error is needed. The v4th tests pass
  \ even with the following line removed.

@@ -56,6 +56,34 @@ Code curoff   ( --)
   blnsw sty  Next jmp  end-code
 
 
+\ *** Block No. 131, Hexblock 83
+83 fthpage
+
+( #bs #cr ..keyboard         clv12.4.87)
+
+: c64key  ( -- 8b)
+ curon BEGIN pause c64key?  UNTIL
+ curoff getkey ;
+
+14 Constant #bs   0D Constant #cr
+
+: c64decode
+ ( addr cnt1 key -- addr cnt2)
+  #bs case?  IF  dup  IF del 1- THEN
+                            exit  THEN
+  #cr case?  IF  dup span ! exit THEN
+  >r  2dup +  r@ swap c!  r> emit  1+ ;
+
+: c64expect ( addr len1 -- )
+ span !  0
+ BEGIN  dup span @  u<
+ WHILE  key  decode
+ REPEAT 2drop space ;
+
+Input: keyboard   [ here input ! ]
+ c64key c64key? c64decode c64expect ;
+
+
 include vf-sys-cbm.fth
 
 

@@ -19,6 +19,7 @@ test_files = $(wildcard tests/*.f*)
 test_files_petscii = $(patsubst tests/%, cbmfiles/%, $(test_files))
 test_logs = $(patsubst %, test-%.log, $(vf_flavours))
 test_resuls = $(patsubst %, test-%.result, $(vf_flavours))
+test_keyboard_input = some 12345 keys
 
 release_zipfile = volksforth-6502-c64-release.zip
 
@@ -35,6 +36,7 @@ clean:
 	rm -f *.log *.result *.golden
 	rm -f cbmfiles/c??-testbase
 	rm -f disks/scratch.d64 emulator/sdcard.img
+	rm -f tests/golden/mycore*.golden
 
 
 # Convenience targets
@@ -130,51 +132,51 @@ test-v4thblk-c64.log: emulator/v4thblk-c64.T64 disks/empty.d64
 	rm -f cbmfiles/test.log disks/scratch.d64
 	cp disks/empty.d64 disks/scratch.d64
 	DISK9=scratch emulator/run-in-vice.sh v4thblk-c64 \
-	  "include run-blk-tests.fth\n1234567890"
+	  "include run-blk-tests.fth\n$(test_keyboard_input)"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4th-c64.log: emulator/v4th-c64.T64
 	rm -f cbmfiles/test.log
 	emulator/run-in-vice.sh v4th-c64 \
-	  "include run-std-tests.fth\n1234567890"
+	  "include run-std-tests.fth\n$(test_keyboard_input)"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4thblk-c16+.log: emulator/v4thblk-c16+.T64 disks/empty.d64
 	rm -f cbmfiles/test.log disks/scratch.d64
 	cp disks/empty.d64 disks/scratch.d64
 	VICE=xplus4 DISK9=scratch emulator/run-in-vice.sh v4thblk-c16+ \
-	  "include run-blk-tests.fth\n1234567890"
+	  "include run-blk-tests.fth\n$(test_keyboard_input)"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4th-c16+.log: emulator/v4th-c16+.T64
 	rm -f cbmfiles/test.log
 	VICE=xplus4 emulator/run-in-vice.sh v4th-c16+ \
-	  "include run-std-tests.fth\n1234567890"
+	  "include run-std-tests.fth\n$(test_keyboard_input)"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4thblk-c16-.log: emulator/v4thblk-c16-.T64
 	rm -f cbmfiles/test.log
 	VICE=xplus4 emulator/run-in-vice.sh v4thblk-c16- \
-	  "include run-min-tests.fth\n1234567890"
+	  "include run-min-tests.fth\n$(test_keyboard_input)"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4th-c16-.log: emulator/v4th-c16-.T64
 	rm -f cbmfiles/test.log
 	VICE=xplus4 emulator/run-in-vice.sh v4th-c16- \
-	  "include run-std-tests.fth\n1234567890"
+	  "include run-std-tests.fth\n$(test_keyboard_input)"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4th-x16.log: cbmfiles/v4th-x16 emulator/sdcard.img
 	rm -f cbmfiles/test.log
 	emulator/run-in-x16emu.sh v4th-x16 \
-	  "include run-std-tests.fth\n1234567890"
+	  "include run-std-tests.fth\n$(test_keyboard_input)"
 	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4th-x16e.log: cbmfiles/v4th-x16e emulator/sdcard.img
 	rm -f cbmfiles/test.log
 	emulator/run-in-x16emu.sh v4th-x16e \
-	  "include run-std-tests.fth\n1234567890"
+	  "include run-std-tests.fth\n$(test_keyboard_input)"
 	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
 	petscii2ascii cbmfiles/test.log $@
 
@@ -190,36 +192,44 @@ emulator/sdcard.img: emulator/sdcard.sfdisk
 	mv $@.tmp $@
 
 test-v4thblk-c64.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core coreext double block report-blk)
+    prelim mycore coreext double block report-blk)
 	cat $^ > $@
 
 test-v4th-c64.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core coreext double report-noblk)
+    prelim mycore coreext double report-noblk)
 	cat $^ > $@
 
 test-v4thblk-c16+.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core coreext double block report-blk)
+    prelim mycore coreext double block report-blk)
 	cat $^ > $@
 
 test-v4th-c16+.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core coreext double report-noblk)
+    prelim mycore coreext double report-noblk)
 	cat $^ > $@
 
 test-v4thblk-c16-.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core)
+    prelim mycore)
 	cat $^ > $@
 
 test-v4th-c16-.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core coreext double report-noblk)
+    prelim mycore coreext double report-noblk)
 	cat $^ > $@
 
 test-v4th-x16.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core coreext double report-noblk)
+    prelim mycore-x16 coreext double report-noblk)
 	cat $^ > $@
 
 test-v4th-x16e.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core coreext double report-noblk)
+    prelim mycore-x16 coreext double report-noblk)
 	cat $^ > $@
+
+tests/golden/mycore.golden: tests/golden/core-template.golden
+	sed -e 's/TMPL_KEYS_ECHO_TMPL/$(test_keyboard_input)/' \
+	   -e 's/TMPL_KEYS_RECEIVED_TMPL/$(test_keyboard_input)/' $< >$@
+
+tests/golden/mycore-x16.golden: tests/golden/core-template.golden
+	sed -e 's/TMPL_KEYS_ECHO_TMPL//' \
+	   -e 's/TMPL_KEYS_RECEIVED_TMPL/$(test_keyboard_input)/' $< >$@
 
 # Rules for building Forth binaries on top of the plain vanilla
 # c64-volksforth83.

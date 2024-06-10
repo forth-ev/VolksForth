@@ -45,6 +45,8 @@ binaries: $(vf_binaries)
 
 test: $(test_resuls)
 
+alltests: test test-v4th-x16-tsk.result
+
 test64: std64 blk64
 
 blk64: test-v4thblk-c64.result
@@ -166,14 +168,14 @@ test-v4th-c16-.log: emulator/v4th-c16-.T64
 	  "include run-std-tests.fth\n$(test_keyboard_input)"
 	petscii2ascii cbmfiles/test.log $@
 
-test-v4th-x16.log: cbmfiles/v4th-x16 emulator/sdcard.img
+test-v4th-x16.log: cbmfiles/v4th-x16 | emulator/sdcard.img
 	rm -f cbmfiles/test.log
 	emulator/run-in-x16emu.sh v4th-x16 \
 	  "include run-std-tests.fth\n$(test_keyboard_input)"
 	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
 	petscii2ascii cbmfiles/test.log $@
 
-test-v4th-x16e.log: cbmfiles/v4th-x16e emulator/sdcard.img
+test-v4th-x16e.log: cbmfiles/v4th-x16e | emulator/sdcard.img
 	rm -f cbmfiles/test.log
 	emulator/run-in-x16emu.sh v4th-x16e \
 	  "include run-std-tests.fth\n$(test_keyboard_input)"
@@ -233,10 +235,11 @@ tests/golden/mycore-noecho.golden: tests/golden/core-template.golden
 
 # Sample test with a changed input that would run the tasker
 # even while waiting for keyboard input:
-test-v4th-x16-tsk.log: cbmfiles/v4th-x16 emulator/sdcard.img \
+test-v4th-x16-tsk.log: cbmfiles/v4th-x16 \
     $(test_files_petscii) $(wildcard emulator/run-in-*.sh) \
     cbmfiles/6502asm.fth cbmfiles/trns6502asm.fth \
-    cbmfiles/vf-lbls-cbm.fth cbmfiles/x16input-tsk.fth
+    cbmfiles/vf-lbls-cbm.fth cbmfiles/x16input-tsk.fth \
+    | emulator/sdcard.img
 	rm -f cbmfiles/test.log
 	emulator/run-in-x16emu.sh v4th-x16 \
 	  "include x16input-tsk.fth\ninclude run-min-tests.fth\n$(test_keyboard_input)"

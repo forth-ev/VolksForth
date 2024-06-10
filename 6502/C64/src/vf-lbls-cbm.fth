@@ -1,7 +1,4 @@
 
-\ *** Block No. 126, Hexblock 7e
-7e fthpage
-
 \ CBM-Labels                   05nov87re
 
 $FFA5 >label ACPTR

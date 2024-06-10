@@ -126,7 +126,7 @@ cbmfiles/v4th-x16e:
 
 # Core test targets
 
-$(test_logs): $(test_files_petscii) emulator/run-in-vice.sh
+$(test_logs): $(test_files_petscii) $(wildcard emulator/run-in-*.sh)
 
 test-v4thblk-c64.log: emulator/v4thblk-c64.T64 disks/empty.d64
 	rm -f cbmfiles/test.log disks/scratch.d64
@@ -192,44 +192,60 @@ emulator/sdcard.img: emulator/sdcard.sfdisk
 	mv $@.tmp $@
 
 test-v4thblk-c64.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim mycore coreext double block report-blk)
+    prelim mycore-echo coreext double block report-blk)
 	cat $^ > $@
 
 test-v4th-c64.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim mycore coreext double report-noblk)
+    prelim mycore-echo coreext double report-noblk)
 	cat $^ > $@
 
 test-v4thblk-c16+.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim mycore coreext double block report-blk)
+    prelim mycore-echo coreext double block report-blk)
 	cat $^ > $@
 
 test-v4th-c16+.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim mycore coreext double report-noblk)
+    prelim mycore-echo coreext double report-noblk)
 	cat $^ > $@
 
 test-v4thblk-c16-.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim mycore)
+    prelim mycore-echo)
 	cat $^ > $@
 
 test-v4th-c16-.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim mycore coreext double report-noblk)
+    prelim mycore-echo coreext double report-noblk)
 	cat $^ > $@
 
 test-v4th-x16.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim mycore-x16 coreext double report-noblk)
+    prelim mycore-noecho coreext double report-noblk)
 	cat $^ > $@
 
 test-v4th-x16e.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim mycore-x16 coreext double report-noblk)
+    prelim mycore-noecho coreext double report-noblk)
 	cat $^ > $@
 
-tests/golden/mycore.golden: tests/golden/core-template.golden
+tests/golden/mycore-echo.golden: tests/golden/core-template.golden
 	sed -e 's/TMPL_KEYS_ECHO_TMPL/$(test_keyboard_input)/' \
 	   -e 's/TMPL_KEYS_RECEIVED_TMPL/$(test_keyboard_input)/' $< >$@
 
-tests/golden/mycore-x16.golden: tests/golden/core-template.golden
+tests/golden/mycore-noecho.golden: tests/golden/core-template.golden
 	sed -e 's/TMPL_KEYS_ECHO_TMPL//' \
 	   -e 's/TMPL_KEYS_RECEIVED_TMPL/$(test_keyboard_input)/' $< >$@
+
+# Sample test with a changed input that would run the tasker
+# even while waiting for keyboard input:
+test-v4th-x16-tsk.log: cbmfiles/v4th-x16 emulator/sdcard.img \
+    $(test_files_petscii) $(wildcard emulator/run-in-*.sh) \
+    cbmfiles/6502asm.fth cbmfiles/trns6502asm.fth \
+    cbmfiles/vf-lbls-cbm.fth cbmfiles/x16input-tsk.fth
+	rm -f cbmfiles/test.log
+	emulator/run-in-x16emu.sh v4th-x16 \
+	  "include x16input-tsk.fth\ninclude run-min-tests.fth\n$(test_keyboard_input)"
+	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
+	petscii2ascii cbmfiles/test.log $@
+
+test-v4th-x16-tsk.golden: $(patsubst %, tests/golden/%.golden, \
+    prelim mycore-echo)
+	cat $^ > $@
 
 # Rules for building Forth binaries on top of the plain vanilla
 # c64-volksforth83.

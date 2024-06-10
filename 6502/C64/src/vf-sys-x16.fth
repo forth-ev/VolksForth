@@ -19,9 +19,9 @@ include vf-lbls-cbm.fth
 \ *** Block No. 129, Hexblock 81
 81 fthpage
 
-\ X16 c64key? getkey
+\ X16 x16key? getkey
 
-Code c64key? ( -- flag)
+Code x16key? ( -- flag)
  KbdbufPeek jsr
  txa  pha
  Push jmp  end-code
@@ -37,7 +37,7 @@ Code getkey  ( -- 8b)
 ( #bs #cr ..keyboard         clv12.4.87)
 
 : x16key  ( -- 8b)
- BEGIN pause c64key? UNTIL getkey ;
+ BEGIN pause x16key? UNTIL getkey ;
 
 14 Constant #bs   0D Constant #cr
 
@@ -57,7 +57,7 @@ Code basin  ( -- 8b)
  REPEAT 2drop space ;
 
 Input: keyboard   [ here input ! ]
- x16key c64key? x16decode x16expect ;
+ x16key x16key? x16decode x16expect ;
 
 
 include vf-sys-cbm.fth

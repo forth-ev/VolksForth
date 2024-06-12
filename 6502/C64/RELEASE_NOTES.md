@@ -22,7 +22,33 @@ The latest release zip file `volksforth-6502-c64-release.zip` contains
     * `v4th*.fth` - the binaries' main files
     * `vf-*.fth` - sources from which VolksForth
       kernels are compiled
-    * further Forth sources
+    * `6502asm.fth` - the 6502 assembler, needed to compile Code words
+    * `trns6502asm.fth` - the transient 6502 assembler. It lives on the
+    heap and is removed by `clear`. This allows building applications that
+    have code words but don't carry the assembler itself after saving.
+    * `tmp6502asm.fth` - like the transient 6502 assembler, but living on the
+    tmpheap instead of the heap. See below for tmpheap.
+    * `rom-ram-sys.fth`
+    * `tracer.fth` - the debugger
+    * `tasker.fth` - the multitasker
+    * `multitask.fth` - the small bit of assembly code needed by tasker.fth
+    * `taskdemo.fth` - a C64/C16 demo of the tasker
+    * `x16input-tsk.fth`- The usual v4th X16 keyboard input uses the regular
+    screen editor for line input, so no task switches happen during line input.
+    This input implementation allows task switches during input but uses Kernal
+    variables and has a cursor bug after backspace.
+    * `cbmopen.fth` - Forth words for Kernal channel I/O
+    * `lists.fth` - two list utility words
+    * `profiler.fth` - *** [4d2023-04](https://forth-ev.de/wiki/res/lib/exe/fetch.php/vd-archiv:4d2023-04.pdf) (English)
+    * `tmpheap.fth` - the reference implementation of the tmpheap design
+    as described at
+    [SVFIG 04-2021](https://www.forth.org/svfig/kk/04-2021.html), in the
+    [4d2021-03](https://forth-ev.de/wiki/res/lib/exe/fetch.php/vd-archiv:4d2021-03.pdf) (German) and used
+    in [cc64](https://github.com/pzembrod/cc64/blob/master/src/cc64/cc64.fth#L11)
+    * `x16tmpheap.fth` - a X16 tmpheap implementation that uses banked ram
+    * `notmpheap.fth` - a null implementation that redirects the tmpheap
+    to the regular VolksForth heap
+    * `tc-base.fth` - loadfile for the resident part of the target compiler
 
 * `src_petscii/` - the files from `src/` converted to PETSCII
 

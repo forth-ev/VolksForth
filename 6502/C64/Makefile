@@ -66,6 +66,18 @@ run-testbase: emulator/testbase.T64
 run-testbase16: emulator/testbase16.T64
 	VICE=xplus4 emulator/run-in-vice.sh testbase16
 
+run-c64: emulator/v4th-c64.T64 $(all_src_files_petscii)
+	emulator/run-in-vice.sh v4th-c64
+
+run-c16+: emulator/v4th-c16+.T64 $(all_src_files_petscii)
+	VICE=xplus4 emulator/run-in-vice.sh v4th-c16+
+
+run-c16-: emulator/v4th-c16-.T64 $(all_src_files_petscii)
+	VICE=xplus4 emulator/run-in-vice.sh v4th-c16-
+
+run-x16: cbmfiles/v4th-x16 $(all_src_files_petscii) | emulator/sdcard.img
+	emulator/run-in-x16emu.sh v4th-x16
+
 
 release: tmp/$(release_zipfile) COPYING RELEASE_NOTES.md
 	rm -rf release

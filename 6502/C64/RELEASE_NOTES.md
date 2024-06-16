@@ -22,13 +22,14 @@ The latest release zip file `volksforth-6502-c64-release.zip` contains
     * `v4th*.fth` - the binaries' main files
     * `vf-*.fth` - sources from which VolksForth
       kernels are compiled
-    * `6502asm.fth` - the 6502 assembler, needed to compile Code words
+    * `6502asm.fth` - the 6502 assembler, needed to compile `Code` words
     * `trns6502asm.fth` - the transient 6502 assembler. It lives on the
     heap and is removed by `clear`. This allows building applications that
     have code words but don't carry the assembler itself after saving.
     * `tmp6502asm.fth` - like the transient 6502 assembler, but living on the
     tmpheap instead of the heap. See below for tmpheap.
-    * `rom-ram-sys.fth`
+    * `rom-ram-c16.fth` - macros for C16 bank switching
+    * `rom-ram-c64.fth` - macros for C64 bank switching
     * `tracer.fth` - the debugger
     * `tasker.fth` - the multitasker
     * `multitask.fth` - the small bit of assembly code needed by tasker.fth

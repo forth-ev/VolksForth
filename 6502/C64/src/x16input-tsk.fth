@@ -2,7 +2,7 @@
 \ even while waiting for keyboard input, similar to
 \ the keyboard input on C16 and C64:
 
-include trns6502asm.fth
+\needs Code include trns6502asm.fth
 
 \ X16 labels
 

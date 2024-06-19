@@ -6,7 +6,15 @@
 
 Code con!  ( 8b --)   SP X) lda
 Label (con!     ConOut jsr    SP 2inc
-Label (con!end  CurFlg stx InsCnt stx
+Label (con!end
+\ So far VolksForth switches off quote switch and insert count
+\ after every printed character. This introduces a dependency
+\ on Kernal variables QtSw and Insrt that are undesirable on the
+\ X16 where their addresses may change between Kernal versions.
+\ Therefore we'll try how the system behaves without them on the
+\ X16. Possibly this isn't needed at all, in the end.
+(C64 QtSw stx Insrt stx )
+(C16 QtSw stx Insrt stx )
  1 # ldy ;c:  pause ;
 
 Label (printable?   \ for CBM-Code !

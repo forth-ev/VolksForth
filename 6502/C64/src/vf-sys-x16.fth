@@ -10,8 +10,10 @@ include vf-lbls-cbm.fth
 0feab >label ExtApi
 09f2c >label BrdCol
  0376 >label BkgPenCol  \ aka color
- 0381 >label CurFlg  \ aka qtsw
- 0385 >label InsCnt  \ aka insrt
+\ I'm tentatively removing QtSw & Insrt from the X16 variant;
+\ see comment at the top of vf-sys-cbm.fth
+\ 0381 >label QtSw
+\ 0385 >label Insrt
 
 1 >label RomBank
 0 >label RamBank

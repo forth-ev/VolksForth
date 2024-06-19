@@ -12,8 +12,8 @@ include vf-lbls-cbm.fth
 0ff19 >label BrdCol
 0ff15 >label BkgCol
  053b >label PenCol
-  0cb >label CurFlg
-  0cf >label InsCnt
+  0cb >label QtSw
+  0cf >label Insrt
  0540 >label KeyRep
 
  055d >label PKeys

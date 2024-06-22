@@ -34,6 +34,7 @@ The latest release zip file `volksforth-6502-c64-release.zip` contains
     * `tasker.fth` - the multitasker
     * `multitask.fth` - the small bit of assembly code needed by tasker.fth
     * `taskdemo.fth` - a C64/C16 demo of the tasker
+    * `taskdemo-x16.fth` - a X16 demo of the tasker
     * `x16input-tsk.fth`- The usual v4th X16 keyboard input uses the regular
     screen editor for line input, so no task switches happen during line input.
     This input implementation allows task switches during input but uses Kernal
@@ -60,8 +61,46 @@ The latest release zip file `volksforth-6502-c64-release.zip` contains
 ## Versions
 
 The following version descriptions are only valid for VolksForth 6502
-C64 Releases. As of now (Dec 2023), the different VolksForth platforms
+C64 Releases. As of now (June 2024), the different VolksForth platforms
 (6502, 68k, 8080, 8086) don't have shared code or shared versioning.
+
+### 6502-C64 3.9.6 - in preparation
+
+Several dependencies of the VolksForth kernel on X16 Kernal variable addresses
+and thus likely breakage points with new Kernal release were replaced with
+Kernal API calls, so the VolksForth kernel should now be much more robust
+when the X16 Kernal changes. The only remaining Kernal variable used is
+$0376 - BkgPenCol.
+
+* Clearing the IOStatus is now possible through the ExtApi call ($FEAB, thanks
+  to *** for implementing this), so the dependency on the address of IOStatus
+  could be removed.
+* The implementation of line input in EXPECT was changed from switching cursor
+  on and off and using GETIN to using BASIN - which automatically handles the
+  cursor and also makes use of the CBM screen editor. The Kernal var dependency
+  that came with switching the cursor on and off is now removed.
+  The downside is that the
+  cooperative multitasker now can't run tasks during line input. The old
+  tasker-compatible EXPECT is now available as separtate source
+  x16input-tsk.fth. For details on this see MISC_DOC.md.
+* The direct clearing of MsgFlg (X16: $028d) at the beginning of
+  (busin and (busout was removed; it shouldn't have had any real purpose.
+* Likewise the clearing of the Kernal variables QtSw and Insrt after each
+  char written to the console via CHROUT: It was removed from the X16 variant
+  as it shouldn't be necessary.
+
+The cooperative multitasker was extracted from the original disk 3 (see
+[`disks/vforth4_3.fth`](https://github.com/forth-ev/VolksForth/blob/master/6502/C64/disks/vforth4_3.fth))
+into the files `tasker.fth, multitask.fth` and `taskdemo.fth`. The latter was
+ported to the X16 as `taskdemo-x16.fth`.
+
+`rom-ram-sys.fth` was split up into a C64 and a C16 flavour. There is no X16
+equivalent; X16 bank switching poses challenges and opportunities completely
+different from those on C16 and C64.
+
+New sources added: `lists,fth, tasker.fth, multitask.fth,
+taskdemo.fth, taskdemo-x16.fth, x16input-tsk.fth, tmp6502asm.fth,
+x16tmpheap.fth, rom-ram-c16.fth, rom-ram-c64.fth`
 
 ### 6502-C64 3.9.5
 

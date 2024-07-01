@@ -73,8 +73,8 @@ when the X16 Kernal changes. The only remaining Kernal variable used is
 $0376 - BkgPenCol.
 
 * Clearing the IOStatus is now possible through the ExtApi call ($FEAB, thanks
-  to *** for implementing this), so the dependency on the address of IOStatus
-  could be removed.
+  to mooinglemur for implementing this), so the dependency on the address of
+  IOStatus could be removed.
 * The implementation of line input in EXPECT was changed from switching cursor
   on and off and using GETIN to using BASIN - which automatically handles the
   cursor and also makes use of the CBM screen editor. The Kernal var dependency

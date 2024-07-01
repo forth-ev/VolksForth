@@ -69,11 +69,9 @@ include vf-sys-cbm.fth
 \ ... continued
 8f fthpage
 
-Create ink-pot
-\ border bkgnd pen  0
-  6 c,   6 c,  3 c, 0 c,  \ Forth
- 0E c,   6 c,  3 c, 0 c,  \ Edi
-  6 c,   6 c,  3 c, 0 c,  \ User
+Create x16-ink-pot
+\ border bkgnd-color-petscii pen-color-petscii
+  6 c,   $1f c,  $9f c,  \ Forth
 
 
 \ *** Block No. 144, Hexblock 90
@@ -99,10 +97,10 @@ Label first-init
  sei cld
  RomBank lda  $f8 # and  RomBank sta \ map in KERNAL ROM
  IOINIT jsr  CINT jsr  RESTOR jsr  \ init. and set I/O-Vectors
- ink-pot    lda BrdCol sta  \ border
- ink-pot 1+ lda
- .a asl .a asl .a asl .a asl  \ backgrnd
- ink-pot 2+ ora BkgPenCol sta  \ pen
+ x16-ink-pot    lda BrdCol sta  \ border
+ x16-ink-pot 1+ lda  ConOut jsr  \ backgrnd
+ 1 # lda  ConOut jsr  \ swap backgrnd <-> pen
+ x16-ink-pot 2+ lda  ConOut jsr  \ pen
  $0e # lda  ConOut jsr  \ lower/uppercase
  cli rts end-code
 first-init dup bootsystem 1+ !

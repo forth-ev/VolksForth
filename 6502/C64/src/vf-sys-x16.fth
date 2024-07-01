@@ -9,7 +9,6 @@ include vf-lbls-cbm.fth
 0febd >label KbdbufPeek
 0feab >label ExtApi
 09f2c >label BrdCol
- 0376 >label BkgPenCol  \ aka color
 \ I'm tentatively removing QtSw & Insrt from the X16 variant;
 \ see comment at the top of vf-sys-cbm.fth
 \ 0381 >label QtSw

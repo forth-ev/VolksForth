@@ -66,11 +66,11 @@ C64 Releases. As of now (June 2024), the different VolksForth platforms
 
 ### 6502-C64 3.9.6 - in preparation
 
-Several dependencies of the VolksForth kernel on X16 Kernal variable addresses
+The known dependencies of the VolksForth kernel
+on X16 Kernal variable addresses
 and thus likely breakage points with new Kernal release were replaced with
 Kernal API calls, so the VolksForth kernel should now be much more robust
-when the X16 Kernal changes. The only remaining Kernal variable used is
-$0376 - BkgPenCol.
+when the X16 Kernal changes.
 
 * Clearing the IOStatus is now possible through the ExtApi call ($FEAB, thanks
   to mooinglemur for implementing this), so the dependency on the address of
@@ -88,6 +88,17 @@ $0376 - BkgPenCol.
 * Likewise the clearing of the Kernal variables QtSw and Insrt after each
   char written to the console via CHROUT: It was removed from the X16 variant
   as it shouldn't be necessary.
+* Up to version 3.9.5, the VolksForth kernel used BkgPenCol (X16: $0376)
+  to set both background and pen color during initialization. It would be
+  great ot have e.g. an ExtApi function to set BkgPenCol, similar to the
+  X16 BASIC command `COLOR`. I'm planning to suggest this,
+  but for the time being setting the background and pen color is
+  instead done via PETSCII control codes instead. To reflect this change,
+  the CBM VolksForth word `INK-POT` has been renamed to `X16-INK-POT`,
+  and it contains only 3 values (border color code, background color PETSCII
+  control charcter, pen color PETSCII control character. This removes the
+  dependency on BkgPenCol and thereby on the last remaining Kernal variable
+  that was used by VolksForth.
 
 The cooperative multitasker was extracted from the original disk 3 (see
 [`disks/vforth4_3.fth`](https://github.com/forth-ev/VolksForth/blob/master/6502/C64/disks/vforth4_3.fth))

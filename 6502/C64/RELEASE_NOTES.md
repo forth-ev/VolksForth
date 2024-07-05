@@ -1,6 +1,8 @@
-# VolksForth 6502 C64 Releases
+# VolksForth 6502-C64 Releases
 
-Release notes of VolksForth for 6502 on CBM-like machines (C64/C16/X16)
+Release notes of VolksForth 6502-C64 which is the flavour of VolksForth
+running on CBM-like 6502 machines - currently the C64, the C16/Plus4 and the
+Commander X16.
 
 ## Release content
 
@@ -60,17 +62,25 @@ The latest release zip file `volksforth-6502-c64-release.zip` contains
 
 ## Versions
 
-The following version descriptions are only valid for VolksForth 6502
-C64 Releases. As of now (June 2024), the different VolksForth platforms
+The following version descriptions are only valid for VolksForth 6502-C64
+releases. As of now (June 2024), the different VolksForth platforms
 (6502, 68k, 8080, 8086) don't have shared code or shared versioning.
 
 ### 6502-C64 3.9.6 - in preparation
 
-The known dependencies of the VolksForth kernel
-on X16 Kernal variable addresses
-and thus likely breakage points with new Kernal release were replaced with
-Kernal API calls, so the VolksForth kernel should now be much more robust
+Main topic of this release is the removal of all usages of Kernal variable
+uses esp. in the X16 VolksForth kernel. Because the addresses of Kernal
+variables can change between different X16 Kernal releases, their use was in
+the past the main reason why VolksForth broke after new X16 ROM releases.
+
+With Kernal variable access replaced by Kernal API calls or by emitting
+control characters, the VolksForth kernel should now be much more robust
 when the X16 Kernal changes.
+
+A secondary topic if this release is more bundled Forth sources, which are
+now also better described (see Release content above).
+
+Changes affecting only the X16 VolksForth kernel:
 
 * Clearing the IOStatus is now possible through the ExtApi call ($FEAB, thanks
   to mooinglemur for implementing this), so the dependency on the address of
@@ -83,11 +93,9 @@ when the X16 Kernal changes.
   cooperative multitasker now can't run tasks during line input. The old
   tasker-compatible EXPECT is now available as separtate source
   x16input-tsk.fth. For details on this see MISC_DOC.md.
-* The direct clearing of MsgFlg (X16: $028d) at the beginning of
-  (busin and (busout was removed; it shouldn't have had any real purpose.
-* Likewise the clearing of the Kernal variables QtSw and Insrt after each
-  char written to the console via CHROUT: It was removed from the X16 variant
-  as it shouldn't be necessary.
+* The clearing of the Kernal variables QtSw and Insrt after each
+  char written to the console via CHROUT most likely has no real purpose.
+  It was therefore removed from the X16 variant.
 * Up to version 3.9.5, the VolksForth kernel used BkgPenCol (X16: $0376)
   to set both background and pen color during initialization. It would be
   great ot have e.g. an ExtApi function to set BkgPenCol, similar to the
@@ -99,6 +107,11 @@ when the X16 Kernal changes.
   control charcter, pen color PETSCII control character. This removes the
   dependency on BkgPenCol and thereby on the last remaining Kernal variable
   that was used by VolksForth.
+
+Changes affecting all VolksForth kernels (C64, C16, X16):
+
+* The direct clearing of MsgFlg (X16: $028d) at the beginning of
+  (busin and (busout was removed; it shouldn't have had any real purpose.
 
 The cooperative multitasker was extracted from the original disk 3 (see
 [`disks/vforth4_3.fth`](https://github.com/forth-ev/VolksForth/blob/master/6502/C64/disks/vforth4_3.fth))
@@ -115,8 +128,10 @@ x16tmpheap.fth, rom-ram-c16.fth, rom-ram-c64.fth`
 
 ### 6502-C64 3.9.5
 
-This release adapts the X16 VolksForth to the R46 ROM.
-It also adds an X16 binary with added words to invoke the
+This release adapts the X16 VolksForth kernel to the R46 X16 ROM.
+July 2024 note: version 3.9.5 also runs with the R47 ROM.
+
+The release also adds an X16 binary with added words to invoke the
 ROM-based X16Edit (XED), to list directories and files (DIR and CAT)
 and to issue DOS commands and read the error channel (DOS).
 

@@ -27,4 +27,4 @@ here dup origin!
 $100 allot
 
 Create logo
-  ," volksFORTH-83 3.9.5-X16  "
+  ," volksFORTH-83 3.9.6-X16  "

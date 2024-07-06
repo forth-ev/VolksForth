@@ -1,16 +1,19 @@
-#+Title: VolksForth (Version for py65) Readme
+#+Title: VolksForth (Version for Cerberus 2100/6502) Readme
 #+Version: Version 1.0
-#+Date: <2020-07-15 Wed>
-#+Author: carsten Strotmann
+#+Date: <2024-07-07 Sun>
+#+Author: Carsten Strotmann
 
-This is a version of the 6502 VolksForth to run in Mike Naberezny Py65
-(https://github.com/mnaberez/py65).
+This is a version of the 6502 VolksForth to run the 6502 personality of the
+Cerberus 2100:
+(https://github.com/TheByteAttic/CERBERUS2100).
 
-The base load address is $1000, the standard I/O memory locations
-($f004 - read char and $f001 - print char) are used.
+The base load address is $0205, the standard I/O memory locations
+($0200 - mailflag and $0201 - mailbox) are used.
 
 * How to run
 
- * start =py65mon=
- * load VolksForth binary =load vfpy65.bin 1000=
- * start VolksForth =goto 1000=
+ * copy the file =cerb2165.bin= onto the SD card or into the =storage=
+ directory of the Cerberus 2100 emulator
+ * load VolksForth binary =load cerb2100.bin=
+ * start VolksForth =run=
+

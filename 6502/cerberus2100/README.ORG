@@ -1,0 +1,16 @@
+#+Title: VolksForth (Version for py65) Readme
+#+Version: Version 1.0
+#+Date: <2020-07-15 Wed>
+#+Author: carsten Strotmann
+
+This is a version of the 6502 VolksForth to run in Mike Naberezny Py65
+(https://github.com/mnaberez/py65).
+
+The base load address is $1000, the standard I/O memory locations
+($f004 - read char and $f001 - print char) are used.
+
+* How to run
+
+ * start =py65mon=
+ * load VolksForth binary =load vfpy65.bin 1000=
+ * start VolksForth =goto 1000=

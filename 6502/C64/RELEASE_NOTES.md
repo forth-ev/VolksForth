@@ -92,7 +92,7 @@ Changes affecting only the X16 VolksForth kernel:
   The downside is that the
   cooperative multitasker now can't run tasks during line input. The old
   tasker-compatible EXPECT is now available as separtate source
-  x16input-tsk.fth. For details on this see MISC_DOC.md.
+  x16input-tsk.fth. For details on this see [tasker.md](doc/tasker.md).
 * The clearing of the Kernal variables QtSw and Insrt after each
   char written to the console via CHROUT most likely has no real purpose.
   It was therefore removed from the X16 variant.

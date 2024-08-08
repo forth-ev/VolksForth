@@ -29,7 +29,7 @@ Code curoff   ( --)
  WHILE  curon key curoff  decode
  REPEAT 2drop space ;
 
-Input: keyboard-tasker  [ here input ! ]
+Input: tasker-keyboard  [ here input ! ]
  x16key x16key? c64decode c64expect ;
 
-keyboard-tasker
+tasker-keyboard

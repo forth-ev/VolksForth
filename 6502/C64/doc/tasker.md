@@ -78,7 +78,7 @@ and start the counter again.
 
 ## Implementation
 
-As mentioned,
+As mentioned, the multitasker uses cooperative multitasking where
 execution control is yielded via the word PAUSE. PAUSE saves the current state
 of the currently active task and calls the task switcher. The state of a task
 consists of the values of the Instruction Pointer (IP),
@@ -96,6 +96,137 @@ the (non-executive) BIT command has been replaced. The
 follows the call of the wake-up procedure. This procedure invites
 state of task (consisting of SP ‘a RP and IP) and sets the
 Userpointer (UP), so that it shows this task.
+
+#### Memory map of a task
+```
+r0 @ -> ╔════════════════════╗ ─────
+        ║   return stack     ║   ⋀
+rp@  -> ╠═════════════════|══╣   |
+        ║                 ⋁  ║
+        ║       free         ║  rlen
+        ║                 ⋀  ║
+        ╠═════════════════|══╣   |
+        ║     user area      ║   ⋁
+up@  -> ╠════════════════════╣ ─────
+        ║       heap         ║   ⋀
+heap -> ╠════════════════════╣   |
+        ║ (stack underflow)  ║
+s0 @ -> ╠════════════════════╣
+        ║       stack        ║
+sp@  -> ╠═════════════════|══╣  slen
+        ║                 ⋁  ║
+        ║       free         ║
+        ║                 ⋀  ║
+here -> ╠═════════════════|══╣   |
+        ║     dictionary     ║   ⋁
+        ╚════════════════════╝ ─────
+```
+There's a small unused area of 6 bytes between stack and heap to prevent heap
+corruption in case of a small stack underrun.
+
+And typically, the dictionary of any task but the main task will be empty, as
+that is where the outer interpreter is running which usally populates the
+dictionary through definitions. However, `dp` is a user variable, so each task
+has its own `here`, and if a task calls `allot`, the memory will be allocated
+in its own dictionary.
+
+#### Tasks' user areas
+
+A task is characterized by the address of its user area. The tasker's round
+robin loop consists of
+
+
+```
+            task 3: jmp XXXX => task is sleeping
+
+          │    ...    │       task3 + 6
+          ├───────────┤
+          │ jsr (wake │       task3 + 3
+          ├───────────┤
+ ┌> -> -> │ jmp XXXX  │-> ┐   task3 + 0
+ ⋀        └───────────┘   ⋁
+ |     ┌ <- <- <-- <- <- <┘
+ ⋀     ⋁
+ |     |    task 2: bit XXXX => task is active
+ ⋀     ⋁
+ |     |  │    ...    │       task2 + 6
+ ⋀     ⋁  ├───────────┤
+ |     |  │ jsr (wake │       task2 + 3
+ ⋀     ⋁  ├───────────┤
+ |     └> │ bit XXXX  │-> ┐   task2 + 0
+ ⋀        └───────────┘   ⋁
+ |     ┌ <- <- <-- <- <- <┘
+ ⋀     ⋁
+ |     |    task 1: bit XXXX => task is active
+ ⋀     ⋁
+ |     |  │    ...    │       task1 + 6
+ ⋀     ⋁  ├───────────┤
+ |     |  │ jsr (wake │       task1 + 3
+ ⋀     ⋁  ├───────────┤
+ |     └> │ bit XXXX  │-> ┐   task1 + 0
+ ⋀        └───────────┘   ⋁
+ └ <- <- <- <- <-- <- <- <┘
+```
+
+#### Overall memory map
+
+```
+0xFFFF  -> ╔════════════════════╗
+           ║   I/O and ROM      ║
+           ║ (starts at 0x8000, ║
+           ║  0x9F00, 0xD000 or ║
+           ║  0xFD00 depending  ║
+           ║  on platform)      ║
+  limit -> ╠════════════════════╣
+           ║     buffers        ║
+first @ -> ╠════════════════════╣
+           ║     (unused)       ║
+   r0 @ -> ╠════════════════════╣ ─────
+           ║   return stack     ║   ⋀
+   rp@  -> ╠═════════════════|══╣   |
+           ║                 ⋁  ║
+           ║       free         ║  rlen
+           ║                 ⋀  ║
+           ╠═════════════════|══╣   |
+           ║     user area      ║   ⋁
+   up@  -> ╠════════════════════╣ ─────
+           ║       heap         ║   ⋀
+   heap -> ╠════════════════════╣   |
+           ║ (stack underflow)  ║
+   s0 @ -> ╠════════════════════╣
+           ║       stack        ║
+   sp@  -> ╠═════════════════|══╣  slen
+           ║                 ⋁  ║
+           ║       free         ║
+           ║                 ⋀  ║
+   here -> ╠═════════════════|══╣
+           ║                    ║
+           ║     dictionary     ║
+           ║                    ║
+           ╠════════════════════╣   |
+           ║     boot area      ║   ⋁
+ origin -> ╠════════════════════╣ ─────
+           ║  10 SYS(2064)      ║
+           ╠════════════════════╣
+           ║   video memory     ║
+           ╠════════════════════╣
+           ║ Kernal vars        ║
+           ║ 6502 ZP, stack     ║
+           ╚════════════════════╝
+```
+
+#### 6502 zero page
+
+|Label  |  C64  |  C16  |  X16  |
+|-------|-------|-------|-------|
+|N      |0x0029 |0x0029 |0x0067 |
+|W      |0x0021 |0x0021 |0x006F |
+|IP     |0x000E |0x000E |0x005C |
+|NEXT   |0x0009 |0x0009 |0x0057 |
+|SP     |0x0007 |0x0007 |0x0055 |
+|Put A  |0x0006 |0x0006 |0x0054 |
+|UP     |0x0004 |0x0004 |0x0052 |
+|RP     |0x0002 |0x0002 |0x0050 |
 
 
 ## Glossary

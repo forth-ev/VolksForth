@@ -113,7 +113,7 @@ target3.log: \
 	    "Onlyforth" \
 	    "9000 displace !"\
 	    "Target definitions   $100 here!" \
-	    "2 6e thru"
+	    "2 75 thru"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 target2.log: \

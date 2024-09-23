@@ -1,10 +1,13 @@
 
 # The Multitasker
 
-VolksForth comes with a simple but powerful multitasker which allows the creation of printer poolers, clocks, counters and other simple background tasks.
+VolksForth comes with a simple but powerful multitasker which allows the
+creation of printer spoolers, clocks, counters and other simple background
+tasks.
 
-The main characteristic of this multitasker is that it uses cooperative, not
-preemtive multitasking. This means that each task has to explicitly yield
+The main characteristic of this multitasker is that it uses cooperative
+multitasking instad of preemtive multitasking.
+This means that each task has to explicitly yield
 execution control and access to I/O devices to make them available for other
 tasks. However, each task can choose when this happens, esp. when to yield
 execution control. Of course this must happen often enough for all tasks
@@ -84,18 +87,58 @@ of the currently active task and calls the task switcher. The state of a task
 consists of the values of the Instruction Pointer (IP),
 Return stack Pointer (RP) and Stack Pointer (SP).
 
-The task switcher consists of a closed loop
-(see picture). Each task contains a machine code jump on
-the next task ("jmp XXXX" in the picture), followed by
-"jsr (wake) in the picture. At the address, on
-which the jump command aims, are located
-Instructions of the next task. If this task is stopped,
-there is also a machine code jump to the next task
-made. If, on the other hand, the task is active,
-the (non-executive) BIT command has been replaced. The
-follows the call of the wake-up procedure. This procedure invites
-state of task (consisting of SP ‘a RP and IP) and sets the
-Userpointer (UP), so that it shows this task.
+The task switcher consists of a closed round-robin loop made up of the
+first 6 bytes of the user area of each task.
+See the picture [Tasks' user areas](#tasks-user-areas) in the
+[Memory map](#memory-map) section.
+Each task's user area starts with a machine code jump to
+the next task's user area (`JMP XXXX` in the picture), followed by
+`JSR wake`. `wake` is the task wake-up routine which sets UP to the task's
+user area address calculated from return address left by the `jsr`,
+restores SP from `user area + 6`and then restores RP and IP from the task's
+data stack. The task's state is thereby restored, and the next iteration of
+`NEXT` will call the task's next word, the one following the `PAUSE` that was
+last invoked by the task.
+
+A trick is employed to switch a task between active and inactive.
+The JMP XXXX instruction at the user area's start, as described above, marks
+an inactive task. When the round-robin loop reaches the task, the JMP
+immediately forwards execution to the next task; the `JSR wake` is never
+reached. For an active task, the JMP opcode is replaced by a BIT opcode (0x2c),
+so that, when the task is jumped to, execution does reach the `JMP wake`
+instruction, and the task runs until its reaaches the next `PAUSE`, which takes
+the address of the BIT instruction for an indirect jump to the next task.
+
+`SINGLETASK` changes `PAUSE` into a fast no-op so that no task change at all
+takes place when `PAUSE` is called. This is the default of a VolksForth
+system without loaded multitasker. `MULTITASK` enables the task-switching
+behaviour of `PAUSE`.
+
+The system supports the multitasker by invoking `PAUSE` during many I/O
+operations such as `KEY`, `TYPE` and `BLOCK`. In many situations this is
+already sufficient for a task (e.g. the printer pooler) to run smoothly.
+In other situations a suitable placement of `PAUSE` calls within foreground
+or background task code may be useful.
+
+Tasks are created in the dictionary of the foreground or console task. Each
+task has its own user area with a copy of the user variables.
+The implementation of the system is, however, simplified through the
+restriction that only the console task can interpret or compile input text.
+There is e.g. only one vocabulary search order across the system; if one task
+changes the search order, this affects all other tasks, too. But this is not
+really disturbing, since only the console task should use the search order
+anyway.
+
+Incidentally, it is possible to forget active tasks: `FORGET` removes all
+tasks from the round-robin loop that are located in the dictionary range to
+forget. This can still go wrong, though, if the forgotten task holds a
+"Semaphor" (see below). Semaphores are not released during forgetting,
+and the associated device will remain blocked.
+
+Finally, it should be mentioned that when invoking a task name, the address
+of the task's user area will be placed on the stack.
+
+## Memory map
 
 #### Memory map of a task
 ```
@@ -124,8 +167,8 @@ here -> ╠═════════════════|══╣   |
 There's a small unused area of 6 bytes between stack and heap to prevent heap
 corruption in case of a small stack underrun.
 
-And typically, the dictionary of any task but the main task will be empty, as
-that is where the outer interpreter is running which usally populates the
+And typically, the dictionary of any task but the console task will be empty,
+as that is where the outer interpreter is running which usally populates the
 dictionary through definitions. However, `dp` is a user variable, so each task
 has its own `here`, and if a task calls `allot`, the memory will be allocated
 in its own dictionary.
@@ -141,7 +184,7 @@ robin loop consists of
 
           │    ...    │       task3 + 6
           ├───────────┤
-          │ jsr (wake │       task3 + 3
+          │ jsr wake  │       task3 + 3
           ├───────────┤
  ┌> -> -> │ jmp XXXX  │-> ┐   task3 + 0
  ⋀        └───────────┘   ⋁
@@ -151,7 +194,7 @@ robin loop consists of
  ⋀     ⋁
  |     |  │    ...    │       task2 + 6
  ⋀     ⋁  ├───────────┤
- |     |  │ jsr (wake │       task2 + 3
+ |     |  │ jsr wake  │       task2 + 3
  ⋀     ⋁  ├───────────┤
  |     └> │ bit XXXX  │-> ┐   task2 + 0
  ⋀        └───────────┘   ⋁
@@ -161,7 +204,7 @@ robin loop consists of
  ⋀     ⋁
  |     |  │    ...    │       task1 + 6
  ⋀     ⋁  ├───────────┤
- |     |  │ jsr (wake │       task1 + 3
+ |     |  │ jsr wake  │       task1 + 3
  ⋀     ⋁  ├───────────┤
  |     └> │ bit XXXX  │-> ┐   task1 + 0
  ⋀        └───────────┘   ⋁

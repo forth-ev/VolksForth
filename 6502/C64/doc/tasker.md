@@ -140,6 +140,98 @@ of the task's user area will be placed on the stack.
 
 ## Memory map
 
+The memory used by VolksForth ranges from
+`ORIGIN` to `LIMIT` . Below `ORIGIN` are the
+Kernal variables, the screen memory and a single line of
+BASIC with a `SYS` command that starts VolksForth.
+Beyond `LIMIT` are I/O ports and the Kernal ROM.
+
+Just below `LIMIT` the block buffers are stored; each with a size
+of 1 Kbyte tall. When the system starts, as many buffers are
+allocated as fit between `R0` and `LIMIT`.
+
+The rest of the system, located between `ORIGIN` and `RO`, consists of
+two areas. The upper area contains the return stack (growing downwards,
+starting at `RO @`) and the user area (growing upwards, starting at `UP@`).
+
+The dictionary and the data stack plus the heap occupy the other area.
+Heap and data stack grow downwards, the heap from `UP@` and the data stack
+from `S0 @`.
+When the heap grows, the data stack is automatically moved downwards.
+New words are stored in the dictionary, which is the fastest-growing
+part of the system during compilation. Therefore the system automatically
+checks that dictionary and data stack don't collide.
+
+The Bootarea finally contains the initial values of the user
+variables, which is copied during the cold start from there into the
+console task's user area.
+
+#### Overall memory map
+
+```
+0xFFFF  -> ╔════════════════════╗
+           ║   I/O and ROM      ║
+           ║ (starts at 0x8000, ║
+           ║  0x9F00, 0xD000 or ║
+           ║  0xFD00 depending  ║
+           ║  on platform)      ║
+  limit -> ╠════════════════════╣
+           ║     buffers        ║
+first @ -> ╠════════════════════╣
+           ║     (unused)       ║
+   r0 @ -> ╠════════════════════╣ ─────
+           ║   return stack     ║   ⋀
+   rp@  -> ╠═════════════════|══╣   |
+           ║                 ⋁  ║
+           ║       free         ║  rlen
+           ║                 ⋀  ║
+           ╠═════════════════|══╣   |
+           ║     user area      ║   ⋁
+   up@  -> ╠════════════════════╣ ─────
+           ║       heap         ║   ⋀
+   heap -> ╠════════════════════╣   |
+           ║ (stack underflow)  ║
+   s0 @ -> ╠════════════════════╣
+           ║       stack        ║
+   sp@  -> ╠═════════════════|══╣  slen
+           ║                 ⋁  ║
+           ║       free         ║
+           ║                 ⋀  ║
+   here -> ╠═════════════════|══╣
+           ║                    ║
+           ║     dictionary     ║
+           ║                    ║
+           ╠════════════════════╣   |
+           ║     boot area      ║   ⋁
+ origin -> ╠════════════════════╣ ─────
+           ║   10 SYS (2064)    ║       SYS (4112) on the C16
+           ╠════════════════════╣
+           ║   video memory     ║
+           ╠════════════════════╣
+           ║ Kernal vars        ║
+           ║ 6502 ZP, stack     ║
+           ╚════════════════════╝
+```
+
+#### 6502 zero page
+
+The system also uses zero page memory, with the inner interpreter `NEXT`
+and the stack pointers `RP` and `SP`, among others.
+
+
+|Label  |  C64  |  C16  |  X16  |
+|-------|-------|-------|-------|
+|N      |0x0029 |0x0029 |0x0067 |
+|W      |0x0021 |0x0021 |0x006F |
+|IP     |0x000E |0x000E |0x005C |
+|NEXT   |0x0009 |0x0009 |0x0057 |
+|SP     |0x0007 |0x0007 |0x0055 |
+|Put A  |0x0006 |0x0006 |0x0054 |
+|UP     |0x0004 |0x0004 |0x0052 |
+|RP     |0x0002 |0x0002 |0x0050 |
+
+
+
 #### Memory map of a task
 ```
 r0 @ -> ╔════════════════════╗ ─────
@@ -210,66 +302,6 @@ robin loop consists of
  ⋀        └───────────┘   ⋁
  └ <- <- <- <- <-- <- <- <┘
 ```
-
-#### Overall memory map
-
-```
-0xFFFF  -> ╔════════════════════╗
-           ║   I/O and ROM      ║
-           ║ (starts at 0x8000, ║
-           ║  0x9F00, 0xD000 or ║
-           ║  0xFD00 depending  ║
-           ║  on platform)      ║
-  limit -> ╠════════════════════╣
-           ║     buffers        ║
-first @ -> ╠════════════════════╣
-           ║     (unused)       ║
-   r0 @ -> ╠════════════════════╣ ─────
-           ║   return stack     ║   ⋀
-   rp@  -> ╠═════════════════|══╣   |
-           ║                 ⋁  ║
-           ║       free         ║  rlen
-           ║                 ⋀  ║
-           ╠═════════════════|══╣   |
-           ║     user area      ║   ⋁
-   up@  -> ╠════════════════════╣ ─────
-           ║       heap         ║   ⋀
-   heap -> ╠════════════════════╣   |
-           ║ (stack underflow)  ║
-   s0 @ -> ╠════════════════════╣
-           ║       stack        ║
-   sp@  -> ╠═════════════════|══╣  slen
-           ║                 ⋁  ║
-           ║       free         ║
-           ║                 ⋀  ║
-   here -> ╠═════════════════|══╣
-           ║                    ║
-           ║     dictionary     ║
-           ║                    ║
-           ╠════════════════════╣   |
-           ║     boot area      ║   ⋁
- origin -> ╠════════════════════╣ ─────
-           ║  10 SYS(2064)      ║
-           ╠════════════════════╣
-           ║   video memory     ║
-           ╠════════════════════╣
-           ║ Kernal vars        ║
-           ║ 6502 ZP, stack     ║
-           ╚════════════════════╝
-```
-
-#### 6502 zero page
-
-|Label  |  C64  |  C16  |  X16  |
-|-------|-------|-------|-------|
-|N      |0x0029 |0x0029 |0x0067 |
-|W      |0x0021 |0x0021 |0x006F |
-|IP     |0x000E |0x000E |0x005C |
-|NEXT   |0x0009 |0x0009 |0x0057 |
-|SP     |0x0007 |0x0007 |0x0055 |
-|Put A  |0x0006 |0x0006 |0x0054 |
-|UP     |0x0004 |0x0004 |0x0052 |
-|RP     |0x0002 |0x0002 |0x0050 |
 
 
 ## Glossary

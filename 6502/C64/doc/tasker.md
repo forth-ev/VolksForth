@@ -261,8 +261,8 @@ corruption in case of a small stack underrun.
 
 And typically, the dictionary of any task but the console task will be empty,
 as that is where the outer interpreter is running which usally populates the
-dictionary through definitions. However, `dp` is a user variable, so each task
-has its own `here`, and if a task calls `allot`, the memory will be allocated
+dictionary through definitions. However, `DP` is a user variable, so each task
+has its own `HERE`, and if a task calls `ALLOT`, the memory will be allocated
 in its own dictionary.
 
 #### Tasks' user areas
@@ -303,6 +303,57 @@ robin loop consists of
  └ <- <- <- <- <-- <- <- <┘
 ```
 
+## Semaphores and LOCK
+
+A problem that has not yet been mentioned: what happens when two tasks want to
+print or access the disk drive simultaneously? Obviously, I/O devices may
+at any time be used by only one task. This is achieved using Semaphores:
+
+```
+  Create disp 0,
+  : newtype disp lock type disp unlock;
+```
+
+This has the following effect:
+
+If two tasks call `NEWTYPE` at the same time, still only task at a time will
+get to run `TYPE`, regardless of how many `PAUSE` are included in `TYPE`.
+The phrase `DISP LOCK` will set up a barrier after the first task that performs
+it, like switching a traffic light to red, and lets no other task pass.
+The other task is held until the first task switches the traffic light to
+green again via `DISP UNLOCK`. Then one (!) other task can pass the traffic
+light, switching it red again, and so on.
+
+By the way, the task that switched the traffic lights to red will not be
+stopped by another `DISP LOCK` but will be let through. This is
+necessary since `TYPE` could also contain a `DISP LOCK`.
+(It doesn't in the above example, but it is conceivable.)
+
+The implementation looks like this:
+(Remember that every task is uniquely identifiable by the its user area
+address.)
+
+`DISP` is the so-called Semaphore; it must have the initial value 0.
+
+`LOCK` looks at the Semaphore:
+If it is zero, then the currently asctive task (i.e. its user area address)
+is written to the semaphore, and the task may continue on its way.
+If the value of the semaphore is the active task, then it may continue, too.
+But if the value of the semaphore deviates from the active task's user area
+address, then another task is active behind the traffic light, and the task
+must `PAUSE` until the light turns green again, i.e. until the semaphore is
+zero.
+
+`UNLOCK` has nothing more to do than to set the value of the semaphore back to
+zero.
+
+`BLOCK` and `BUFFER` are, by the way, secured in this way for use by several
+tasks:
+only one task can request the loading of a blocks from the diskette at any given
+time.
+Whether `TYPE`, `EMIT`, etc. are also secured depends on their implementation -
+`TYPE`, `EMIT`, etc are essentially deferred words with different possible
+implementations.
 
 ## Glossary
 

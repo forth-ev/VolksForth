@@ -349,11 +349,87 @@ zero.
 
 `BLOCK` and `BUFFER` are, by the way, secured in this way for use by several
 tasks:
-only one task can request the loading of a blocks from the diskette at any given
+only one task can request the loading of a block from the diskette at any given
 time.
 Whether `TYPE`, `EMIT`, etc. are also secured depends on their implementation -
 `TYPE`, `EMIT`, etc are essentially deferred words with different possible
 implementations.
+
+## Remarks regarding BLOCK and a few other things
+
+As can be seen from the glossary, only the address of the block buffer last
+requested with `BLOCK` or `BUFFER` is valid, i.e. older blocks, depending on
+the number of block buffers, may already be stored on the disk again. To be
+on the safe side, it is useful to imagine that only one block buffer exists
+in the entire system.
+
+Now any task can run `BLOCK` and thus remove blocks from "under the feet"
+of other tasks.
+Therefore, one should not continue to use the address of a block after calling
+a word that performs `PAUSE` performs. One should rather request the block
+using `BLOCK` again. An example:
+
+```
+  : .line ( block -- )
+    block c/l bounds DO I c@ emit LOOP ;
+```
+
+is WRONG because after `EMIT` the address range the address range that the
+loop index steps through may no longer be correct.
+
+```
+  : .line ( block -- )
+    c/1 0 DO dup block I + c@ emit LOOP drop ;
+```
+
+is CORRECT because it only keeps the number of the block, not the address of
+its buffer.
+
+```
+  : .line ( block -- ) block c/l type ;
+```
+is WRONG since `TYPE` may call `EMIT` repeatedly, and thus the address
+delivered by `BLOCK` may become invalid during `TYPE`.
+
+```
+  : >type ( adr len -- ) >r pad r@ cmove pad r> type ;
+  : .line -( block -—) block c/l >type ;
+```
+is CORRECT because `PAD` is different for each task.
+
+In version 3.8 the word LIST was changed in such a way that it can be stopped
+and terminated by pressing buttons, similar to `INDEX`. This entails certain
+problems when this word is used in a task (e.g. a printer pooler). In this
+case, both the console task and the tasks containing the word LIST attempt
+to read inputs from the keyboard. If you type a text, the individual
+characters are randomly distributed to the two tasks. Therefore, each task
+(of course with the exception of the console task) should define its input
+vector so that you cannot receive inputs.
+
+The following code snippet contains an input vector that does not allow inputs.
+See section Vectors in chapter Vectors and Deferred Words about defining
+input or output vectors using `Input:` or  `Output:`.
+TODO: Add link once chapter Vectors and Deferred Words is translated.
+
+```
+  : halt ." Task gestoppt!” stop ;  \ completely stops the task
+
+  Input: nul-Input halt false drop halt ;
+  \ instead of: key key? decode expect
+```
+
+Another implementation of `KEY` for background tasks could be one that always
+return a constant harmless character. Whether that works and with which
+character must of course be decided for each application.
+With `EXPECT` it is hard to envision a better solution, since `EXPECT` is
+intended to change the `SPAN` variable which is a global variable, not a
+per-task user variable.
+
+One more note: A background task should not perform `ABORT"` or a similar word.
+If it did, the task would become like the console task, resulting in a system
+crash. Even if this possibility of error is intercepted and the task is
+stopped, the problem remains that semaphores can still be "locked" on this task
+and thus the use of certain parts of the forth remains blocked!
 
 ## Glossary
 

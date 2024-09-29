@@ -20,6 +20,11 @@ The latest release zip file `volksforth-6502-c64-release.zip` contains
     * `v4th-x16e` - Commander X16 kernel with added X16Edit and
       DOS commands
 
+* `doc/` - documentation, the beginning of an English translation
+  of the original German VolksForth/UltraForth manual for C64 and C16,
+  with some X16 specifics added.
+    * [`tasker.md`](doc/tasker.md) - the chapter about the multitasker
+
 * `src/` - sources
     * `v4th*.fth` - the binaries' main files
     * `vf-*.fth` - sources from which VolksForth
@@ -79,6 +84,11 @@ when the X16 Kernal changes.
 
 A secondary topic if this release is more bundled Forth sources, which are
 now also better described (see Release content above).
+
+And a third topic is the beginning of an English translation of the
+original German VolksForth/UltraForth manual for C64 and C16.
+Since this release affects some multitasking behaviour, the translation
+was started with the [chapter about the multitasker](doc/tasker.md).
 
 Changes affecting only the X16 VolksForth kernel:
 

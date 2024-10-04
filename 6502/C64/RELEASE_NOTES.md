@@ -71,7 +71,7 @@ The following version descriptions are only valid for VolksForth 6502-C64
 releases. As of now (June 2024), the different VolksForth platforms
 (6502, 68k, 8080, 8086) don't have shared code or shared versioning.
 
-### 6502-C64 3.9.6 - in preparation
+### 6502-C64 3.9.6
 
 Main topic of this release is the removal of all usages of Kernal variable
 uses esp. in the X16 VolksForth kernel. Because the addresses of Kernal

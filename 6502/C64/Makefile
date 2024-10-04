@@ -19,6 +19,7 @@ test_files = $(wildcard tests/*.f*)
 test_files_petscii = $(patsubst tests/%, cbmfiles/%, $(test_files))
 test_logs = $(patsubst %, test-%.log, $(vf_flavours))
 test_resuls = $(patsubst %, test-%.result, $(vf_flavours))
+test_keyboard_input = some 12345 keys
 
 release_zipfile = volksforth-6502-c64-release.zip
 
@@ -35,6 +36,7 @@ clean:
 	rm -f *.log *.result *.golden
 	rm -f cbmfiles/c??-testbase
 	rm -f disks/scratch.d64 emulator/sdcard.img
+	rm -f tests/golden/mycore*.golden
 
 
 # Convenience targets
@@ -42,6 +44,8 @@ clean:
 binaries: $(vf_binaries)
 
 test: $(test_resuls)
+
+alltests: test test-v4th-x16-tsk.result
 
 test64: std64 blk64
 
@@ -61,6 +65,18 @@ run-testbase: emulator/testbase.T64
 
 run-testbase16: emulator/testbase16.T64
 	VICE=xplus4 emulator/run-in-vice.sh testbase16
+
+run-c64: emulator/v4th-c64.T64 $(all_src_files_petscii)
+	emulator/run-in-vice.sh v4th-c64
+
+run-c16+: emulator/v4th-c16+.T64 $(all_src_files_petscii)
+	VICE=xplus4 emulator/run-in-vice.sh v4th-c16+
+
+run-c16-: emulator/v4th-c16-.T64 $(all_src_files_petscii)
+	VICE=xplus4 emulator/run-in-vice.sh v4th-c16-
+
+run-x16: cbmfiles/v4th-x16 $(all_src_files_petscii) | emulator/sdcard.img
+	emulator/run-in-x16emu.sh v4th-x16
 
 
 release: tmp/$(release_zipfile) COPYING RELEASE_NOTES.md
@@ -124,57 +140,57 @@ cbmfiles/v4th-x16e:
 
 # Core test targets
 
-$(test_logs): $(test_files_petscii) emulator/run-in-vice.sh
+$(test_logs): $(test_files_petscii) $(wildcard emulator/run-in-*.sh)
 
 test-v4thblk-c64.log: emulator/v4thblk-c64.T64 disks/empty.d64
 	rm -f cbmfiles/test.log disks/scratch.d64
 	cp disks/empty.d64 disks/scratch.d64
 	DISK9=scratch emulator/run-in-vice.sh v4thblk-c64 \
-	  "include run-blk-tests.fth\n1234567890"
+	  "include run-blk-tests.fth\n$(test_keyboard_input)"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4th-c64.log: emulator/v4th-c64.T64
 	rm -f cbmfiles/test.log
 	emulator/run-in-vice.sh v4th-c64 \
-	  "include run-std-tests.fth\n1234567890"
+	  "include run-std-tests.fth\n$(test_keyboard_input)"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4thblk-c16+.log: emulator/v4thblk-c16+.T64 disks/empty.d64
 	rm -f cbmfiles/test.log disks/scratch.d64
 	cp disks/empty.d64 disks/scratch.d64
 	VICE=xplus4 DISK9=scratch emulator/run-in-vice.sh v4thblk-c16+ \
-	  "include run-blk-tests.fth\n1234567890"
+	  "include run-blk-tests.fth\n$(test_keyboard_input)"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4th-c16+.log: emulator/v4th-c16+.T64
 	rm -f cbmfiles/test.log
 	VICE=xplus4 emulator/run-in-vice.sh v4th-c16+ \
-	  "include run-std-tests.fth\n1234567890"
+	  "include run-std-tests.fth\n$(test_keyboard_input)"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4thblk-c16-.log: emulator/v4thblk-c16-.T64
 	rm -f cbmfiles/test.log
 	VICE=xplus4 emulator/run-in-vice.sh v4thblk-c16- \
-	  "include run-min-tests.fth\n1234567890"
+	  "include run-min-tests.fth\n$(test_keyboard_input)"
 	petscii2ascii cbmfiles/test.log $@
 
 test-v4th-c16-.log: emulator/v4th-c16-.T64
 	rm -f cbmfiles/test.log
 	VICE=xplus4 emulator/run-in-vice.sh v4th-c16- \
-	  "include run-std-tests.fth\n1234567890"
+	  "include run-std-tests.fth\n$(test_keyboard_input)"
 	petscii2ascii cbmfiles/test.log $@
 
-test-v4th-x16.log: cbmfiles/v4th-x16 emulator/sdcard.img
+test-v4th-x16.log: cbmfiles/v4th-x16 | emulator/sdcard.img
 	rm -f cbmfiles/test.log
 	emulator/run-in-x16emu.sh v4th-x16 \
-	  "include run-std-tests.fth\n1234567890"
+	  "include run-std-tests.fth\n$(test_keyboard_input)"
 	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
 	petscii2ascii cbmfiles/test.log $@
 
-test-v4th-x16e.log: cbmfiles/v4th-x16e emulator/sdcard.img
+test-v4th-x16e.log: cbmfiles/v4th-x16e | emulator/sdcard.img
 	rm -f cbmfiles/test.log
 	emulator/run-in-x16emu.sh v4th-x16e \
-	  "include run-std-tests.fth\n1234567890"
+	  "include run-std-tests.fth\n$(test_keyboard_input)"
 	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
 	petscii2ascii cbmfiles/test.log $@
 
@@ -190,35 +206,60 @@ emulator/sdcard.img: emulator/sdcard.sfdisk
 	mv $@.tmp $@
 
 test-v4thblk-c64.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core coreext double block report-blk)
+    prelim mycore-echo coreext double block report-blk)
 	cat $^ > $@
 
 test-v4th-c64.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core coreext double report-noblk)
+    prelim mycore-echo coreext double report-noblk)
 	cat $^ > $@
 
 test-v4thblk-c16+.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core coreext double block report-blk)
+    prelim mycore-echo coreext double block report-blk)
 	cat $^ > $@
 
 test-v4th-c16+.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core coreext double report-noblk)
+    prelim mycore-echo coreext double report-noblk)
 	cat $^ > $@
 
 test-v4thblk-c16-.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core)
+    prelim mycore-echo)
 	cat $^ > $@
 
 test-v4th-c16-.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core coreext double report-noblk)
+    prelim mycore-echo coreext double report-noblk)
 	cat $^ > $@
 
 test-v4th-x16.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core coreext double report-noblk)
+    prelim mycore-noecho coreext double report-noblk)
 	cat $^ > $@
 
 test-v4th-x16e.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core coreext double report-noblk)
+    prelim mycore-noecho coreext double report-noblk)
+	cat $^ > $@
+
+tests/golden/mycore-echo.golden: tests/golden/core-template.golden
+	sed -e 's/TMPL_KEYS_ECHO_TMPL/$(test_keyboard_input)/' \
+	   -e 's/TMPL_KEYS_RECEIVED_TMPL/$(test_keyboard_input)/' $< >$@
+
+tests/golden/mycore-noecho.golden: tests/golden/core-template.golden
+	sed -e 's/TMPL_KEYS_ECHO_TMPL//' \
+	   -e 's/TMPL_KEYS_RECEIVED_TMPL/$(test_keyboard_input)/' $< >$@
+
+# Sample test with a changed input that would run the tasker
+# even while waiting for keyboard input:
+test-v4th-x16-tsk.log: cbmfiles/v4th-x16 \
+    $(test_files_petscii) $(wildcard emulator/run-in-*.sh) \
+    cbmfiles/6502asm.fth cbmfiles/trns6502asm.fth \
+    cbmfiles/vf-lbls-cbm.fth cbmfiles/x16input-tsk.fth \
+    | emulator/sdcard.img
+	rm -f cbmfiles/test.log
+	emulator/run-in-x16emu.sh v4th-x16 \
+	  "include x16input-tsk.fth\ninclude run-min-tests.fth\n$(test_keyboard_input)"
+	mcopy -i emulator/sdcard.img ::TEST.LOG cbmfiles/test.log
+	petscii2ascii cbmfiles/test.log $@
+
+test-v4th-x16-tsk.golden: $(patsubst %, tests/golden/%.golden, \
+    prelim mycore-echo)
 	cat $^ > $@
 
 # Rules for building Forth binaries on top of the plain vanilla

@@ -2,6 +2,25 @@
 
 * C64/C16/Plus4/CommanderX16
 
+See also [[6502/C64/RELEASE_NOTES.md]]
+
+*3.9.6*
+
+ * Removes all known dependencies of the X16 VolksForth kernel on
+ undocumented X16 Kernal variables and thus (hopefully) on specific
+ X16 ROM versions. This has some implications on multitasking behaviour
+ while waiting for console input.
+ * Adds more bundled Forth sources from the original disks.
+ * Starts an English translation of the original German manual with a
+ translation of the chapter on the multitasker. 
+
+*3.9.5*
+
+ * X16 version adapted to the X16 ROM version R46. It also runs with
+ the R47 ROM.
+ * Adds a second X16 binary with a word (XED) use the ROM-based editor
+  X16Edit, and with some DOS and file support (DIR, CAT, DOS).
+
 *3.9.4*
 
  * X16 version adapted to Kernal/Emulator version R41

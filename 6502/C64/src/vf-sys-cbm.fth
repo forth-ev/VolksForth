@@ -1,32 +1,4 @@
 
-\ *** Block No. 131, Hexblock 83
-83 fthpage
-
-( #bs #cr ..keyboard         clv12.4.87)
-
-: c64key  ( -- 8b)
- curon BEGIN pause c64key?  UNTIL
- curoff getkey ;
-
-14 Constant #bs   0D Constant #cr
-
-: c64decode
- ( addr cnt1 key -- addr cnt2)
-  #bs case?  IF  dup  IF del 1- THEN
-                            exit  THEN
-  #cr case?  IF  dup span ! exit THEN
-  >r  2dup +  r@ swap c!  r> emit  1+ ;
-
-: c64expect ( addr len1 -- )
- span !  0
- BEGIN  dup span @  u<
- WHILE  key  decode
- REPEAT 2drop space ;
-
-Input: keyboard   [ here input ! ]
- c64key c64key? c64decode c64expect ;
-
-
 \ *** Block No. 132, Hexblock 84
 84 fthpage
 
@@ -34,7 +6,15 @@ Input: keyboard   [ here input ! ]
 
 Code con!  ( 8b --)   SP X) lda
 Label (con!     ConOut jsr    SP 2inc
-Label (con!end  CurFlg stx InsCnt stx
+Label (con!end
+\ So far VolksForth switches off quote switch and insert count
+\ after every printed character. This introduces a dependency
+\ on Kernal variables QtSw and Insrt that are undesirable on the
+\ X16 where their addresses may change between Kernal versions.
+\ Therefore we'll try how the system behaves without them on the
+\ X16. Possibly this isn't needed at all, in the end.
+(C64 QtSw stx Insrt stx )
+(C16 QtSw stx Insrt stx )
  1 # ldy ;c:  pause ;
 
 Label (printable?   \ for CBM-Code !
@@ -150,8 +130,10 @@ Label nodevice     0 # ldx  1 # ldy
 
 \ ?device                     clv12jul87
 
-Label (?dev
- IOStatus stx  \ because IOStatus isn't cleared by LISTEN or TALK
+Label (?dev  ( a: dev )
+ \ Clear IOStatus because it isn't cleared by LISTEN or TALK
+ (C64 IOStatus stx ( ) (C16 IOStatus stx ( )
+ (X16 pha  1 # lda  ExtApi jsr  pla ( )
  \ It's unclear in which situation or use case the following
  \ workaround for a C16 OS error is needed. The v4th tests pass
  \ even with the following line removed.
@@ -169,7 +151,7 @@ Label (?dev
  i/o lock  (?device ;
 
  Code (busout  ( dev 2nd -- )
- MsgFlg stx  2 # lda  Setup jsr
+ 2 # lda  Setup jsr
  N 2+ lda  (?dev jsr
  N 2+ lda  LISTEN jsr
  N lda  60 # ora SECOND jsr
@@ -192,7 +174,7 @@ Label (?dev
  0E0 or busout busoff ;
 
  Code (busin  ( dev 2nd -- )
- MsgFlg stx  2 # lda  Setup jsr
+ 2 # lda  Setup jsr
  N 2+ lda  (?dev jsr
  N 2+ lda  TALK jsr
  N lda  60 # ora (C16 $ad sta ( )

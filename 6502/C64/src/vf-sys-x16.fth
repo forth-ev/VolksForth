@@ -7,36 +7,22 @@ include vf-lbls-cbm.fth
 
 0ffd2 >label ConOut
 0febd >label KbdbufPeek
- 0289 >label IOStatus
- 028c >label MsgFlg
+0feab >label ExtApi
 09f2c >label BrdCol
- 0266 >label BkgCol
- 0284 >label PenCol
- 0381 >label CurFlg  \ aka qtsw
- 0385 >label InsCnt  \ aka insrt
+\ I'm tentatively removing QtSw & Insrt from the X16 variant;
+\ see comment at the top of vf-sys-cbm.fth
+\ 0381 >label QtSw
+\ 0385 >label Insrt
 
 1 >label RomBank
 0 >label RamBank
 
-  037B >label blnsw  \ C64: $cc
-\   037C >label blnct  \ C64: $cd
-\   037D >label gdbln  \ C64: $ce
-\   037E >label blnon  \ C64: $cf
-\   0262 >label pnt    \ C64: $d1
-\   0380 >label pntr   \ C64: $d3
-\   0373 >label gdcol
-
-\ C64 labels that X16 doesn't have:
-
-\ 028a >label KeyRep  \ aka rptflg
-
-
 \ *** Block No. 129, Hexblock 81
 81 fthpage
 
-\ X16 c64key? getkey
+\ X16 x16key? getkey
 
-Code c64key? ( -- flag)
+Code x16key? ( -- flag)
  KbdbufPeek jsr
  txa  pha
  Push jmp  end-code
@@ -46,16 +32,33 @@ Code getkey  ( -- 8b)
  Push0A jmp   end-code
 
 
-\ *** Block No. 130, Hexblock 82
-82 fthpage
+\ *** Block No. 131, Hexblock 83
+83 fthpage
 
-\ X16 curon curoff
+( #bs #cr ..keyboard         clv12.4.87)
 
-Code curon   ( --)
-  blnsw stx  Next jmp  end-code
+: x16key  ( -- 8b)
+ BEGIN pause x16key? UNTIL getkey ;
 
-Code curoff   ( --)
-  blnsw sty  Next jmp  end-code
+14 Constant #bs   0D Constant #cr
+
+: x16decode
+ ( addr cnt1 key -- addr cnt2)
+  #cr case?  IF  dup span ! exit THEN
+  >r  2dup +  r> swap c!  1+ ;
+
+Code basin  ( -- 8b)
+ CHRIN jsr
+ Push0A jmp   end-code
+
+: x16expect ( addr len1 -- )
+ span !  0
+ BEGIN  dup span @  u<
+ WHILE  basin  x16decode
+ REPEAT 2drop space ;
+
+Input: keyboard   [ here input ! ]
+ x16key x16key? x16decode x16expect ;
 
 
 include vf-sys-cbm.fth
@@ -65,11 +68,9 @@ include vf-sys-cbm.fth
 \ ... continued
 8f fthpage
 
-Create ink-pot
-\ border bkgnd pen  0
-  6 c,   6 c,  3 c, 0 c,  \ Forth
- 0E c,   6 c,  3 c, 0 c,  \ Edi
-  6 c,   6 c,  3 c, 0 c,  \ User
+Create x16-ink-pot
+\ border bkgnd-color-petscii pen-color-petscii
+  6 c,   $1f c,  $9f c,  \ Forth
 
 
 \ *** Block No. 144, Hexblock 90
@@ -95,9 +96,10 @@ Label first-init
  sei cld
  RomBank lda  $f8 # and  RomBank sta \ map in KERNAL ROM
  IOINIT jsr  CINT jsr  RESTOR jsr  \ init. and set I/O-Vectors
- ink-pot    lda BrdCol sta \ border
- ink-pot 1+ lda BkgCol sta \ backgrnd
- ink-pot 2+ lda PenCol sta \ pen
+ x16-ink-pot    lda BrdCol sta  \ border
+ x16-ink-pot 1+ lda  ConOut jsr  \ backgrnd
+ 1 # lda  ConOut jsr  \ swap backgrnd <-> pen
+ x16-ink-pot 2+ lda  ConOut jsr  \ pen
  $0e # lda  ConOut jsr  \ lower/uppercase
  cli rts end-code
 first-init dup bootsystem 1+ !

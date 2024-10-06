@@ -5,7 +5,7 @@
 \ tmpclear will remove all words on the tmpheap, wheras regular clear
 \ will remove all words on tmpheap and heap together.
 
-\ Other than the reference tmpheap living on the regular heap, this
+\ In contrast to the reference tmpheap living on the regular heap, this
 \ custom tmpheap needs no initialization as its position and
 \ size (8k) is fixed.
 

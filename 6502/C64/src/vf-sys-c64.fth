@@ -8,12 +8,11 @@ include vf-lbls-cbm.fth
 
 0E716 >label ConOut
   090 >label IOStatus
-  09d >label MsgFlg
 0d020 >label BrdCol
 0d021 >label BkgCol
  0286 >label PenCol
-  0d4 >label CurFlg
-  0d8 >label InsCnt
+  0d4 >label QtSw
+  0d8 >label Insrt
  028a >label KeyRep
 
   0cc >label blnsw
@@ -57,6 +56,34 @@ Code curoff   ( --)
  iny  blnsw sty  blnct sty  blnon stx
  gdbln lda  pntr ldy  pnt )Y sta
  1 # ldy  Next jmp   end-code
+
+
+\ *** Block No. 131, Hexblock 83
+83 fthpage
+
+( #bs #cr ..keyboard         clv12.4.87)
+
+: c64key  ( -- 8b)
+ curon BEGIN pause c64key?  UNTIL
+ curoff getkey ;
+
+14 Constant #bs   0D Constant #cr
+
+: c64decode
+ ( addr cnt1 key -- addr cnt2)
+  #bs case?  IF  dup  IF del 1- THEN
+                            exit  THEN
+  #cr case?  IF  dup span ! exit THEN
+  >r  2dup +  r@ swap c!  r> emit  1+ ;
+
+: c64expect ( addr len1 -- )
+ span !  0
+ BEGIN  dup span @  u<
+ WHILE  key  decode
+ REPEAT 2drop space ;
+
+Input: keyboard   [ here input ! ]
+ c64key c64key? c64decode c64expect ;
 
 
 include vf-sys-cbm.fth

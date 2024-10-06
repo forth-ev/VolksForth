@@ -84,7 +84,7 @@ target0.log: \
 	    "include source2.fb"
 	#vdos2unix -n $(runcpmdir)/logfile.txt $@
 
-target1.log: \
+v4th.com: \
     $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
     include.fb log2file.fb target.fb source.fb) \
     | emu
@@ -97,7 +97,8 @@ target1.log: \
 	    "logclose" \
 	    "bye" \
 	    "exit"
-	dos2unix -n $(runcpmdir)/logfile.txt $@
+	dos2unix -n $(runcpmdir)/logfile.txt $@.log
+	cp $(runcpmdir)/A/0/KERNEL.COM $@
 
 target3.log: \
     $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
@@ -161,9 +162,26 @@ test-min.log: \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
+test-v4th.log: \
+    $(patsubst %, $(cpmfilesdir)/%, v4th.com fileint.fb \
+    include.fb log2file.fb \
+    ans-shim.fth prelim.fth tester.fth core.fr test-min.fth) \
+    | emu
+	./emulator/run-in-runcpm.sh \
+	    "v4th fileint.fb" \
+	    "1 load onlyforth" \
+	    "include include.fb" \
+	    "include test-min.fth" \
+	    "bye" \
+	    "exit"
+	dos2unix -n $(runcpmdir)/logfile.txt $@
+
 emu: $(runcpmdir)/RunCPM
 
 test-min.golden: $(patsubst %, tests/golden/%.golden, prelim core)
+	cat $^ > $@
+
+test-v4th.golden: $(patsubst %, tests/golden/%.golden, prelim core)
 	cat $^ > $@
 
 %.golden: tests/golden/%.golden

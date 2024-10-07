@@ -74,17 +74,25 @@ inctest.log: \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
-target0.log: \
+v4th.com: \
     $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
-    include.fb log2file.fb target.fb source2.fb) \
+    include.fb log2file.fb target.fb source.fb v4th.fth) Makefile \
     | emu
+	rm -f $(runcpmdir)/A/0/KERNEL.COM
 	./emulator/run-in-runcpm.sh \
 	    "volks4th" \
+	    "include log2file.fb" \
+	    "logopen" \
+	    "include include.fb" \
 	    "include target.fb" \
-	    "include source2.fb"
-	#vdos2unix -n $(runcpmdir)/logfile.txt $@
+	    "include v4th.fth" \
+	    "logclose" \
+	    "bye" \
+	    "exit"
+	dos2unix -n $(runcpmdir)/logfile.txt $@.log
+	cp -f $(runcpmdir)/A/0/V4TH.COM $@
 
-v4th.com: \
+v4th2.com: \
     $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
     include.fb log2file.fb target.fb source.fb) \
     | emu
@@ -99,54 +107,6 @@ v4th.com: \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@.log
 	cp $(runcpmdir)/A/0/KERNEL.COM $@
-
-target3.log: \
-    $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
-    include.fb log2file.fb target.fb source.fb) \
-    | emu
-	./emulator/run-in-runcpm.sh \
-	    "volks4th" \
-	    "include log2file.fb" \
-	    "logopen" \
-	    "include target.fb" \
-	    "10 2 / ." \
-	    "use source.fb" \
-	    "Onlyforth" \
-	    "9000 displace !"\
-	    "Target definitions   $100 here!" \
-	    "2 75 thru"
-	dos2unix -n $(runcpmdir)/logfile.txt $@
-
-target2.log: \
-    $(patsubst %, $(cpmfilesdir)/%, kernel.com fileint.fb ass8080.fb \
-    include.fb log2file.fb target.fb source.fb) \
-    | emu
-	./emulator/run-in-runcpm.sh \
-	    "kernel fileint.fb" \
-	    "1 load onlyforth" \
-	    "include log2file.fb" \
-	    "logopen" \
-	    "include ass8080.fb" \
-	    "include target.fb" \
-	    "include source.fb" \
-	    "logclose" \
-	    "bye" \
-	    "exit"
-	dos2unix -n $(runcpmdir)/logfile.txt $@
-
-target4.log: \
-    $(patsubst %, $(cpmfilesdir)/%, kernel.com fileint.fb ass8080.fb \
-    include.fb log2file.fb target.fb source.fb) \
-    | emu
-	./emulator/run-in-runcpm.sh \
-	    "kernel fileint.fb" \
-	    "1 load onlyforth" \
-	    "include ass8080.fb" \
-	    "include target.fb" \
-	    ': status blk @ ?dup IF ."  blk " u. ." here "  here u. ' \
-	    ' ." there " there u. ." heap "  heap u.  cr THEN ; ' \
-	    "' status is .status " \
-	    "include source.fb"
 
 test-min.log: \
     $(patsubst %, $(cpmfilesdir)/%, kernel.com fileint.fb \

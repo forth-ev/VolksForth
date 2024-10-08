@@ -162,8 +162,8 @@ Code perform   ( 'cfa -- )
 end-code
 
 
-\\
-: perform   ( addr -- )      @ execute ;
+\ \\
+\ : perform   ( addr -- )      @ execute ;
 
 
 
@@ -185,8 +185,8 @@ Code flip ( 16b1 -- 16b2 )
 Code ctoggle ( 8b addr -- )
    H pop   D pop   M A mov   E xra   A M mov   Next  end-code
 
-\\
-: ctoggle   ( 8b addr --)      under c@ xor swap c! ;
+\ \\
+\ : ctoggle   ( 8b addr --)      under c@ xor swap c! ;
 
 \ *** Block No. 12, Hexblock c
 
@@ -237,10 +237,10 @@ Code ?dup ( 16b -- 16b 16b / false)
    H pop   H A mov   L ora   0<> ?[ H push ]?
    hpush jmp   end-code
 
-\\
-: ?dup ( 16b -- 16b 16b / false) dup IF dup THEN ;
-
-: dup ( 16b -- 16b 16b )    sp@ @ ;
+\ \\
+\ : ?dup ( 16b -- 16b 16b / false) dup IF dup THEN ;
+\
+\ : dup ( 16b -- 16b 16b )    sp@ @ ;
 
 
 
@@ -258,11 +258,11 @@ Code nip ( 16b1 16b2 -- 16b2)
 Code under ( 16b1 16b2 -- 16b2 16b1 16b2)
    H pop   D pop   H push  dpush jmp   end-code
 
-\\
-: over   >r swap r> swap ;
-: rot   >r dup r> swap ;
-: nip   swap drop ;
-: under swap over ;
+\ \\
+\ : over   >r swap r> swap ;
+\ : rot   >r dup r> swap ;
+\ : nip   swap drop ;
+\ : under swap over ;
 
 \ *** Block No. 16, Hexblock 10
 
@@ -279,9 +279,9 @@ Code pick    ( n -- 16b.n )
 
 : -roll   ( n -- ) >r dup sp@ dup 2+
    dup 2+ swap r@ 2* cmove r> 1+ 2* + ! ;
-\\
-: -rot    ( 16b1 16b2 16b3 -- 16b3 16b1 16b2 )   rot rot ;
-: pick    ( n -- 16b.n )     1+ 2* sp@ + @ ;
+\ \\
+\ : -rot    ( 16b1 16b2 16b3 -- 16b3 16b1 16b2 )   rot rot ;
+\ : pick    ( n -- 16b.n )     1+ 2* sp@ + @ ;
 
 \ *** Block No. 17, Hexblock 11
 
@@ -297,10 +297,10 @@ Code 2drop ( 32b -- )   H pop   H pop   Next   end-code
 Code 2dup ( 32b -- 32b 32b)
    H pop   D pop   D push   H push   dpush jmp   end-code
 
-\\
-: 2swap ( 32b1 32b2 -- 32b2 32b1) rot >r rot r> ;
-: 2drop ( 32b -- ) drop drop ;
-: 2dup ( 32b -- 32b 32b) over over ;
+\ \\
+\ : 2swap ( 32b1 32b2 -- 32b2 32b1) rot >r rot r> ;
+\ : 2drop ( 32b -- ) drop drop ;
+\ : 2dup ( 32b -- 32b 32b) over over ;
 
 \ *** Block No. 18, Hexblock 12
 
@@ -333,8 +333,8 @@ Code -    ( n1 n2 -- n3 )
 Code negate ( n1 -- n2 )
    H pop   H dcx   >not jmp   end-code
 
-\\
-: -    ( n1 n2 -- n3 )   negate + ;
+\ \\
+\ : -    ( n1 n2 -- n3 )   negate + ;
 
 
 
@@ -456,22 +456,22 @@ Code =    ( n1 n2 -- flag )  H pop   D pop
 
 \ *** Block No. 26, Hexblock 1a
 
-\\ comparision words high level                          18Nov87
-: 0<  ( n1 -- flag )       8000 and 0<> ;
-: >   ( n1 n2 -- flag )    swap < ;
-: 0>  ( n -- flag )        negate 0< ;
-: 0<> ( n -- flag )        0= not ;
-: u>  ( u1 u2 -- flag )    swap u< ;
-: =   ( n1 n2 -- flag )    - 0= ;
-: uwithin  ( u1 [low up[ -- flag )    over - -rot  - u> ;
-| : minimax  ( n1 n2 flag -- n3 )   rdrop IF swap THEN drop ;
-: min  ( n1 n2 -- n3 )              2dup  > minimax ;
-: max  ( n1 n2 -- n3 )              2dup  < minimax ;
-: umax  ( u1 u2 -- u3 )             2dup u< minimax ;
-: umin  ( u1 u2 -- u3 )             2dup u> minimax ;
-: extend   ( n -- d )               dup 0< ;
-: dabs  ( d -- ud )                 extend IF dnegate THEN ;
-: abs   ( n -- u)                   extend IF  negate THEN ;
+\ \\ comparision words high level                          18Nov87
+\ : 0<  ( n1 -- flag )       8000 and 0<> ;
+\ : >   ( n1 n2 -- flag )    swap < ;
+\ : 0>  ( n -- flag )        negate 0< ;
+\ : 0<> ( n -- flag )        0= not ;
+\ : u>  ( u1 u2 -- flag )    swap u< ;
+\ : =   ( n1 n2 -- flag )    - 0= ;
+\ : uwithin  ( u1 [low up[ -- flag )    over - -rot  - u> ;
+\ | : minimax  ( n1 n2 flag -- n3 )   rdrop IF swap THEN drop ;
+\ : min  ( n1 n2 -- n3 )              2dup  > minimax ;
+\ : max  ( n1 n2 -- n3 )              2dup  < minimax ;
+\ : umax  ( u1 u2 -- u3 )             2dup u< minimax ;
+\ : umin  ( u1 u2 -- u3 )             2dup u> minimax ;
+\ : extend   ( n -- d )               dup 0< ;
+\ : dabs  ( d -- ud )                 extend IF dnegate THEN ;
+\ : abs   ( n -- u)                   extend IF  negate THEN ;
 
 \ *** Block No. 27, Hexblock 1b
 
@@ -489,8 +489,8 @@ Code d0= ( d -- flag )  H pop
     rot 2dup =  IF 2drop u< exit THEN  > nip nip ;
 
 
-\\
-: d0= ( d -- flag )        or 0= ;
+\ \\
+\ : d0= ( d -- flag )        or 0= ;
 
 \ *** Block No. 28, Hexblock 1c
 
@@ -543,8 +543,8 @@ Code ?branch ( fl -- )
    IP inx   IP inx  Next   end-code
 
 
-\\
-: branch r> dup @ + >r ;
+\ \\
+\ : branch r> dup @ + >r ;
 
 
 
@@ -559,14 +559,14 @@ Code bounds ( start count -- limit start )
 Code endloop
    RP lhld   6 D lxi   D dad   RP shld   next  end-code restrict
 
-\\ dodo puts "index | limit | adr.of.DO" on return-stack
-: bounds ( start count -- limit start )     over + swap ;
-
-| : dodo              rdrop r> 2+ dup >r rot >r swap >r >r ;
-
-: (do  ( limit start -- )  over - dodo ;  restrict
-: (?do ( limit start -- )  over - ?dup IF dodo THEN
-                           r> dup  @ +  >r drop ; restrict
+\ \\ dodo puts "index | limit | adr.of.DO" on return-stack
+\ : bounds ( start count -- limit start )     over + swap ;
+\
+\ | : dodo              rdrop r> 2+ dup >r rot >r swap >r >r ;
+\
+\ : (do  ( limit start -- )  over - dodo ;  restrict
+\ : (?do ( limit start -- )  over - ?dup IF dodo THEN
+\                            r> dup  @ +  >r drop ; restrict
 
 \ *** Block No. 32, Hexblock 20
 
@@ -672,9 +672,9 @@ Code case? ( 16b1 16b2 -- 16b1 false / true )
    H A mov   D cmp   0= ?[   L A mov   E cmp   yes jz ]?
    D push   no jmp   end-code
 
-\\
-: case? ( 16b1 16b2 -- 16b1 false / true )
-    over = dup  IF nip THEN ;
+\ \\
+\ : case? ( 16b1 16b2 -- 16b1 false / true )
+\     over = dup  IF nip THEN ;
 
 
 
@@ -717,8 +717,8 @@ Code LEAVE
    H inx   RP shld   xchg    H dcx   M D mov   H dcx   M E mov
    D dad   H IP mvx   Next   end-code   restrict
 
-\\ Returnstack: calladr | index limit | adr of DO
-: LEAVE     endloop r> 2- dup @ + >r ;             restrict
+\ \\ Returnstack: calladr | index limit | adr of DO
+\ : LEAVE     endloop r> 2- dup @ + >r ;             restrict
 
 \ *** Block No. 40, Hexblock 28
 
@@ -754,9 +754,9 @@ Code 2*  ( n -- 2*n )   H pop   H dad   hpush jmp   end-code
 Code 2/  ( n -- n/2 )
    H pop   H A mov   rlc   rrc   rar   A H mov
            L A mov   rar   A L mov   hpush jmp   end-code
-\\
-: 2*  ( n -- 2*n )   2 * ;
-: 2/  ( n -- n/2 )   2 / ;
+\ \\
+\ : 2*  ( n -- 2*n )   2 * ;
+\ : 2/  ( n -- n/2 )   2 / ;
 
 \ *** Block No. 42, Hexblock 2a
 
@@ -865,12 +865,12 @@ Code fill ( addr quan 8b -- )
 
 : erase   ( addr quan --)            0 fill ;
 
-\\ : fill ( addr quan 8b -- )
-   swap ?dup IF >r over c! dup 1+ r> 1- cmove exit THEN 2drop ;
-: count ( adr -- adr+1 len )  dup 1+ swap c@ ;
-: move   ( from to quan -- )
-   >r  2dup u< IF  r> cmove> exit  THEN  r> cmove ;
-: place  ( addr len to --)  over >r  rot over 1+  r> move c! ;
+\ \\ : fill ( addr quan 8b -- )
+\    swap ?dup IF >r over c! dup 1+ r> 1- cmove exit THEN 2drop ;
+\ : count ( adr -- adr+1 len )  dup 1+ swap c@ ;
+\ : move   ( from to quan -- )
+\    >r  2dup u< IF  r> cmove> exit  THEN  r> cmove ;
+\ : place  ( addr len to --)  over >r  rot over 1+  r> move c! ;
 
 \ *** Block No. 48, Hexblock 30
 
@@ -912,18 +912,18 @@ Variable span     0 span !
 
 \ *** Block No. 50, Hexblock 32
 
-\\ scan skip /string                           16May86   18Nov87
-
-: scan ( addr0 len0 char -- addr1 len1 ) >r
-   BEGIN dup WHILE  over c@ r@ -  WHILE  1- swap 1+ swap REPEAT
-   rdrop ;
-
-: skip ( addr len del -- addr1 len1 ) >r
-   BEGIN dup WHILE  over c@ r@ =  WHILE  1- swap 1+ swap REPEAT
-   rdrop ;
-
-: /string ( addr0 len0 +n - addr1 len1 )
-   over umin rot over + -rot - ;
+\ \\ scan skip /string                           16May86   18Nov87
+\
+\ : scan ( addr0 len0 char -- addr1 len1 ) >r
+\    BEGIN dup WHILE  over c@ r@ -  WHILE  1- swap 1+ swap REPEAT
+\    rdrop ;
+\
+\ : skip ( addr len del -- addr1 len1 ) >r
+\    BEGIN dup WHILE  over c@ r@ =  WHILE  1- swap 1+ swap REPEAT
+\    rdrop ;
+\
+\ : /string ( addr0 len0 +n - addr1 len1 )
+\    over umin rot over + -rot - ;
 
 
 
@@ -962,10 +962,10 @@ Code upper ( addr len -- )   D pop   E D mov   H pop   D inr
    [[ D dcr >next jz  M E mov  (capital call  E M mov  H inx ]]
 end-code
 
-\\ : capital ( char -- char')
-   dup  Ascii a   [ Ascii z 1+ ] Literal  uwithin not ?exit
-   [ Ascii a Ascii A - ] Literal - ;
-: upper ( addr len -- )  bounds   ?DO I c@ capital I c! LOOP ;
+\ \\ : capital ( char -- char')
+\    dup  Ascii a   [ Ascii z 1+ ] Literal  uwithin not ?exit
+\    [ Ascii a Ascii A - ] Literal - ;
+\ : upper ( addr len -- )  bounds   ?DO I c@ capital I c! LOOP ;
 
 \ *** Block No. 53, Hexblock 35
 
@@ -998,11 +998,11 @@ Code (word ( char adr0 len0 -- addr )
    [[ B A mov  C ora 0<>
    ?[[ D ldax  A M mov   H inx  D inx  B dcx ]]?   bl M mvi
    IPsave lhld   H IP mvx   Next   end-code
-\\
-: (word  ( char adr0 len0 -- addr )
-   rot  >r  over swap   >in @ /string
-   r@ skip   over swap   r> scan >r   rot over swap - r> 0<> -
-   >in !   over - here  dup >r  place  bl r@ count  + c!   r> ;
+\ \\
+\ : (word  ( char adr0 len0 -- addr )
+\    rot  >r  over swap   >in @ /string
+\    r@ skip   over swap   r> scan >r   rot over swap - r> 0<> -
+\    >in !   over - here  dup >r  place  bl r@ count  + c!   r> ;
 
 
 \ *** Block No. 55, Hexblock 37
@@ -1074,10 +1074,10 @@ Code digit?    ( char -- n true : false )
    M cmp   no jnc
    0 H mvi   A L mov   H push   yes jmp   end-code
 
-\\
-: digit? ( char -- digit true/ false )  dup Ascii 9 >
-   IF [ Ascii A Ascii 9 - 1- ] Literal - dup Ascii 9 > and THEN
-   Ascii 0 - dup base @ u< dup ?exit nip ;
+\ \\
+\ : digit? ( char -- digit true/ false )  dup Ascii 9 >
+\    IF [ Ascii A Ascii 9 - 1- ] Literal - dup Ascii 9 > and THEN
+\    Ascii 0 - dup base @ u< dup ?exit nip ;
 
 
 
@@ -1285,10 +1285,10 @@ Code nfa? ( thread cfa -- nfa / false )
      H A mov   D cmp   0= ?[ L A mov  E cmp ]?
      H pop   0= ?]   H inx  H inx  Hpush jmp
 end-code
-\\
-: nfa?    ( thread cfa -- nfa / false)
-   >r  BEGIN @ dup 0= IF  rdrop exit  THEN  dup 2+ name> r@ =
-       UNTIL 2+ rdrop ;
+\ \\
+\ : nfa?    ( thread cfa -- nfa / false)
+\    >r  BEGIN @ dup 0= IF  rdrop exit  THEN  dup 2+ name> r@ =
+\        UNTIL 2+ rdrop ;
 
 \ *** Block No. 70, Hexblock 46
 
@@ -1412,16 +1412,16 @@ Vocabulary Root
                    -1 r@ $80 and  IF  1-      THEN
                       r> $40 and  IF  negate  THEN  ;
 
-\\
-: -text ( adr1 u adr2 -- false:gleich/+1:str1>str2/-1:str1<str2)
-    over bounds DO   drop 1+ dup 1- c@ I c@ - dup
-                   IF dup abs / LEAVE THEN LOOP nip ;
-| Variable string        | Variable strlen
-: (find    ( string thread -- str false/NFA true )
-   >r count $1F and  strlen ! string !
-   BEGIN r> ?dup WHILE dup @ >r 2+ dup c@ $1F and strlen @ =
-    IF dup 1+ strlen @ string @ -text 0= ?dup IF rdrop exit THEN
-      THEN drop   REPEAT  string @ 1- false ;
+\ \\
+\ : -text ( adr1 u adr2 -- false:gleich/+1:str1>str2/-1:str1<str2)
+\     over bounds DO   drop 1+ dup 1- c@ I c@ - dup
+\                    IF dup abs / LEAVE THEN LOOP nip ;
+\ | Variable string        | Variable strlen
+\ : (find    ( string thread -- str false/NFA true )
+\    >r count $1F and  strlen ! string !
+\    BEGIN r> ?dup WHILE dup @ >r 2+ dup c@ $1F and strlen @ =
+\     IF dup 1+ strlen @ string @ -text 0= ?dup IF rdrop exit THEN
+\       THEN drop   REPEAT  string @ 1- false ;
 
 \ *** Block No. 77, Hexblock 4d
 
@@ -1440,7 +1440,7 @@ Label findloop
       H inx   D inx   ]]?
    D pop   H pop   H inx   H inx   IP pop   H push   yes jmp
 end-code
-\\  HL: thread, nfa   DE: string   C: strlen   B: counter
+\ \\  HL: thread, nfa   DE: string   C: strlen   B: counter
 
 \ *** Block No. 78, Hexblock 4e
 
@@ -1551,7 +1551,7 @@ Code ?stack
    UP lhld   user' s0 D lxi   D dad   M E mov   H inx   M D mov
    H pop    D A mov   H cmp  c0= ?[ 0= ?[ E A mov  L cmp ]? ]?
    >next jnc  ;c: true abort" Stack empty" ;
-\\
-: ?stack     sp@ here - 100 u< IF stackfull THEN
-                sp@ s0 @ u> Abort" Stack empty" ;
+\ \\
+\ : ?stack     sp@ here - 100 u< IF stackfull THEN
+\                 sp@ s0 @ u> Abort" Stack empty" ;
 

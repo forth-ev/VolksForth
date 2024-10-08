@@ -4,8 +4,9 @@ Onlyforth
 Target definitions   $100 here!
 
   include vf-core.fth
+  include vf-io.fth
   use source.fb
-  $54 $75 thru    \ Standard 8080-System
+  $5e $75 thru    \ Standard 8080-System
 
 cr .( unresolved: )  .unresolved   ( ' .blk is .status )
 

@@ -80,7 +80,8 @@ inctest.log: \
 
 $(cpmfilesdir)/v4th.com: \
     $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
-    include.fb log2file.fb target.fb source.fb v4th.fth vf-core.fth) \
+    include.fb log2file.fb target.fb source.fb \
+    v4th.fth vf-core.fth vf-io.fth) \
     Makefile | emu
 	rm -f $(runcpmdir)/A/0/V4TH.COM $@
 	./emulator/run-in-runcpm.sh \

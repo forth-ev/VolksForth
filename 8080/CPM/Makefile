@@ -21,7 +21,9 @@ clean:
 veryclean: clean
 	rm -rf $(cpmfilesdir)
 
-test: logtest.result inctest.result test-min.result test-v4th.result
+test: test-v4th.result
+
+alltests: logtest.result inctest.result test-min.result test-v4th.result
 
 run-editor: | msdos
 	FORTHPATH="f:\\src;f:\\tests;f:\\msdos" \
@@ -78,9 +80,9 @@ inctest.log: \
 
 $(cpmfilesdir)/v4th.com: \
     $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
-    include.fb log2file.fb target.fb source.fb v4th.fth) Makefile \
-    | emu
-	rm -f $(runcpmdir)/A/0/KERNEL.COM
+    include.fb log2file.fb target.fb source.fb v4th.fth vf-core.fth) \
+    Makefile | emu
+	rm -f $(runcpmdir)/A/0/V4TH.COM $@
 	./emulator/run-in-runcpm.sh \
 	    "volks4th" \
 	    "include log2file.fb" \
@@ -98,6 +100,7 @@ v4th2.com: \
     $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
     include.fb log2file.fb target.fb source.fb) \
     | emu
+	rm -f $(runcpmdir)/A/0/KERNEL.COM $@
 	./emulator/run-in-runcpm.sh \
 	    "volks4th" \
 	    "include log2file.fb" \

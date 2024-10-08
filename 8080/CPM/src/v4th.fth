@@ -3,8 +3,9 @@ Onlyforth
     $9000 displace !
 Target definitions   $100 here!
 
+  include vf-core.fth
   use source.fb
-  2 $75 thru    \ Standard 8080-System
+  $54 $75 thru    \ Standard 8080-System
 
 cr .( unresolved: )  .unresolved   ( ' .blk is .status )
 

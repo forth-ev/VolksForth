@@ -9,6 +9,8 @@ whitch_runcpm = $(shell which RunCPM)
 runcpmdir = runcpm
 cpmfilesdir = cpmfiles
 
+bin: $(cpmfilesdir)/v4th.com
+
 fth: $(fthfiles)
 
 clean:
@@ -17,9 +19,9 @@ clean:
 	rm -f msdos
 
 veryclean: clean
-	rm -rf cpmfiles
+	rm -rf $(cpmfilesdir)
 
-test: logtest.result inctest.result test-min.result
+test: logtest.result inctest.result test-min.result test-v4th.result
 
 run-editor: | msdos
 	FORTHPATH="f:\\src;f:\\tests;f:\\msdos" \
@@ -74,7 +76,7 @@ inctest.log: \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
-v4th.com: \
+$(cpmfilesdir)/v4th.com: \
     $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
     include.fb log2file.fb target.fb source.fb v4th.fth) Makefile \
     | emu

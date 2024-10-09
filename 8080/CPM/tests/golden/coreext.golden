@@ -1,17 +1,17 @@
 
-UTIL.FTH  ?DEFTEST1 exists
+UTIL.FTH  ?DEFTEST1 exists 
 Test utilities loaded
 
-ERRORREP.FTH
+ERRORREP.FTH 
 COREEXT.FTH **************
 
 Output from .(
-You should see -9876: -9876
+You should see -9876: -9876 
 and again: -9876
 
 
 On the next 2 lines you should see First then Second messages:
-First message via .(
+First message via .( 
 Second message via ."
 
 *
@@ -19,33 +19,33 @@ Second message via ."
 Output from .R and U.R
 You should see lines duplicated:
 indented by 0 spaces
+30278 
 30278
-30278
+-31871 
 -31871
--31871
+30278 
 30278
-30278
-33665
+33665 
 33665
 
 indented by 0 spaces
+30278 
 30278
-30278
+-31871 
 -31871
--31871
+30278 
 30278
-30278
-33665
+33665 
 33665
 
 indented by 5 spaces
+     30278 
      30278
-     30278
+     -31871 
      -31871
-     -31871
+     30278 
      30278
-     30278
-     33665
+     33665 
      33665
 
 ***

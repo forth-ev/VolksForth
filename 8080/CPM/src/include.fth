@@ -39,10 +39,10 @@
 
 \ *** Block No. 2, Hexblock 2
 
-\ fib /fib #fib eolf?                                phz 07mai23
+\ fib /fib #fib eolf?                                phz 09okt24
 
   context @ dos also context !
-  $50 constant /tib
+  \ $50 constant /tib
   variable tibeof tibeof off
   $1a constant ctrl-z
 

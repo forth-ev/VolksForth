@@ -21,7 +21,7 @@ clean:
 veryclean: clean
 	rm -rf $(cpmfilesdir)
 
-test: test-v4th.result
+test: test-min.result test-std.result
 
 alltests: logtest.result inctest.result test-min.result test-v4th.result
 
@@ -88,6 +88,7 @@ $(cpmfilesdir)/v4th.com: \
 	    "volks4th" \
 	    "include log2file.fb" \
 	    "logopen" \
+	    "$50 constant /tib" \
 	    "include include.fb" \
 	    "include target.fb" \
 	    "include v4th.fth" \
@@ -114,7 +115,7 @@ v4th2.com: \
 	dos2unix -n $(runcpmdir)/logfile.txt $@.log
 	cp $(runcpmdir)/A/0/KERNEL.COM $@
 
-test-min.log: \
+test-kernel.log: \
     $(patsubst %, $(cpmfilesdir)/%, kernel.com fileint.fb \
     include.fb log2file.fb \
     ans-shim.fth prelim.fth tester.fth core.fr test-min.fth) \
@@ -128,7 +129,7 @@ test-min.log: \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
-test-v4th.log: \
+test-min.log: \
     $(patsubst %, $(cpmfilesdir)/%, v4th.com fileint.fb \
     include.fb log2file.fb \
     ans-shim.fth prelim.fth tester.fth core.fr test-min.fth) \
@@ -142,12 +143,34 @@ test-v4th.log: \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
+test-std.log: \
+    $(patsubst %, $(cpmfilesdir)/%, v4th.com fileint.fb \
+    include.fb log2file.fb core.fr) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fth)) \
+    | emu
+	./emulator/run-in-runcpm.sh \
+	    "v4th fileint.fb" \
+	    "1 load onlyforth" \
+	    "include include.fb" \
+	    "include test-std.fth" \
+	    "bye" \
+	    "exit"
+	dos2unix -n $(runcpmdir)/logfile.txt $@
+
 emu: $(runcpmdir)/RunCPM
 
 test-min.golden: $(patsubst %, tests/golden/%.golden, prelim core)
 	cat $^ > $@
 
-test-v4th.golden: $(patsubst %, tests/golden/%.golden, prelim core)
+test-std.golden: $(patsubst %, tests/golden/%.golden, \
+    prelim core coreplus coreext doubltst report-noblk)
+	cat $^ > $@
+
+test-blk.golden: $(patsubst %, tests/golden/%.golden, \
+    prelim core coreplus coreext doubltst block report-blk)
+	cat $^ > $@
+
+test-kernel.golden: $(patsubst %, tests/golden/%.golden, prelim core)
 	cat $^ > $@
 
 %.golden: tests/golden/%.golden

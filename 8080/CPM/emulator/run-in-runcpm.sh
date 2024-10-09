@@ -21,11 +21,11 @@ test -d "${runcpm_a0}" || mkdir -p "${runcpm_a0}"
 
 for pathname in ${cpmfilesdir}/*
 do
-  echo $pathname
+  # echo $pathname
   filename="$(realpath --relative-to="${cpmfilesdir}" "${pathname}")"
-  echo $filename
+  # echo $filename
   uppercase_filename="$("${toolsdir}/echo-toupper.py" "${filename}")"
-  echo $uppercase_filename
+  # echo $uppercase_filename
   cp "${pathname}" "${runcpm_a0}/${uppercase_filename}"
 done
 

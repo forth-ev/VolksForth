@@ -8,7 +8,8 @@ Target definitions   $100 here!
   include vf-bufs.fth
   include vf-sys.fth
   use source.fb
-  $74 $75 thru    \ Standard 8080-System
+  $76 load    \ Standard 8080-System
+  include vf-end.fth
 
 cr .( unresolved: )  .unresolved   ( ' .blk is .status )
 

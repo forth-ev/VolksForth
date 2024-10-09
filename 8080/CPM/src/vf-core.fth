@@ -895,8 +895,9 @@ Code allot ( n -- )    user' dp  D lxi
 
 \ input strings                                          11Jun86
 
+$84 Constant /tib
 Variable #tib     0 #tib !
-Variable >tib     here >tib ! $50 allot
+Variable >tib     here >tib ! /tib allot
 Variable >in      0 >in !
 Variable blk      0 blk !
 Variable span     0 span !

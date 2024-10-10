@@ -21,7 +21,7 @@ clean:
 veryclean: clean
 	rm -rf $(cpmfilesdir)
 
-test: test-min.result test-std.result
+test: test-min.result test-std.result test-blk.result
 
 alltests: logtest.result inctest.result test-min.result test-v4th.result
 
@@ -153,6 +153,20 @@ test-std.log: \
 	    "1 load onlyforth" \
 	    "include include.fb" \
 	    "include test-std.fth" \
+	    "bye" \
+	    "exit"
+	dos2unix -n $(runcpmdir)/logfile.txt $@
+
+test-blk.log: \
+    $(patsubst %, $(cpmfilesdir)/%, v4th.com fileint.fb \
+    include.fb log2file.fb core.fr) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fth) \
+    tests/empty.fb) | emu
+	./emulator/run-in-runcpm.sh \
+	    "v4th fileint.fb" \
+	    "1 load onlyforth" \
+	    "include include.fb" \
+	    "include test-blk.fth" \
 	    "bye" \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@

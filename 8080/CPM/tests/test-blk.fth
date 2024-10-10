@@ -1,6 +1,7 @@
 
-include log2file.fth
-logopen output.log
+include log2file.fb
+' noop Is .status
+logopen
 
 include ans-shim.fth
 : \vf  [compile] \ ; immediate
@@ -17,7 +18,6 @@ include errorrep.fth
 include coreext.fth
 include doubltst.fth
 
-: flush  logclose flush logreopen ;
 include block.fth
 
 REPORT-ERRORS

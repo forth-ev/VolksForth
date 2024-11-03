@@ -103,17 +103,14 @@ $(patsubst %, $(cpmfilesdir)/%, kernel.com \
 	cp -f $(runcpmdir)/A/0/TC-BASE.COM $@
 
 $(cpmfilesdir)/v4th.com: \
-    $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
-    include.fb log2file.fb target.fb v4th.fth vf-core.fth \
+    $(patsubst %, $(cpmfilesdir)/%, tc-base.com \
+    target.fb v4th.fth vf-core.fth \
     vf-io.fth vf-bufs.fth vf-sys.fth vf-end.fth vf-bdos.fth) \
     Makefile | emu
-	rm -f $(runcpmdir)/A/0/V4TH.COM $@
+	rm -f $(runcpmdir)/A/0/V4TH.COM $(runcpmdir)/A/0/LOGFILE.TXT $@
 	./emulator/run-in-runcpm.sh \
-	    "volks4th" \
-	    "include log2file.fb" \
+	    "tc-base" \
 	    "logopen" \
-	    "$50 constant /tib" \
-	    "include include.fb" \
 	    "include target.fb" \
 	    "include v4th.fth" \
 	    "logclose" \
@@ -124,10 +121,10 @@ $(cpmfilesdir)/v4th.com: \
 
 $(cpmfilesdir)/v4th3.com: \
     $(patsubst %, $(cpmfilesdir)/%, tc-base.com \
-    include.fb log2file.fb target.fb v4th.fth vf-core.fth vf-io.fth \
+    target.fb v4th.fth vf-core.fth vf-io.fth \
     vf-bufs.fth vf-sys.fth vf-file.fth vf-end.fth vf-bdos.fth) \
     Makefile | emu
-	rm -f $(runcpmdir)/A/0/V4TH.COM $@
+	rm -f $(runcpmdir)/A/0/V4TH.COM $(runcpmdir)/A/0/LOGFILE.TXT $@
 	./emulator/run-in-runcpm.sh \
 	    "tc-base" \
 	    "logopen" \

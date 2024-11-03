@@ -17,6 +17,7 @@ clean:
 	rm -f *.log *.golden *.result
 	rm -rf $(runcpmdir)
 	rm -f msdos
+	rm -f $(cpmfilesdir)/empty.f*
 
 veryclean: clean
 	rm -rf $(cpmfilesdir)
@@ -78,6 +79,23 @@ inctest.log: \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
+$(cpmfilesdir)/tc-base.com: \
+$(patsubst %, $(cpmfilesdir)/%, kernel.com \
+    fileint.fb ass8080.fb xinout.fb savesys.fb) \
+    Makefile | emu
+	rm -f $(runcpmdir)/A/0/TC-BASE.COM $@
+	./emulator/run-in-runcpm.sh \
+	    "kernel fileint.fb" \
+	    "1 load" \
+	    "include ass8080.fb" \
+	    "include xinout.fb" \
+	    "include savesys.fb" \
+	    "cr   decimal   caps on" \
+	    "scr off  r# off     savesystem tc-base.com" \
+	    "bye" \
+	    "exit"
+	cp -f $(runcpmdir)/A/0/TC-BASE.COM $@
+
 $(cpmfilesdir)/v4th.com: \
     $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
     include.fb log2file.fb target.fb v4th.fth vf-core.fth \
@@ -86,6 +104,26 @@ $(cpmfilesdir)/v4th.com: \
 	rm -f $(runcpmdir)/A/0/V4TH.COM $@
 	./emulator/run-in-runcpm.sh \
 	    "volks4th" \
+	    "include log2file.fb" \
+	    "logopen" \
+	    "$50 constant /tib" \
+	    "include include.fb" \
+	    "include target.fb" \
+	    "include v4th.fth" \
+	    "logclose" \
+	    "bye" \
+	    "exit"
+	dos2unix -n $(runcpmdir)/logfile.txt $@.log
+	cp -f $(runcpmdir)/A/0/V4TH.COM $@
+
+$(cpmfilesdir)/v4th3.com: \
+    $(patsubst %, $(cpmfilesdir)/%, tc-base.com \
+    include.fb log2file.fb target.fb v4th.fth vf-core.fth vf-io.fth \
+    vf-bufs.fth vf-sys.fth vf-file.fth vf-end.fth vf-bdos.fth) \
+    Makefile | emu
+	rm -f $(runcpmdir)/A/0/V4TH.COM $@
+	./emulator/run-in-runcpm.sh \
+	    "tc-base" \
 	    "include log2file.fb" \
 	    "logopen" \
 	    "$50 constant /tib" \

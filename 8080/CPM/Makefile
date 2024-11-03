@@ -81,19 +81,25 @@ inctest.log: \
 
 $(cpmfilesdir)/tc-base.com: \
 $(patsubst %, $(cpmfilesdir)/%, kernel.com \
-    fileint.fb ass8080.fb xinout.fb savesys.fb) \
+    fileint.fb ass8080.fb include.fb log2file.fb xinout.fb savesys.fb) \
     Makefile | emu
 	rm -f $(runcpmdir)/A/0/TC-BASE.COM $@
 	./emulator/run-in-runcpm.sh \
 	    "kernel fileint.fb" \
 	    "1 load" \
+	    "include log2file.fb" \
+	    "logopen" \
 	    "include ass8080.fb" \
 	    "include xinout.fb" \
 	    "include savesys.fb" \
+	    "$50 constant /tib" \
+	    "include include.fb" \
 	    "cr   decimal   caps on" \
 	    "scr off  r# off     savesystem tc-base.com" \
+	    "logclose" \
 	    "bye" \
 	    "exit"
+	dos2unix -n $(runcpmdir)/logfile.txt $@.log
 	cp -f $(runcpmdir)/A/0/TC-BASE.COM $@
 
 $(cpmfilesdir)/v4th.com: \
@@ -124,10 +130,7 @@ $(cpmfilesdir)/v4th3.com: \
 	rm -f $(runcpmdir)/A/0/V4TH.COM $@
 	./emulator/run-in-runcpm.sh \
 	    "tc-base" \
-	    "include log2file.fb" \
 	    "logopen" \
-	    "$50 constant /tib" \
-	    "include include.fb" \
 	    "include target.fb" \
 	    "include v4th.fth" \
 	    "logclose" \

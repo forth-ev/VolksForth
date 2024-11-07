@@ -83,7 +83,7 @@ Input:  keyboard    [ here input ! ]
 Dos definitions
 ' 2- | Alias dosfcb>         ' 2+ | Alias >dosfcb
 
-: dos-error? ( n -- f )   $FF = ;
+: dos-error? ( n -- f )   0<> ;
 
 $5C Constant fcb
 : reset     (   --     )  0 &13 bdos ;

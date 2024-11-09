@@ -219,7 +219,8 @@ test3.log: \
 	    "1 load onlyforth" \
 	    "use include.fb" \
 	    "onlyforth dos also forth definitions" \
-	    "1 1 thru" \
+	    "\ ' read-seq alias iread-seq" \
+	    "7 8 thru" \
 	    "include test-blk.fth" \
 	    "bye" \
 	    "exit"

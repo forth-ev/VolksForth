@@ -23,9 +23,8 @@
   variable incfile
   variable increc
   variable rec-offset
-  $80 constant dmabuf    | $ff constant dmabuf-last
-
-.( line 27 )
+  $80 constant dmabuf
+  $ff constant dmabuf-last
 
   : readrec  ( fcb -- f )
     dup cr+ex@ increc !
@@ -45,11 +44,9 @@
   ." extra chars ignored" cr
   BEGIN inc-fgetc eolf? 1+ UNTIL tibeof @ ;
 
-| : probe-for-fb  ( -- flag )
+  : probe-for-fb  ( -- flag )
   dmabuf BEGIN dup c@ #lf = IF drop 0 exit THEN
          1+ dup dmabuf-last u> UNTIL drop 1 ;
-
-.( line 50 )
 
   $50 constant /stash
   create stash[  /stash allot  here constant ]stash
@@ -71,8 +68,11 @@
   : include-inner ( -- )
   increc push  0 isfile@ cr+ex!
   isfile@ readrec Abort" can't read start of file"
-  probe-for-fb IF ." regular load " 1 load exit THEN
-  ." stream include "
+  probe-for-fb IF 1 load exit THEN
+  \ ." stream include "
   incfile push  isfile@ incfile !
-  savetib >r  interpret-via-tib  isfile@ closefile  r> restoretib ;
-
+  savetib >r  interpret-via-tib
+  \ ." before isfile@ closefile"
+  \ isfile@ closefile
+  \ ." after isfile@ closefile"
+  r> restoretib ;

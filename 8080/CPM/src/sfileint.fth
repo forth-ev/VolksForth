@@ -84,8 +84,6 @@ Constant b/fcb
 : drive!     ( drv    --      )     $0E bdos ;
 : search0    ( dosfcb -- dir  )     $11 bdosa ;
 : searchnext ( dosfcb -- dir  )     $12 bdosa ;
-: read-seq   ( dosfcb -- f    )     $14 bdosa dos-error? ;
-: write-seq  ( dosfcb -- f    )     $15 bdosa dos-error? ;
 : createfile ( dosfcb -- f    )     $16 bdosa dos-error? ;
 : size       ( dos    -- size ) dup $23 bdos dosfcb> record @ ;
 : drive@     (        -- drv  )   0 $19 bdosa ;
@@ -371,12 +369,12 @@ Forth definitions
 : loadfrom     ( n -- )
                isfile push  fromfile push  use load   close ;
 : include ( -- )
-  rec-offset push  isfile push  fromfile push
+  increc-offset push  isfile push  fromfile push
   use  cr file?
-  include-inner
+  include-isfile
   incfile @
     IF increc @ incfile @ cr+ex!
-    incfile @ readrec Abort" error re-reading after include"
+    incfile @ increadrec Abort" error re-reading after include"
     THEN ;
 
 : eof ( -- f ) isfile@  dup filesize @ swap record @ = ;

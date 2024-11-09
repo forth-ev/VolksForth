@@ -216,7 +216,7 @@ test3.log: \
     tests/empty.fb) | emu
 	./emulator/run-in-runcpm.sh \
 	    "v4th3 sfileint.fth" \
-	    "include-inner" \
+	    "include-isfile" \
 	    "onlyforth" \
 	    "include test-blk.fth" \
 	    "bye" \

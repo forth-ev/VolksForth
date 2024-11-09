@@ -89,6 +89,8 @@ $5C Constant fcb
 : reset     (   --     )  0 &13 bdos ;
 : openfile  ( fcb -- f )    &15 bdosa dos-error? ;
 : closefile ( fcb -- f )    &16 bdosa dos-error? ;
+: read-seq  ( fcb -- f )    $14 bdosa dos-error? ;
+: write-seq ( fcb -- f )    $15 bdosa dos-error? ;
 : dma!      ( dma --   )    &26 bdos  ;
 : rec@      ( fcb -- f )    &33 bdosa ;
 : rec!      ( fcb -- f )    &34 bdosa ;

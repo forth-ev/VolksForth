@@ -8,6 +8,7 @@ Target definitions   $100 here!
   include vf-bufs.fth
   include vf-sys.fth
   include vf-bdos.fth
+  include vf-file.fth
   include vf-end.fth
 
 cr .( unresolved: )  .unresolved   ( ' .blk is .status )

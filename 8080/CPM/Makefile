@@ -104,7 +104,7 @@ $(patsubst %, $(cpmfilesdir)/%, kernel.com \
 
 $(cpmfilesdir)/v4th.com: \
     $(patsubst %, $(cpmfilesdir)/%, tc-base.com \
-    target.fb v4th.fth vf-core.fth \
+    target.fb v4th.fth vf-core.fth vf-file.fth \
     vf-io.fth vf-bufs.fth vf-sys.fth vf-end.fth vf-bdos.fth) \
     Makefile | emu
 	rm -f $(runcpmdir)/A/0/V4TH.COM $(runcpmdir)/A/0/LOGFILE.TXT $@
@@ -168,42 +168,42 @@ test-kernel.log: \
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 test-min.log: \
-    $(patsubst %, $(cpmfilesdir)/%, v4th.com fileint.fb \
-    include.fb log2file.fb \
+    $(patsubst %, $(cpmfilesdir)/%, v4th.com sfileint.fth \
+    log2file.fb \
     ans-shim.fth prelim.fth tester.fth core.fr test-min.fth) \
     | emu
 	./emulator/run-in-runcpm.sh \
-	    "v4th fileint.fb" \
-	    "1 load onlyforth" \
-	    "include include.fb" \
+	    "v4th sfileint.fth" \
+	    "include-isfile" \
+	    "onlyforth" \
 	    "include test-min.fth" \
 	    "bye" \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 test-std.log: \
-    $(patsubst %, $(cpmfilesdir)/%, v4th.com fileint.fb \
-    include.fb log2file.fb core.fr) \
+    $(patsubst %, $(cpmfilesdir)/%, v4th.com sfileint.fth \
+    log2file.fb core.fr) \
     $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fth)) \
     | emu
 	./emulator/run-in-runcpm.sh \
-	    "v4th fileint.fb" \
-	    "1 load onlyforth" \
-	    "include include.fb" \
+	    "v4th sfileint.fth" \
+	    "include-isfile" \
+	    "onlyforth" \
 	    "include test-std.fth" \
 	    "bye" \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 test-blk.log: \
-    $(patsubst %, $(cpmfilesdir)/%, v4th.com fileint.fb \
-    include.fb log2file.fb core.fr) \
+    $(patsubst %, $(cpmfilesdir)/%, v4th.com sfileint.fth \
+    log2file.fb core.fr) \
     $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fth) \
     tests/empty.fb) | emu
 	./emulator/run-in-runcpm.sh \
-	    "v4th fileint.fb" \
-	    "1 load onlyforth" \
-	    "include include.fb" \
+	    "v4th sfileint.fth" \
+	    "include-isfile" \
+	    "onlyforth" \
 	    "include test-blk.fth" \
 	    "bye" \
 	    "exit"

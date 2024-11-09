@@ -119,6 +119,23 @@ $(cpmfilesdir)/v4th.com: \
 	dos2unix -n $(runcpmdir)/logfile.txt $@.log
 	cp -f $(runcpmdir)/A/0/V4TH.COM $@
 
+$(cpmfilesdir)/v4thblk.com: \
+    $(patsubst %, $(cpmfilesdir)/%, tc-base.com \
+    target.fb v4thblk.fth vf-core.fth vf-file.fth \
+    vf-io.fth vf-bufs.fth vf-sys.fth vf-end.fth vf-bdos.fth) \
+    Makefile | emu
+	rm -f $(runcpmdir)/A/0/V4THBLK.COM $(runcpmdir)/A/0/LOGFILE.TXT $@
+	./emulator/run-in-runcpm.sh \
+	    "tc-base" \
+	    "logopen" \
+	    "include target.fb" \
+	    "include v4thblk.fth" \
+	    "logclose" \
+	    "bye" \
+	    "exit"
+	dos2unix -n $(runcpmdir)/logfile.txt $@.log
+	cp -f $(runcpmdir)/A/0/V4THBLK.COM $@
+
 $(cpmfilesdir)/v4th3.com: \
     $(patsubst %, $(cpmfilesdir)/%, tc-base.com \
     target.fb v4th3.fth vf-core.fth vf-io.fth \
@@ -179,12 +196,12 @@ test-std.log: \
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 test-blk.log: \
-    $(patsubst %, $(cpmfilesdir)/%, v4th.com sfileint.fth \
+    $(patsubst %, $(cpmfilesdir)/%, v4thblk.com sfileint.fth \
     log2file.fb core.fr) \
     $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fth) \
     tests/empty.fb) | emu
 	./emulator/run-in-runcpm.sh \
-	    "v4th sfileint.fth" \
+	    "v4thblk sfileint.fth" \
 	    "include-isfile" \
 	    "onlyforth" \
 	    "include test-blk.fth" \

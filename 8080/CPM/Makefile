@@ -210,13 +210,14 @@ test-blk.log: \
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 test3.log: \
-    $(patsubst %, $(cpmfilesdir)/%, v4th3.com fileint.fb \
+    $(patsubst %, $(cpmfilesdir)/%, v4th3.com sfileint.fth \
     include.fb log2file.fb core.fr) \
     $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fth) \
     tests/empty.fb) | emu
 	./emulator/run-in-runcpm.sh \
-	    "v4th3 fileint.fb" \
-	    "1 load onlyforth" \
+	    "v4th3 sfileint.fth" \
+	    "include-inner" \
+	    "onlyforth" \
 	    "use include.fb" \
 	    "onlyforth dos also forth definitions" \
 	    "\ ' read-seq alias iread-seq" \

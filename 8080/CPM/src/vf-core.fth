@@ -1054,7 +1054,9 @@ Code "lit   RP lhld   M E mov   H inx   M D mov   H dcx
 : (        ascii ) parse 2drop ; immediate
 : .(       ascii ) parse type ; immediate
 
-: \        >in @ negate  c/l mod  >in +! ; immediate
+: \        blk @ IF >in @ negate  c/l mod  >in +!
+                 ELSE #tib @ >in ! THEN ; immediate
+
 : \\       b/blk >in ! ; immediate
 : \needs   name find nip 0=exit [compile] \ ;
 

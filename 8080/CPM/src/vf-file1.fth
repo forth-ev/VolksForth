@@ -73,6 +73,6 @@
   incfile push  isfile@ incfile !
   savetib >r  interpret-via-tib
   \ ." before isfile@ closefile"
-  \ isfile@ closefile
+  incfile @ 2+ closefile Abort" error closing file"
   \ ." after isfile@ closefile"
   r> restoretib ;

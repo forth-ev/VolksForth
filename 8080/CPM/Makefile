@@ -136,23 +136,6 @@ $(cpmfilesdir)/v4th3.com: \
 	dos2unix -n $(runcpmdir)/logfile.txt $@.log
 	cp -f $(runcpmdir)/A/0/V4TH.COM $@
 
-v4th2.com: \
-    $(patsubst %, $(cpmfilesdir)/%, volks4th.com \
-    include.fb log2file.fb target.fb source.fb) \
-    | emu
-	rm -f $(runcpmdir)/A/0/KERNEL.COM $@
-	./emulator/run-in-runcpm.sh \
-	    "volks4th" \
-	    "include log2file.fb" \
-	    "logopen" \
-	    "include target.fb" \
-	    "include source.fb" \
-	    "logclose" \
-	    "bye" \
-	    "exit"
-	dos2unix -n $(runcpmdir)/logfile.txt $@.log
-	cp $(runcpmdir)/A/0/KERNEL.COM $@
-
 test-kernel.log: \
     $(patsubst %, $(cpmfilesdir)/%, kernel.com fileint.fb \
     include.fb log2file.fb \

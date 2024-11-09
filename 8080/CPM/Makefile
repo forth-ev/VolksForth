@@ -211,17 +211,13 @@ test-blk.log: \
 
 test3.log: \
     $(patsubst %, $(cpmfilesdir)/%, v4th3.com sfileint.fth \
-    include.fb log2file.fb core.fr) \
+    log2file.fb core.fr) \
     $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fth) \
     tests/empty.fb) | emu
 	./emulator/run-in-runcpm.sh \
 	    "v4th3 sfileint.fth" \
 	    "include-inner" \
 	    "onlyforth" \
-	    "use include.fb" \
-	    "onlyforth dos also forth definitions" \
-	    "\ ' read-seq alias iread-seq" \
-	    "7 8 thru" \
 	    "include test-blk.fth" \
 	    "bye" \
 	    "exit"

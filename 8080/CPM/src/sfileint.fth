@@ -370,7 +370,14 @@ Forth definitions
 : from         isfile push use ;
 : loadfrom     ( n -- )
                isfile push  fromfile push  use load   close ;
-: include      1 loadfrom ;
+: include ( -- )
+  rec-offset push  isfile push  fromfile push
+  use  cr file?
+  include-inner
+  incfile @
+    IF increc @ incfile @ cr+ex!
+    incfile @ readrec Abort" error re-reading after include"
+    THEN ;
 
 : eof ( -- f ) isfile@  dup filesize @ swap record @ = ;
 

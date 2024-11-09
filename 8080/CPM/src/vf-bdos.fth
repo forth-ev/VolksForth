@@ -99,7 +99,9 @@ $5C Constant fcb
 
 \ Default Disk Interface: open and close                 20Nov87
 
-Target Dos also     Defer drvinit       Dos definitions
+Target Dos also     Defer drvinit
+
+Dos definitions
 
 | Variable  opened
 : default  ( -- )  opened off
@@ -108,34 +110,19 @@ Target Dos also     Defer drvinit       Dos definitions
    openfile Abort" default file not found!"  opened on  ;
 ' default Is drvinit
 
+Defer save-dos-buffers
+
 : close-default ( -- ) opened @ not ?exit
     fcb closefile Abort" can't close default-file!" ;
 ' close-default Is save-dos-buffers
 
 
 
-\ *** Block No. 125, Hexblock 7d
-
-\ Default Disk Interface: read/write                     14Feb88
-
-Target Dos also
-
-| : rec# ( 'dosfcb -- 'rec# )  &33 + ;
-
-: (r/w  ( adr blk file r/wf -- flag )  >r
-    dup 0= Abort" no Direct Disk IO supported! " >dosfcb
-    swap rec/blk *  over rec#   0 over 2+ c!   !
-    r> rot  b/blk bounds
-    DO I dma!  2dup IF rec@ drop
-       ELSE rec! IF 2drop true endloop exit THEN THEN
-       over rec#   0 over 2+ c!  1 swap +!
-    b/rec +LOOP  2drop false ;
-
-' (r/w Is r/w
-
 \ *** Block No. 126, Hexblock 7e
 
 \ Postlude                                               20Nov87
+
+Target Dos also
 
 Defer postlude
 

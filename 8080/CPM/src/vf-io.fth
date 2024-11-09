@@ -8,6 +8,7 @@ Defer .status   ' noop Is .status
 
 : push   ( addr -- )   r> swap dup >r @ >r pull >r >r ;
                        restrict
+Variable loadfile
 
 : (load  ( blk offset -- )
    isfile push  loadfile push  fromfile push  blk push >in push
@@ -159,11 +160,6 @@ $20 Constant bl
 $40 Constant c/l        \ Screen line length
 $10 Constant l/s        \ lines per screen
 
-: list ( blk -- )
-   scr ! ." Scr " scr @ u.
-   l/s 0 DO
-     cr I 2 .r space scr @ block I c/l * + c/l -trailing type
-   LOOP cr ;
 
 
 
@@ -187,3 +183,18 @@ Code pause   >next here 2- !  end-code
 Label wake   H pop   H dcx   UP shld
    6 D lxi   D dad   M A mov   H inx   M H mov  A L mov   sphl
    H pop   RP shld   IP pop   Next   end-code
+
+\ file related definitions moved here from vf-bufs.fth
+
+User isfile          0 isfile !   \ addr of file control block
+Variable fromfile    0 fromfile !
+
+Code isfile@ ( -- addr )  user' isfile  D lxi
+   UP lhld   D dad   fetch jmp   end-code
+
+$FF00 Constant limit
+
+Defer save-buffers  ' noop IS save-buffers
+Defer init-buffers  ' noop IS init-buffers
+
+$400 Constant b/blk

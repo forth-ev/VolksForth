@@ -1010,10 +1010,11 @@ Code (word ( char adr0 len0 -- addr )
 
 \ source word parse name                       20Oct86UH 25Jan88
 
-Variable loadfile
+defer source
 
-: source ( -- addr len )   blk @ ?dup
-   IF loadfile @ (block  b/blk   exit  THEN  tib #tib @ ;
+: (source   ( -- addr len)   tib #tib @  ;
+
+' (source IS source
 
 : word ( char -- addr )   source (word ;
 

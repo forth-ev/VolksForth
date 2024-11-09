@@ -41,7 +41,7 @@ OnlyForth
 
 \ Build correct view-numbers for this file           UUH 19Nov87
 
-| : fileintview ( -- )  $400 blk @ + ;
+| : fileintview ( -- n )  $400 blk @ + ;
 
 ' fileintview Is makeview
 

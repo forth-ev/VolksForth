@@ -1,6 +1,6 @@
 
 Onlyforth
-    $9000 displace !
+    $8000 displace !
 Target definitions   $100 here!
 
   include vf-core.fth

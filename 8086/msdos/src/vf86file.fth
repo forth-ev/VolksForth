@@ -1,7 +1,7 @@
 
-  variable tibeof tibeof off
+| variable tibeof tibeof off
 
-  : eolf? ( c -- f )
+| : eolf? ( c -- f )
     \ f=-1: not yet eol; store c and continue
     \ f=0: eol but not yet eof; return line and flag continue
     \ f=1: eof: return line and flag eof
@@ -19,7 +19,7 @@
   variable incfile
   variable incpos 2 allot
 
-  : inc-fgetc  ( -- c )
+| : inc-fgetc  ( -- c )
     incfile @ f.handle @ 0= IF
       incpos 2@  incfile @  fseek THEN
     incfile @ fgetc
@@ -35,7 +35,7 @@
 
 \ freadline probe-for-fb                             phz 06feb22
 
-  : freadline ( -- eof )
+| : freadline ( -- eof )
   tib /tib bounds DO
     inc-fgetc dup eolf? under 0< IF I c! ELSE drop THEN
     0< 0= IF I tib - #tib ! ENDLOOP tibeof @ exit THEN
@@ -54,17 +54,18 @@
 
 \ save/restoretib                                    phz 16jan22
 
-  $50 constant /stash
-  create stash[  /stash allot  here constant ]stash
-  variable stash>   stash[ stash> !
+| $50 constant /stash
+| create stash[  /stash allot  here constant ]stash
+| variable stash>   stash[ stash> !
+| : clear-tibstash  stash[ stash> ! ;
 
-  : savetib  ( -- n )
+| : savetib  ( -- n )
       #tib @ >in @ -  dup stash> @ + ]stash u>
         abort" tib stash overflow"   >r
       tib >in @ +  stash> @  r@ cmove
       r@ stash> +!  r> ;
 
-  : restoretib  ( n -- )
+| : restoretib  ( n -- )
       dup >r negate stash> +!   stash> @ tib r@ cmove
       r> #tib !  >in off ;
 
@@ -73,7 +74,7 @@
 
 \ interpret-via-tib include                          phz 06feb22
 
-  : interpret-via-tib
+| : interpret-via-tib
   BEGIN freadline >r .status >in off interpret
   r> UNTIL ;
 
@@ -87,7 +88,3 @@
   incfile push  isfile@ incfile !
   incpos push  incpos off  incpos 2+ dup push off
   savetib >r  interpret-via-tib close  r> restoretib ;
-
-  : (stashquit  stash[ stash> !  (quit ;
-  : stashrestore  ['] (stashquit IS 'quit ;
-  ' stashrestore IS 'restart

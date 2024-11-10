@@ -1473,7 +1473,7 @@ Target  Forth also definitions
 
   Defer prompt    ' (prompt Is prompt
 
-  : (quit  BEGIN  prompt query interpret  REPEAT ;
+  : (quit    clear-tibstash  BEGIN  prompt query interpret  REPEAT ;
 
   Defer 'quit     ' (quit Is 'quit
 

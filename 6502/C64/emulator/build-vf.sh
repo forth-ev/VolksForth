@@ -7,6 +7,8 @@
 
 set -e
 
+test -n "${TCBASE}" || TCBASE="tcbase"
+
 emulatordir="$(dirname "${BASH_SOURCE[0]}")"
 basedir="$(realpath --relative-to="$PWD" "${emulatordir}/..")"
 
@@ -22,7 +24,7 @@ keybuf="include ${source}\nsave-target ${target}\ndos s0:notdone"
 test -n "${nosave}" && keybuf="include ${source}\n"
 
 DISK10=tc38q "${emulatordir}/run-in-vice.sh" \
-  "tcbase" "${keybuf}"
+  "${TCBASE}" "${keybuf}"
 
 petscii2ascii "${basedir}/cbmfiles/${logfile}" | \
   grep -F 'target compile complete' || \

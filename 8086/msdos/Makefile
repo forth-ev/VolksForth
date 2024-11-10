@@ -202,18 +202,17 @@ test-volks4th-min.golden: $(patsubst %, tests/golden/%.golden, \
 	tests/evaluate-test.sh $(basename $@)
 
 
-dosfiles/%: %
-	test -d dosfiles || mkdir dosfiles
+dosfiles/%: % | dosfiles
 	cp $< $@
 
-dosfiles/%: src/%
-	test -d dosfiles || mkdir dosfiles
+dosfiles/%: src/% | dosfiles
 	cp $< $@
 
-dosfiles/%: tests/%
-	test -d dosfiles || mkdir dosfiles
+dosfiles/%: tests/% | dosfiles
 	cp $< $@
 
+dosfiles:
+	mkdir $@
 
 src/%.fth: src/%.fb ../../tools/fb2fth.py
 	../../tools/fb2fth.py $< $@

@@ -31,11 +31,12 @@ update: $(vf_blk_fth_files) $(vf_fth_files_petscii)
 
 
 clean:
-	rm -f cbmfiles/*.fr cbmfiles/*.fth cbmfiles/*.log
+	rm -f cbmfiles/*.fr cbmfiles/*.fth cbmfiles/*.log tmp/*
 	rm -rf tmp/* release
 	rm -f *.log *.result *.golden
 	rm -f cbmfiles/c??-testbase
 	rm -f disks/scratch.d64 emulator/sdcard.img
+	rm -f cbmfiles/tcbase16
 	rm -f tests/golden/mycore*.golden
 
 
@@ -136,6 +137,18 @@ cbmfiles/v4th-x16:
 
 cbmfiles/v4th-x16e:
 	emulator/build-vf.sh v4th-x16e
+
+
+# Proof-of-concept self-hosted C16 target compile
+
+cbmfiles/tcbase16: emulator/v4thblk-c16+.T64 emulator/build-tcbase.sh \
+    disks/tc38q.d64 disks/file-words.d64 cbmfiles/tc-base.fth
+	VICE=xplus4 TCVF=v4thblk-c16+ TCBASE=tcbase16 emulator/build-tcbase.sh
+
+cbmfiles/v4th-c16+self: emulator/tcbase16.T64
+	VICE=xplus4 TCBASE=tcbase16 emulator/build-vf.sh v4th-c16+
+	rm -f $@
+	cp cbmfiles/v4th-c16+ $@
 
 
 # Core test targets

@@ -155,14 +155,15 @@ $(cpmfilesdir)/v4th3.com: \
 
 test-kernel.log: \
     $(patsubst %, $(cpmfilesdir)/%, kernel.com fileint.fb \
-    include.fb log2file.fb \
-    ans-shim.fth prelim.fth tester.fth core.fr test-min.fth) \
+    include.fb log2file.fb core.fr) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fth)) \
     | emu
 	./emulator/run-in-runcpm.sh \
 	    "kernel fileint.fb" \
 	    "1 load onlyforth" \
+	    "$50 constant /tib" \
 	    "include include.fb" \
-	    "include test-min.fth" \
+	    "include test-krn.fth" \
 	    "bye" \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
@@ -241,7 +242,8 @@ test3.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreplus coreext doubltst report-noblk)
 	cat $^ > $@
 
-test-kernel.golden: $(patsubst %, tests/golden/%.golden, prelim core)
+test-kernel.golden: $(patsubst %, tests/golden/%.golden, \
+    prelim core coreplus coreext report-nodbl)
 	cat $^ > $@
 
 %.golden: tests/golden/%.golden

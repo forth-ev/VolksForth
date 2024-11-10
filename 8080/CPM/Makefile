@@ -136,23 +136,6 @@ $(cpmfilesdir)/v4thblk.com: \
 	dos2unix -n $(runcpmdir)/logfile.txt $@.log
 	cp -f $(runcpmdir)/A/0/V4THBLK.COM $@
 
-$(cpmfilesdir)/v4th3.com: \
-    $(patsubst %, $(cpmfilesdir)/%, tc-base.com \
-    target.fb v4th3.fth vf-core.fth vf-io.fth \
-    vf-bufs1.fth vf-sys.fth vf-file1.fth vf-end.fth vf-bdos.fth) \
-    Makefile | emu
-	rm -f $(runcpmdir)/A/0/V4TH.COM $(runcpmdir)/A/0/LOGFILE.TXT $@
-	./emulator/run-in-runcpm.sh \
-	    "tc-base" \
-	    "logopen" \
-	    "include target.fb" \
-	    "include v4th3.fth" \
-	    "logclose" \
-	    "bye" \
-	    "exit"
-	dos2unix -n $(runcpmdir)/logfile.txt $@.log
-	cp -f $(runcpmdir)/A/0/V4TH.COM $@
-
 test-kernel.log: \
     $(patsubst %, $(cpmfilesdir)/%, kernel.com fileint.fb \
     include.fb log2file.fb core.fr) \
@@ -211,20 +194,6 @@ test-blk.log: \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
-test3.log: \
-    $(patsubst %, $(cpmfilesdir)/%, v4th3.com sfileint.fth \
-    logfile.fth core.fr) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fth) \
-    tests/empty.fb) | emu
-	./emulator/run-in-runcpm.sh \
-	    "v4th3 sfileint.fth" \
-	    "include-isfile" \
-	    "onlyforth" \
-	    "include test-std.fth" \
-	    "bye" \
-	    "exit"
-	dos2unix -n $(runcpmdir)/logfile.txt $@
-
 emu: $(runcpmdir)/RunCPM
 
 test-min.golden: $(patsubst %, tests/golden/%.golden, prelim core)
@@ -236,10 +205,6 @@ test-std.golden: $(patsubst %, tests/golden/%.golden, \
 
 test-blk.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreplus coreext doubltst block report-blk)
-	cat $^ > $@
-
-test3.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core coreplus coreext doubltst report-noblk)
 	cat $^ > $@
 
 test-kernel.golden: $(patsubst %, tests/golden/%.golden, \

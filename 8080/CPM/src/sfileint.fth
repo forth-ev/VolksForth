@@ -37,25 +37,6 @@ OnlyForth
 \ ' noop          Is drvinit
  \      include startup.fb \ load Standard System
 
-\ *** Block No. 2, Hexblock 2
-
-\ Build correct view-numbers for this file           UUH 19Nov87
-
-| : fileintview ( -- n )  $400 blk @ + ;
-
-' fileintview Is makeview
-
-
-
-
-
-
-
-
-
-
-
-
 \ *** Block No. 3, Hexblock 3
 
 \ File Control Blocks                                 UH 18Feb88
@@ -91,7 +72,6 @@ Constant b/fcb
 
 
 
-
 \ *** Block No. 5, Hexblock 5
 
 \ File sizes                                          UH 05Oct87
@@ -108,9 +88,6 @@ Forth definitions
 
 Dos definitions
 
-
-
-
 \ *** Block No. 6, Hexblock 6
 
 \ (open                                               UH 18Feb88
@@ -125,10 +102,6 @@ Dos definitions
    dup >dosfcb createfile Abort" directory full!"
    dup position 0. rot 2!
    dup filesize off   opened on  offset off ;
-
-: file-r/w  ( buffer block fcb f  -- f )
-    over 0= Abort" no Direct Disk IO supported! "
-    >r  dup  (open   2dup in-range r> (r/w ;
 
 \ *** Block No. 7, Hexblock 7
 
@@ -229,14 +202,7 @@ Dos definitions
 
 \ Close a file                                        UH 10Oct87
 
-' save-buffers >body $0C + @ | Alias backup
-
-| : filebuffer?  ( fcb -- fcb bufaddr/flag )
-   prev  BEGIN @ dup WHILE  2dup 2+ @ = UNTIL ;
-
-| : flushfile  ( fcb -- )  \ flush file buffers
-     BEGIN  filebuffer?  ?dup  WHILE
-            dup backup  emptybuf  REPEAT  drop ;
+Defer flushfile  ' noop is flushfile
 
 : (close  ( fcb -- )  \ close file in fcb
    dup flushfile
@@ -280,27 +246,6 @@ Forth definitions
 
 : file?   isfile@ .file ;  \ print current file
 
-: list  ( n -- )   3 spaces  file? list ;
-
-\ *** Block No. 15, Hexblock f
-
-\ words for viewing                                   UH 10Oct87
-
-Forth definitions
-
-| $200 Constant viewoffset \ max. %512 kB files
-
-: (makeview  ( -- n )  \ calc. view filed for a name
-   blk @ dup  0= ?exit
-   loadfile @ ?dup IF fileno @ viewoffset * + THEN ;
-
-: (view      ( blk -- blk' ) \ select file and leave block
-   dup 0=exit
-   viewoffset u/mod  file-link
-   BEGIN @ dup WHILE 2dup fileno @ = UNTIL
-   !files drop ;        \ not found: direct access
-
-
 \ *** Block No. 16, Hexblock 10
 
 \ FORGETing files                                     UH 10Oct87
@@ -315,25 +260,6 @@ Forth definitions
      file-link
      BEGIN @ ?dup WHILE remove? IF dup (close THEN REPEAT
      file-link remove ;
-
-
-
-
-
-\ *** Block No. 17, Hexblock 11
-
-\ print a list of all buffers                         UH 20Oct86
-
-: .buffers
-   prev BEGIN  @ ?dup WHILE  stop? abort" stopped"
-           cr dup u. dup 2+ @ dup 1+
-           IF ."    Block: " over 4+ @ 5 .r
-              ."    File : " [ Dos ] .file
-              dup 6 + @ 0< IF ."     updated" THEN
-           ELSE ." Buffer empty" drop THEN  REPEAT ;
-
-
-
 
 
 
@@ -366,8 +292,7 @@ Forth definitions
 : emptyfile    isfile@ >dosfcb createfile ;
 
 : from         isfile push use ;
-: loadfrom     ( n -- )
-               isfile push  fromfile push  use load   close ;
+
 : include ( -- )
   increc-offset push  isfile push  fromfile push
   use  cr file?
@@ -390,15 +315,6 @@ Forth definitions
 
 | : >fileend   isfile@ >dosfcb size drop ;
 
-| : addblock  ( n -- )  \ add block n to file
-     dup buffer under   b/blk  bl fill
-     isfile@   rec/blk  over filesize +!  false file-r/w
-     IF close Abort" disk full!" THEN ;
-
-: more ( n -- )   open >fileend
-   capacity swap bounds  ?DO I addblock LOOP close
-   open close ;
-
 : Drive: ( n -- n' ) dup Constant 1+ Does> @ drive! ;
 0   Drive: a:   Drive: b:   Drive: c:   Drive: d:
 5 + Drive: j:  drop
@@ -414,40 +330,5 @@ Forth definitions
    ?DO I dma!  isfile@ >dosfcb write-seq  Abort" disk full!"
        b/rec +LOOP  close ;
 
-
-
-
-
-
-
-
-
-\ *** Block No. 22, Hexblock 16
-
-\ Status                                              UH 10OCt87
-
-
-: .blk ( -- )   blk @ ?dup 0=exit
-   dup 1 = IF cr file? THEN base push hex ."  Blk " . ?cr ;
-
-' .blk Is .status
-
-
-
-
-
-
-
-
-
-
-\ *** Block No. 23, Hexblock 17
-
-File source.fb      \  Define already existing Files
-File fileint.fb     File startup.fbr
-
-' (makeview     Is makeview
 ' remove-files  Is custom-remove
-' file-r/w      Is r/w
 ' noop          Is drvinit
- \      include startup.fb \ load Standard System

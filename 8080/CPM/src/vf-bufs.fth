@@ -94,7 +94,7 @@ Defer r/w
 
 \ backup emptybuf readblk                                20Oct86
 
-| : backup ( bufaddr -- )       dup 6+ @ 0<
+  : backup ( bufaddr -- )       dup 6+ @ 0<
      IF 2+ dup @ 1+         \ buffer empty if file = -1
        IF input push output push standardi/o
          BEGIN  dup 6+ over 2+ @ 2 pick @ 0 r/w

@@ -24,7 +24,8 @@ veryclean: clean
 
 test: test-min.result test-std.result test-blk.result
 
-alltests: logtest.result inctest.result test-min.result test-v4th.result
+alltests: test-min.result test-std.result test-blk.result \
+    logtest.result inctest.result test-kernel.result
 
 run-editor: | msdos
 	FORTHPATH="f:\\src;f:\\tests;f:\\msdos" \
@@ -70,6 +71,7 @@ inctest.log: \
 	./emulator/run-in-runcpm.sh \
 	    "kernel fileint.fb" \
 	    "1 load onlyforth" \
+	    "$50 constant /tib" \
 	    "include include.fb" \
 	    "include log2file.fb" \
 	    "logopen" \

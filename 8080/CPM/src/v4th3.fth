@@ -17,7 +17,7 @@ Target definitions   $100 here!
  \ .( order2 ) order
   include vf-io.fth
  \ .( order3 ) order
-  include vf-bufs.fth
+  include vf-bufs1.fth
  \ .( order4 ) order
   include vf-sys.fth
  \ .( order5 ) order

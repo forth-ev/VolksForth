@@ -139,7 +139,7 @@ $(cpmfilesdir)/v4thblk.com: \
 $(cpmfilesdir)/v4th3.com: \
     $(patsubst %, $(cpmfilesdir)/%, tc-base.com \
     target.fb v4th3.fth vf-core.fth vf-io.fth \
-    vf-bufs.fth vf-sys.fth vf-file1.fth vf-end.fth vf-bdos.fth) \
+    vf-bufs1.fth vf-sys.fth vf-file1.fth vf-end.fth vf-bdos.fth) \
     Makefile | emu
 	rm -f $(runcpmdir)/A/0/V4TH.COM $(runcpmdir)/A/0/LOGFILE.TXT $@
 	./emulator/run-in-runcpm.sh \
@@ -238,7 +238,7 @@ test-blk.golden: $(patsubst %, tests/golden/%.golden, \
 	cat $^ > $@
 
 test3.golden: $(patsubst %, tests/golden/%.golden, \
-    prelim core coreplus coreext doubltst block report-blk)
+    prelim core coreplus coreext doubltst report-noblk)
 	cat $^ > $@
 
 test-kernel.golden: $(patsubst %, tests/golden/%.golden, prelim core)

@@ -2,12 +2,9 @@
 
 \ buffer mechanism                             20Oct86   07Oct87
 
-User isfile          0 isfile !   \ addr of file control block
-Variable fromfile    0 fromfile !
 Variable prev        0 prev !     \ Listhead
 | Variable buffers   0 buffers !  \ Semaphor
 $408 Constant b/buf               \ physikalische Groesse
-$400 Constant b/blk
 \ \\ Struktur eines Buffers:    0 : link
 \                               2 : file
 \                               4 : blocknummer
@@ -97,7 +94,7 @@ Defer r/w
 
 \ backup emptybuf readblk                                20Oct86
 
-| : backup ( bufaddr -- )       dup 6+ @ 0<
+  : backup ( bufaddr -- )       dup 6+ @ 0<
      IF 2+ dup @ 1+         \ buffer empty if file = -1
        IF input push output push standardi/o
          BEGIN  dup 6+ over 2+ @ 2 pick @ 0 r/w
@@ -141,12 +138,15 @@ Defer r/w
 : (block ( blk file -- addr )
     BEGIN  (core? take readblk mark  REPEAT ;
 
-Code isfile@ ( -- addr )  user' isfile  D lxi
-   UP lhld   D dad   fetch jmp   end-code
-
 : buffer ( blk -- addr )   isfile@ (buffer ;
 
 : block  ( blk -- addr )   isfile@ (block ;
+
+: (blk-source   ( -- addr len)
+    blk @ ?dup IF loadfile @ (block  b/blk  exit THEN
+    tib #tib @ ;
+
+' (blk-source IS source
 
 \ : isfile@ ( -- addr )    isfile @ ;
 
@@ -156,11 +156,10 @@ Code isfile@ ( -- addr )  user' isfile  D lxi
 
 : update          $80 prev @ 6+ 1+ ( Byte-Order! )  c! ;
 
-Defer save-dos-buffers
-
-: save-buffers ( -- )   buffers lock
+: (save-buffers ( -- )   buffers lock
    BEGIN updates? ?dup WHILE backup REPEAT save-dos-buffers
    buffers unlock ;
+' (save-buffers IS save-buffers
 
 : empty-buffers ( -- )   buffers lock prev
    BEGIN @ ?dup  WHILE dup emptybuf REPEAT  buffers unlock ;
@@ -172,7 +171,7 @@ Defer save-dos-buffers
 \ *** Block No. 103, Hexblock 67
 
 \ Allocating buffers                                     10Oct87
-$10000 Constant limit            Variable first
+Variable first
 
 : allotbuffer ( -- )
    first @  r0 @  -  b/buf 2+  u< ?exit
@@ -186,5 +185,30 @@ $10000 Constant limit            Variable first
 
 : all-buffers  BEGIN  first @ allotbuffer first @ =  UNTIL ;
 
-| : init-buffers    prev off  limit first ! all-buffers ;
+| : (init-buffers    prev off  limit first ! all-buffers  flush ;
+' (init-buffers IS init-buffers
 
+\ *** Block No. 125, Hexblock 7d
+
+\ Default Disk Interface: read/write                     14Feb88
+
+Target Dos also
+
+| : rec# ( 'dosfcb -- 'rec# )  &33 + ;
+
+: (r/w  ( adr blk file r/wf -- flag )  >r
+    dup 0= Abort" no Direct Disk IO supported! " >dosfcb
+    swap rec/blk *  over rec#   0 over 2+ c!   !
+    r> rot  b/blk bounds
+    DO I dma!  2dup IF rec@ drop
+       ELSE rec! IF 2drop true endloop exit THEN THEN
+       over rec#   0 over 2+ c!  1 swap +!
+    b/rec +LOOP  2drop false ;
+
+' (r/w Is r/w
+
+: list ( blk -- )
+   scr ! ." Scr " scr @ u.
+   l/s 0 DO
+     cr I 2 .r space scr @ block I c/l * + c/l -trailing type
+   LOOP cr ;

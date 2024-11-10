@@ -82,7 +82,8 @@ Defer custom-remove     ' noop Is custom-remove
    voc-link @ BEGIN  dup 4- @ over 2- ! @ ?dup  0= UNTIL
    up@ origin $100 cmove ;
 
-: bye       flush empty (bye ;
+: bye       save-buffers  (bye ;
+\ : bye       flush empty (bye ;
 
 | : end?    key #cr = IF true rdrop THEN ;
 
@@ -146,7 +147,7 @@ Defer 'cold    ' noop Is 'cold
 
 | : (cold      origin up@ $100 cmove  $80 count
      $50 umin >r tib r@ move r> #tib ! >in off  blk off
-     init-vocabularys init-buffers  flush  'cold
+     init-vocabularys init-buffers  'cold
      Onlyforth page &24 spaces  logo count type cr (restart  ;
 
 

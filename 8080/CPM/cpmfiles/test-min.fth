@@ -1,5 +1,5 @@
 
-include log2file.fb
+include logfile.fth
 logopen
 
 include ans-shim.fth

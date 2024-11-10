@@ -5,7 +5,6 @@ Target definitions   $100 here!
 
   include vf-core.fth
   include vf-io.fth
-  include vf-bufs.fth
   include vf-sys.fth
   include vf-bdos.fth
   include vf-file.fth

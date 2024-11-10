@@ -105,7 +105,7 @@ $(patsubst %, $(cpmfilesdir)/%, kernel.com \
 $(cpmfilesdir)/v4th.com: \
     $(patsubst %, $(cpmfilesdir)/%, tc-base.com \
     target.fb v4th.fth vf-core.fth vf-file.fth \
-    vf-io.fth vf-bufs.fth vf-sys.fth vf-end.fth vf-bdos.fth) \
+    vf-io.fth vf-sys.fth vf-end.fth vf-bdos.fth) \
     Makefile | emu
 	rm -f $(runcpmdir)/A/0/V4TH.COM $(runcpmdir)/A/0/LOGFILE.TXT $@
 	./emulator/run-in-runcpm.sh \

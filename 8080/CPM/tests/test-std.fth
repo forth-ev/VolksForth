@@ -3,7 +3,7 @@
 \     blk @ ?dup IF  ."  Blk " u. ?cr  exit THEN
 \     incfile @ IF tib #tib @ cr type THEN ;
 
-include log2file.fb
+include logfile.fth
 logopen
 
 include ans-shim.fth

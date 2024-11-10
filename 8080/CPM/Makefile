@@ -170,7 +170,7 @@ test-kernel.log: \
 
 test-min.log: \
     $(patsubst %, $(cpmfilesdir)/%, v4th.com sfileint.fth \
-    log2file.fb \
+    logfile.fth \
     ans-shim.fth prelim.fth tester.fth core.fr test-min.fth) \
     | emu
 	./emulator/run-in-runcpm.sh \
@@ -184,7 +184,7 @@ test-min.log: \
 
 test-std.log: \
     $(patsubst %, $(cpmfilesdir)/%, v4th.com sfileint.fth \
-    log2file.fb core.fr) \
+    logfile.fth core.fr) \
     $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fth)) \
     | emu
 	./emulator/run-in-runcpm.sh \
@@ -198,7 +198,7 @@ test-std.log: \
 
 test-blk.log: \
     $(patsubst %, $(cpmfilesdir)/%, v4thblk.com sfileint.fth \
-    sblkint.fth log2file.fb core.fr) \
+    sblkint.fth logfile.fth core.fr) \
     $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fth) \
     tests/empty.fb) | emu
 	./emulator/run-in-runcpm.sh \
@@ -213,7 +213,7 @@ test-blk.log: \
 
 test3.log: \
     $(patsubst %, $(cpmfilesdir)/%, v4th3.com sfileint.fth \
-    log2file.fb core.fr) \
+    logfile.fth core.fr) \
     $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fth) \
     tests/empty.fb) | emu
 	./emulator/run-in-runcpm.sh \

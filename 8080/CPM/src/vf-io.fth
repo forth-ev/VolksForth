@@ -1,5 +1,7 @@
 \ *** Block No. 84, Hexblock 54
 
+Target
+
 \ .status push load                                      20Oct86
 
 Defer .status   ' noop Is .status
@@ -8,26 +10,6 @@ Defer .status   ' noop Is .status
 
 : push   ( addr -- )   r> swap dup >r @ >r pull >r >r ;
                        restrict
-Variable loadfile
-
-: (load  ( blk offset -- )
-   isfile push  loadfile push  fromfile push  blk push >in push
-   >in !  blk !  isfile@ loadfile !  .status  interpret ;
-
-: load   ( blk --)     ?dup 0=exit  0 (load ;
-
-
-
-\ *** Block No. 85, Hexblock 55
-
-\ +load thru +thru --> rdepth depth                      20Oct86
-
-: +load    ( offset --)       blk @ + load ;
-
-: thru     ( from to --)      1+ swap DO I  load LOOP ;
-: +thru    ( off0 off1 --)    1+ swap DO I +load LOOP ;
-
-: -->        1 blk +! >in off .status ; immediate
 
 : rdepth   ( -- +n)           r0 @ rp@ 2+   - 2/ ;
 : depth    ( -- +n)           sp@ s0 @ swap - 2/ ;

@@ -183,7 +183,7 @@ test-std.log: \
 
 test-blk.log: \
     $(patsubst %, $(cpmfilesdir)/%, v4thblk.com sfileint.fth \
-    sblkint.fth logfile.fth core.fr) \
+    sblkint.fth log2file.fb core.fr) \
     $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fth) \
     tests/empty.fb) | emu
 	./emulator/run-in-runcpm.sh \

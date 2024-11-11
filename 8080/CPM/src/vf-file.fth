@@ -1,4 +1,6 @@
 
+Target Dos also
+
   : cr+ex@  ( fcb -- cr+256*ex )
     dup &34 + c@  swap &14 + c@ $100 * + ;
   : cr+ex!  ( cr+256*ex fcb -- )
@@ -61,10 +63,14 @@
 | : interpret-via-tib
   BEGIN freadline >r .status >in off  interpret  r> UNTIL ;
 
+  Defer include-load
+| : block-not-implemented 1 abort" block file access not implemented" ;
+  ' block-not-implemented IS include-load
+
   : include-isfile ( -- )
   increc push  0 isfile@ cr+ex!
   isfile@ increadrec Abort" can't read start of file"
-  probe-for-fb IF 1 load exit THEN
+  probe-for-fb IF 1 include-load exit THEN
   incfile push  isfile@ incfile !
   savetib >r  interpret-via-tib  r> restoretib
   incfile @ 2+ closefile Abort" error closing file" ;

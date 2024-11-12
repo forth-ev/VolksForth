@@ -1,5 +1,7 @@
 \ *** Block No. 104, Hexblock 68
 
+Target
+
 \ endpoints of forget                                    01Jul86
 
 | : |? ( nfa -- flag )   c@ $20 and ;

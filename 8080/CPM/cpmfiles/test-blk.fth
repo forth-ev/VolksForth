@@ -1,5 +1,5 @@
 
-include logfile.fth
+include log2file.fb  \ so that include with block file gets tested
 ' noop Is .status
 logopen
 

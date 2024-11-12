@@ -212,3 +212,25 @@ Target Dos also
    l/s 0 DO
      cr I 2 .r space scr @ block I c/l * + c/l -trailing type
    LOOP cr ;
+
+
+Variable loadfile
+
+: (load  ( blk offset -- )
+   isfile push  loadfile push  fromfile push  blk push >in push
+   >in !  blk !  isfile@ loadfile !  .status  interpret ;
+
+: load   ( blk --)     ?dup 0=exit  0 (load ;
+' load IS include-load
+
+
+\ *** Block No. 85, Hexblock 55
+
+\ +load thru +thru --> rdepth depth                      20Oct86
+
+: +load    ( offset --)       blk @ + load ;
+
+: thru     ( from to --)      1+ swap DO I  load LOOP ;
+: +thru    ( off0 off1 --)    1+ swap DO I +load LOOP ;
+
+: -->        1 blk +! >in off .status ; immediate

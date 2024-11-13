@@ -82,12 +82,12 @@ inctest.log: \
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 $(cpmfilesdir)/tc-base.com: \
-$(patsubst %, $(cpmfilesdir)/%, kernel.com \
+$(patsubst %, $(cpmfilesdir)/%, v4th-4tc.com \
     fileint.fb ass8080.fb include.fb log2file.fb xinout.fb savesys.fb) \
     Makefile | emu
 	rm -f $(runcpmdir)/A/0/TC-BASE.COM $@
 	./emulator/run-in-runcpm.sh \
-	    "kernel fileint.fb" \
+	    "v4th-4tc fileint.fb" \
 	    "1 load" \
 	    "include log2file.fb" \
 	    "logopen" \

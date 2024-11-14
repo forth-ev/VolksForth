@@ -1,4 +1,6 @@
 
+$80 .pagestatus
+
 Target Dos also
 
   : cr+ex@  ( fcb -- cr+256*ex )

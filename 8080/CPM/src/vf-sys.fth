@@ -1,5 +1,7 @@
 \ *** Block No. 104, Hexblock 68
 
+$68 .pagestatus
+
 Target
 
 \ endpoints of forget                                    01Jul86
@@ -192,6 +194,8 @@ Label boot     here >boot !    \ find link to Main:
 end-code
 
 \ *** Block No. 114, Hexblock 72
+
+$72 .pagestatus
 
 \ "search                                                05Mar88
 

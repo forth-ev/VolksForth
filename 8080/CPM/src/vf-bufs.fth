@@ -1,5 +1,7 @@
 \ *** Block No. 94, Hexblock 5e
 
+$5e .pagestatus
+
 \ buffer mechanism                             20Oct86   07Oct87
 
 Variable prev        0 prev !     \ Listhead
@@ -190,6 +192,8 @@ Variable first
 
 \ *** Block No. 125, Hexblock 7d
 
+$7d .pagestatus
+
 \ Default Disk Interface: read/write                     14Feb88
 
 Target Dos also
@@ -225,6 +229,8 @@ Variable loadfile
 
 
 \ *** Block No. 85, Hexblock 55
+
+$55 .pagestatus
 
 \ +load thru +thru --> rdepth depth                      20Oct86
 

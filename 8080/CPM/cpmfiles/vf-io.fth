@@ -1,5 +1,7 @@
 \ *** Block No. 84, Hexblock 54
 
+$54 .pagestatus
+
 Target
 
 \ .status push load                                      20Oct86
@@ -148,6 +150,8 @@ $10 Constant l/s        \ lines per screen
 
 
 \ *** Block No. 93, Hexblock 5d
+
+$5d .pagestatus
 
 \ multitasker primitives                                 20Nov87
 

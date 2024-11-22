@@ -2,6 +2,8 @@
 
 \ FORTH Preamble and ID                            uho 19May2005
 
+2 .pagestatus
+
 Assembler
 
 nop  0 jmp   here 2- >label >boot
@@ -1542,6 +1544,8 @@ Defer parser
 
 
 \ *** Block No. 83, Hexblock 53
+
+$53 .pagestatus
 
 \ ?stack                                                 30Jun86
 | : stackfull ( -- )     depth $20 > Abort" tight stack"

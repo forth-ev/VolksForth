@@ -1,5 +1,7 @@
 \ *** Block No. 116, Hexblock 74
 
+$74 .pagestatus
+
 \ Rest of Standard-System                      04Oct87   07Oct87
 
 \ 2 +load  \ Operating System
@@ -18,6 +20,8 @@ Target Forth also definitions
 : forth-83 ;     \ last word in Dictionary
 
 \ *** Block No. 117, Hexblock 75
+
+$75 .pagestatus
 
 \ System patchup                                         04Oct87
 

@@ -1,6 +1,16 @@
 
 Onlyforth
+
+: .pagestatus  ( n -- )
+  cr ." page " .
+  ." here "  here u.
+  ." there " there u.
+  ." displaced there " there displace @ + u.
+  ." heap "  heap u.  cr
+;
+
     $8000 displace !
+
 Target definitions   $100 here!
 
   include vf-core.fth

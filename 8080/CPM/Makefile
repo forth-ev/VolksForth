@@ -37,10 +37,10 @@ run-editor: | msdos
 msdos:
 	ln -s ../../8086/msdos msdos
 
-src/%.fb.txt: src/%.fb ../../tools/fb2fth.py
+$(srcfbtxtfiles): src/%.fb.txt: src/%.fb ../../tools/fb2fth.py
 	../../tools/fb2fth.py $< $@
 
-tests/%.fb.txt: tests/%.fb ../../tools/fb2fth.py
+$(testsfbtxtfiles): tests/%.fb.txt: tests/%.fb ../../tools/fb2fth.py
 	../../tools/fb2fth.py $< $@
 
 run-volks4th: \

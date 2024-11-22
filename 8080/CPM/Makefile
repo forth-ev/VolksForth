@@ -107,6 +107,27 @@ $(patsubst %, $(cpmfilesdir)/%, v4th-4tc.com \
 	dos2unix -n $(runcpmdir)/logfile.txt $@.log
 	cp -f $(runcpmdir)/A/0/TC-BASE.COM $@
 
+$(cpmfilesdir)/tc-base2.com: \
+$(patsubst %, $(cpmfilesdir)/%, v4thblk.com \
+    sfileint.fth ass8080.fb include.fb log2file.fb xinout.fb savesys.fb) \
+    Makefile | emu
+	rm -f $(runcpmdir)/A/0/TC-BASE.COM $@
+	./emulator/run-in-runcpm.sh \
+	    "v4thblk sfileint.fth" \
+	    "include-isfile" \
+	    "include log2file.fb" \
+	    "logopen" \
+	    "include ass8080.fb" \
+	    ".( include xinout.fb) cr" \
+	    "include savesys.fb" \
+	    "cr   decimal   caps on" \
+	    "scr off  r# off     savesystem tc-base.com" \
+	    "logclose" \
+	    "bye" \
+	    "exit"
+	dos2unix -n $(runcpmdir)/logfile.txt $@.log
+	cp -f $(runcpmdir)/A/0/TC-BASE.COM $@
+
 $(cpmfilesdir)/v4th.com: \
     $(patsubst %, $(cpmfilesdir)/%, tc-base.com \
     target.fb v4th.fth vf-core.fth vf-file.fth \

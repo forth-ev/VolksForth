@@ -1,8 +1,11 @@
 
 srcfbfiles = $(wildcard src/*.fb)
+srcfbtxtfiles = $(patsubst src/%.fb, src/%.fb.txt, $(srcfbfiles))
 srcfthfiles = $(patsubst src/%.fb, src/%.fth, $(srcfbfiles))
 testsfbfiles = $(wildcard tests/*.fb)
+testsfbtxtfiles = $(patsubst tests/%.fb, tests/%.fb.txt, $(testsfbfiles))
 testsfthfiles = $(patsubst tests/%.fb, tests/%.fth, $(testsfbfiles))
+fb_txt_files = $(srcfbtxtfiles) $(testsfbtxtfiles)
 fthfiles = $(srcfthfiles) $(testsfthfiles)
 
 whitch_runcpm = $(shell which RunCPM)
@@ -11,7 +14,7 @@ cpmfilesdir = cpmfiles
 
 bin: $(cpmfilesdir)/v4th.com
 
-fth: $(fthfiles)
+fb.txt: $(fb_txt_files)
 
 clean:
 	rm -f *.log *.golden *.result
@@ -34,10 +37,10 @@ run-editor: | msdos
 msdos:
 	ln -s ../../8086/msdos msdos
 
-src/%.fth: src/%.fb ../../tools/fb2fth.py
+src/%.fb.txt: src/%.fb ../../tools/fb2fth.py
 	../../tools/fb2fth.py $< $@
 
-tests/%.fth: tests/%.fb ../../tools/fb2fth.py
+tests/%.fb.txt: tests/%.fb ../../tools/fb2fth.py
 	../../tools/fb2fth.py $< $@
 
 run-volks4th: \

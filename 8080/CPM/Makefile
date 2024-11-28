@@ -1,12 +1,9 @@
 
 srcfbfiles = $(wildcard src/*.fb)
 srcfbtxtfiles = $(patsubst src/%.fb, src/%.fb.txt, $(srcfbfiles))
-srcfthfiles = $(patsubst src/%.fb, src/%.fth, $(srcfbfiles))
 testsfbfiles = $(wildcard tests/*.fb)
 testsfbtxtfiles = $(patsubst tests/%.fb, tests/%.fb.txt, $(testsfbfiles))
-testsfthfiles = $(patsubst tests/%.fb, tests/%.fth, $(testsfbfiles))
 fb_txt_files = $(srcfbtxtfiles) $(testsfbtxtfiles)
-fthfiles = $(srcfthfiles) $(testsfthfiles)
 
 whitch_runcpm = $(shell which RunCPM)
 runcpmdir = runcpm
@@ -108,12 +105,12 @@ $(patsubst %, $(cpmfilesdir)/%, v4th-4tc.com \
 	cp -f $(runcpmdir)/A/0/TC-BASE.COM $@
 
 $(cpmfilesdir)/tc-base2.com: \
-$(patsubst %, $(cpmfilesdir)/%, v4thblk.com \
-    sfileint.fth ass8080.fb include.fb log2file.fb xinout.fb savesys.fb) \
+$(patsubst %, $(cpmfilesdir)/%, v4thblk.com sfileint.fs \
+    ass8080.fb include.fb log2file.fb xinout.fb savesys.fb) \
     Makefile | emu
 	rm -f $(runcpmdir)/A/0/TC-BASE.COM $@
 	./emulator/run-in-runcpm.sh \
-	    "v4thblk sfileint.fth" \
+	    "v4thblk sfileint.fs" \
 	    "include-isfile" \
 	    "include log2file.fb" \
 	    "logopen" \
@@ -130,15 +127,15 @@ $(patsubst %, $(cpmfilesdir)/%, v4thblk.com \
 
 $(cpmfilesdir)/v4th.com: \
     $(patsubst %, $(cpmfilesdir)/%, tc-base.com \
-    target.fb v4th.fth vf-core.fth vf-file.fth \
-    vf-io.fth vf-sys.fth vf-end.fth vf-bdos.fth) \
+    target.fb v4th.fs vf-core.fs vf-file.fs \
+    vf-io.fs vf-sys.fs vf-end.fs vf-bdos.fs) \
     Makefile | emu
 	rm -f $(runcpmdir)/A/0/V4TH.COM $(runcpmdir)/A/0/LOGFILE.TXT $@
 	./emulator/run-in-runcpm.sh \
 	    "tc-base" \
 	    "logopen" \
 	    "include target.fb" \
-	    "include v4th.fth" \
+	    "include v4th.fs" \
 	    "logclose" \
 	    "bye" \
 	    "exit"
@@ -147,15 +144,15 @@ $(cpmfilesdir)/v4th.com: \
 
 $(cpmfilesdir)/v4thblk.com: \
     $(patsubst %, $(cpmfilesdir)/%, tc-base.com \
-    target.fb v4thblk.fth vf-core.fth vf-file.fth \
-    vf-io.fth vf-bufs.fth vf-sys.fth vf-end.fth vf-bdos.fth) \
+    target.fb v4thblk.fs vf-core.fs vf-file.fs \
+    vf-io.fs vf-bufs.fs vf-sys.fs vf-end.fs vf-bdos.fs) \
     Makefile | emu
 	rm -f $(runcpmdir)/A/0/V4THBLK.COM $(runcpmdir)/A/0/LOGFILE.TXT $@
 	./emulator/run-in-runcpm.sh \
 	    "tc-base" \
 	    "logopen" \
 	    "include target.fb" \
-	    "include v4thblk.fth" \
+	    "include v4thblk.fs" \
 	    "logclose" \
 	    "bye" \
 	    "exit"
@@ -178,12 +175,12 @@ test-kernel.log: \
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 test-min.log: \
-    $(patsubst %, $(cpmfilesdir)/%, v4th.com sfileint.fth \
+    $(patsubst %, $(cpmfilesdir)/%, v4th.com sfileint.fs \
     logfile.fth \
     ans-shim.fth prelim.fth tester.fth core.fr test-min.fth) \
     | emu
 	./emulator/run-in-runcpm.sh \
-	    "v4th sfileint.fth" \
+	    "v4th sfileint.fs" \
 	    "include-isfile" \
 	    "onlyforth" \
 	    "include test-min.fth" \
@@ -192,12 +189,12 @@ test-min.log: \
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 test-std.log: \
-    $(patsubst %, $(cpmfilesdir)/%, v4th.com sfileint.fth \
+    $(patsubst %, $(cpmfilesdir)/%, v4th.com sfileint.fs \
     logfile.fth core.fr) \
     $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fth)) \
     | emu
 	./emulator/run-in-runcpm.sh \
-	    "v4th sfileint.fth" \
+	    "v4th sfileint.fs" \
 	    "include-isfile" \
 	    "onlyforth" \
 	    "include test-std.fth" \
@@ -206,14 +203,14 @@ test-std.log: \
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 test-blk.log: \
-    $(patsubst %, $(cpmfilesdir)/%, v4thblk.com sfileint.fth \
-    sblkint.fth log2file.fb core.fr) \
+    $(patsubst %, $(cpmfilesdir)/%, v4thblk.com sfileint.fs \
+    sblkint.fs log2file.fb core.fr) \
     $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fth) \
     tests/empty.fb) | emu
 	./emulator/run-in-runcpm.sh \
-	    "v4thblk sfileint.fth" \
+	    "v4thblk sfileint.fs" \
 	    "include-isfile" \
-	    "include sblkint.fth" \
+	    "include sblkint.fs" \
 	    "onlyforth" \
 	    "include test-blk.fth" \
 	    "bye" \

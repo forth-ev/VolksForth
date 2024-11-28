@@ -10,17 +10,15 @@ Onlyforth
 ;
 
     $8000 displace !
-
 Target definitions   $100 here!
 
-  include vf-core.fth
-  include vf-io.fth
-  include vf-sys.fth
-  include vf-bdos.fth
-  include vf-file.fth
-  include vf-bufs.fth
-  include vf-end.fth
+  include vf-core.fs
+  include vf-io.fs
+  include vf-sys.fs
+  include vf-bdos.fs
+  include vf-file.fs
+  include vf-end.fs
 
 cr .( unresolved: )  .unresolved   ( ' .blk is .status )
 
-save-target  V4THBLK.COM
+save-target  V4TH.COM

@@ -66,7 +66,7 @@ logtest.log: \
 
 inctest.log: \
     $(patsubst %, $(cpmfilesdir)/%, kernel.com fileint.fb \
-    include.fb log2file.fb inctest.fth) \
+    include.fb log2file.fb inctest.fs) \
     | emu
 	./emulator/run-in-runcpm.sh \
 	    "kernel fileint.fb" \
@@ -75,7 +75,7 @@ inctest.log: \
 	    "include include.fb" \
 	    "include log2file.fb" \
 	    "logopen" \
-	    "include inctest.fth" \
+	    "include inctest.fs" \
 	    "logclose" \
 	    "bye" \
 	    "exit"
@@ -161,58 +161,58 @@ $(cpmfilesdir)/v4thblk.com: \
 
 test-kernel.log: \
     $(patsubst %, $(cpmfilesdir)/%, kernel.com fileint.fb \
-    include.fb log2file.fb core.fr) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fth)) \
+    include.fb log2file.fb core.fs) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fs)) \
     | emu
 	./emulator/run-in-runcpm.sh \
 	    "kernel fileint.fb" \
 	    "1 load onlyforth" \
 	    "$50 constant /tib" \
 	    "include include.fb" \
-	    "include test-krn.fth" \
+	    "include test-krn.fs" \
 	    "bye" \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 test-min.log: \
     $(patsubst %, $(cpmfilesdir)/%, v4th.com sfileint.fs \
-    logfile.fth \
-    ans-shim.fth prelim.fth tester.fth core.fr test-min.fth) \
+    logfile.fs \
+    ans-shim.fs prelim.fs tester.fs core.fs test-min.fs) \
     | emu
 	./emulator/run-in-runcpm.sh \
 	    "v4th sfileint.fs" \
 	    "include-isfile" \
 	    "onlyforth" \
-	    "include test-min.fth" \
+	    "include test-min.fs" \
 	    "bye" \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 test-std.log: \
     $(patsubst %, $(cpmfilesdir)/%, v4th.com sfileint.fs \
-    logfile.fth core.fr) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fth)) \
+    logfile.fs core.fs) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fs)) \
     | emu
 	./emulator/run-in-runcpm.sh \
 	    "v4th sfileint.fs" \
 	    "include-isfile" \
 	    "onlyforth" \
-	    "include test-std.fth" \
+	    "include test-std.fs" \
 	    "bye" \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 test-blk.log: \
     $(patsubst %, $(cpmfilesdir)/%, v4thblk.com sfileint.fs \
-    sblkint.fs log2file.fb core.fr) \
-    $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fth) \
+    sblkint.fs log2file.fb core.fs) \
+    $(patsubst tests/%, $(cpmfilesdir)/%, $(wildcard tests/*.fs) \
     tests/empty.fb) | emu
 	./emulator/run-in-runcpm.sh \
 	    "v4thblk sfileint.fs" \
 	    "include-isfile" \
 	    "include sblkint.fs" \
 	    "onlyforth" \
-	    "include test-blk.fth" \
+	    "include test-blk.fs" \
 	    "bye" \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@

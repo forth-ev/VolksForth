@@ -3,26 +3,26 @@
 \     blk @ ?dup IF  ."  Blk " u. ?cr  exit THEN
 \     incfile @ IF tib #tib @ cr type THEN ;
 
-include logfile.fth
+include logfile.fs
 logopen
 
-include ans-shim.fth
+include ans-shim.fs
 : \vf  [compile] \ ; immediate
 
-include prelim.fth
-include tester.fth
+include prelim.fs
+include tester.fs
 \ 1 verbose !
-include core.fr
-include coreplus.fth
+include core.fs
+include coreplus.fs
 
-include util.fth
-include errorrep.fth
+include util.fs
+include errorrep.fs
 
-include coreext.fth
+include coreext.fs
 
 \ ' .blk|tib Is .status
 
-include doubltst.fth
+include doubltst.fs
 
 REPORT-ERRORS
 

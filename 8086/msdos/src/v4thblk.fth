@@ -19,6 +19,7 @@
   new v4thblk.com   Onlyforth Target definitions
 
   include vf86core.fth
+  include vf86dkey.fth
   include vf86dos.fth
   include vf86file.fth
   include vf86bufs.fth

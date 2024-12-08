@@ -7,7 +7,7 @@ fthfiles_caseconverted = $(patsubst %.fb, %.fth, \
     $(shell ../../tools/echo-tolower.py $(fbfiles_uppercase)))
 
 test: incltest.result logtest.result test-std.result test-blk.result \
-    incltest-volks4th.result test-volks4th-min.result
+    incltest-volks4th.result test-volks4th-min.result test-stdi.result
 
 fth: $(fthfiles) $(fthfiles_caseconverted)
 
@@ -25,7 +25,7 @@ metafile.com: v4thfile.com src/meta.fb src/mk-meta.fth tests/log2file.fb
 	grep -F 'Metacompiler saved as metafile.com' metafile.log
 
 v4th.com: metafile.com src/meta.fb src/v4th.fth src/vf86core.fth \
-    src/vf86dos.fth src/vf86file.fth src/vf86end.fth
+    src/vf86dkey.fth src/vf86dos.fth src/vf86file.fth src/vf86end.fth
 	rm -f v4th.com V4TH.COM OUTPUT.LOG
 	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
 	    metafile.com "include v4th.fth"
@@ -36,7 +36,8 @@ v4th.com: metafile.com src/meta.fb src/v4th.fth src/vf86core.fth \
 	grep -i 'unresolved:.*[^ ]' v4th.log && exit 1 || true
 
 v4thblk.com: metafile.com src/meta.fb src/v4thblk.fth src/vf86core.fth \
-    src/vf86dos.fth src/vf86file.fth src/vf86bufs.fth src/vf86end.fth
+    src/vf86dkey.fth src/vf86dos.fth src/vf86file.fth src/vf86bufs.fth \
+    src/vf86end.fth
 	rm -f v4thblk.com V4THBLK.COM OUTPUT.LOG
 	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
 	    metafile.com "include v4thblk.fth"
@@ -45,6 +46,17 @@ v4thblk.com: metafile.com src/meta.fb src/v4thblk.fth src/vf86core.fth \
 	grep -F 'unresolved:' v4thblk.log
 	grep -F 'new kernel written as v4thblk.com' v4thblk.log
 	grep -i 'unresolved:.*[^ ]' v4thblk.log && exit 1 || true
+
+v4thi.com: metafile.com src/meta.fb src/v4thi.fth src/vf86core.fth \
+    src/vf86ikey.fth src/vf86dos.fth src/vf86file.fth src/vf86end.fth
+	rm -f v4th.com V4TH.COM OUTPUT.LOG
+	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
+	    metafile.com "include v4thi.fth"
+	dos2unix -n OUTPUT.LOG v4thi.log
+	mv V4THI.COM v4thi.com
+	grep -F 'unresolved:' v4thi.log
+	grep -F 'new kernel written as v4thi.com' v4thi.log
+	grep -i 'unresolved:.*[^ ]' v4thi.log && exit 1 || true
 
 # o4th for old volks4th - the new v4th is built with precompiled
 # metacompiler metafile.com and mk-v4th.fth which writes a compile log.
@@ -98,6 +110,14 @@ test-blk.log: \
 	rm -f dosfiles/OUTPUT.LOG
 	(cd dosfiles && ../emulator/run-in-dosbox.sh v4thblk.com \
 	    "include logprep.fth include test-blk.fth")
+	dos2unix -n dosfiles/OUTPUT.LOG $@
+
+test-stdi.log: \
+    $(patsubst %, dosfiles/%, v4thi.com $(prepfths)) \
+    $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
+	rm -f dosfiles/OUTPUT.LOG
+	(cd dosfiles && ../emulator/run-in-dosbox.sh v4thi.com \
+	    "include logprep.fth include test-std.fth")
 	dos2unix -n dosfiles/OUTPUT.LOG $@
 
 forthblkdos: v4thblk.dos v4thblk.forth
@@ -188,6 +208,10 @@ test-blk.golden: $(patsubst %, tests/golden/%.golden, \
 
 test-volks4th-min.golden: $(patsubst %, tests/golden/%.golden, \
     volks4th-prelim core)
+	cat $^ > $@
+
+test-stdi.golden: $(patsubst %, tests/golden/%.golden, \
+    prelim core coreplus coreext doubltst report-noblk)
 	cat $^ > $@
 
 

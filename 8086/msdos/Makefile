@@ -2,14 +2,10 @@
 fbfiles = $(wildcard src/*.fb tests/*.fb)
 fthfiles = $(patsubst %.fb, %.fth, $(fbfiles))
 
-fbfiles_uppercase = $(wildcard src/*.FB tests/*.FB)
-fthfiles_caseconverted = $(patsubst %.fb, %.fth, \
-    $(shell ../../tools/echo-tolower.py $(fbfiles_uppercase)))
-
 test: incltest.result logtest.result test-std.result test-blk.result \
     incltest-volks4th.result test-volks4th-min.result test-stdi.result
 
-fth: $(fthfiles) $(fthfiles_caseconverted)
+fth: $(fthfiles)
 
 clean:
 	rm -f *.log *.LOG *.result *.golden
@@ -243,18 +239,3 @@ src/%.fth: src/%.fb ../../tools/fb2fth.py
 
 tests/%.fth: tests/%.fb ../../tools/fb2fth.py
 	../../tools/fb2fth.py $< $@
-
-# Collective rule for converting uppercase *.FB to lowercase *.fth.
-# Because make doesn't provide case changing pattern matching,
-# file-by-file dependencies as with the src/%.fth and tests/%.fth
-# rules doesn't seem feasible here, hence the one collective rule.
-
-.ONESHELL:
-$(fthfiles_caseconverted): $(fbfiles_uppercase)
-	set -x
-	for fb in $^
-	do
-	  echo fb: $$fb
-	  fth=$$(../../tools/echo-tolower.py $$fb | sed -e 's/fb$$/fth/')
-	  ../../tools/fb2fth.py $$fb $$fth
-	done

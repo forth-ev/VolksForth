@@ -13,45 +13,45 @@ fb.txt: $(fb_txt_files)
 clean:
 	rm -f *.log *.LOG *.result *.golden
 	rm -f dosfiles/*
-	rm -f tests/empty.fth tests/empty.fb.txt
+	rm -f tests/empty.fs tests/empty.fb.txt
 
 *.log: emulator/run-in-dosbox.sh
 
-metafile.com: v4thfile.com src/meta.fb src/mk-meta.fth tests/log2file.fb
+metafile.com: v4thfile.com src/meta.fb src/mk-meta.fs tests/log2file.fb
 	rm -f METAFILE.COM OUTPUT.LOG
 	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
-	    v4thfile.com "include mk-meta.fth"
+	    v4thfile.com "include mk-meta.fs"
 	dos2unix -n OUTPUT.LOG metafile.log
 	grep -F 'Metacompiler saved as metafile.com' metafile.log
 
-v4th.com: metafile.com src/meta.fb src/v4th.fth src/vf86core.fth \
-    src/vf86dkey.fth src/vf86dos.fth src/vf86file.fth src/vf86end.fth
+v4th.com: metafile.com src/meta.fb src/v4th.fs src/vf86core.fs \
+    src/vf86dkey.fs src/vf86dos.fs src/vf86file.fs src/vf86end.fs
 	rm -f v4th.com V4TH.COM OUTPUT.LOG
 	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
-	    metafile.com "include v4th.fth"
+	    metafile.com "include v4th.fs"
 	dos2unix -n OUTPUT.LOG v4th.log
 	mv V4TH.COM v4th.com
 	grep -F 'unresolved:' v4th.log
 	grep -F 'new kernel written as v4th.com' v4th.log
 	grep -i 'unresolved:.*[^ ]' v4th.log && exit 1 || true
 
-v4thblk.com: metafile.com src/meta.fb src/v4thblk.fth src/vf86core.fth \
-    src/vf86dkey.fth src/vf86dos.fth src/vf86file.fth src/vf86bufs.fth \
-    src/vf86end.fth
+v4thblk.com: metafile.com src/meta.fb src/v4thblk.fs src/vf86core.fs \
+    src/vf86dkey.fs src/vf86dos.fs src/vf86file.fs src/vf86bufs.fs \
+    src/vf86end.fs
 	rm -f v4thblk.com V4THBLK.COM OUTPUT.LOG
 	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
-	    metafile.com "include v4thblk.fth"
+	    metafile.com "include v4thblk.fs"
 	dos2unix -n OUTPUT.LOG v4thblk.log
 	mv V4THBLK.COM v4thblk.com
 	grep -F 'unresolved:' v4thblk.log
 	grep -F 'new kernel written as v4thblk.com' v4thblk.log
 	grep -i 'unresolved:.*[^ ]' v4thblk.log && exit 1 || true
 
-v4thi.com: metafile.com src/meta.fb src/v4thi.fth src/vf86core.fth \
-    src/vf86ikey.fth src/vf86dos.fth src/vf86file.fth src/vf86end.fth
+v4thi.com: metafile.com src/meta.fb src/v4thi.fs src/vf86core.fs \
+    src/vf86ikey.fs src/vf86dos.fs src/vf86file.fs src/vf86end.fs
 	rm -f v4th.com V4TH.COM OUTPUT.LOG
 	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
-	    metafile.com "include v4thi.fth"
+	    metafile.com "include v4thi.fs"
 	dos2unix -n OUTPUT.LOG v4thi.log
 	mv V4THI.COM v4thi.com
 	grep -F 'unresolved:' v4thi.log
@@ -59,7 +59,7 @@ v4thi.com: metafile.com src/meta.fb src/v4thi.fth src/vf86core.fth \
 	grep -i 'unresolved:.*[^ ]' v4thi.log && exit 1 || true
 
 # o4th for old volks4th - the new v4th is built with precompiled
-# metacompiler metafile.com and mk-v4th.fth which writes a compile log.
+# metacompiler metafile.com and mk-v4th.fs which writes a compile log.
 o4th.com o4th.log: volks4th.com  src/kernel.fb
 	rm -f FORTH.COM forth.com o4th.com
 	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
@@ -78,22 +78,22 @@ logtest.log: volks4th.com tests/log2file.fb tests/logtest.fb
 	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh volks4th.com "include logtest.fb"
 	dos2unix -n OUTPUT.LOG $@
 
-logappendtest.log: v4thfile.com tests/logapp.fth
+logappendtest.log: v4thfile.com tests/logapp.fs
 	rm -f OUTPUT.LOG
-	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh v4thfile.com "include logapp.fth"
+	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh v4thfile.com "include logapp.fs"
 	dos2unix -n OUTPUT.LOG $@
 
 prepsrcs = asm.fb extend.fb multi.vid dos.fb include.fb
 
-prepfths = asm.fb extend.fb multi.vid dos.fb include.fb 86asm.fth \
-    t86asm.fth extend2.fth multivid.fth dos2.fth dos3.fth log2file.fth
+prepfths = asm.fb extend.fb multi.vid dos.fb include.fb 86asm.fs \
+    t86asm.fs extend2.fs multivid.fs dos2.fs dos3.fs log2file.fs
 
 incltest.log: \
     $(patsubst %, dosfiles/%, v4thblk.com $(prepsrcs) log2file.fb \
-        incltest.fth)
+        incltest.fs)
 	rm -f dosfiles/OUTPUT.LOG
 	(cd dosfiles && ../emulator/run-in-dosbox.sh \
-	    v4thblk.com "include incltest.fth")
+	    v4thblk.com "include incltest.fs")
 	dos2unix -n dosfiles/OUTPUT.LOG $@
 
 test-std.log: \
@@ -101,7 +101,7 @@ test-std.log: \
     $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
 	rm -f dosfiles/OUTPUT.LOG
 	(cd dosfiles && ../emulator/run-in-dosbox.sh v4th.com \
-	    "include logprep.fth include test-std.fth")
+	    "include logprep.fs include test-std.fs")
 	dos2unix -n dosfiles/OUTPUT.LOG $@
 
 test-blk.log: \
@@ -109,7 +109,7 @@ test-blk.log: \
     $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
 	rm -f dosfiles/OUTPUT.LOG
 	(cd dosfiles && ../emulator/run-in-dosbox.sh v4thblk.com \
-	    "include logprep.fth include test-blk.fth")
+	    "include logprep.fs include test-blk.fs")
 	dos2unix -n dosfiles/OUTPUT.LOG $@
 
 test-stdi.log: \
@@ -117,7 +117,7 @@ test-stdi.log: \
     $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
 	rm -f dosfiles/OUTPUT.LOG
 	(cd dosfiles && ../emulator/run-in-dosbox.sh v4thi.com \
-	    "include logprep.fth include test-std.fth")
+	    "include logprep.fs include test-std.fs")
 	dos2unix -n dosfiles/OUTPUT.LOG $@
 
 forthblkdos: v4thblk.dos v4thblk.forth
@@ -129,7 +129,7 @@ v4th0.dos: \
     $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
 	rm -f dosfiles/OUTPUT.LOG
 	(cd dosfiles && ../emulator/run-in-dosbox.sh v4th.com \
-	    "include logprep.fth include vocdos.fth")
+	    "include logprep.fs include vocdos.fs")
 	dos2unix -n dosfiles/OUTPUT.LOG output.log
 	tr " " "\n" <output.log | sort >$@
 
@@ -138,7 +138,7 @@ v4th0.forth: \
     $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
 	rm -f dosfiles/OUTPUT.LOG
 	(cd dosfiles && ../emulator/run-in-dosbox.sh v4th.com \
-	    "include logprep.fth include vocforth.fth")
+	    "include logprep.fs include vocforth.fs")
 	dos2unix -n dosfiles/OUTPUT.LOG output.log
 	tr " " "\n" <output.log | sort >$@
 
@@ -147,7 +147,7 @@ v4thblk.dos: \
     $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
 	rm -f dosfiles/OUTPUT.LOG
 	(cd dosfiles && ../emulator/run-in-dosbox.sh v4thblk.com \
-	    "include logprep.fth include vocdos.fth")
+	    "include logprep.fs include vocdos.fs")
 	dos2unix -n dosfiles/OUTPUT.LOG output.log
 	tr " " "\n" <output.log | sort >$@
 
@@ -156,7 +156,7 @@ v4thblk.forth: \
     $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
 	rm -f dosfiles/OUTPUT.LOG
 	(cd dosfiles && ../emulator/run-in-dosbox.sh v4thblk.com \
-	    "include logprep.fth include vocforth.fth")
+	    "include logprep.fs include vocforth.fs")
 	dos2unix -n dosfiles/OUTPUT.LOG output.log
 	tr " " "\n" <output.log | sort >$@
 
@@ -165,7 +165,7 @@ v4thfile.dos: \
     $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
 	rm -f dosfiles/OUTPUT.LOG
 	(cd dosfiles && ../emulator/run-in-dosbox.sh v4thfile.com \
-	    "include log2file.fth include vocdos.fth")
+	    "include log2file.fs include vocdos.fs")
 	dos2unix -n dosfiles/OUTPUT.LOG output.log
 	tr " " "\n" <output.log | sort >$@
 
@@ -174,20 +174,20 @@ v4thfile.forth: \
     $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
 	rm -f dosfiles/OUTPUT.LOG
 	(cd dosfiles && ../emulator/run-in-dosbox.sh v4thfile.com \
-	    "include log2file.fth include vocforth.fth")
+	    "include log2file.fs include vocforth.fs")
 	dos2unix -n dosfiles/OUTPUT.LOG output.log
 	tr " " "\n" <output.log | sort >$@
 
-incltest-volks4th.log: v4thfile.com tests/log2file.fb tests/incltest.fth
+incltest-volks4th.log: v4thfile.com tests/log2file.fb tests/incltest.fs
 	rm -f OUTPUT.LOG
 	FORTHPATH="f:\\;f:\\tests" ./emulator/run-in-dosbox.sh \
-	    v4thfile.com "include incltest.fth"
+	    v4thfile.com "include incltest.fs"
 	dos2unix -n OUTPUT.LOG $@
 
 test-volks4th-min.log: v4thfile.com tests/* emulator/run-in-dosbox.sh
 	rm -f OUTPUT.LOG
 	FORTHPATH="f:\\;f:\\src;f:\\tests" ./emulator/run-in-dosbox.sh \
-	    v4thfile.com "include test-min.fth"
+	    v4thfile.com "include test-min.fs"
 	dos2unix -n OUTPUT.LOG $@
 
 

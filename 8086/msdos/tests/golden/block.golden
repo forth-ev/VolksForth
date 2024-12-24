@@ -1,5 +1,5 @@
  FLUSH exists
-BLOCK.FTH **=== NOT TESTED === ******* Scr 21 Dr 5 EMPTY.FB
+BLOCK.FS **=== NOT TESTED === ******* Scr 21 Dr 5 EMPTY.FB
  0 Should show a (mostly) blank screen
  1
  2

@@ -3,7 +3,7 @@
 
 \                                                 ks 11 mai 88
 
-\ This file is a pure .fth-version of extend.fb.
+\ This file is a pure .fs-version of extend.fb.
 \ It contains definitions needed for several further system
 \ and application files.
 
@@ -17,7 +17,7 @@
 
 \ loadscreen for often used words                 ks cas 25sep16
 
-  Onlyforth  \needs Assembler   include t86asm.fth
+  Onlyforth  \needs Assembler   include t86asm.fs
 
   ' save-buffers Alias sav
 

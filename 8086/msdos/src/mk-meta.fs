@@ -1,5 +1,5 @@
 
-  include log2file.fth
+  include log2file.fs
   logopen output.log
 
   Onlyforth   \ \needs Assembler   2 loadfrom asm.fb

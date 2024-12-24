@@ -1,9 +1,9 @@
 
-UTIL.FTH  ?DEFTEST1 exists
+UTIL.FS  ?DEFTEST1 exists
 Test utilities loaded
 
-ERRORREP.FTH
-COREEXT.FTH **************
+ERRORREP.FS
+COREEXT.FS **************
 
 Output from .(
 You should see -9876: -9876

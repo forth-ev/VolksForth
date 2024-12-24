@@ -11,4 +11,4 @@
      include
      dp ! ;
 
-  maybe-include-tmp-asm 86asm.fth
+  maybe-include-tmp-asm 86asm.fs

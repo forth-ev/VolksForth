@@ -3,7 +3,7 @@
 
 \                                                    28 jun 88
 
-\ This file is an .fth-version of dos.fb without the block-related
+\ This file is an .fs-version of dos.fb without the block-related
 \ words.
 
 \ DOS loads higher level file functions which go beyond

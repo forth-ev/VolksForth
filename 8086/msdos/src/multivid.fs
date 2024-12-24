@@ -1,7 +1,7 @@
 
 \ *** Block No. 0, Hexblock 0
 
-\ This file is a pure .fth-version of multi.vid.
+\ This file is a pure .fs-version of multi.vid.
 
 \ This display interface uses BIOS call $10 functions for a fast
 \ display interface. A couple of state variables is contained
@@ -22,7 +22,7 @@
 \ *** Block No. 1, Hexblock 1
 
 \ Multitsking display interface loadscreen        ks phz 31jan22
-  Onlyforth    \needs Assembler   include t86asm.fth
+  Onlyforth    \needs Assembler   include t86asm.fs
 
       User area     area off    \ points at active window
   Variable status   \ to switch status on/off

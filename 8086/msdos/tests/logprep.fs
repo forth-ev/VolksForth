@@ -1,7 +1,7 @@
 
-  include extend2.fth
+  include extend2.fs
 \needs drv  : drv 2 ;  \ showing C: if drv isn't defined
-  include multivid.fth
+  include multivid.fs
 
 \ : .blk|tib
 \     blk @ ?dup IF  ."  Blk " u. ?cr  exit THEN
@@ -9,6 +9,6 @@
 
 \ ' .blk|tib Is .status
 
-\  include dos2.fth
-  include dos3.fth
-  include log2file.fth
+\  include dos2.fs
+  include dos3.fs
+  include log2file.fs

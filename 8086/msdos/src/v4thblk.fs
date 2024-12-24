@@ -16,18 +16,19 @@
 
   2 loadfrom META.fb
 
-  new v4th.com   Onlyforth Target definitions
+  new v4thblk.com   Onlyforth Target definitions
 
-  include vf86core.fth
-  include vf86dkey.fth
-  include vf86dos.fth
-  include vf86file.fth
-  include vf86end.fth
+  include vf86core.fs
+  include vf86dkey.fs
+  include vf86dos.fs
+  include vf86file.fs
+  include vf86bufs.fs
+  include vf86end.fs
 
 \log logclose
   flush
 \log logreopen
 
-  cr .( new kernel written as v4th.com) cr
+  cr .( new kernel written as v4thblk.com) cr
 
 \log logclose

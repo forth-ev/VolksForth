@@ -3,7 +3,7 @@
 
 \                                                    28 jun 88
 
-\ This file is a pure .fth-version of dos.fb.
+\ This file is a pure .fs-version of dos.fb.
 
 \ DOS loads higher level file functions which go beyond
 \ including a screen file. Calls to MS-DOS are implemented

@@ -1,6 +1,6 @@
 
-ANS-SHIM.FTH
-PRELIM.FTH
+ANS-SHIM.FS
+PRELIM.FS
 
 CR CR SOURCE TYPE ( Preliminary test ) CR
 SOURCE ( These lines test SOURCE, TYPE, CR and parenthetic comments ) TYPE CR

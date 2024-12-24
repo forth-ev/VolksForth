@@ -2,14 +2,23 @@
 fbfiles = $(wildcard src/*.fb tests/*.fb)
 fthfiles = $(patsubst %.fb, %.fth, $(fbfiles))
 
+srcfbfiles = $(wildcard src/*.fb)
+srcfbtxtfiles = $(patsubst src/%.fb, src/%.fb.txt, $(srcfbfiles))
+testsfbfiles = $(wildcard tests/*.fb)
+testsfbtxtfiles = $(patsubst tests/%.fb, tests/%.fb.txt, $(testsfbfiles))
+fb_txt_files = $(srcfbtxtfiles) $(testsfbtxtfiles)
+
 test: incltest.result logtest.result test-std.result test-blk.result \
     incltest-volks4th.result test-volks4th-min.result test-stdi.result
 
 fth: $(fthfiles)
 
+fb.txt: $(fb_txt_files)
+
 clean:
 	rm -f *.log *.LOG *.result *.golden
 	rm -f dosfiles/*
+	rm -f tests/empty.fth tests/empty.fb.txt
 
 *.log: emulator/run-in-dosbox.sh
 
@@ -233,6 +242,17 @@ dosfiles/%: tests/% | dosfiles
 
 dosfiles:
 	mkdir $@
+
+$(srcfbtxtfiles): src/%.fb.txt: src/%.fb ../../tools/fb2fth.py
+	../../tools/fb2fth.py $< $@
+	mv $(patsubst %.fb, %.fth, $<) $(patsubst %.fb, %.fth.txt, $<) 
+	diff $(patsubst %.fb, %.fth.txt, $<) $(patsubst %.fb, %.fb.txt, $<) 
+
+$(testsfbtxtfiles): tests/%.fb.txt: tests/%.fb ../../tools/fb2fth.py
+	../../tools/fb2fth.py $< $@
+	mv $(patsubst %.fb, %.fth, $<) $(patsubst %.fb, %.fth.txt, $<) 
+	diff $(patsubst %.fb, %.fth.txt, $<) $(patsubst %.fb, %.fb.txt, $<) 
+
 
 src/%.fth: src/%.fb ../../tools/fb2fth.py
 	../../tools/fb2fth.py $< $@

@@ -86,7 +86,7 @@ logappendtest.log: v4thfile.com tests/logapp.fth
 prepsrcs = asm.fb extend.fb multi.vid dos.fb include.fb
 
 prepfths = asm.fb extend.fb multi.vid dos.fb include.fb 86asm.fth \
-    t86asm.fth extend2.fth multivid.fth dos2.fth dos3.fth
+    t86asm.fth extend2.fth multivid.fth dos2.fth dos3.fth log2file.fth
 
 incltest.log: \
     $(patsubst %, dosfiles/%, v4thblk.com $(prepsrcs) log2file.fb \

@@ -6,7 +6,8 @@ testsfbtxtfiles = $(patsubst tests/%.fb, tests/%.fb.txt, $(testsfbfiles))
 fb_txt_files = $(srcfbtxtfiles) $(testsfbtxtfiles)
 
 test: incltest.result logtest.result test-std.result test-blk.result \
-    incltest-volks4th.result test-volks4th-min.result test-stdi.result
+    incltest-volks4th.result test-volks4th-min.result \
+    test-stdi.result test-stde.result
 
 fb.txt: $(fb_txt_files)
 
@@ -120,6 +121,14 @@ test-stdi.log: \
 	    "include logprep.fs include test-std.fs")
 	dos2unix -n dosfiles/OUTPUT.LOG $@
 
+test-stde.log: \
+    $(patsubst %, dosfiles/%, v4thi.com $(prepfths)) \
+    $(patsubst tests/%, dosfiles/%, $(wildcard tests/*.*))
+	rm -f dosfiles/OUTPUT.LOG
+	(cd dosfiles && ../emulator/run-in-emu2.sh v4thi.com \
+	    "include logprep.fs include test-std.fs")
+	dos2unix -n dosfiles/output.log $@
+
 forthblkdos: v4thblk.dos v4thblk.forth
 
 forthdos: forthblkdos v4thfile.dos v4thfile.forth v4th0.dos v4th0.forth
@@ -211,6 +220,10 @@ test-volks4th-min.golden: $(patsubst %, tests/golden/%.golden, \
 	cat $^ > $@
 
 test-stdi.golden: $(patsubst %, tests/golden/%.golden, \
+    prelim core coreplus coreext doubltst report-noblk)
+	cat $^ > $@
+
+test-stde.golden: $(patsubst %, tests/golden/%.golden, \
     prelim core coreplus coreext doubltst report-noblk)
 	cat $^ > $@
 

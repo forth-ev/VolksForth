@@ -1,5 +1,5 @@
  ok
-include inctest.fth 
-INCTEST.FTH included from stream file: "1 2 + 4 * .": 12 
+include inctest.fs 
+INCTEST.FS included from stream file: "1 2 + 4 * .": 12 
  ok
 logclose 

@@ -49,8 +49,9 @@ for cmd in forthcmds:
   main.run('text %s' % cmd)
   main.run('keypress %s' % code.Return)
 
-main.run('text makefile done.txt')
-main.run('keypress %s' % code.Return)
+if not os.environ['KEEPEMU']:
+  main.run('text makefile done.txt')
+  main.run('keypress %s' % code.Return)
 
 while main.tokens.hatari.is_running() and not os.path.exists(donefile):
   print('waiting for %s' % donefile)

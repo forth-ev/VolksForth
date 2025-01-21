@@ -32,6 +32,13 @@ run-volks4th: \
 run-hconsole:
 	./emulator/run-in-hatari.py 4thcore.prg ".( hello world)" "1 2 + ."
 
+run-editor: | msdos
+	FORTHPATH="f:\\src;f:\\tests;f:\\msdos" \
+	../8086/msdos/emulator/run-in-dosbox.sh f:\\msdos\\volks4th.com
+
+msdos:
+	ln -s ../8086/msdos msdos
+
 $(stfilesdir)/4thimg.prg: \
     $(patsubst %, $(stfilesdir)/%, volks4th.prg ediicon.rsc \
     assemble.fb c.fb forth83.fb target.fb) \

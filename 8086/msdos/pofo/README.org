@@ -15,8 +15,10 @@ backlight and had 240×64 pixels or 40 characters × 8 lines.
 
 * Files:
 
- * =pofo.fb= - Atari Portfolio System Enhancements
- * =pofo.vid= - Atari Portfolio Video Driver (for 40x8 line display)
- * =pofo.sys= - load file to generate a full VolksForth for the Atari Portfolio
- * =kernel.com= - Vanilla VolksForth Kernel
- * =pofo4th.com= - VolksForth for Atari Portfolio
+4thpofo.fs
+pofo.fs
+pofovid.fs
+
+ * =pofo.fs= - Atari Portfolio System Enhancements
+ * =pofovid.fs= - Atari Portfolio Video Driver (for 40x8 line display)
+ * =v4thpofo.fs= - load file to generate a full VolksForth for the Atari Portfolio

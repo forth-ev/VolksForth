@@ -1,4 +1,3 @@
-
 srcfbfiles = $(wildcard src/*.fb)
 srcfbtxtfiles = $(patsubst src/%.fb, src/%.fb.txt, $(srcfbfiles))
 testsfbfiles = $(wildcard tests/*.fb)
@@ -58,6 +57,13 @@ v4thi.com: metafile.com src/meta.fb src/v4thi.fs src/vf86core.fs \
 	grep -F 'unresolved:' v4thi.log
 	grep -F 'new kernel written as v4thi.com' v4thi.log
 	grep -i 'unresolved:.*[^ ]' v4thi.log && exit 1 || true
+
+v4thpofo.com: metafile.com src/meta.fb src/vf86core.fs \
+  src/vf86ikey.fs src/vf86dos.fs src/vf86file.fs src/vf86end.fs
+	rm -f v4thpofo.com V4THPOFO.COM OUTPUT.LOG
+	./emulator/run-in-dosbox.sh \
+	v4thi.com "include pofo\4thpofo.fs"
+	mv V4THPOFO.COM v4thpofo.com
 
 # o4th for old volks4th - the new v4th is built with precompiled
 # metacompiler metafile.com and mk-v4th.fs which writes a compile log.

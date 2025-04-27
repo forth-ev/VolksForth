@@ -49,7 +49,7 @@ for cmd in forthcmds:
   main.run('text %s' % cmd)
   main.run('keypress %s' % code.Return)
 
-if not os.environ['KEEPEMU']:
+if not 'KEEPEMU' in os.environ:
   main.run('text makefile done.txt')
   main.run('keypress %s' % code.Return)
 

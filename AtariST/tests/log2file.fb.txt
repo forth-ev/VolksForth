@@ -1,0 +1,114 @@
+
+\ *** Block No. 0, Hexblock 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\ *** Block No. 1, Hexblock 1
+
+\ (blk                                               phz 21mai25
+
+  : (blk  blk @ 0= IF ascii ) parse 2drop THEN ;
+  : ) ; immediate
+
+  (blk 1 4 +thru )
+
+
+
+
+
+
+
+
+
+
+
+\ *** Block No. 2, Hexblock 2
+
+\ File functions for save-system                     phz 04mai25
+
+  Code (createfile   ( C$ -- handle )
+   0 # A7 -) move               \ normal file, no protection
+   SP )+ D6 move   D6 reg) A0 lea   .l A0 A7 -) move
+   .w $3C # A7 -) move   1 trap   8 A7 addq
+   D0 SP -) move   Next   end-code
+
+  Code (closefile    ( handle -- f )
+   SP )+  A7 -) move
+   $3E # A7 -) move   1 trap   4 A7 addq
+   D0 SP -) move   Next   end-code
+
+
+
+
+
+\ *** Block No. 3, Hexblock 3
+
+\ (filewrite                                         phz 27apr25
+
+  Code (filewrite  ( buf len handle -- n )
+    SP )+ D0 move   .l D2 clr  .w SP )+ D2 move
+    SP )+ D6 move   D6 reg) A0 lea
+    .l  A0 A7 -) move           \ buffer adress
+        D2 A7 -) move           \ buffer length
+    .w  D0 A7 -) move           \ handle
+     $40 # A7 -) move           \ call WRITE
+    1 trap    $0C # A7 adda
+    D0 SP -) move               \ errorflag, num written bytes
+    Next  end-code
+
+
+
+
+
+\ *** Block No. 4, Hexblock 4
+
+\ logfile log-type log-emit log-cr alsologtofile     phz 21mai25
+
+  variable logfile      variable log-char
+
+  : (log-type  ( adr len -- )
+    under  logfile @ (filewrite  - abort" log write error" ;
+  : log-type  ( adr len -- )  2dup STtype  (log-type ;
+
+  : log-emit  ( char -- )  dup STemit
+    log-char c! log-char 1 (log-type ;
+
+  : log-cr  ( -- )  STcr
+    #cr log-char c!  #lf log-char 1+ c!  log-char 2 (log-type ;
+
+Output: alsologtofile
+  log-emit log-cr log-type STdel STpage STat STat? ;
+
+\ *** Block No. 5, Hexblock 5
+
+\ logopen logclose                                   phz 21mai25
+
+  create logfilename ," logfile.txt" 0 c,
+
+  : logopen  ( -- )
+    logfilename 1+ (createfile
+    dup 0< abort" logfile create error"  logfile !
+    alsologtofile ;
+
+  : logclose  ( -- )
+    display  logfile @ (closefile
+    0< abort" logfile close error" ;
+
+
+
+

@@ -7,9 +7,9 @@ srcfbfiles = $(wildcard src/*.fb) $(wildcard src/gem/*.fb)
 srcfbtxtfiles = $(patsubst src/%.fb, src/%.fb.txt, $(srcfbfiles))
 # srcfbfiles = $(wildcard *.FB)
 # srcfbtxtfiles = $(patsubst %.FB, src/%.fb.txt, $(srcfbfiles))
-# testsfbfiles = $(wildcard tests/*.fb)
-# testsfbtxtfiles = $(patsubst tests/%.fb, tests/%.fb.txt, $(testsfbfiles))
-fb_txt_files = $(srcfbtxtfiles) # $(testsfbtxtfiles)
+testsfbfiles = $(wildcard tests/*.fb)
+testsfbtxtfiles = $(patsubst tests/%.fb, tests/%.fb.txt, $(testsfbfiles))
+fb_txt_files = $(srcfbtxtfiles) $(testsfbtxtfiles)
 
 stfilesdir = stfiles
 
@@ -29,12 +29,31 @@ run-volks4th: \
 	hatari --mono --sound off --cpuclock 32 --auto volks4th.prg \
 	--confirm-quit false stfiles
 
+manual-logtest: \
+    $(patsubst %, $(stfilesdir)/%, volks4th.prg log2file.fb \
+    assemble.fb editor.fb ediicon.fb edwindow.fb \
+    gem/gemdefs.fb gem/supergem.fb)
+	hatari --mono --sound off --cpuclock 32 --auto volks4th.prg \
+	--confirm-quit false stfiles
+
 run-hconsole:
 	./emulator/run-in-hatari.py 4thcore.prg ".( hello world)" "1 2 + ."
 
 run-editor: | msdos
 	FORTHPATH="f:\\src;f:\\tests;f:\\msdos" \
 	../8086/msdos/emulator/run-in-dosbox.sh f:\\msdos\\volks4th.com
+
+logtest: \
+    $(patsubst %, $(stfilesdir)/%, volks4th.prg log2file.fb \
+    assemble.fb editor.fb ediicon.fb edwindow.fb \
+    gem/gemdefs.fb gem/supergem.fb)
+	./emulator/run-in-hatari.py volks4th.prg \
+	"include assemble.fb" \
+	"include log2file.fb" \
+	"logopen" \
+	".( hello world)" \
+	"1 2 + ." \
+	"logclose"
 
 msdos:
 	ln -s ../8086/msdos msdos
@@ -67,8 +86,8 @@ run-4thimg.prg:
 $(srcfbtxtfiles): src/%.fb.txt: src/%.fb ../tools/fb2fth.py
 	../tools/fb2fth.py $< $@
 
-# $(testsfbtxtfiles): tests/%.fb.txt: tests/%.fb ../tools/fb2fth.py
-# 	../tools/fb2fth.py $< $@
+$(testsfbtxtfiles): tests/%.fb.txt: tests/%.fb ../tools/fb2fth.py
+	../tools/fb2fth.py $< $@
 
 $(stfilesdir)/%: src/%
 	mydir=$$(dirname $@) && test -d "$$mydir" || mkdir -p "$$mydir"

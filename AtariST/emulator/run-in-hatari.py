@@ -52,9 +52,12 @@ for cmd in forthcmds:
 if not 'KEEPEMU' in os.environ:
   main.run('text makefile done.txt')
   main.run('keypress %s' % code.Return)
+else:
+  main.run("--fast-forward false")
 
+print('waiting for %s' % donefile)
 while main.tokens.hatari.is_running() and not os.path.exists(donefile):
-  print('waiting for %s' % donefile)
+  print('.', end="")
   time.sleep(1)
 print('%s found' % donefile)
 

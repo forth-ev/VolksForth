@@ -15,6 +15,11 @@ stfilesdir = stfiles
 
 fb.txt: $(fb_txt_files)
 
+clean:
+	rm -f *.log *.LOG *.result *.golden
+	rm -rf stfiles/*
+	# rm -f tests/empty.fs tests/empty.fb.txt
+
 run-4thcore: \
     $(patsubst %, $(stfilesdir)/%, 4thcore.prg \
     assemble.fb editor.fb ediicon.fb edwindow.fb \
@@ -43,10 +48,11 @@ run-editor: | msdos
 	FORTHPATH="f:\\src;f:\\tests;f:\\msdos" \
 	../8086/msdos/emulator/run-in-dosbox.sh f:\\msdos\\volks4th.com
 
-logtest: \
-    $(patsubst %, $(stfilesdir)/%, volks4th.prg log2file.fb \
-    assemble.fb editor.fb ediicon.fb edwindow.fb \
+logtest.log: \
+    $(patsubst %, $(stfilesdir)/%, volks4th.prg ediicon.rsc \
+    log2file.fb assemble.fb editor.fb ediicon.fb edwindow.fb \
     gem/gemdefs.fb gem/supergem.fb)
+	rm -f stfiles/output.log
 	./emulator/run-in-hatari.py volks4th.prg \
 	"include assemble.fb" \
 	"include log2file.fb" \
@@ -54,6 +60,7 @@ logtest: \
 	".( hello world)" \
 	"1 2 + ." \
 	"logclose"
+	dos2unix -n stfiles/output.log $@
 
 msdos:
 	ln -s ../8086/msdos msdos
@@ -79,6 +86,16 @@ $(stfilesdir)/editor.prg: \
 run-4thimg.prg:
 	hatari --mono --sound off --cpuclock 32 --auto 4thimg.prg \
 	--confirm-quit false stfiles
+
+
+%.golden: tests/golden/%.golden
+	cp -p $< $@
+
+%.result: %.log %.golden tests/evaluate-test.sh
+	rm -f $@
+	tests/evaluate-test.sh $(basename $@)
+
+
 
 # $(srcfbtxtfiles): src/%.fb.txt: %.FB ../tools/fb2fth.py
 # 	../tools/fb2fth.py $< $@

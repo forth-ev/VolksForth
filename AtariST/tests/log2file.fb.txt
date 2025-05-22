@@ -96,9 +96,9 @@ Output: alsologtofile
 
 \ *** Block No. 5, Hexblock 5
 
-\ logopen logclose                                   phz 21mai25
+\ logopen logclose                                   phz 22mai25
 
-  create logfilename ," logfile.txt" 0 c,
+  create logfilename ," output.log" 0 c,
 
   : logopen  ( -- )
     logfilename 1+ (createfile

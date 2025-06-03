@@ -28,8 +28,8 @@ run-4thcore: \
 	--confirm-quit false stfiles
 
 run-volks4th: \
-    $(patsubst %, $(stfilesdir)/%, volks4th.prg \
-    assemble.fb editor.fb ediicon.fb edwindow.fb \
+    $(patsubst %, $(stfilesdir)/%, volks4th.prg ediicon.rsc \
+    assemble.fb editor.fb ediicon.fb edwindow.fb include.fb \
     gem/gemdefs.fb gem/supergem.fb)
 	hatari --mono --sound off --cpuclock 32 --auto volks4th.prg \
 	--confirm-quit false stfiles
@@ -59,6 +59,21 @@ logtest.log: \
 	"logopen" \
 	".( hello world)" \
 	"1 2 + ." \
+	"logclose"
+	dos2unix -n stfiles/output.log $@
+
+incltest.log: \
+    $(patsubst %, $(stfilesdir)/%, volks4th.prg ediicon.rsc \
+    log2file.fb assemble.fb include.fb hello.fs)
+	rm -f stfiles/output.log
+	./emulator/run-in-hatari.py volks4th.prg \
+	"include assemble.fb" \
+	"include log2file.fb" \
+	"logopen" \
+	".( hello world)" \
+	"1 2 + ." \
+	"include include.fb" \
+	"include hello.fs" \
 	"logclose"
 	dos2unix -n stfiles/output.log $@
 

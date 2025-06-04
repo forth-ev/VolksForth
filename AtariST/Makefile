@@ -73,6 +73,7 @@ incltest.log: \
 	".( hello world)" \
 	"1 2 + ." \
 	"include include.fb" \
+	"' .blk|tib Is .status" \
 	"include hello.fs" \
 	"logclose"
 	dos2unix -n stfiles/output.log $@

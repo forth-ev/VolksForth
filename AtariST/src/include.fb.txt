@@ -1,21 +1,21 @@
 
 \ *** Block No. 0, Hexblock 0
 
-\\ temp code stash                                   phz 28mai25
+                                                     phz 04jun25
 
-  : freadline  ( -- eof? )
-    #tib off
-    BEGIN incl> @ ]incl @ u< 0=
-      IF eof @ IF true exit THEN fread-incl[] THEN
-      incl> @  1 incl> +!  c@  dup eol?
-        IF drop eof @ exit THEN  >tib
-    REPEAT ;
 
-  $50 constant /tib
-  : >tib  ( c -- )
-    #tib @ /tib u< IF tib #tib @ + c! 1 #tib +! exit THEN
-    ." warning: line exceeds max " /tib . cr
-    ." extra chars ignored" cr ;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 \ *** Block No. 1, Hexblock 1
@@ -39,7 +39,7 @@
 
 \ *** Block No. 2, Hexblock 2
 
-\ incl-variables fread-incl[]                        phz 01jun25
+\ incl-variables fread-incl[]                        phz 04jun25
 
   $80 constant /incl[]
   create incl[  /incl[] allot  variable ]incl
@@ -52,13 +52,13 @@
   : fread-incl[]  ( -- )
       incl[ /incl[] incl-file @ filehandle @ (fileread
       dup ?diskabort
-      dup incl[ + ]incl !  /incl[] swap u< incl-eof !
+      dup incl[ + ]incl !   /incl[] u< incl-eof !
       incl[ incl> ! ;
 
 
 \ *** Block No. 3, Hexblock 3
 
-\ incl-fgetc tibeof eolf?                            phz 01jun25
+\ incl-fgetc tibeof eolf?                            phz 04jun25
 
   : incl-fgetc  ( -- c )
     incl> @ ]incl @ u< 0=
@@ -96,21 +96,21 @@
 
 \ *** Block No. 5, Hexblock 5
 
-\ save/restoretib                                    phz 01jun25
+\ save/restoretib                                    phz 04jun25
 
   $50 constant /stash
   create stash[  /stash allot  here constant ]stash
   variable stash>   stash[ stash> !
 
-  : savetib  ( -- n )
+  : savetib  ( -- n )   1 ; (
       #tib @ >in @ -  dup stash> @ + ]stash u>
         abort" tib stash overflow"   >r
       tib >in @ +  stash> @  r@ cmove
-      r@ stash> +!  r> ;
+      r@ stash> +!  r> ;     ( )
 
-  : restoretib  ( n -- )
+  : restoretib  ( n -- )   drop ; (
       dup >r negate stash> +!   stash> @ tib r@ cmove
-      r> #tib !  >in off ;
+      r> #tib !  >in off ;      ( )
 
 
 \ *** Block No. 6, Hexblock 6
@@ -153,19 +153,19 @@
 
 \ *** Block No. 8, Hexblock 8
 
-\ \                                                  phz 03jun25
+\ stashinit \ .blk|tib                               phz 04jun25
 
-  : (stashquit  stash[ stash> !  (quit ;
+  : stashinit  stash[ stash> ;
+  : (stashquit  stashinit  (quit ;
   : stashrestore  ['] (stashquit IS 'quit ;
   ' stashrestore IS 'restart
+    stashinit
 
   : \  blk @ IF >in @ negate  c/l mod  >in +!
        ELSE #tib @ >in ! THEN ; immediate
 
-
-
-
-
-
+  : .blk|tib  ( -- )
+    blk @ ?dup IF ." Blk " u. ?cr  exit THEN
+    incl-file @ IF tib #tib @ type cr THEN ;
 
 

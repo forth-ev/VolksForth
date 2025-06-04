@@ -96,21 +96,21 @@
 
 \ *** Block No. 5, Hexblock 5
 
-\ save/restoretib                                    phz 04jun25
+\ save/restoretib                                    phz 05jun25
 
   $50 constant /stash
   create stash[  /stash allot  here constant ]stash
   variable stash>   stash[ stash> !
 
-  : savetib  ( -- n )   1 ; (
-      #tib @ >in @ -  dup stash> @ + ]stash u>
+  : savetib  ( -- n )
+      #tib @ >in @ -  0 umin  dup stash> @ + ]stash u>
         abort" tib stash overflow"   >r
       tib >in @ +  stash> @  r@ cmove
-      r@ stash> +!  r> ;     ( )
+      r@ stash> +!  r> ;
 
-  : restoretib  ( n -- )   drop ; (
+  : restoretib  ( n -- )
       dup >r negate stash> +!   stash> @ tib r@ cmove
-      r> #tib !  >in off ;      ( )
+      r> #tib !  >in off ;
 
 
 \ *** Block No. 6, Hexblock 6

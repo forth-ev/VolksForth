@@ -17,7 +17,7 @@ fb.txt: $(fb_txt_files)
 
 clean:
 	rm -f *.log *.LOG *.result *.golden
-	rm -rf stfiles/*
+	rm -rf $(stfilesdir)/*
 	# rm -f tests/empty.fs tests/empty.fb.txt
 
 run-4thcore: \
@@ -25,21 +25,21 @@ run-4thcore: \
     assemble.fb editor.fb ediicon.fb edwindow.fb \
     gem/gemdefs.fb gem/supergem.fb)
 	hatari --mono --sound off --cpuclock 32 --auto 4thcore.prg \
-	--confirm-quit false stfiles
+	--confirm-quit false $(stfilesdir)
 
 run-volks4th: \
     $(patsubst %, $(stfilesdir)/%, volks4th.prg ediicon.rsc \
     assemble.fb editor.fb ediicon.fb edwindow.fb include.fb \
     gem/gemdefs.fb gem/supergem.fb)
 	hatari --mono --sound off --cpuclock 32 --auto volks4th.prg \
-	--confirm-quit false stfiles
+	--confirm-quit false $(stfilesdir)
 
 manual-logtest: \
     $(patsubst %, $(stfilesdir)/%, volks4th.prg log2file.fb \
     assemble.fb editor.fb ediicon.fb edwindow.fb \
     gem/gemdefs.fb gem/supergem.fb)
 	hatari --mono --sound off --cpuclock 32 --auto volks4th.prg \
-	--confirm-quit false stfiles
+	--confirm-quit false $(stfilesdir)
 
 run-hconsole:
 	./emulator/run-in-hatari.py 4thcore.prg ".( hello world)" "1 2 + ."
@@ -51,21 +51,38 @@ run-editor: | msdos
 logtest.log: \
     $(patsubst %, $(stfilesdir)/%, volks4th.prg ediicon.rsc \
     log2file.fb assemble.fb editor.fb ediicon.fb edwindow.fb \
-    gem/gemdefs.fb gem/supergem.fb)
-	rm -f stfiles/output.log
+    gem/gemdefs.fb gem/supergem.fb) \
+    Makefile
+	rm -f $(stfilesdir)/output.log
 	./emulator/run-in-hatari.py volks4th.prg \
 	"include assemble.fb" \
 	"include log2file.fb" \
 	"logopen" \
 	".( hello world)" \
 	"1 2 + ." \
+	"dos words" \
 	"logclose"
-	dos2unix -n stfiles/output.log $@
+	dos2unix -n $(stfilesdir)/output.log $@
+
+logtest2.log: \
+    $(patsubst %, $(stfilesdir)/%, volks4th.prg ediicon.rsc \
+    log2file.fb assemble.fb editor.fb ediicon.fb edwindow.fb \
+    gem/gemdefs.fb gem/supergem.fb) \
+    Makefile
+	rm -f $(stfilesdir)/output.log
+	./emulator/run-in-hatari.py volks4th.prg \
+	"use log2file.fb dos also 4 5 thru" \
+	"logopen" \
+	".( hello world)" \
+	"1 2 + ." \
+	"logclose"
+	dos2unix -n $(stfilesdir)/output.log $@
 
 incltest.log: \
     $(patsubst %, $(stfilesdir)/%, volks4th.prg ediicon.rsc \
-    log2file.fb assemble.fb include.fb hello.fs)
-	rm -f stfiles/output.log
+    log2file.fb assemble.fb include.fb hello.fs) \
+    Makefile
+	rm -f $(stfilesdir)/output.log
 	./emulator/run-in-hatari.py volks4th.prg \
 	"include assemble.fb" \
 	"include log2file.fb" \
@@ -76,7 +93,7 @@ incltest.log: \
 	"' .blk|tib Is .status" \
 	"include hello.fs" \
 	"logclose"
-	dos2unix -n stfiles/output.log $@
+	dos2unix -n $(stfilesdir)/output.log $@
 
 msdos:
 	ln -s ../8086/msdos msdos
@@ -101,7 +118,33 @@ $(stfilesdir)/editor.prg: \
 
 run-4thimg.prg:
 	hatari --mono --sound off --cpuclock 32 --auto 4thimg.prg \
-	--confirm-quit false stfiles
+	--confirm-quit false $(stfilesdir)
+
+test-org.log: \
+    $(patsubst %, $(stfilesdir)/%, volks4th.prg ediicon.rsc \
+    include.fb log2file.fb \
+    ans-shim.fs prelim.fs tester.fs core.fs test-min.fs) \
+    Makefile
+	./emulator/run-in-hatari.py volks4th.prg \
+	"onlyforth" \
+	"use log2file.fb dos also 4 5 thru" \
+	"include include.fb" \
+	"include test-min.fs"
+	dos2unix -n $(stfilesdir)/output.log $@
+
+test-min.log: \
+    $(patsubst %, $(stfilesdir)/%, v4th.prg sfileint.fs \
+    logfile.fs \
+    ans-shim.fs prelim.fs tester.fs core.fs test-min.fs) \
+    Makefile
+	./emulator/run-in-hatari.py \
+	    "v4th.prg sfileint.fs" \
+	    "include-isfile" \
+	    "onlyforth" \
+	    "include test-min.fs" \
+	    "bye" \
+	    "exit"
+	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 
 %.golden: tests/golden/%.golden

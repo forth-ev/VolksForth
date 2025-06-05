@@ -39,13 +39,13 @@
 
 \ *** Block No. 2, Hexblock 2
 
-\ incl-variables fread-incl[]                        phz 04jun25
+\ incl-variables fread-incl[]                        phz 05jun25
 
   $80 constant /incl[]
   create incl[  /incl[] allot  variable ]incl
   2variable incl#  0 extend incl# 2!
-  variable incl-eof  incl-eof off
-  variable incl>  : incl[]-reset  incl[ dup ]incl ! incl> ! ;
+  variable incl>   variable incl-eof
+  : incl[]-reset   incl[ dup ]incl ! incl> !   incl-eof off ;
   variable incl-file
   $50 constant /tib
 

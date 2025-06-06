@@ -20,6 +20,9 @@ clean:
 	rm -rf $(stfilesdir)/*
 	# rm -f tests/empty.fs tests/empty.fb.txt
 
+test: logtest.result incltest.result test-org.result
+
+
 run-4thcore: \
     $(patsubst %, $(stfilesdir)/%, 4thcore.prg \
     assemble.fb editor.fb ediicon.fb edwindow.fb \
@@ -60,7 +63,6 @@ logtest.log: \
 	"logopen" \
 	".( hello world)" \
 	"1 2 + ." \
-	"dos words" \
 	"logclose"
 	dos2unix -n $(stfilesdir)/output.log $@
 
@@ -145,6 +147,21 @@ test-min.log: \
 	    "bye" \
 	    "exit"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
+
+
+test-org.golden: test-min.golden
+	cp $< $@
+
+test-min.golden: $(patsubst %, tests/golden/%.golden, prelim core)
+	cat $^ > $@
+
+test-std.golden: $(patsubst %, tests/golden/%.golden, \
+    prelim core coreplus coreext doubltst report-noblk)
+	cat $^ > $@
+
+test-blk.golden: $(patsubst %, tests/golden/%.golden, \
+    prelim core coreplus coreext doubltst block report-blk)
+	cat $^ > $@
 
 
 %.golden: tests/golden/%.golden

@@ -51,6 +51,25 @@ run-editor: | msdos
 	FORTHPATH="f:\\src;f:\\tests;f:\\msdos" \
 	../8086/msdos/emulator/run-in-dosbox.sh f:\\msdos\\volks4th.com
 
+
+v4th.prg: \
+    $(patsubst %, $(stfilesdir)/%, volks4th.prg ediicon.rsc \
+    log2file.fb assemble.fb target.fb forth83.fb) \
+    Makefile
+	rm -f $(stfilesdir)/output.log $(stfilesdir)/v4th.prg
+	./emulator/run-in-hatari.py volks4th.prg \
+	"use log2file.fb dos also 4 5 thru" \
+	"logopen" \
+	"onlyforth" \
+	"include assemble.fb" \
+	"include target.fb" \
+	"include forth83.fb" \
+	"save-target v4th.prg" \
+	"logclose"
+	dos2unix -n $(stfilesdir)/output.log $@.log
+	cp $(stfilesdir)/$@ $@
+
+
 logtest.log: \
     $(patsubst %, $(stfilesdir)/%, volks4th.prg ediicon.rsc \
     log2file.fb assemble.fb editor.fb ediicon.fb edwindow.fb \
@@ -135,17 +154,14 @@ test-org.log: \
 	dos2unix -n $(stfilesdir)/output.log $@
 
 test-min.log: \
-    $(patsubst %, $(stfilesdir)/%, v4th.prg sfileint.fs \
-    logfile.fs \
+    $(patsubst %, $(stfilesdir)/%, v4th.prg \
+    fileint.fb include.fb log2file.fb \
     ans-shim.fs prelim.fs tester.fs core.fs test-min.fs) \
-    Makefile
-	./emulator/run-in-hatari.py \
-	    "v4th.prg sfileint.fs" \
-	    "include-isfile" \
+    | Makefile
+	./emulator/run-in-hatari.py v4ht.prg fileint.fb \
+	    "1 load" \
 	    "onlyforth" \
-	    "include test-min.fs" \
-	    "bye" \
-	    "exit"
+	    ".( include test-min.fs)"
 	dos2unix -n $(runcpmdir)/logfile.txt $@
 
 

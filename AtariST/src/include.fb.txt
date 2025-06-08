@@ -153,9 +153,9 @@
 
 \ *** Block No. 8, Hexblock 8
 
-\ stashinit \ .blk|tib                               phz 04jun25
+\ stashinit \ .blk|tib                               phz 08jun25
 
-  : stashinit  stash[ stash> ;
+  : stashinit  stash[ stash> ! ;
   : (stashquit  stashinit  (quit ;
   : stashrestore  ['] (stashquit IS 'quit ;
   ' stashrestore IS 'restart

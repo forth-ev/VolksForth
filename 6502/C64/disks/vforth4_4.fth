@@ -4119,7 +4119,7 @@ town
 
 \ lineplot linies moire        20oct87re
 
-: linies
+: lines
  grinit
  &320 0 DO
     &320 0 DO I &198 J 0 line &35 +LOOP
@@ -4217,7 +4217,7 @@ Create colortab
 
 | : ring  ( edges -- )
  &200 over / swap
- &18 0 DO  2dup vieleck
+ &18 0 DO  2dup polygon
           &20 right  LOOP  2drop ;
 
 : ornament  ( -- )
@@ -4264,17 +4264,17 @@ Create colortab
  dup forward &90 right
  2- (worm ;
 
-: worm  ( -- )
- shome &190 (schnecke ;
-
 | : (coil  ( length -- )  recursive
  dup 5 < IF drop exit THEN
  dup forward &91 right
  2- (coil ;
 
+: worm ( -- )
+ shome &190 (coil ;
+
+
 : coil ( -- )
  shome 5 forward &190 (coil ;
-
 
 
 
@@ -4328,7 +4328,7 @@ Create colortab
  pendown &10 4 polygon
  setxy ;
 
-: town       houserow
+: town       rowofhouses
  startpos 4 0 DO housewindow continue
  LOOP
  housewindow ;

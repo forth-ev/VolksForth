@@ -8,7 +8,7 @@
 : arguments ( n -- )
      depth 1- > abort" not enough Parameters" ;
 
-Vocabulary Dos   Dos also definitions
+\ Vocabulary Dos   Dos also definitions
 
 | Code (createfile   ( C$ -- handle )
    0 # A7 -) move               \ normal file, no protection
@@ -94,12 +94,12 @@ Vocabulary Dos   Dos also definitions
 
 \ File control block structure                         09sep86we
 
-cr .( pzdebug order) order cr
+\ cr .( pzdebug order) order cr
 
 | : Fcbyte ( n len -- n' )   \ defining word for fcb contents
     Create over c, +  does>  c@ + ;
 
-words
+\ words
 
 &25 Constant filenamelen      \ only SHORT pathes will fit !
 |  0  2 Fcbyte nextfile       \ link to next file
@@ -349,7 +349,7 @@ Forth definitions
 : capacity      ( -- n)
     isfile@ ?dup  IF  dup (open (capacity  exit THEN  blk/drv ;
 
-Dos definitions
+\ Dos definitions
 
 \ *** Block No. 21, Hexblock 15
 

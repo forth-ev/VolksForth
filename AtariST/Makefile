@@ -52,6 +52,7 @@ run-editor: | msdos
 	../8086/msdos/emulator/run-in-dosbox.sh f:\\msdos\\volks4th.com
 
 
+# Original kernel as of the late 80s
 v4th.prg: \
     $(patsubst %, $(stfilesdir)/%, volks4th.prg ediicon.rsc \
     log2file.fb assemble.fb target.fb forth83.fb) \
@@ -68,6 +69,41 @@ v4th.prg: \
 	"logclose"
 	dos2unix -n $(stfilesdir)/output.log $@.log
 	cp $(stfilesdir)/$@ $@
+
+# First step of a kernel built from stream sources
+# TODO: figure out how to load the tfileint.fs version from the
+# target compiler.
+v4th-new.prg: \
+    $(patsubst %, $(stfilesdir)/%, volks4th.prg ediicon.rsc \
+    log2file.fb assemble.fb target.fb forth83.fb \
+    include.fb v4th.fs tfileint.fs) \
+    Makefile
+	rm -f $(stfilesdir)/output.log $(stfilesdir)/v4th.prg
+	./emulator/run-in-hatari.py volks4th.prg \
+	"2 buffers" \
+	"use log2file.fb dos also 4 5 thru" \
+	"logopen" \
+	"onlyforth" \
+	"include assemble.fb" \
+	"include include.fb" \
+	"include target.fb" \
+	"order onlyforth" \
+	"transient definitions order" \
+	"include v4th.fs" \
+	"save-target v4th-new.prg" \
+	"" \
+	"logclose"
+	dos2unix -n $(stfilesdir)/output.log $@.log
+	cp $(stfilesdir)/$@ $@
+
+# A few debug helpers for copying into the make target above:
+
+#	': .mystat cr ." order: " order ." : " .blk|tib .s ;' \
+#	"' .mystat Is .status" \
+
+#	': status blk @ ?dup IF ." blk " u. ." here " here u.' \
+#	'." there " there u. ." heap " heap u. cr THEN ;' \
+#	"' status is .status" \
 
 
 logtest.log: \

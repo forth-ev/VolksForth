@@ -6,11 +6,11 @@
 
 \log logopen output.log
 
-  \ : .blk|tib
-  \     blk @ ?dup IF  ."  Blk " u. ?cr  exit THEN
-  \     incfile @ IF tib #tib @ cr type THEN ;
+\   : .order+blk|tib  cr ." order: " order ." : "
+\       blk @ ?dup IF  ."  Blk " u. ?cr  exit THEN
+\       incfile @ IF tib #tib @ cr type THEN ;
 
-  \ ' .blk|tib Is .status
+\  ' .order+blk|tib Is .status
 
   Onlyforth
 

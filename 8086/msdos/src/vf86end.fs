@@ -9,4 +9,5 @@
   Host  tnext-link @ Target   next-link !
   Host  tfile-link @ Target Forth  file-link !
   Host  T move-threads H
+  \ ' noop Is .status
   save-buffers cr .( unresolved: )  .unresolved

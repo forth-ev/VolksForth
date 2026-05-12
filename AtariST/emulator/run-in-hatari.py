@@ -48,6 +48,9 @@ time.sleep(3)
 for cmd in forthcmds:
   main.run('text %s' % cmd)
   main.run('keypress %s' % code.Return)
+  # TODO: find if we can replace the unconditional sleep with
+  # something more feedback controlled.
+  time.sleep(1)
 
 if not 'KEEPEMU' in os.environ:
   main.run('text makefile done.txt')

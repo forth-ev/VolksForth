@@ -5,7 +5,7 @@
 
 vf_blk_d64_files = $(wildcard disks/*.d64)
 vf_blk_fth_files = $(patsubst %.d64, %.fth, $(vf_blk_d64_files))
-vf_fth_files = $(wildcard src/vf-*.fth src/v4th*.fth)
+vf_fth_files = $(wildcard src/vf-*.fth src/v4th*.fth) src/tc-trans.fth
 vf_fth_files_petscii = $(patsubst src/%, cbmfiles/%, $(vf_fth_files))
 vf_flavours = \
     v4thblk-c64 v4thblk-c16+ v4thblk-c16- \
@@ -114,7 +114,7 @@ cbmfiles/tcbase: emulator/v4th-c64-4tc.T64 emulator/build-tcbase.sh \
 	emulator/build-tcbase.sh
 
 $(vf_binaries): $(vf_fth_files_petscii) emulator/build-vf.sh \
-    emulator/tcbase.T64 disks/tc38q.d64 cbmfiles/logtofile.fth
+    emulator/tcbase.T64 cbmfiles/logtofile.fth
 
 cbmfiles/v4thblk-c64:
 	emulator/build-vf.sh v4thblk-c64

@@ -2,8 +2,7 @@
 hex
 
 \ load transient part of target compiler
-2 drive 27 30 thru
-
+include tc-trans.fth
 
 Onlyforth hex
 

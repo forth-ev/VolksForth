@@ -46,7 +46,7 @@ binaries: $(vf_binaries)
 
 test: $(test_resuls)
 
-alltests: test test-v4th-x16-tsk.result
+alltests: test test-v4th-x16-tsk.result test-v4th-c16+self.result
 
 test64: std64 blk64
 
@@ -108,7 +108,9 @@ tmp/$(release_zipfile): $(vf_binaries) \
 # Targetcompiler targets
 
 cbmfiles/tcbase: emulator/v4th-c64-4tc.T64 emulator/build-tcbase.sh \
-    disks/tc38q.d64 disks/file-words.d64 cbmfiles/tc-base.fth
+    disks/tc38q.d64 \
+    cbmfiles/savesys-noed.fth cbmfiles/dir-dos-cat.fth \
+    cbmfiles/tc-relocate.fth cbmfiles/tc-base.fth
 	emulator/build-tcbase.sh
 
 $(vf_binaries): $(vf_fth_files_petscii) emulator/build-vf.sh \

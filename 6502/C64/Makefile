@@ -150,6 +150,15 @@ cbmfiles/v4th-c16+self: emulator/tcbase16.T64
 	rm -f $@
 	cp cbmfiles/v4th-c16+ $@
 
+test-v4th-c16+self.log: emulator/v4th-c16+self.T64
+	rm -f cbmfiles/test.log
+	VICE=xplus4 emulator/run-in-vice.sh v4th-c16+self \
+	  "include run-std-tests.fth\n$(test_keyboard_input)"
+	petscii2ascii cbmfiles/test.log $@
+
+test-v4th-c16+self.golden: test-v4th-c16+.golden
+	cp $^ $@
+
 
 # Core test targets
 

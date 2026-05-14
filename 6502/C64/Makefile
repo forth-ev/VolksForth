@@ -110,7 +110,8 @@ tmp/$(release_zipfile): $(vf_binaries) \
 cbmfiles/tcbase: emulator/v4th-c64-4tc.T64 emulator/build-tcbase.sh \
     disks/tc38q.d64 \
     cbmfiles/savesys-noed.fth cbmfiles/dir-dos-cat.fth \
-    cbmfiles/tc-relocate.fth cbmfiles/tc-base.fth
+    cbmfiles/tc-relocate.fth cbmfiles/tc-base.fth \
+    cbmfiles/tc6502asm.fth
 	emulator/build-tcbase.sh
 
 $(vf_binaries): $(vf_fth_files_petscii) emulator/build-vf.sh \

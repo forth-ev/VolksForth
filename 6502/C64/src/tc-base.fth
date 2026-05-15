@@ -32,9 +32,9 @@ Variable Image      C000 Image !
 Vocabulary Ttools
 Vocabulary Defining
 
-
- 11 20 thru   \ Target compiler
- 21 23 thru   \ Target Tools
- 24 26 thru   \ Redefinitions
+include tc-main.fth
+\ 11 20 thru   \ Target compiler
+\ 21 23 thru   \ Target Tools
+\ 24 26 thru   \ Redefinitions
 clear
 

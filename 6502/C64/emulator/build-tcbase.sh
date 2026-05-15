@@ -16,5 +16,4 @@ keybuf="include savesys-noed.fth\ninclude dir-dos-cat.fth\nsave\n\
 include tc-relocate.fth\ninclude tc-base.fth\n\
 savesystem ${TCBASE}\ndos s0:notdone"
 
-DISK10=tc38q "${emulatordir}/run-in-vice.sh" \
-  "${TCVF}" "${keybuf}"
+"${emulatordir}/run-in-vice.sh" "${TCVF}" "${keybuf}"

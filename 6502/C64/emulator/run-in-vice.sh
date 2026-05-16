@@ -7,6 +7,7 @@ test -n "$DISK10" || DISK10=empty
 test -n "$DISK11" || DISK11=empty
 emulatordir="$(realpath --relative-to="$PWD" "$(dirname "${BASH_SOURCE[0]}")")"
 basedir="$(realpath --relative-to="$PWD" "${emulatordir}/..")"
+emulatorlogdir="$(realpath --relative-to="$PWD" "${emulatordir}/logs")"
 
 executable="${1}"
 keybuf="${2}"
@@ -30,6 +31,7 @@ then
   fi
 fi
 
+mkdir -p "${emulatorlogdir}"
 "$VICE" \
   -virtualdev \
   +truedrive \
@@ -46,7 +48,7 @@ fi
   $autostart \
   -keybuf "$keybuf" \
   $warp \
-  &
+  > "${emulatorlogdir}/vice-$(date "+%F_%T").log" &
 
 
 if [ -n "$keybuf" ]

@@ -33,7 +33,7 @@ update: $(vf_blk_fth_files) $(vf_fth_files_petscii)
 clean:
 	rm -f cbmfiles/*.fr cbmfiles/*.fth cbmfiles/*.log tmp/*
 	rm -rf tmp/* release
-	rm -f *.log *.result *.golden
+	rm -f *.log *.result *.golden emulator/logs/*
 	rm -f cbmfiles/c??-testbase
 	rm -f disks/scratch.d64 emulator/sdcard.img
 	rm -f cbmfiles/tcbase16

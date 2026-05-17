@@ -46,7 +46,7 @@ binaries: $(vf_binaries)
 
 test: $(test_resuls)
 
-alltests: test test-v4th-x16-tsk.result test-v4th-c16+self.result
+alltests: test test-v4th-x16-tsk.result test-v4th-c16+slf.result
 
 test64: std64 blk64
 
@@ -144,21 +144,25 @@ cbmfiles/v4th-x16e:
 # Proof-of-concept self-hosted C16 target compile
 
 cbmfiles/tcbase16: emulator/v4thblk-c16+.T64 emulator/build-tcbase.sh \
-    disks/tc38q.d64 disks/file-words.d64 cbmfiles/tc-base.fth
+    cbmfiles/savesys-noed.fth cbmfiles/dir-dos-cat.fth \
+    cbmfiles/tc-relocate.fth cbmfiles/tc-base.fth \
+    cbmfiles/tc6502asm.fth cbmfiles/tc-main.fth
 	VICE=xplus4 TCVF=v4thblk-c16+ TCBASE=tcbase16 emulator/build-tcbase.sh
 
-cbmfiles/v4th-c16+self: emulator/tcbase16.T64
-	VICE=xplus4 TCBASE=tcbase16 emulator/build-vf.sh v4th-c16+
-	rm -f $@
-	cp cbmfiles/v4th-c16+ $@
+cbmfiles/v4th-c16+slf: $(vf_fth_files_petscii) emulator/build-vf.sh \
+    emulator/tcbase16.T64 cbmfiles/logtofile.fth
+	sed 's/c16+.log/c16+slf.log/' src/v4th-c16+.fth | ascii2petscii - cbmfiles/v4th-c16+slf.fth
+	VICE=xplus4 TCBASE=tcbase16 emulator/build-vf.sh v4th-c16+slf
+	rm -f cbmfiles/v4th-c16+slf.fth
 
-test-v4th-c16+self.log: emulator/v4th-c16+self.T64
+test-v4th-c16+slf.log: emulator/v4th-c16+slf.T64 \
+    $(test_files_petscii) $(wildcard emulator/run-in-*.sh)
 	rm -f cbmfiles/test.log
-	VICE=xplus4 emulator/run-in-vice.sh v4th-c16+self \
+	VICE=xplus4 emulator/run-in-vice.sh v4th-c16+slf \
 	  "include run-std-tests.fth\n$(test_keyboard_input)"
 	petscii2ascii cbmfiles/test.log $@
 
-test-v4th-c16+self.golden: test-v4th-c16+.golden
+test-v4th-c16+slf.golden: test-v4th-c16+.golden
 	cp $^ $@
 
 

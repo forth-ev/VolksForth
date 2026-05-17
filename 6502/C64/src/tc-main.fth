@@ -31,11 +31,9 @@ Variable tvoc-link    0 tvoc-link !
 
 \ Image and byteorder        clv2:jull87
 
-Code romoff (64
- sei 034 # lda 01 sta C) Next jmp
+Code romoff (64 sei 034 # lda 01 sta C) Next jmp
 
-Code romon  (64
- 036 # lda 01 sta cli C) Next jmp
+Code romon  (64 036 # lda 01 sta cli C) Next jmp
 
 Code >byte   ( 16b - 8bl 8bh)
  SP )Y lda pha txa SP )Y sta

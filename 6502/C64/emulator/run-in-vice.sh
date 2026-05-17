@@ -47,6 +47,7 @@ mkdir -p "${emulatorlogdir}"
   -keymap 2 \
   $autostart \
   -keybuf "$keybuf" \
+  +sound \
   $warp \
   > "${emulatorlogdir}/vice-$(date "+%F_%T").log" &
 

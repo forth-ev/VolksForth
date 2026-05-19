@@ -1,0 +1,38 @@
+
+\ *** Block No. 0, Hexblock 0
+
+\\         ***  Loadscreen für Arbeitssystem ***      bp 12oct86
+
+Der folgenden Screens wird benutzt, um aus    FORTHKER.PRG
+ ein Arbeitssystem zusammenzustellen.
+
+Alle Files, die zum Standardsystem gehören sollen, werden mit
+ INCLUDE  dazugeladen. Nicht benötigte Teile können mit  \
+ weggelassen werden. Natürlich kann man auch die entsprechenden
+ Zeilen ganz löschen. Beachten Sie aber, da₧ bestimmte Files
+ Grundlage für andere sind. So wird zum Beispiel der Assembler
+ sehr häufig gebraucht, der hier "Intern" geladen wird.
+
+Für eigene Applikationen erstellen Sie sich einen Loadscreen
+ nach dem Muster, der dann das oder die Files beinhaltet, die
+ zu Ihrer Applikation gehören.
+
+
+\ *** Block No. 1, Hexblock 1
+
+\ Loadscreen for Standard System                     cas20130105
+
+Onlyforth include misc.fb
+Onlyforth 2 loadfrom assemble.fb
+\ Onlyforth include assemble.fb
+Onlyforth include strings.fb
+Onlyforth include allocate.fb
+Onlyforth include gem\aes.fb
+Onlyforth include editor.fb
+Onlyforth include index.fb
+Onlyforth include tools.fb
+Onlyforth include relocate.fb
+\ Onlyforth include printer.fb
+\ Onlyforth include line_a.fb
+\ Onlyforth include demo.fb
+Onlyforth    cr cr .( May the volksFORTH be with you ...)  cr

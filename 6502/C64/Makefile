@@ -5,7 +5,7 @@
 
 vf_blk_d64_files = $(wildcard disks/*.d64)
 vf_blk_fth_files = $(patsubst %.d64, %.fth, $(vf_blk_d64_files))
-vf_fth_files = $(wildcard src/vf-*.fth src/v4th*.fth)
+vf_fth_files = $(wildcard src/vf-*.fth src/v4th*.fth) src/tc-trans.fth
 vf_fth_files_petscii = $(patsubst src/%, cbmfiles/%, $(vf_fth_files))
 vf_flavours = \
     v4thblk-c64 v4thblk-c16+ v4thblk-c16- \
@@ -33,7 +33,7 @@ update: $(vf_blk_fth_files) $(vf_fth_files_petscii)
 clean:
 	rm -f cbmfiles/*.fr cbmfiles/*.fth cbmfiles/*.log tmp/*
 	rm -rf tmp/* release
-	rm -f *.log *.result *.golden
+	rm -f *.log *.result *.golden emulator/logs/*
 	rm -f cbmfiles/c??-testbase
 	rm -f disks/scratch.d64 emulator/sdcard.img
 	rm -f cbmfiles/tcbase16
@@ -46,7 +46,7 @@ binaries: $(vf_binaries)
 
 test: $(test_resuls)
 
-alltests: test test-v4th-x16-tsk.result
+alltests: test test-v4th-x16-tsk.result test-v4th-c16+slf.result
 
 test64: std64 blk64
 
@@ -108,11 +108,13 @@ tmp/$(release_zipfile): $(vf_binaries) \
 # Targetcompiler targets
 
 cbmfiles/tcbase: emulator/v4th-c64-4tc.T64 emulator/build-tcbase.sh \
-    disks/tc38q.d64 disks/file-words.d64 cbmfiles/tc-base.fth
+    cbmfiles/savesys-noed.fth cbmfiles/dir-dos-cat.fth \
+    cbmfiles/tc-relocate.fth cbmfiles/tc-base.fth \
+    cbmfiles/tc6502asm.fth cbmfiles/tc-main.fth
 	emulator/build-tcbase.sh
 
 $(vf_binaries): $(vf_fth_files_petscii) emulator/build-vf.sh \
-    emulator/tcbase.T64 disks/tc38q.d64 cbmfiles/logtofile.fth
+    emulator/tcbase.T64 cbmfiles/logtofile.fth
 
 cbmfiles/v4thblk-c64:
 	emulator/build-vf.sh v4thblk-c64
@@ -142,13 +144,26 @@ cbmfiles/v4th-x16e:
 # Proof-of-concept self-hosted C16 target compile
 
 cbmfiles/tcbase16: emulator/v4thblk-c16+.T64 emulator/build-tcbase.sh \
-    disks/tc38q.d64 disks/file-words.d64 cbmfiles/tc-base.fth
+    cbmfiles/savesys-noed.fth cbmfiles/dir-dos-cat.fth \
+    cbmfiles/tc-relocate.fth cbmfiles/tc-base.fth \
+    cbmfiles/tc6502asm.fth cbmfiles/tc-main.fth
 	VICE=xplus4 TCVF=v4thblk-c16+ TCBASE=tcbase16 emulator/build-tcbase.sh
 
-cbmfiles/v4th-c16+self: emulator/tcbase16.T64
-	VICE=xplus4 TCBASE=tcbase16 emulator/build-vf.sh v4th-c16+
-	rm -f $@
-	cp cbmfiles/v4th-c16+ $@
+cbmfiles/v4th-c16+slf: $(vf_fth_files_petscii) emulator/build-vf.sh \
+    emulator/tcbase16.T64 cbmfiles/logtofile.fth
+	sed 's/c16+.log/c16+slf.log/' src/v4th-c16+.fth | ascii2petscii - cbmfiles/v4th-c16+slf.fth
+	VICE=xplus4 TCBASE=tcbase16 emulator/build-vf.sh v4th-c16+slf
+	rm -f cbmfiles/v4th-c16+slf.fth
+
+test-v4th-c16+slf.log: emulator/v4th-c16+slf.T64 \
+    $(test_files_petscii) $(wildcard emulator/run-in-*.sh)
+	rm -f cbmfiles/test.log
+	VICE=xplus4 emulator/run-in-vice.sh v4th-c16+slf \
+	  "include run-std-tests.fth\n$(test_keyboard_input)"
+	petscii2ascii cbmfiles/test.log $@
+
+test-v4th-c16+slf.golden: test-v4th-c16+.golden
+	cp $^ $@
 
 
 # Core test targets

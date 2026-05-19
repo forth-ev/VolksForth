@@ -1,0 +1,19 @@
+ ok
+.( hello world) hello world ok
+1 2 + . 3  ok
+include include.fb 
+INCLUDE.FB  Blk 1  Blk 2  Blk 3  Blk 4  Blk 5  Blk 6  Blk 7  INCLUDE exists 
+ Blk 8  \ exists  ok
+' .blk|tib Is .status  ok
+include hello.fs 
+HELLO.FS 
+  : hello  ." hello world" cr ;
+
+    hello
+hello world
+
+  .( 2 + 3 = ) 2 3 + . cr
+2 + 3 = 5 
+
+ ok
+logclose 

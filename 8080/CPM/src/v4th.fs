@@ -9,6 +9,12 @@ Onlyforth
   ." heap "  heap u.  cr
 ;
 
+\   : .order+blk|tib  cr ." order: " order ." : "
+\       blk @ ?dup IF  ."  Blk " u. ?cr  exit THEN
+\       incfile @ IF tib #tib @ cr type THEN ;
+
+\  ' .order+blk|tib Is .status
+
     $8000 displace !
 Target definitions   $100 here!
 

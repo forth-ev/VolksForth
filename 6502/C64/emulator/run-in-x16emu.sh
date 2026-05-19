@@ -54,6 +54,7 @@ fi
 x16emu \
   -keymap de \
   -sdcard "${sdcard}" \
+  -sound none \
   $autostart \
   $script \
   $warp \

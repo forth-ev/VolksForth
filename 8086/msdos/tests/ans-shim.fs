@@ -11,7 +11,7 @@
 
 : lshift  0 ?DO 2* LOOP ;
 
-: rshift  0 ?DO 2/ 32767 and LOOP ;
+: rshift  0 ?DO 2/ $7FFF and LOOP ;
 
 \ : 2over  3 pick 3 pick ;
 

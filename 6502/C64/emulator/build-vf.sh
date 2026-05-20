@@ -27,4 +27,6 @@ test -n "${nosave}" && keybuf="include ${source}\n"
 
 petscii2ascii "${basedir}/cbmfiles/${logfile}" | \
   grep -F 'target compile complete' || \
-  (echo "check logfile ${basedir}/cbmfiles/${logfile}" && exit 1)
+  (echo "check logfile ${basedir}/cbmfiles/${logfile}" &&
+    (test -z "${nosave}" && rm -f "${basedir}/cbmfiles/${target}") &&
+  exit 1)

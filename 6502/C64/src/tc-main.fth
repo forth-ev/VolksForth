@@ -146,6 +146,8 @@ Code byte>   ( 8bl 8bh - 16b)
  over 2+ @ and
  IF drop True rdrop exit THEN ;
 
+| variable #unresolved
+
 | : unresolved? ( addr - f)
  2+ dup c@ 01F and over + c@ BL =
  IF name> forward? 4 + @
@@ -154,13 +156,16 @@ Code byte>   ( 8bl 8bh - 16b)
 
 | : unresolved-words
  BEGIN @ ?dup WHILE dup unresolved?
-    IF dup  2+ .name ?cr THEN
+    IF dup  2+ .name ?cr
+    1 #unresolved +! THEN
  REPEAT ;
 
 : .unresolved
+ #unresolved off
  voc-link @
  BEGIN dup 4 - unresolved-words
- @ ?dup 0= UNTIL ;
+ @ ?dup 0= UNTIL
+ #unresolved @ ?dup IF u. ." unresolved words" abort THEN ;
 
 
 

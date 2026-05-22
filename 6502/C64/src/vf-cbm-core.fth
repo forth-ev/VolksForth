@@ -84,7 +84,6 @@ Constant origin  8 uallot drop
 User s0       $7CFA s0 !
 User r0       $7FFE r0 !
 User dp
-User offset      0 offset !
 User base      &10 base !
 User output
 User input
@@ -1454,8 +1453,6 @@ Variable state    0 state !
 
 : \  blk @ IF >in @  c/l /  1+ c/l *
  ELSE #tib @ THEN >in ! ; immediate
-
-: \\        b/blk >in ! ;  immediate
 
 : \needs
  name find nip  IF  [compile] \  THEN ;

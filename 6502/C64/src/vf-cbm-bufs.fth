@@ -2,6 +2,15 @@
 \needs fthpage ' drop | alias fthpage
 66 fthpage
 
+User offset      0 offset !
+
+\ b/blk drive >drive drvinit  clv14:2x87
+
+400 Constant b/blk
+
+: \\        b/blk >in ! ;  immediate
+
+
 ( load +load thru +thru --> )
 
 : load   ( blk --)

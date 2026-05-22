@@ -82,27 +82,11 @@ Output: display   [ here output ! ]
 Code i/o-status?  ( -- n )
   READST jsr  Push0A jmp  end-code
 
-\ b/blk drive >drive drvinit  clv14:2x87
-
-400 Constant b/blk
-
-0AA Constant blk/drv
-
 Variable (drv    0 (drv !
 
 | : disk ( -- dev.no )   (drv @ 8 + ;
 
-: drive  ( drv# -- )
- blk/drv *  offset ! ;
-
-: >drive ( block drv# -- block' )
- blk/drv * +   offset @ - ;
-
-: drv?    ( block -- drv# )
- offset @ + blk/drv / ;
-
-: drvinit  noop ;
-
+' noop alias drvinit
 
 \ *** Block No. 136, Hexblock 88
 88 fthpage

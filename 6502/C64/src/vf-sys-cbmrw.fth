@@ -2,6 +2,18 @@
 \ *** Block No. 140, Hexblock 8c
 8c fthpage
 
+0AA Constant blk/drv
+
+: drive  ( drv# -- )
+ blk/drv *  offset ! ;
+
+: >drive ( block drv# -- block' )
+ blk/drv * +   offset @ - ;
+
+: drv?    ( block -- drv# )
+ offset @ + blk/drv / ;
+
+
 ( s#>s+t  x,x                 28may85re)
 
 165 | Constant 1.t

@@ -90,13 +90,6 @@
 \ *** Block No. 143, Hexblock 8f
 8f fthpage
 
-\ index findex ink-pot         05nov87re
-
-: index ( from to --)
- 1+ swap DO
-   cr  I 3 .r  I block 28 type
-   stop?  IF LEAVE THEN  LOOP ;
-
 : findex ( from to --)
  diskopen  IF  2drop  exit  THEN
  1+ swap DO  cr  I 3 .r

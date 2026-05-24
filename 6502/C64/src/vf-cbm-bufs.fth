@@ -326,4 +326,9 @@ Defer diskerr  ' (diskerr  Is diskerr
  BEGIN  first @ allotbuffer
         first @  = UNTIL ;
 
-include vf-sys-cbmrw.fth
+\ index
+
+: index ( from to --)
+ 1+ swap DO
+   cr  I 3 .r  I block 28 type
+   stop?  IF LEAVE THEN  LOOP ;

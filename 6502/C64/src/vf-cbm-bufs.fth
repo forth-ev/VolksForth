@@ -2,6 +2,15 @@
 \needs fthpage ' drop | alias fthpage
 66 fthpage
 
+User offset      0 offset !
+
+\ b/blk drive >drive drvinit  clv14:2x87
+
+400 Constant b/blk
+
+: \\        b/blk >in ! ;  immediate
+
+
 ( load +load thru +thru --> )
 
 : load   ( blk --)
@@ -317,4 +326,9 @@ Defer diskerr  ' (diskerr  Is diskerr
  BEGIN  first @ allotbuffer
         first @  = UNTIL ;
 
-include vf-sys-cbmrw.fth
+\ index
+
+: index ( from to --)
+ 1+ swap DO
+   cr  I 3 .r  I block 28 type
+   stop?  IF LEAVE THEN  LOOP ;

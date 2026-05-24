@@ -62,6 +62,7 @@ Input: keyboard   [ here input ! ]
 
 
 include vf-sys-cbm.fth
+include vf-sys-iec.fth
 
 
 \ *** Block No. 143, Hexblock 8f

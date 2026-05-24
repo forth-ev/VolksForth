@@ -2,6 +2,18 @@
 \ *** Block No. 140, Hexblock 8c
 8c fthpage
 
+0AA Constant blk/drv
+
+: drive  ( drv# -- )
+ blk/drv *  offset ! ;
+
+: >drive ( block drv# -- block' )
+ blk/drv * +   offset @ - ;
+
+: drv?    ( block -- drv# )
+ offset @ + blk/drv / ;
+
+
 ( s#>s+t  x,x                 28may85re)
 
 165 | Constant 1.t
@@ -77,13 +89,6 @@
 
 \ *** Block No. 143, Hexblock 8f
 8f fthpage
-
-\ index findex ink-pot         05nov87re
-
-: index ( from to --)
- 1+ swap DO
-   cr  I 3 .r  I block 28 type
-   stop?  IF LEAVE THEN  LOOP ;
 
 : findex ( from to --)
  diskopen  IF  2drop  exit  THEN

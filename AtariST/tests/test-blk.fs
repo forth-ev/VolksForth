@@ -1,7 +1,7 @@
 
 include fileint.fs
 
-\ include log2file.fb  \ so that include with block file gets tested
+use log2file.fb  4 5 thru  \ so that include with block file gets tested
 ' noop Is .status
 \ ' .blk|tib IS .status
 

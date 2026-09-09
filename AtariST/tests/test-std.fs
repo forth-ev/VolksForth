@@ -3,7 +3,8 @@
 \     blk @ ?dup IF  ."  Blk " u. ?cr  exit THEN
 \     incfile @ IF tib #tib @ cr type THEN ;
 
-\ include logfile.fs
+include makefile.fs
+include log2file.fs
 logopen
 
 include ans-shim.fs

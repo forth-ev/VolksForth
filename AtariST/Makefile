@@ -20,7 +20,10 @@ clean:
 	rm -rf $(stfilesdir)/*
 	# rm -f tests/empty.fs tests/empty.fb.txt
 
-test: logtest.result incltest.result test-org.result
+test: test-min.result test-std.result test-blk.result
+
+test-all: logtest.result incltest.result test-org.result \
+    test-min.result test-std.result test-blk.result
 
 
 run-4thcore: \
@@ -197,9 +200,7 @@ test-min.log: \
     | Makefile
 	rm -f $(stfilesdir)/output.log
 	./emulator/run-in-hatari.py v4th.prg \
-	    "include log2file.fs" \
 	    "onlyforth" \
-	    "include makefile.fs" \
 	    "include test-min.fs"
 	dos2unix -n $(stfilesdir)/output.log $@
 
@@ -209,25 +210,19 @@ test-std.log: \
      | Makefile
 	rm -f $(stfilesdir)/output.log
 	./emulator/run-in-hatari.py v4th.prg \
-	    "include log2file.fs" \
 	    "onlyforth" \
-	    "include makefile.fs" \
 	    "include test-std.fs"
 	dos2unix -n $(stfilesdir)/output.log $@
 
 test-blk.log: \
     $(patsubst %, $(stfilesdir)/%, v4th.prg fileint.fs) \
     $(patsubst tests/%, $(stfilesdir)/%, $(wildcard tests/*.fs) \
-    tests/empty.fb) | Makefile
+    tests/empty.fb tests/log2file.fb) | Makefile
 	rm -f $(stfilesdir)/output.log
 	./emulator/run-in-hatari.py v4th.prg \
-	    "include log2file.fs" \
 	    "onlyforth" \
-	    "include makefile.fs" \
 	    "include test-blk.fs"
 	dos2unix -n $(stfilesdir)/output.log $@
-
-#	    "include fileint.fs" \
 
 #	    "' .blk|tib IS .status" \
 

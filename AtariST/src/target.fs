@@ -7,6 +7,7 @@
  : ?.s  state @ 0= IF .s THEN ;
  : .stat .blk ?.s ;     ' .stat Is .status
 \ : .stat .blk|tib ?.s ;     ' .stat Is .status
+\ : .stat order cr .blk|tib ;     ' .stat Is .status
 
 \  : .blk|tib+.s  ( -- )
 \    blk @ ?dup IF ." Blk " u.  .s ." ::" ?cr  exit THEN

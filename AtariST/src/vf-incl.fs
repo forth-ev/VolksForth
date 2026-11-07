@@ -71,6 +71,9 @@ Code lseek      ( d handle n -- d' )
 : position      ( d handle -- f )
    0 lseek   0< ?exit   drop false ;
 
+: position?     ( handle -- d )
+   0 0 rot  1  lseek   dup 0<  IF  ?diskabort  THEN ;
+
 
 \ *** Block No. 9, Hexblock 9
 
@@ -87,33 +90,83 @@ Code (fileread   ( buff len handle -- n )
    D0 SP -) move               \ errorflag or bytes read
    Next  end-code
 
-  Code (filewrite  ( buf len handle -- n )
-    SP )+ D0 move   .l D2 clr  .w SP )+ D2 move
-    SP )+ D6 move   D6 reg) A0 lea
-    .l  A0 A7 -) move           \ buffer adress
-        D2 A7 -) move           \ buffer length
-    .w  D0 A7 -) move           \ handle
-     $40 # A7 -) move           \ call WRITE
-    1 trap    $0C # A7 adda
-    D0 SP -) move               \ errorflag, num written bytes
-    Next  end-code
+Code (filewrite  ( buf len handle -- n )
+   SP )+ D0 move   .l D2 clr  .w SP )+ D2 move
+   SP )+ D6 move   D6 reg) A0 lea
+   .l  A0 A7 -) move           \ buffer adress
+       D2 A7 -) move           \ buffer length
+   .w  D0 A7 -) move           \ handle
+    $40 # A7 -) move           \ call WRITE
+   1 trap    $0C # A7 adda
+   D0 SP -) move               \ errorflag, num written bytes
+   Next  end-code
 
 
 \ *** Block No. 10, Hexblock a
 
 \ (open-file  setdta                                   26oct86we
 
-Code (openfile  ( C$ -- handle )
+| Code (openfile  ( C$ -- handle )
    2 # A7 -) move
    SP )+ D6 move   D6 reg) A0 lea   .l A0 A7 -) move
    .w $3D # A7 -) move   1 trap   8 A7 addq
    D0 SP -) move   Next   end-code
 
-\ Create dta      &44 allot
+| Create dta      &44 allot
 
-\ Code setdta     ( addr -- )
-\    SP )+ D6 move   D6 reg) A0 lea   .l A0 A7 -) move
-\    .w $1A # A7 -) move   1 trap   6 A7 addq   Next   end-code
+| Code setdta     ( addr -- )
+   SP )+ D6 move   D6 reg) A0 lea   .l A0 A7 -) move
+   .w $1A # A7 -) move   1 trap   6 A7 addq   Next   end-code
+
+
+\ search for files                                     03oct86we
+
+| Code search0    ( C$ attr -- f )    \ search for first file
+   SP )+ A7 -) move    SP )+ D6 move   D6 reg) A0 lea
+   .l A0 A7 -) move   .w $4E # A7 -) move   1 trap   8 A7 addq
+   D0 SP -) move    Next  end-code
+
+| Code searchnext    ( -- f )         \ search for next file
+   $4F # A7 -) move   1 trap   2 A7 addq
+   D0 SP -) move    Next  end-code
+
+
+
+
+
+
+
+\ *** Block No. 12, Hexblock c
+
+\ Create a subdir                                   bp 11 oct 86
+
+| Code (makedir  ( C$ -- f )     \ Create a subdir
+   $39 # D1 move
+Label long-adr
+   SP )+ D6 move   D6 reg) A0 lea   .l A0 A7 -) move
+   .w D1 A7 -) move   1 trap   6 A7 addq
+   D0 SP -) move   Next  end-code
+
+| Code (setdir     ( C$ -- f )
+   $3B # D1 move   long-adr bra    end-code
+
+
+\ *** Block No. 13, Hexblock d
+
+\ select drive                                         09sep86we
+
+| Code setdrive   ( n -- )
+   SP )+ A7 -) move
+   $0E # A7 -) move   1 trap   4 A7 addq   Next end-code
+
+| Code getdrive   ( -- n )
+   $19 # A7 -) move   1 trap   2 A7 addq
+   D0 SP -) move   Next   end-code
+
+| Code getdir     ( addr n -- f )  \ n is drive, string in addr
+   SP )+ A7 -) move   SP )+ D6 move   D6 reg) A0 lea
+   .l A0 A7 -) move   .w $47 # A7 -) move   1 trap   8 A7 addq
+   D0 SP -) move   Next   end-code
 
 
 \ from include.fb.txt:
@@ -220,14 +273,15 @@ Code (openfile  ( C$ -- handle )
   name count  2dup cr type bl emit  makec$
   (openfile  dup ?diskabort ;
 
-  : (include ( -- )
-  savetib >r (use-openfile (interpret-from-file  r> restoretib ;
-
-  : include ( -- )
-  (include
+  : (include ( filehandle -- )
+  savetib >r (interpret-from-file  r> restoretib 
   incl-filehandle @
     IF incl# 2@  incl-filehandle @  position  ?diskabort
     incl[]-reset THEN
+  ;
+
+  : include ( -- )
+  (use-openfile (include
   ;
 
 
@@ -247,3 +301,19 @@ Code (openfile  ( C$ -- handle )
   : .blk|tib  ( -- )
     blk @ ?dup IF ." Blk " u. ?cr  exit THEN
     incl-filehandle @ IF tib #tib @ type cr THEN ;
+
+Vocabulary Dos
+Dos definitions
+
+' (openfile alias (openfile
+' dta alias dta
+' setdta alias setdta
+' search0 alias search0
+' searchnext alias searchnext
+' (makedir alias (makedir
+' (setdir alias (setdir
+' setdrive alias setdrive
+' getdrive alias getdrive
+' getdir alias getdir
+
+Transient definitions

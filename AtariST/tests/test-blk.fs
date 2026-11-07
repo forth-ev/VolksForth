@@ -1,10 +1,17 @@
 
-include log2file.fb  \ so that include with block file gets tested
+include fileint.fs
+
+use log2file.fb  4 5 thru  \ so that include with block file gets tested
 ' noop Is .status
+\ ' .blk|tib IS .status
+
 logopen
 
 include ans-shim.fs
 : \vf  [compile] \ ; immediate
+
+\ \atari marks tests that fail with VolksForth 3.85.2
+: \atari  [compile] \ ; immediate
 
 include prelim.fs
 include tester.fs

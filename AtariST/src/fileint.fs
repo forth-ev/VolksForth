@@ -98,7 +98,7 @@ Onlyforth
 
 \ disk errors                                          13oct86we
 
-Vocabulary Dos   Dos also definitions
+Dos also definitions
 
 | ' 2-   Alias body>            \ just for style
 
@@ -338,7 +338,7 @@ Variable  pathes  pathlen allot \ counted string of pathes
      pathlen min   pathes place
      Ascii ;  pathes count + c!   pathes c@ 1+ pathes c! ;
 
-\ s\\ PATH : see elsewhere in this file
+\ \\ PATH : see elsewhere in this file
 
 
 \ *** Block No. 18, Hexblock 12

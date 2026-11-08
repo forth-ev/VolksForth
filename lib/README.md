@@ -14,7 +14,7 @@ this works and how usable and browsable it all turns out to be.
 
 ### Term4
 
-Written by Claus Vogt and described in the
+Written by [Claus Vogt](http://clv.bplaced.net/) and described in the
 [2026-03 issue](https://forth-ev.de/wiki/res/lib/exe/fetch.php/vd-archiv:4d2026-03.pdf)
 of the German
 [Vierte Dimension periodical](https://forth-ev.de/wiki/vd-archiv),

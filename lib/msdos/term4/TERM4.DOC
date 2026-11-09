@@ -1,0 +1,414 @@
+TERM4 ---- Terminalprogramm   Dokumentation                     clv13jun89
+--------------------------------------------------------------------------
+
+** TEN JEARS LATER **
+clv2000dec10 : rev2.3 : TRANSMIT now shows and PROTOCOLs transmission
+                        No Linefeeds appended on transmission
+clv2000may13 : rev2.2 : fixed bug around the stopbits
+  On monochrome monitors staying blank try: TERM4 $7001 ATTS !
+  Perhaps $707F, or $7F70 instead. I couldn't test it, don't have one
+  On a 16450 (without FIFO) don't run faster than 19.200 baud
+clv16sep98: (fixed)
+clv08apr90: rev 2.1 under vf3.81.41
+
+
+
+
+TERM4 ---- Terminalprogramm   Dokumentation                     clv13jun89
+--------------------------------------------------------------------------
+Inhalt:
+        0.      Einleitung
+
+        1.      Benutzung
+        1.2.    Bedienung mittels Statuszeile
+        1.3.    Aufruf und Kommandozeile
+        1.4.    Installation
+
+        2.      interne Dokumentation
+        2.1.    Arbeit mit den Quelltexten
+        2.2.    ev. sinnvolle Erweiterungen
+
+--------------------------------------------------------------------------
+        0.      Einleitung
+
+        TERM4 ist ein Programm zur DatenÅbertragung Åber RS232-Schnittstelle
+        des IBM-PCs und kompatibler.
+
+        Es ist in volksForth geschrieben, seine Quelle umfa·t ca. 100 kByte,
+        das ausfÅhrbare File ca. 50kByte.
+        Es hat eine selbsdokumentierende interaktive BenutzeroberflÑche,
+        die Åbrigens den grî·ten Teil des Quelltextes umfa·t und etwa
+        90 % der gesamten Arbeit von etwa 300 Stunden ausmachte.
+
+        Die UnterstÅtzung der seriellen Schnittstelle umfa·t
+        - direkter Zugriff auf den Chip
+          (fast alle kompatiblen PCs untertÅtzen dies durch Port-KompatibilitÑt)
+        - alle Baudraten (2..115200 baud)
+        - alle Bitanzahlen (5..8) mit 1 (bei 5 bits nur 1.5) oder 2 stopbits
+        - alle Parityarten (keine,grade,ungrade,immer 1, immer 0)
+          (allerdings werden weder parity noch framingerrors ÅberprÅft)
+        - Protokolle: xon/xoff, hardwarehandshake Åber RTS und DTR, keins
+        - halbduplex (lokales Echo) und fullduplex (kein lokales Echo)
+        - beide serielle Ports COM1 und COM2
+        - Handshake
+        - File-öbertragung und Empfangen mîglich (netto bis 3000 baud)
+          Anzahl Åbertragener Zeichen wird kontinuierlich angezeigt,
+          wÑhrend der öbertragung werden weiterhin Tastatureingaben Åbertragen.
+
+        FÅr die Ñu·ere Schînheit und weiteren Benutzungskomfort sorgen:
+        - Sicherung des DOS- und Terminal Bildschirms und wiederherstellen
+        - Aufteilung des Terminal-Bildschirms in Terminal,Status,Meldungen
+        - interaktive Bedienung Åber ESC-Taste und Cursor-Tasten,
+          weitgehend selbstdokumentierend
+        - eine Betriebssystem-Shell kann zwischendurch benutzt werden
+        - Forth kann zwischendurch benutzt werden
+        - Die Eingestellten Optionen kînnen auf ein COM-File gesichert werden
+        - Alle Funktionen auch Åber Kommanozeile (Batch-Files) mîglich.
+        - Alle Bildschirmausgaben kînnen auf ein File mitprotokolliert werden.
+
+        13.Juni 1989, Claus Vogt
+
+        (c) 1989-2000 Claus.Vogt@Berlin.de - http://www.home.pages/~clv
+            May be copied freely under the terms of the Gnu Public License.
+
+ --------------------------------------------------------------------------
+        1.      Benutzung
+                nach Aufruf erscheint ein dreigeteilter Schirm.
+                Im oberen (grî·ten) Teil wird ein Terminal emuliert.
+                Nach Aufruf erscheint hier eine Einschaltmeldung.
+                In der (hervorgehobenen) Statuszeile stehen verschiedene
+                Optionen.
+                In der letzten Zeile steht nichts, sie ist fÅr Meldungen
+                des Systems vorgesehen.
+
+                Durch drÅcken der Taste <Esc> kann nun in die Statuszeile
+                gesprungen werden. Alle besonderen Funktionen werden
+                darÅber abgewickelt. Durch nochmaliges betÑtigen von
+                <Esc> wird zurÅckgesprungen.
+
+                Jede andere Eingabe wird (ohne Handshake)
+                in die Leitung gesteckt und
+                ggf. gleichzeitig auf den Bildschirm geechoed.
+
+                Ankommende Zeichen werden auf den Bildschirm geschrieben.
+
+--------------------------------------------------------------------------
+        1.2.    Bedienung
+
+                Die Statuszeile sieht etwa so aus:
+
+                quit COM1 none 8+1  xon/xoff 000.300 halfduplex xxxxx
+
+                Nach drÅcken von <esc> wird in die Statuszeile gesprungen,
+                die aktive Funktion (z.B. 'quit') wird hervorgehoben.
+                Mit <esc> geht es auch wieder aus der Statuszeile zurÅck,
+                alle Funktionen kînnen mit <esc> abgebrochen werden.
+
+                mit <cursor-rechts> und <cursor-links> kann eine andere
+                der sichtbaren Funktionen der Statuszeile ausgewÑhlt
+                werden.
+
+                mit <cursor-rauf> und <cursor-runter> kînnen weitere
+                funktionen ausgewÑhlt werden, die erst dann sichtbar werden.
+
+                Und zwar verbergen sich unter den sichtbaren Funktionen:
+
+
+                quit     COM1 none 5+1   rts/dtr  000.300 halfduplex xxxxx
+                shell    COM2 low  5+1.5 rts       (s.1)  fullduplex (s.2)
+                forth         high 6+1   xon/xoff    .                 .
+                transmit      even 6+2   noShake     .                 .
+                receive       odd  7+1
+                protocol           7+2
+                saveterm           8+1
+                                   8+2
+
+
+                (s.1.) : <cursor-rauf> und <cursor-runter> verdoppelt,
+                         bzw. halbiert die Baudrate zwischen
+                         75 und 38400 baud. Weitere Baudraten kînnen
+                         durch Eingabe von Zahlen direkt eingeben werden.
+                         Anschlie·end mu· <return> gedrÅckt werden.
+                         Es wird nun die nÑchstgrî·ere mîgliche
+                         Baudrate ein- und dargestellt. Mîglich sind
+                         2..115200 baud. (vgl. auch BAUD)
+
+                (s.2.) : Hier kînnen-Benutzerspezifische Funktionen
+                         instatllier werden. Dies ist allerdings
+                         mÅhselig und nur mit den Quelltexten mîglich.
+
+
+                Die Funktionen unter 'quit' werden erst nach drÅcken
+                von <return> aktiviert, alle anderen werden sofort
+                ausgefÅhrt und verstellen auch sofort die serielle
+                Schnittstelle.
+
+                Falls Funktionen weiter Parameter erfordern, so werden
+                diese interaktiv eingelesen. Dies geschieht i.a.
+                nach Aufforderung im Meldungsfenster.
+
+                Die Funktionen im einzelnen
+
+                QUIT     ( Kommandozeilenbenutzung: endterm )
+
+                Die serielle Schnittstelle wird geschlossen und ins
+                Betriebssystem zurÅckgekehrt.
+
+                SHELL    ( Kommandozeilenbenutzung: <keine> )
+
+                Es wird ein geschachteltes Betriebssystem aufgerufen,
+                das mittels 'exit' wieder verlassen werden kann.
+                Die serielle Schnittstelle bleibt solange aktiv und
+                sollte nicht (z.B. mit 'mode') verdreht werden.
+                Nach zurÅckkehren wird der Terminalbildschirm restauriert.
+                Die Protokollfunktion ist fÅr die Dauer der Shell inaktiv.
+
+                FORTH    ( Kommandozeilenbenutzung: <keine> )
+
+                Es wird das Forth aufgerufen,
+                das mittels 'bye' wieder verlassen werden kann.
+                Die serielle Schnittstelle bleibt solange aktiv und
+                kann mittels der dafÅr vorgesehenen Kommandozeilen-Worte
+                nach Belieben benutzt verdreht etc. werden.
+                Nach zurÅckkehren wird der Terminalbildschirm restauriert.
+
+
+                TRANSMIT ( Kommandozeilenbenutzung: TRANSMIT <filename> )
+
+                Ein File (dessen Name interaktiv erfragt wird)
+                wird durch die serielle Schnittstelle Åbertragen.
+                Es werden soviele Bytes Åbertragen, wie im File vorhanden
+                sind.
+                Tastatureingaben werden in die Leitung Åbertragen, soda·
+                der EmpfÑnger noch zu einer Aktion veranla·t werden kann.
+                Oder um beispielsweise ein FileendeZeichen (<ctrl z>)
+                hinterherzujagen.
+                Die Anzahl der Åbertragenen Zeichen wird kontinuierlich
+                ausgegeben, mit <esc> kann abgebrochen werden.
+
+
+                RECEIVE  ( Kommandozeilenbenutzung: RECEIVE <filename> )
+
+                Ein File (dessen Name interaktiv erfragt wird)
+                empfÑngt die im folgenden empfangenen Daten.
+                Es werden soviele Bytes empfangen, bis ein File-Ende-Zeichen
+                das Empfangen beendet oder bis <esc> gedrÅckt wird.
+                Tastatureingaben werden in die Leitung Åbertragen, soda·
+                der EmpfÑnger noch zu einer Aktion veranla·t werden kann.
+                Die Anzahl der Åbertragenen Zeichen wird kontinuierlich
+                ausgegeben, mit <esc> kann abgebrochen werden.
+
+
+                PROTOCOL ( Kommandozeilenbenutzung: PROTOCOL <filename>
+                                               bzw. PROTEND )
+
+                Ein File (dessen Name interaktiv erfragt wird)
+                wird erîffnet. Nachfolgende Bildschirmausgaben werden
+                zusÑtzlich auf dieses File mitgeschrieben.
+                Beim nÑchsten AusfÅhren von PROTOCOL wird das mitschreiben
+                gestoppt und das File geschlossen.
+                Bei Kommandozeilenbenutzung darf das Schlie·en nicht
+                durch ein zweites PROTOCOL sondern mu· durch PROTEND erfolgen.
+
+
+                SAVETERM ( Kommandozeilenbenutzung: SAVETERM <filename> )
+
+                Das Programm wird mit allen momentan gesetzten Optionen
+                auf ein File geschrieben (dessen Name interaktiv erfragt wird).
+                Beim Starten dieses .COM-Files sind alle Voreinstellungen
+                so wie verlassen.
+
+                COM1 COM2                ( Kommandozeilenbenutzung genauso)
+
+                Die erste bzw. zweite serielle Schnittstelle wird
+                fÅr folgende öbertragung ausgewÑhlt.
+
+
+
+                LOW HIGH EVEN ODD NONE   ( Kommandozeilenbenutzung genauso)
+
+                Die ParitÑt wird als immer0/immer1/gerade/ungerade/keine
+                fÅr folgende öbertragung ausgewÑhlt .
+                Allerdings findet keine ParitÑtsprÅfung statt.
+
+
+                5+1.5 5.2 etc.           ( Kommandozeilenbenutzung genauso)
+
+                Die Anzahl von Bits und Stopbits wird
+                fÅr folgende öbertragung ausgewÑhlt.
+                8+2 stellt z.B. 8 Bits 2 Stopbits ein.
+
+
+                RTS/DTR RTS XON/XOFF NOSHAKE ( Kommandozeilenbenutzung genauso)
+
+                Das öbertragungsprotokoll (Handshake) wird
+                fÅr folgende öbertragung ausgewÑhlt.
+                Hierbei bedeutet:
+                NOSHAKE: es gibt gar keinen Handshake.
+                XON/XOFF: Softwarehanshake mit ^s ^q
+                   Wird bei wenigen Leitungen angewandt. Sendet Handshake-Zeichen
+                   durch die normalen TD- und RD- Leitungen.
+                   Mit diesem Terminalprogramm darf man ^s und ^q auch
+                   von Hand eingeben.
+                RTS: Hardwarehandshake mit RTS-Leitung
+                RTS/DTR: Hardwarehandhake mit RTS- und DTR-Leitung
+                   (letzteres ist eine Handshake-Art, die selbst das
+                   dÅmmste GerÑt noch versteht. Modems legen
+                   dann allerdings gleich auf.)
+
+
+                <baud> ( Kommandozeilenbenutzung: <zahl>. BAUD )
+
+                Die gewÅnschte Baudrate wird
+                fÅr folgende öbertragung ausgewÑhlt.
+                Bei der Kommandozeilenbenutzung darf bitte nicht der
+                Punkt hinter der Zahl vergessen werden!
+
+
+
+                HALFDUPLEX FULLDUPLEX    ( Kommandozeilenbenutzung genauso)
+
+                Von der Tastatur aus eingegebene Zeichen werden ab sofort
+                gleichzeitig auf den Bildschirm ausgegeben (HALFDUPLEX)
+                bzw. nicht auf den Bildschirm ausgegeben (FULLDUPLEX).
+                Falls jedes Zeichen doppelt erscheint, sollte auf
+                FULLDUPLEX gestellt werden, sonst ist HALFDUPLEX sinnvoll.
+
+
+--------------------------------------------------------------------------
+        1.3.    Aufruf und Kommandozeile
+
+                Der Aufruf erfolgt mit:
+
+                        TERM4 [<worte>]
+
+                Die Sequenz <worte> wird ausgefÅhrt. Dadurch kînnen
+                Voreinstellungen vorgenommen oder beliebige andere
+                Aktionen ausgefÅhrt werden.
+
+                Beispiele:
+
+                        TERM4 COM1  9.600 BAUD 8+2 NONE RTS HALFDUPLEX
+                            - setzt Voreinstellungen
+                        TERM4 0.300 BAUD 8+2 NONE XON/XOFF SAVETERM t4.com
+                            - setzt Voreinstellungen und sichert sie auf T4.COM
+                        TERM4 COM1 RECEIVE xx.dfÅ COM2 TRANSMIT xx.dfÅ ENDTERM
+                            - empfÑngt von COM1 bis zum ersten File-Ende-Zeichen
+                              und sendet das File XX.DFö dann weiter an COM2
+
+                Alle zum Terminal-Programm gehîrenden Worte sind
+                weiter oben erlÑutert.
+                Wer Forth kann, kann auch beliebige Forth-Worte benutzen.
+                Was passiert wohl bei:
+
+                        TERM4 10 12 * .  ENDTERM
+
+                Allerdings kann falsche Benutzung gefÑhrlicher Forth-Worte
+                manchmal zum Absturz des Systems fÅhren. Insbesondere darf
+                das Word BYE nicht statt ENDTERM zum Verlassen benutzt werden.
+
+--------------------------------------------------------------------------
+        1.4.    Installation
+
+                Kopieren und SAVETERM
+                ---------------------
+                Kopieren sie das File TERM.COM in greifbare NÑhe und
+                tippen sie:
+
+                        TERM4
+
+                mittels oben beschriebener Methoden kînnen sie jetzt
+                alle Voreinstellungen Ñndern und (wenn gewÅnscht)
+                mittels SAVETERM sichern. Als Filename empfehlen wir:
+                TERM4.COM oder T4.COM
+
+                Video-Anpassung
+                ---------------
+                Einige Video-Adapter unterstÅtzen die verwendeten Display-
+                Attribute nicht. Wenn Sie die Statuszeile nicht sehen kînnen,
+                probieren Sie mal:
+
+                     TERM4  $7f70 atts !
+
+                Das Ñndert die Attribute der Statuszeile. Auch jede andere
+                Zahl kînnen Sie testen.
+
+--------------------------------------------------------------------------
+        2.      interne Dokumentation
+
+
+--------------------------------------------------------------------------
+        2.1.    Arbeit mit den Quelltexten
+
+                Folgende Files gehîren zum System:
+
+                MAKET4   BAT       25   6-13-89  11:38a erzeugt TERM4.COM
+                TERM4    SCR    53248   6-13-89   3:46p das zentrale File
+                TERM4SER SCR    61440   6-13-89   2:10p rs232-Grundroutinen
+                INPUT    SCR    10240   5-16-89   4:51p User-Ein-Ausgabe
+                PROTOCOL SCR     4096   5-25-89   3:41p mitprotokollieren
+                UTI      SCR    35840   6-13-89  11:25a diverses nÅtzliches
+
+                TERM     DOC    sie lesen es gerade
+
+                TERM     SCR    15360   2-28-89   7:37p eine alte Version
+
+                zahlreiche Quellen sind mit Shadows versehen.
+                viel Spa·!
+
+ --------------------------------------------------------------------------
+        2.2.    ev. sinnvolle Erweiterungen
+                Folgende Erweiterungen wÅrder ich mir wÅnschen:
+                - UnterstÅtzung bei der Forth-Fernbedienung
+                  z.B. durch r/w-Umleitung.
+                - CR/LF. Die Frage, wann einem CR ein LF
+                  hinterherzujagen ist, ist ziemlich ungeklÑrt.
+                  Im Moment wird jeder CR von der Tastatur mit LF
+                  versehen.
+                - zusammen damit sind die diversen Echo-Modes mit
+                  FULLDUPLEX und HALFDUPLEX noch lÑngst nicht erschlagen.
+                  Die allgemeine Variante wÑre:
+
+                  key     --> screenOut   - Taste auf Bildschirm echoen
+                  key     --> rs232Out    - Taste in Leitung stecken
+                  rs232In --> screenOut   - empfangenes Zeichen auf Bildschirm
+                  rs232In --> rs232Out    - empf. Z. in Leitung zurÅckechoen
+
+                  FÅr jeden dieser Echowege lie·e sich getrennt
+                  einstellen: a) Findet das Echo fÅr normale Zeichen statt
+                              b) Wird ein CR als LF geechoed.
+                  Einige Varianten sind zwar vîllig unsinnig (z.B. das
+                  eingetippte Zeichen nirgends hinschicken), aber
+                  besser zuviel als zuwenig.
+                - Etwas schneller dÅrfte es schon gehen.
+                  Derzeit kommen netto bis 3000 baud raus beim Filetransfers,
+                  wobei das ZÑhlen der Bytes ca. 30% ausmacht.
+                  Sinnvoll wÑre es (vgl.Forth-Fernbedienung) eine
+                  Umleitung von Standardi/o hinzukriegen, die mit TYPE
+                  und EXPECT mehrere Zeichen auf einmal wegtut.
+                - Schneller (und v.a. eleganter) kînnte auch ein Multitasking-
+                  ansatz sein. z.B.
+                    TASK1 liest von der Tastatur und schiebt es weiter
+                    TASK2 liest von der RS232 und stellt es dar
+                    TASK3 nimmt BenutzerwÅnsche in der Statuszeile an
+                    TASK4 ÅbertrÑgt Files.
+                  Die Vorteile:
+                  - dussliges Screenswitchen entfÑllt
+                  - gleiche Funktionen werden identisch ausgefÅhrt
+                  - wÑhrend man die baudrate verdreht, sieht man
+                    schon wie die empfangenen Zeichen sich Ñndern
+                  Dabei mÅssen natÅrlich diverse Tasks sich
+                  gegenseitig schlafen legen.
+                - Parity- und Framing-errors (vielleicht noch'n Tast?)
+                - Die BenutzeroberflÑche mÅ·te auf solide FÅ·e gestellt
+                  werden. Mein Eindruck: Die Statuszeilenvariante
+                  ist komplizierter als Push-Down-Menues. Das ganze ist
+                  ein grî·eres Projekt, lieber fertig kaufen oder
+                  genug Literatur wÑlzen
+                - eine Hilfe-Funktion wÑre hÅbsch, die immer im
+                  MSG-Fensterle irgendwas labert.
+                - receive sagt gerne 'file exists'. Gibt's denn nix
+                  besseres als makefile fÅr den Zweck
+
+-ENDE---------------------------------------------------------------------
+
